@@ -5,6 +5,51 @@ All notable changes to Crash Doctor will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.9] — 2026-05-01
+
+### Added
+- **Directory junction** at `ProgramData\Mount and Blade II Bannerlord\crashes`
+  → `Modules\CrashDoctor\cache`. Created on `OnSubModuleLoad` via `mklink /J`
+  (no admin rights). Bannerlord native crash dumper writes to the junction,
+  files physically land in our cache, and the next-launch wipe deletes only
+  the junction — content survives. Existing subfolders are migrated into cache
+  before the junction is created.
+- **Force-crash test button** ("Сгенерировать краш") — hidden by default,
+  toggled via `ModuleData/CrashDoctorSettings.xml`:
+  ```xml
+  <ShowForceCrashButton>true</ShowForceCrashButton>
+  ```
+  Calls `kernel32!RaiseException(0xC0000005, NONCONTINUABLE)` — real native
+  access violation. Bannerlord's `SetUnhandledExceptionFilter` catches it
+  and runs the crash dumper. Used to verify the redirect actually works.
+  `Environment.FailFast` is managed-only and skips the native filter.
+- Footer label "Crash Doctor vX.Y.Z · build YYYY-MM-DD HH:mm:ss" so users
+  can see which version is loaded.
+
+### Changed
+- **Unrecognized-crash text rewritten** for both EN and RU. Only directs
+  users to the Telegram channel `https://t.me/CodeRickTg` (no more Discord,
+  TaleWorlds Forum or Reddit refs).
+- "Fix steps:" header and list are now hidden for unrecognized crashes
+  (new `HasFixSteps` property).
+
+### Fixed
+- v1.0.5..1.0.6: `ExecuteForceCrash` was missing from VM (silent edit
+  failure in an earlier build) — button binding pointed to a non-existent
+  method and clicks did nothing. Wired correctly now.
+- v1.0.7: switched from `Environment.FailFast` to `RaiseException` —
+  the former is managed-only and skips Bannerlord's crash dumper.
+- Localization restructured to vanilla TaleWorlds layout
+  `ModuleData/Languages/`. Old file name conflicted with Native and
+  failed to load — that's why RU/EN appeared mixed before.
+- Cleanup `IsProtected()` no longer falsely shields working subfolders
+  (`test_crashes/`, `cache/`, `exports/`); whitelisted explicitly.
+- `_selected = null` reset after Clear so Copy/Export disappear properly.
+- Read-only / hidden / system attributes stripped from files **and**
+  subdirectories before sending to Recycle Bin.
+- Windows "File In Use" popup no longer appears — `UICancelOption.DoNothing`
+  + silent IOException handling + `*_<currentPID>.txt` skipped.
+
 ## [1.0.4] — 2026-05-01
 
 ### Added
