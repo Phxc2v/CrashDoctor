@@ -1,0 +1,187 @@
+- id: mod.module_not_found
+  category: modules
+  severity: critical
+  confidence: high
+  evidence_source: "https://forums.taleworlds.com/threads/could-not-load-module.450123/"
+  requires_sources: [log_line]
+  title:
+    en: "A required module DLL could not be loaded"
+    ru: "Не удалось загрузить DLL одного из модов"
+  description:
+    en: |
+      Bannerlord could not load the DLL of one of the active modules. The mod is
+      either missing files, blocked by Windows ('blocked file' on download), or
+      installed for a different game version.
+    ru: |
+      Bannerlord не смог загрузить DLL одного из активных модов. У мода либо нет
+      нужных файлов, либо Windows заблокировал DLL ('blocked file' после
+      скачивания), либо мод на другую версию игры.
+  fix:
+    en:
+      - "Check that the mod is installed in <Bannerlord>/Modules/<ModId>/, not nested."
+      - "Right-click the mod's .dll → Properties → Unblock (if shown)."
+      - "Reinstall the mod for the current Bannerlord version."
+    ru:
+      - "Проверь, что мод лежит в <Bannerlord>/Modules/<ModId>/, не вложен."
+      - "Правый клик по DLL мода → Свойства → Разблокировать (если есть галочка)."
+      - "Переустанови мод под текущую версию Bannerlord."
+  match:
+    any:
+      - log_line:
+          contains: "Could not load module"
+      - log_line:
+          contains: "Couldn't load"
+      - log_line:
+          contains: "Cannot load"
+
+- id: mod.bad_image_format
+  category: modules
+  severity: critical
+  confidence: high
+  evidence_source: "https://learn.microsoft.com/en-us/dotnet/api/system.badimageformatexception"
+  requires_sources: [log_line]
+  title:
+    en: "BadImageFormatException — DLL bitness mismatch"
+    ru: "BadImageFormatException — несовпадение разрядности DLL"
+  description:
+    en: |
+      A mod's DLL was compiled for a different bitness or runtime than the game.
+      Almost always caused by an outdated mod that targets a previous Bannerlord version.
+    ru: |
+      DLL мода собран под другую разрядность или рантайм, чем игра. Почти всегда —
+      устаревший мод под старую версию Bannerlord.
+  fix:
+    en:
+      - "Update the mod to the version compatible with the current Bannerlord."
+      - "Check the mod's required Bannerlord version on its NexusMods page."
+      - "Disable the mod if no update is available."
+    ru:
+      - "Обнови мод до версии под текущий Bannerlord."
+      - "Проверь требуемую версию Bannerlord на странице мода в NexusMods."
+      - "Отключи мод, если обновления нет."
+  match:
+    all:
+      - log_line:
+          contains: "BadImageFormatException"
+
+- id: mod.dependency_mismatch
+  category: modules
+  severity: critical
+  confidence: high
+  evidence_source: "https://docs.bannerlordmodding.com/dependency-mismatch"
+  requires_sources: [log_line]
+  title:
+    en: "Mod dependency version mismatch"
+    ru: "Несовпадение версий зависимостей модов"
+  description:
+    en: |
+      A mod requires another mod at a specific version, and the version installed
+      is different. The launcher highlights this red on startup.
+    ru: |
+      Мод требует другой мод определённой версии, а установлена другая. Лаунчер
+      подсвечивает это красным при старте.
+  fix:
+    en:
+      - "Open the launcher and read which mod has the version conflict."
+      - "Update the dependency to the required version."
+      - "If newer version isn't compatible, downgrade the dependent mod."
+    ru:
+      - "Открой лаунчер и посмотри, у какого мода конфликт версий."
+      - "Обнови зависимость до требуемой версии."
+      - "Если свежей нет — откати зависящий мод на старую версию."
+  match:
+    any:
+      - log_line:
+          contains: "DependencyVersionMismatch"
+      - log_line:
+          contains: "dependency version"
+
+- id: mod.type_load_exception
+  category: modules
+  severity: critical
+  confidence: high
+  evidence_source: "https://learn.microsoft.com/en-us/dotnet/api/system.typeloadexception"
+  requires_sources: [log_line]
+  title:
+    en: "TypeLoadException — class signature mismatch"
+    ru: "TypeLoadException — несовпадение сигнатуры класса"
+  description:
+    en: |
+      A mod tried to use a TaleWorlds type that has changed between game versions.
+      The mod is built against a different Bannerlord version.
+    ru: |
+      Мод пытается использовать тип TaleWorlds, который изменился между версиями
+      игры. Мод собран под другую версию Bannerlord.
+  fix:
+    en:
+      - "Read the next stack frames after TypeLoadException — they name the offending mod."
+      - "Update the mod or downgrade Bannerlord to its target version."
+    ru:
+      - "Прочитай следующие фреймы стека после TypeLoadException — там имя мода."
+      - "Обнови мод или откати Bannerlord до его целевой версии."
+  match:
+    any:
+      - log_line:
+          contains: "TypeLoadException"
+
+- id: mod.missing_method
+  category: modules
+  severity: critical
+  confidence: high
+  evidence_source: "https://learn.microsoft.com/en-us/dotnet/api/system.missingmethodexception"
+  requires_sources: [log_line]
+  title:
+    en: "MissingMethodException — outdated mod"
+    ru: "MissingMethodException — устаревший мод"
+  description:
+    en: |
+      A mod called a TaleWorlds method that no longer exists. Same root cause as
+      TypeLoadException — mod built against an old Bannerlord.
+    ru: |
+      Мод позвал метод TaleWorlds, которого больше нет. Та же причина, что и у
+      TypeLoadException — мод собран под старый Bannerlord.
+  fix:
+    en:
+      - "Read the next stack frames — they name the offending mod and method."
+      - "Update the mod from NexusMods."
+      - "Disable the mod if there is no update."
+    ru:
+      - "Прочитай следующие фреймы стека — там мод и метод, который не нашёлся."
+      - "Обнови мод с NexusMods."
+      - "Отключи мод, если обновления нет."
+  match:
+    any:
+      - log_line:
+          contains: "MissingMethodException"
+
+- id: harmony.patch_exception
+  category: harmony
+  severity: critical
+  confidence: high
+  evidence_source: "https://harmony.pardeike.net/articles/patching.html"
+  requires_sources: [log_line]
+  title:
+    en: "Harmony patch failed to apply"
+    ru: "Harmony-патч не применился"
+  description:
+    en: |
+      A Harmony patch threw during apply. Two patches from different mods are
+      probably touching the same method incompatibly.
+    ru: |
+      Патч Harmony упал при применении. Скорее всего два мода патчат один и тот же
+      метод несовместимо.
+  fix:
+    en:
+      - "Read the next lines after Harmony.PatchException — they name the patcher mod."
+      - "Update the patcher mod to the latest version."
+      - "Disable mods one by one to localize the conflict."
+    ru:
+      - "Прочитай следующие строки после Harmony.PatchException — там имя мода-патчера."
+      - "Обнови мод-патчер до свежей версии."
+      - "Отключай моды по одному, чтобы локализовать конфликт."
+  match:
+    any:
+      - log_line:
+          contains: "Harmony.PatchException"
+      - log_line:
+          contains: "HarmonyPatchException"

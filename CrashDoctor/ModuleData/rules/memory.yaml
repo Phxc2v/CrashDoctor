@@ -1,0 +1,68 @@
+- id: mem.pagefile_low
+  category: memory
+  severity: critical
+  confidence: high
+  evidence_source: "https://learn.microsoft.com/en-us/windows/client-management/determine-appropriate-page-file-size"
+  requires_sources: [crash_tag]
+  title:
+    en: "Windows page file is almost exhausted"
+    ru: "Файл подкачки Windows почти исчерпан"
+  description:
+    en: |
+      Less than 1 GB of virtual memory is left for the game. Long sessions with
+      heavy mods (especially TOR on a /continuegame save) accumulate memory until
+      Windows can no longer hand out a page — the process then dies with an
+      access violation.
+    ru: |
+      Виртуальной памяти осталось меньше 1 ГБ. Долгие сессии с тяжёлыми модами
+      (особенно TOR на загрузке /continuegame) накапливают потребление памяти,
+      пока Windows не перестаёт выдавать страницы — после чего процесс падает
+      с access violation.
+  fix:
+    en:
+      - "Reboot the PC — the page file is reset on cold boot."
+      - "Don't load saves via /continuegame after a long session — quit to main menu and Continue from there."
+      - "Increase the page file: System → Advanced system settings → Performance → Settings → Advanced → Virtual Memory → Custom size 32–64 GB on an SSD."
+      - "Close background apps (Chrome, Discord, browsers) before launching."
+    ru:
+      - "Перезагрузить ПК — файл подкачки очищается при холодном старте."
+      - "Не загружай сейв через /continuegame после долгой сессии — выйди в главное меню и нажми Continue."
+      - "Увеличить файл подкачки: Система → Дополнительные параметры → Производительность → Параметры → Дополнительно → Виртуальная память → Особый размер 32–64 ГБ на SSD."
+      - "Закрой фоновые приложения (Chrome, Discord, браузеры) перед запуском."
+  match:
+    all:
+      - system:
+          field: page_file_available_mb
+          lt: "1024"
+
+- id: mem.bad_alloc
+  category: memory
+  severity: critical
+  confidence: high
+  evidence_source: "https://en.cppreference.com/w/cpp/memory/new/bad_alloc"
+  requires_sources: [log_line]
+  title:
+    en: "Out of memory (bad_alloc)"
+    ru: "Закончилась память (bad_alloc)"
+  description:
+    en: |
+      The native allocator failed to grab a chunk of memory. Either the page file
+      is too small, RAM is fragmented after a long session, or a mod has a leak.
+    ru: |
+      Нативному аллокатору не удалось получить кусок памяти. Либо мал файл
+      подкачки, либо RAM фрагментирована после долгой сессии, либо в моде утечка.
+  fix:
+    en:
+      - "Reboot the PC."
+      - "Lower Texture Quality and Texture Budget by one step in Options → Graphics."
+      - "Increase the Windows page file (see mem.pagefile_low fix)."
+      - "Quit any background apps before launching."
+    ru:
+      - "Перезагрузить ПК."
+      - "Понизь Texture Quality и Texture Budget на ступень в Опции → Графика."
+      - "Увеличить файл подкачки Windows (см. mem.pagefile_low)."
+      - "Закрой фоновые приложения перед запуском."
+  match:
+    all:
+      - log_line:
+          contains: "bad_alloc"

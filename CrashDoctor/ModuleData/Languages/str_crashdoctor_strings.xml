@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" type="string">
+  <tags>
+    <tag language="English" />
+  </tags>
+  <strings>
+    <string id="cd_open" text="Crash Doctor" />
+    <string id="cd_window_title" text="Crash Doctor" />
+    <string id="cd_no_crashes" text="No crashes detected. Play in peace." />
+    <string id="cd_selftest_fail" text="Crash Doctor self-test failed: {REASON}. See Modules/CrashDoctor/crashdoctor.log." />
+    <string id="cd_internal_error" text="Crash Doctor encountered an internal error. See crashdoctor.log." />
+    <string id="cd_status_scanning" text="Scanning..." />
+    <string id="cd_status_count" text="{COUNT} crashes" />
+    <string id="cd_btn_refresh" text="Refresh" />
+    <string id="cd_btn_clear" text="Clear..." />
+    <string id="cd_btn_open_folder" text="Open folder" />
+    <string id="cd_btn_open_log_folder" text="Open log folder" />
+    <string id="cd_btn_copy" text="Copy" />
+    <string id="cd_btn_export" text="Export" />
+    <string id="cd_btn_close" text="Close" />
+    <string id="cd_section_crashes" text="Crashes" />
+    <string id="cd_section_fix" text="Fix steps:" />
+    <string id="cd_section_evidence" text="Matched lines:" />
+    <string id="cd_section_diagnoses" text="Diagnoses" />
+    <string id="cd_severity_critical" text="CRITICAL" />
+    <string id="cd_severity_warning" text="WARNING" />
+    <string id="cd_severity_info" text="INFO" />
+    <string id="cd_severity_unknown" text="UNKNOWN" />
+    <string id="cd_confidence_high" text="high confidence" />
+    <string id="cd_confidence_medium" text="medium confidence" />
+    <string id="cd_confidence_low" text="low confidence" />
+    <string id="cd_unrecognized_title" text="Unrecognized crash" />
+    <string id="cd_unrecognized_desc" text="No rule matched. Click 'Export' and share the .txt on the TOR Discord, TaleWorlds Forum, or Reddit r/Bannerlord." />
+    <string id="cd_clear_dialog_title" text="Delete crash logs?" />
+    <string id="cd_clear_dialog_keep" text="Keep last 3 crashes (recommended)" />
+    <string id="cd_clear_dialog_delete_dump" text="Delete .dmp memory dumps too" />
+    <string id="cd_clear_dialog_confirm" text="Delete" />
+    <string id="cd_clear_dialog_cancel" text="Cancel" />
+    <string id="cd_clear_dialog_recycle_note" text="Files go to the Windows Recycle Bin and can be restored." />
+    <string id="cd_clear_done" text="Removed {COUNT} files. Restore from the Windows Recycle Bin if needed." />
+    <string id="cd_checkbox_on" text="[X]" />
+    <string id="cd_checkbox_off" text="[ ]" />
+  </strings>
+</base>

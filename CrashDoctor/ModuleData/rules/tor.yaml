@@ -1,0 +1,261 @@
+- id: tor.requires_harmony
+  category: modules
+  severity: critical
+  confidence: high
+  evidence_source: "TOR-bug-corpus.md TOR-R01"
+  requires_sources: [module_list]
+  title:
+    en: "TOR is enabled without Bannerlord.Harmony"
+    ru: "TOR включён без Bannerlord.Harmony"
+  description:
+    en: "The Old Realms requires Harmony to load. Without it the game crashes during module init."
+    ru: "The Old Realms требует Harmony для загрузки. Без него игра падает на старте инициализации модов."
+  fix:
+    en:
+      - "Install Bannerlord.Harmony from NexusMods (mod 2006)."
+      - "Place it ABOVE TOR_Core in the launcher load order."
+    ru:
+      - "Поставь Bannerlord.Harmony с NexusMods (mod 2006)."
+      - "Поставь его ВЫШЕ TOR_Core в порядке загрузки лаунчера."
+  match:
+    all:
+      - module_list: { id: "TOR_Core", has: "true" }
+      - module_list: { id: "Bannerlord.Harmony", missing: "true" }
+
+- id: tor.missing_core_submodule
+  category: modules
+  severity: critical
+  confidence: high
+  evidence_source: "TOR-bug-corpus.md TOR-R02"
+  requires_sources: [module_list]
+  title:
+    en: "TOR sub-module enabled without TOR_Core"
+    ru: "TOR-подмодуль активен, а TOR_Core нет"
+  description:
+    en: "TOR_Armory or TOR_Environment are enabled but TOR_Core is missing. They will fail to load anything."
+    ru: "TOR_Armory или TOR_Environment активны, но TOR_Core отсутствует. Они не смогут загрузиться."
+  fix:
+    en:
+      - "Enable TOR_Core in the launcher and place it ABOVE TOR_Armory and TOR_Environment."
+    ru:
+      - "Включи TOR_Core в лаунчере и поставь ВЫШЕ TOR_Armory и TOR_Environment."
+  match:
+    all:
+      - any:
+          - module_list: { id: "TOR_Armory", has: "true" }
+          - module_list: { id: "TOR_Environment", has: "true" }
+      - module_list: { id: "TOR_Core", missing: "true" }
+
+- id: tor.career_perk_npe
+  category: tor
+  severity: critical
+  confidence: high
+  evidence_source: "TOR-bug-corpus.md TOR-001"
+  requires_sources: [log_line]
+  title:
+    en: "TOR CareerPerkMissionBehavior null reference"
+    ru: "Null reference в TOR_Core.CareerPerkMissionBehavior"
+  description:
+    en: "Known TOR bug — CareerPerkMissionBehavior.OnAgentRemoved hits a null when certain career perks fire on an already-dead agent."
+    ru: "Известный баг TOR — CareerPerkMissionBehavior.OnAgentRemoved падает на null, когда определённые карьерные перки срабатывают на уже мёртвом агенте."
+  fix:
+    en:
+      - "Update TOR_Core to the latest version on NexusMods."
+      - "If reproducible: avoid the specific career perk that triggers it (see TOR Discord #bug-reports)."
+    ru:
+      - "Обнови TOR_Core до свежей версии на NexusMods."
+      - "Если повторяется — избегай конкретного карьерного перка (см. TOR Discord #bug-reports)."
+  match:
+    any:
+      - log_line: { contains: "CareerPerkMissionBehavior.OnAgentRemoved" }
+      - butr_report.exception: { frame_module_equals: "TOR_Core" }
+
+- id: tor.graveyard_party_npe
+  category: tor
+  severity: critical
+  confidence: high
+  evidence_source: "TOR-bug-corpus.md TOR-002"
+  requires_sources: [log_line]
+  title:
+    en: "TOR GraveyardNightWatchPartyComponent null reference"
+    ru: "TOR — null в GraveyardNightWatchPartyComponent"
+  description:
+    en: "Known TOR bug in the RaiseDead campaign mechanic — the night-watch party loses its name reference."
+    ru: "Известный баг TOR в кампанийной механике RaiseDead — ночная стража теряет ссылку на имя."
+  fix:
+    en:
+      - "Update TOR_Core to the latest version."
+      - "If reproducible: avoid raising undead near the affected settlement until the fix lands."
+    ru:
+      - "Обнови TOR_Core до свежей версии."
+      - "Если повторяется — не поднимай нежить около задетого поселения до фикса."
+  match:
+    all:
+      - log_line: { contains: "GraveyardNightWatchPartyComponent" }
+
+- id: tor.damage_model_npe
+  category: tor
+  severity: critical
+  confidence: high
+  evidence_source: "TOR-bug-corpus.md TOR-004"
+  requires_sources: [log_line]
+  title:
+    en: "TOR damage model null reference"
+    ru: "Null в TOR damage model"
+  description:
+    en: "TORagentApplyDamageModel.CalculateDamage hit a null. Combat-only crash."
+    ru: "TORagentApplyDamageModel.CalculateDamage упал на null. Краш только в бою."
+  fix:
+    en:
+      - "Update TOR_Core."
+      - "Disable any combat-modifying mods (RBM Combat, Bannerlord Combat Overhaul) — they conflict with TOR damage."
+    ru:
+      - "Обнови TOR_Core."
+      - "Отключи моды на бой (RBM Combat, Bannerlord Combat Overhaul) — они конфликтуют с уроном TOR."
+  match:
+    all:
+      - log_line: { contains: "TORagentApplyDamageModel" }
+
+- id: tor.dll_blocked
+  category: modules
+  severity: critical
+  confidence: high
+  evidence_source: "TOR-bug-corpus.md TOR-005"
+  requires_sources: [log_line]
+  title:
+    en: "TOR DLL blocked by Windows / antivirus"
+    ru: "Windows / антивирус заблокировал TOR DLL"
+  description:
+    en: "Cannot load TOR_Core.dll — Windows marks downloads from the Internet as 'blocked' until you unblock them, or your antivirus quarantined it."
+    ru: "Не загружается TOR_Core.dll — Windows помечает скачанные файлы как 'blocked' пока их не разблокировать; или антивирус посадил DLL в карантин."
+  fix:
+    en:
+      - "Modules/TOR_Core/bin/Win64_Shipping_Client/TOR_Core.dll → right click → Properties → check 'Unblock' → OK. Repeat for the other TOR DLLs."
+      - "Add the Modules/TOR_Core folder to your antivirus exclusions."
+      - "Re-download the mod from NexusMods if its DLLs are missing entirely."
+    ru:
+      - "Modules/TOR_Core/bin/Win64_Shipping_Client/TOR_Core.dll → правый клик → Свойства → Разблокировать → OK. Повтори для остальных DLL TOR."
+      - "Добавь папку Modules/TOR_Core в исключения антивируса."
+      - "Перекачай мод с NexusMods, если DLL вообще пропали."
+  match:
+    all:
+      - log_line: { contains: "TOR_Core" }
+      - log_line: { contains: "Cannot load" }
+
+- id: tor.gpu_texture_array_fail
+  category: tor
+  severity: critical
+  confidence: high
+  evidence_source: "TOR-bug-corpus.md TOR-009"
+  requires_sources: [log_line]
+  title:
+    en: "TOR GPU texture array allocation failed"
+    ru: "TOR — GPU не выделил массив текстур"
+  description:
+    en: "rglGPU_device::create_texture_array failed. TOR loads many high-res textures at once; on a low-VRAM GPU the call returns an error and the game crashes."
+    ru: "rglGPU_device::create_texture_array упал. TOR подгружает много текстур разом; на видеокарте с малым VRAM вызов возвращает ошибку и игра крашится."
+  fix:
+    en:
+      - "In-game: Options → Graphics → set Texture Quality to Low and Texture Budget to 1."
+      - "Restart the game; if it still crashes — disable TOR_Environment temporarily."
+      - "If you have a discrete GPU, make sure the game runs on it (see gpu.amd_integrated_default)."
+    ru:
+      - "В игре: Опции → Графика → Texture Quality на Low, Texture Budget на 1."
+      - "Перезапусти игру; если опять — временно отключи TOR_Environment."
+      - "Если есть дискретная видеокарта — убедись, что игра идёт на ней (см. gpu.amd_integrated_default)."
+  match:
+    all:
+      - log_line: { contains: "rglGPU_device::create_texture_array" }
+
+- id: tor.ability_not_baseability
+  category: tor
+  severity: warning
+  confidence: medium
+  evidence_source: "TOR-bug-corpus.md TOR-017"
+  requires_sources: [log_line]
+  title:
+    en: "TOR ability of wrong type"
+    ru: "TOR-абилка неверного типа"
+  description:
+    en: "An ability XML doesn't inherit from BaseAbility. The mod has a malformed ability definition."
+    ru: "XML абилки не наследует BaseAbility. У мода битое определение."
+  fix:
+    en:
+      - "Update TOR or the affected ability mod."
+      - "If you wrote a custom ability — fix its XML to inherit from BaseAbility."
+    ru:
+      - "Обнови TOR или мод-источник этой абилки."
+      - "Если своя абилка — исправь XML, наследуй BaseAbility."
+  match:
+    all:
+      - log_line: { contains: "wasn't of type BaseAbility" }
+
+- id: tor.triggered_script_failed
+  category: tor
+  severity: warning
+  confidence: medium
+  evidence_source: "TOR-bug-corpus.md TOR-018"
+  requires_sources: [log_line]
+  title:
+    en: "TOR triggered script failed to spawn"
+    ru: "TOR triggered-скрипт не запустился"
+  description:
+    en: "TOR_Core.BattleMechanics.TriggeredEffect.Scripts could not spawn a script — usually missing asset or version mismatch."
+    ru: "TOR_Core.BattleMechanics.TriggeredEffect.Scripts не смог запустить скрипт — обычно нет ассета или несовпадение версий."
+  fix:
+    en:
+      - "Update TOR_Core."
+      - "Steam → Verify integrity (in case of asset loss)."
+    ru:
+      - "Обнови TOR_Core."
+      - "Steam → Проверить целостность (на случай битого ассета)."
+  match:
+    all:
+      - log_line: { contains: "Tried to spawn TriggeredScript" }
+
+- id: tor.null_particle
+  category: tor
+  severity: info
+  confidence: medium
+  evidence_source: "TOR-bug-corpus.md TOR-019"
+  requires_sources: [log_line]
+  title:
+    en: "TOR null particle on agent bone"
+    ru: "TOR — null particle на кости агента"
+  description:
+    en: "Particle ID is empty — usually only a visual glitch, but spam in the log can hide other problems."
+    ru: "Particle ID пустой — обычно это просто визуальный баг, но спам в логе может прятать другие проблемы."
+  fix:
+    en:
+      - "Update TOR_Core."
+      - "Often safe to ignore unless it accompanies a crash."
+    ru:
+      - "Обнови TOR_Core."
+      - "Часто безопасно игнорировать, если не сопровождает краш."
+  match:
+    all:
+      - log_line: { contains: "Attempted to apply a null particle to agent bone" }
+
+- id: tor.gamepass_not_supported
+  category: tor
+  severity: critical
+  confidence: high
+  evidence_source: "TOR-bug-corpus.md TOR-006"
+  requires_sources: [log_line]
+  title:
+    en: "TOR does not run on Microsoft Store / Game Pass"
+    ru: "TOR не работает на Microsoft Store / Game Pass"
+  description:
+    en: "TOR is built for the Steam version. The MS Store / Game Pass build of Bannerlord uses different binaries."
+    ru: "TOR собран под Steam-версию. Версия Microsoft Store / Game Pass использует другие бинарники."
+  fix:
+    en:
+      - "Buy Bannerlord on Steam to play TOR."
+      - "There is no fix for the MS Store version — TaleWorlds and TOR don't support it."
+    ru:
+      - "Купи Bannerlord в Steam, чтобы играть с TOR."
+      - "Решения для MS Store-версии нет — TaleWorlds и TOR её не поддерживают."
+  match:
+    any:
+      - log_line: { contains: "gaming.desktop.x64_shipping_client" }
+      - log_line: { contains: "Microsoft.Mount" }

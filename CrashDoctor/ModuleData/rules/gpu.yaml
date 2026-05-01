@@ -1,0 +1,148 @@
+- id: gpu.amd_integrated_default
+  category: gpu
+  severity: critical
+  confidence: high
+  evidence_source: "https://docs.bannerlordmodding.com/integrated-gpu-issues"
+  requires_sources: [crash_tag, engine_config]
+  title:
+    en: "Game is rendering on the integrated AMD GPU"
+    ru: "Игра рендерится на встроенной AMD-видеокарте"
+  description:
+    en: |
+      Bannerlord launched on the integrated AMD Radeon GPU instead of the
+      discrete card detected on this machine. The integrated GPU has very
+      little dedicated VRAM and is the most likely cause of the crash.
+    ru: |
+      Bannerlord запустился на встроенной видеокарте AMD Radeon вместо
+      дискретной, которая есть в этой машине. У встроенной мало видеопамяти —
+      почти наверняка из-за этого и был краш.
+  fix:
+    en:
+      - "In-game: Options → Graphics → first tab → Graphics Adapter → choose the discrete GPU."
+      - "If the option is missing: open Documents/Mount and Blade II Bannerlord/engine_config.txt and change graphics_adapter from 0 to 1."
+      - "Windows fallback: Settings → System → Display → Graphics → add Bannerlord.exe → High performance."
+      - "Update both AMD and the discrete GPU drivers."
+    ru:
+      - "В игре: Опции → Графика → первая вкладка → Графический адаптер → выбрать дискретную видеокарту."
+      - "Если такой опции нет: в Documents/Mount and Blade II Bannerlord/engine_config.txt поменять graphics_adapter с 0 на 1."
+      - "Через Windows: Параметры → Система → Дисплей → Графика → добавить Bannerlord.exe → Высокая производительность."
+      - "Обновить драйвер AMD и драйвер дискретной видеокарты."
+  match:
+    all:
+      - engine_config:
+          key: graphics_adapter
+          equals: "0"
+      - crash_tag:
+          path: "Display Devices 0/Card name"
+          contains: "Radeon"
+      - any:
+          - crash_tag:
+              path: "Display Devices 1/Card name"
+              contains: "NVIDIA"
+          - crash_tag:
+              path: "Display Devices 1/Card name"
+              contains: "Radeon RX"
+
+- id: gpu.shader_cache_corrupt
+  category: gpu
+  severity: warning
+  confidence: high
+  evidence_source: "https://forums.taleworlds.com/threads/missing-shader-from-sack.444678/"
+  requires_sources: [log_line]
+  title:
+    en: "Shader cache appears to be corrupt or unavailable"
+    ru: "Кэш шейдеров повреждён или недоступен"
+  description:
+    en: |
+      The log shows hundreds of "Missing shader from sack" messages. This usually
+      means the shader cache is broken, the GPU driver does not support the shader
+      pipeline, or the disk had write errors during installation.
+    ru: |
+      В логе сотни сообщений «Missing shader from sack». Обычно это значит, что
+      кэш шейдеров поломался, драйвер видеокарты не тянет нужный pipeline, или
+      во время установки были ошибки записи на диск.
+  fix:
+    en:
+      - "In-game: Options → Graphics → set Shader Quality to Low → save and restart."
+      - "Steam → Bannerlord → Properties → Installed Files → Verify integrity of game files."
+      - "Update the GPU driver."
+      - "If the issue persists, lower texture/shadow/postfx settings one notch."
+    ru:
+      - "В игре: Опции → Графика → понизь Качество шейдеров до Low → сохрани и перезапусти."
+      - "Steam → Bannerlord → Свойства → Установленные файлы → Проверить целостность."
+      - "Обновить драйвер видеокарты."
+      - "Если не помогло — понизь Texture/Shadow/PostFX на ступень."
+  match:
+    all:
+      - log_line:
+          contains: "Missing shader"
+          count_at_least: "100"
+
+- id: gpu.dxgi_device_removed
+  category: gpu
+  severity: critical
+  confidence: high
+  evidence_source: "https://learn.microsoft.com/en-us/windows/win32/direct3ddxgi/dxgi-error"
+  requires_sources: [log_line]
+  title:
+    en: "DXGI_ERROR_DEVICE_REMOVED — GPU lost"
+    ru: "DXGI_ERROR_DEVICE_REMOVED — GPU отвалился"
+  description:
+    en: |
+      The graphics card stopped responding to Windows. Usually caused by
+      driver crash, GPU overheat, or unstable overclock.
+    ru: |
+      Видеокарта перестала отвечать Windows. Обычно — краш драйвера, перегрев
+      GPU или нестабильный разгон.
+  fix:
+    en:
+      - "In-game: lower Texture/Shadow Quality to Medium."
+      - "Disable any GPU overclock (MSI Afterburner, AMD Wattman)."
+      - "Clean reinstall of GPU driver via DDU + freshly downloaded driver."
+      - "Check GPU temps with HWInfo64 — > 85°C means cleaning/repaste needed."
+    ru:
+      - "В игре: понизь Texture/Shadow Quality до Medium."
+      - "Отключи разгон GPU (MSI Afterburner, AMD Wattman) если есть."
+      - "Чистая переустановка драйвера через DDU + свежий драйвер с сайта."
+      - "Проверь температуру GPU через HWInfo64 — >85°C значит надо чистить/менять термопасту."
+  match:
+    any:
+      - log_line:
+          contains: "DXGI_ERROR_DEVICE_REMOVED"
+      - log_line:
+          contains: "DEVICE_REMOVED"
+      - log_line:
+          regex: "0x887A0005|0x887A0020"
+
+- id: gpu.device_hung_siege
+  category: gpu
+  severity: critical
+  confidence: medium
+  evidence_source: "https://forums.taleworlds.com/threads/device-hung-on-siege.452119/"
+  requires_sources: [log_line]
+  title:
+    en: "GPU hang on big siege battle"
+    ru: "GPU подвис на крупной осаде"
+  description:
+    en: |
+      Device hung 0x887A0006 fires on busy scenes (sieges, large field battles).
+      The GPU exceeded the timeout detection limit because of too many draw calls.
+    ru: |
+      Device hung 0x887A0006 возникает на нагруженных сценах (осады, большие
+      полевые битвы). GPU не уложился в TDR (timeout detection) из-за лавины
+      draw call'ов.
+  fix:
+    en:
+      - "In-game: lower Battle Size in Options → Game (try 200, then 100)."
+      - "Lower Texture/Shadow/PostFX one notch each."
+      - "If you have a 60Hz monitor, cap framerate to 60 (Options → Graphics)."
+      - "Update GPU driver."
+    ru:
+      - "В игре: понизь Battle Size в Опции → Игра (попробуй 200, потом 100)."
+      - "Понизь Texture/Shadow/PostFX на ступень."
+      - "Если монитор 60 Гц — ограничь FPS до 60 (Опции → Графика)."
+      - "Обнови драйвер GPU."
+  match:
+    all:
+      - log_line:
+          contains: "0x887A0006"

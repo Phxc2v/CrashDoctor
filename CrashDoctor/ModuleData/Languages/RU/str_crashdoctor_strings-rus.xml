@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" type="string">
+  <tags>
+    <tag language="Русский" />
+  </tags>
+  <strings>
+    <string id="cd_open" text="Crash Doctor" />
+    <string id="cd_window_title" text="Crash Doctor" />
+    <string id="cd_no_crashes" text="Логи чистые, играй спокойно." />
+    <string id="cd_selftest_fail" text="Crash Doctor: самодиагностика не прошла ({REASON}). См. Modules/CrashDoctor/crashdoctor.log." />
+    <string id="cd_internal_error" text="Crash Doctor: внутренняя ошибка. См. crashdoctor.log." />
+    <string id="cd_status_scanning" text="Сканирование..." />
+    <string id="cd_status_count" text="Крашей: {COUNT}" />
+    <string id="cd_btn_refresh" text="Обновить" />
+    <string id="cd_btn_clear" text="Очистить..." />
+    <string id="cd_btn_open_folder" text="Открыть папку" />
+    <string id="cd_btn_open_log_folder" text="Папка логов" />
+    <string id="cd_btn_copy" text="Скопировать" />
+    <string id="cd_btn_export" text="Экспорт" />
+    <string id="cd_btn_close" text="Закрыть" />
+    <string id="cd_section_crashes" text="Краши" />
+    <string id="cd_section_fix" text="Что делать:" />
+    <string id="cd_section_evidence" text="Совпавшие строки:" />
+    <string id="cd_section_diagnoses" text="Диагнозы" />
+    <string id="cd_severity_critical" text="КРИТИЧНО" />
+    <string id="cd_severity_warning" text="ПРЕДУПРЕЖДЕНИЕ" />
+    <string id="cd_severity_info" text="ИНФО" />
+    <string id="cd_severity_unknown" text="НЕИЗВЕСТНО" />
+    <string id="cd_confidence_high" text="высокая уверенность" />
+    <string id="cd_confidence_medium" text="средняя уверенность" />
+    <string id="cd_confidence_low" text="низкая уверенность" />
+    <string id="cd_unrecognized_title" text="Краш не распознан" />
+    <string id="cd_unrecognized_desc" text="Ни одно правило не сработало. Нажми «Экспорт» и запости .txt на дискорд TOR, форум TaleWorlds или Reddit r/Bannerlord." />
+    <string id="cd_clear_dialog_title" text="Удалить логи крашей?" />
+    <string id="cd_clear_dialog_keep" text="Оставить последние 3 краша (рекомендуется)" />
+    <string id="cd_clear_dialog_delete_dump" text="Удалить также .dmp дампы памяти" />
+    <string id="cd_clear_dialog_confirm" text="Удалить" />
+    <string id="cd_clear_dialog_cancel" text="Отмена" />
+    <string id="cd_clear_dialog_recycle_note" text="Файлы переедут в Корзину Windows — можно восстановить." />
+    <string id="cd_clear_done" text="Удалено файлов: {COUNT}. При необходимости восстанови из Корзины Windows." />
+    <string id="cd_checkbox_on" text="[X]" />
+    <string id="cd_checkbox_off" text="[  ]" />
+  </strings>
+</base>
