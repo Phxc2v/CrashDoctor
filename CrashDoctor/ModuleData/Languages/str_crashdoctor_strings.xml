@@ -18,6 +18,7 @@
     <string id="cd_btn_copy" text="Copy" />
     <string id="cd_btn_export" text="Export" />
     <string id="cd_btn_close" text="Close" />
+    <string id="cd_btn_force_crash" text="Force crash (test)" />
     <string id="cd_section_crashes" text="Crashes" />
     <string id="cd_section_fix" text="Fix steps:" />
     <string id="cd_section_evidence" text="Matched lines:" />
@@ -30,7 +31,7 @@
     <string id="cd_confidence_medium" text="medium confidence" />
     <string id="cd_confidence_low" text="low confidence" />
     <string id="cd_unrecognized_title" text="Unrecognized crash" />
-    <string id="cd_unrecognized_desc" text="No rule matched. Click 'Export' and share the .txt on the TOR Discord, TaleWorlds Forum, or Reddit r/Bannerlord." />
+    <string id="cd_unrecognized_desc" text="No rule matched yet. Please click 'Export' and send the .txt file to our Telegram channel: https://t.me/CodeRickTg — we will add a rule for this crash." />
     <string id="cd_clear_dialog_title" text="Delete crash logs?" />
     <string id="cd_clear_dialog_keep" text="Keep last 3 crashes (recommended)" />
     <string id="cd_clear_dialog_delete_dump" text="Delete .dmp memory dumps too" />

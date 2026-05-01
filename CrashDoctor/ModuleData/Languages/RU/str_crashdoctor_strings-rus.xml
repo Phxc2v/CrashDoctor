@@ -18,6 +18,7 @@
     <string id="cd_btn_copy" text="Скопировать" />
     <string id="cd_btn_export" text="Экспорт" />
     <string id="cd_btn_close" text="Закрыть" />
+    <string id="cd_btn_force_crash" text="Сгенерировать краш" />
     <string id="cd_section_crashes" text="Краши" />
     <string id="cd_section_fix" text="Что делать:" />
     <string id="cd_section_evidence" text="Совпавшие строки:" />
@@ -30,7 +31,7 @@
     <string id="cd_confidence_medium" text="средняя уверенность" />
     <string id="cd_confidence_low" text="низкая уверенность" />
     <string id="cd_unrecognized_title" text="Краш не распознан" />
-    <string id="cd_unrecognized_desc" text="Ни одно правило не сработало. Нажми «Экспорт» и запости .txt на дискорд TOR, форум TaleWorlds или Reddit r/Bannerlord." />
+    <string id="cd_unrecognized_desc" text="Это новый краш — мы пока не знаем как его починить. Нажми «Экспорт» и пришли файл .txt в наш Telegram-канал: https://t.me/CodeRickTg — мы добавим правило для этого краша." />
     <string id="cd_clear_dialog_title" text="Удалить логи крашей?" />
     <string id="cd_clear_dialog_keep" text="Оставить последние 3 краша (рекомендуется)" />
     <string id="cd_clear_dialog_delete_dump" text="Удалить также .dmp дампы памяти" />
