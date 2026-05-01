@@ -5,6 +5,41 @@ All notable changes to Crash Doctor will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.4] — 2026-05-01
+
+### Added
+- Live preview in clear dialog: "Will delete: N of M crash folders".
+- Footer label with version + build timestamp ("Crash Doctor v1.0.4 · build YYYY-MM-DD HH:mm:ss").
+- Telegram channel header line at the top of every Copy/Export output.
+- `test_crashes/` folder for drop-in fixture testing of new rules.
+
+### Changed
+- Localization moved to vanilla TaleWorlds layout `ModuleData/Languages/`
+  with unique file name `str_crashdoctor_strings.xml` (the previous
+  `std_module_strings_xml.xml` clashed with Native and silently failed
+  to load — that's why RU/EN appeared mixed before).
+- Default of "Keep last 3 crashes" is now OFF — the button does what it says.
+- Copy / Export buttons visible **only** for unrecognized crashes (avoids
+  duplicate spam to the analysis channel).
+- Confirmation dialog now uses an opaque popup canvas + 85% black overlay
+  (was see-through before).
+
+### Fixed
+- `IsProtected()` falsely matched any path containing `Modules/CrashDoctor`,
+  which silently protected our own working subfolders. Now whitelists
+  `test_crashes/`, `cache/`, `exports/` for deletion while still guarding
+  `bin/`, `ModuleData/`, `GUI/`, `Localization/`.
+- After cleanup, the right pane was still showing the deleted crash's
+  diagnosis with Copy/Export visible — `_selected` is now reset properly.
+- Read-only / hidden / system attributes are stripped from files **and**
+  subdirectories before sending to Recycle Bin.
+- `GC.Collect()` before delete to release our own short-lived file handles
+  (CrashCollector reads files just before user clicks Delete).
+- Windows "File In Use" popup no longer shown — `UICancelOption.DoNothing`
+  + silent IOException catch + per-file detailed Logger.Warn.
+- File handles of the running game's own logs (`*_<pid>.txt`) are
+  detected by name and skipped without trying to delete them.
+
 ## [1.0.0] — 2026-05-01
 
 ### Added

@@ -38,6 +38,7 @@
     <string id="cd_clear_dialog_cancel" text="Cancel" />
     <string id="cd_clear_dialog_recycle_note" text="Files go to the Windows Recycle Bin and can be restored." />
     <string id="cd_clear_done" text="Removed {COUNT} files. Restore from the Windows Recycle Bin if needed." />
+    <string id="cd_clear_preview" text="Will delete: {DEL} of {TOTAL} crash folders" />
     <string id="cd_checkbox_on" text="[X]" />
     <string id="cd_checkbox_off" text="[ ]" />
   </strings>

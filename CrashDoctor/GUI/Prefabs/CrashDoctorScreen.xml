@@ -115,6 +115,11 @@
           </Children>
         </Widget>
 
+        <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="700" SuggestedHeight="22"
+                    HorizontalAlignment="Right" VerticalAlignment="Bottom" MarginRight="20" MarginBottom="6"
+                    Brush.FontSize="14" Brush.FontColor="#988673AA" Brush.TextHorizontalAlignment="Right"
+                    Text="@VersionLabel" />
+
         <ListPanel WidthSizePolicy="CoverChildren" HeightSizePolicy="Fixed" SuggestedHeight="60"
                    HorizontalAlignment="Center" VerticalAlignment="Bottom" MarginBottom="30"
                    StackLayout.LayoutMethod="HorizontalLeftToRight">
