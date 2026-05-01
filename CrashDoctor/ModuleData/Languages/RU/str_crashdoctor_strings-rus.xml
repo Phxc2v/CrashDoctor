@@ -38,6 +38,7 @@
     <string id="cd_clear_dialog_cancel" text="Отмена" />
     <string id="cd_clear_dialog_recycle_note" text="Файлы переедут в Корзину Windows — можно восстановить." />
     <string id="cd_clear_done" text="Удалено файлов: {COUNT}. При необходимости восстанови из Корзины Windows." />
+    <string id="cd_clear_preview" text="Будет удалено: {DEL} из {TOTAL} крашей" />
     <string id="cd_checkbox_on" text="[X]" />
     <string id="cd_checkbox_off" text="[  ]" />
   </strings>
