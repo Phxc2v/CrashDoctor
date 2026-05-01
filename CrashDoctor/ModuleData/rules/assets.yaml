@@ -1,0 +1,92 @@
+- id: assets.scene_missing
+  category: assets
+  severity: critical
+  confidence: high
+  evidence_source: "https://forums.taleworlds.com/threads/cannot-find-scene.456001/"
+  requires_sources: [log_line]
+  title:
+    en: "Scene file not found"
+    ru: "Файл сцены не найден"
+  description:
+    en: |
+      A mod tried to load a scene that doesn't exist on disk. Either the mod
+      install is incomplete or the scene was renamed in a newer mod version.
+    ru: |
+      Мод пытается загрузить сцену, которой нет на диске. Либо мод установлен
+      не полностью, либо сцену переименовали в новой версии мода.
+  fix:
+    en:
+      - "Reinstall the mod completely — fully delete its folder before re-adding."
+      - "Check the mod's Required Files on NexusMods (often a 'Scenes' download)."
+    ru:
+      - "Переустанови мод полностью — удали папку и накати свежую версию."
+      - "Проверь Required Files на странице мода в NexusMods (часто отдельно лежит 'Scenes')."
+  match:
+    any:
+      - log_line:
+          contains: "Cannot find scene"
+      - log_line:
+          contains: "Scene not found"
+
+- id: assets.mesh_missing
+  category: assets
+  severity: warning
+  confidence: high
+  evidence_source: "https://forums.taleworlds.com/threads/cannot-find-mesh.457001/"
+  requires_sources: [log_line]
+  title:
+    en: "Mesh asset not found"
+    ru: "Меш не найден"
+  description:
+    en: |
+      A model referenced by item/scene XML doesn't exist as a .obj/.mesh on disk.
+      Usually a missing or partial mod install.
+    ru: |
+      Модель, на которую ссылается XML предмета/сцены, не существует как
+      .obj/.mesh файл. Обычно — мод установлен частично.
+  fix:
+    en:
+      - "Reinstall the offending mod (mesh path in the log usually contains the mod ID)."
+      - "Check Required Files on NexusMods."
+    ru:
+      - "Переустанови мод (путь в логе обычно содержит ID мода)."
+      - "Проверь Required Files на NexusMods."
+  match:
+    all:
+      - log_line:
+          contains: "Cannot find mesh"
+
+- id: audio.fmod_bank_failed
+  category: audio
+  severity: warning
+  confidence: medium
+  evidence_source: "https://www.fmod.com/docs/2.02/api/glossary.html"
+  requires_sources: [log_line]
+  title:
+    en: "FMOD audio bank failed to load"
+    ru: "FMOD не загрузил аудиобанк"
+  description:
+    en: |
+      An audio bank file (.bank) is missing or corrupt. Bannerlord usually keeps
+      running with broken sounds, but a hard FMOD error can also crash on first
+      battle music.
+    ru: |
+      Аудиобанк (.bank) отсутствует или повреждён. Bannerlord обычно работает
+      без звука, но жёсткая FMOD-ошибка может уронить игру при первой боевой
+      музыке.
+  fix:
+    en:
+      - "Steam → Bannerlord → Properties → Installed Files → Verify integrity."
+      - "Reinstall any audio mods one by one to find the conflict."
+    ru:
+      - "Steam → Bannerlord → Свойства → Установленные файлы → Проверить целостность."
+      - "Переустанови аудио-моды по одному, чтобы найти конфликт."
+  match:
+    all:
+      - log_line:
+          contains: "FMOD"
+      - any:
+          - log_line:
+              contains: "Master.bank"
+          - log_line:
+              contains: "bank failed"

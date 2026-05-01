@@ -1,0 +1,183 @@
+- id: hw.ram_below_minimum
+  category: hardware
+  severity: warning
+  confidence: high
+  evidence_source: "https://store.steampowered.com/app/261550/"
+  requires_sources: [crash_tag]
+  title:
+    en: "RAM below Bannerlord minimum"
+    ru: "Меньше RAM, чем требует Bannerlord"
+  description:
+    en: |
+      Bannerlord's minimum is 6 GB RAM, recommended 8 GB. With heavy mods like TOR,
+      anything below 16 GB will crash regularly.
+    ru: |
+      Минимум Bannerlord — 6 ГБ RAM, рекомендовано 8 ГБ. С тяжёлыми модами вроде TOR
+      ниже 16 ГБ — регулярные крашы.
+  fix:
+    en:
+      - "Close Chrome, Discord, browsers, and other background apps before launching."
+      - "In-game: Options → Graphics → set Texture Quality and Shadow Quality to Low."
+      - "Add an extra RAM stick if your system allows."
+    ru:
+      - "Закрой Chrome, Discord, браузеры и фоновые приложения перед запуском."
+      - "В игре: Опции → Графика → Texture Quality и Shadow Quality на Low."
+      - "По возможности — добавь планку RAM."
+  match:
+    all:
+      - system:
+          field: ram_mb
+          lt: "8192"
+
+- id: hw.ram_below_recommended_for_tor
+  category: hardware
+  severity: info
+  confidence: medium
+  evidence_source: "TOR-bug-corpus.md - hardware notes"
+  requires_sources: [crash_tag, module_list]
+  title:
+    en: "RAM is tight for TOR"
+    ru: "Маловато RAM для TOR"
+  description:
+    en: |
+      The Old Realms is heavy. With less than 16 GB RAM and TOR_Core enabled,
+      crashes during long sessions or sieges are likely.
+    ru: |
+      The Old Realms — тяжёлый мод. Меньше 16 ГБ RAM с TOR_Core активным — будут
+      крашы в долгих сессиях и осадах.
+  fix:
+    en:
+      - "In-game: lower Texture Quality and Shadow Quality."
+      - "Close everything in the background before launching."
+      - "Quit to main menu every 1–2 hours and Continue from there to flush memory."
+    ru:
+      - "В игре: понизь Texture Quality и Shadow Quality."
+      - "Закрой всё в фоне перед запуском."
+      - "Каждые 1–2 часа выходи в главное меню и нажимай Continue — чтобы сбрасывать память."
+  match:
+    all:
+      - system:
+          field: ram_mb
+          lt: "16384"
+      - module_list:
+          id: "TOR_Core"
+          has: "true"
+
+- id: hw.vram_below_minimum
+  category: hardware
+  severity: warning
+  confidence: high
+  evidence_source: "https://store.steampowered.com/app/261550/"
+  requires_sources: [crash_tag]
+  title:
+    en: "GPU has less than 2 GB VRAM"
+    ru: "У видеокарты меньше 2 ГБ VRAM"
+  description:
+    en: |
+      Active GPU has under 2 GB dedicated VRAM. Bannerlord minimum is 2 GB,
+      recommended 4+ GB. With TOR — 6+ GB.
+    ru: |
+      У активной видеокарты меньше 2 ГБ VRAM. Минимум Bannerlord — 2 ГБ,
+      рекомендовано 4+ ГБ. С TOR — 6+ ГБ.
+  fix:
+    en:
+      - "In-game: lower Texture Quality and Texture Budget."
+      - "Disable any heavy texture mods."
+    ru:
+      - "В игре: понизь Texture Quality и Texture Budget."
+      - "Отключи тяжёлые текстурные моды, если есть."
+  match:
+    all:
+      - system:
+          field: active_gpu_vram_mb
+          lt: "2048"
+
+- id: hw.driver_outdated
+  category: hardware
+  severity: warning
+  confidence: high
+  evidence_source: "https://www.amd.com/en/support / https://www.nvidia.com/Download/index.aspx"
+  requires_sources: [crash_tag]
+  title:
+    en: "GPU driver is over 18 months old"
+    ru: "Драйвер видеокарты старше 18 месяцев"
+  description:
+    en: |
+      The display driver is from a different release year. Many TaleWorlds and
+      mod-related shader/render bugs are fixed in newer driver releases.
+    ru: |
+      Драйвер видеокарты от старого года выпуска. Многие баги шейдеров и рендера
+      в Bannerlord и модах исправляют в свежих драйверах.
+  fix:
+    en:
+      - "AMD: open AMD Software → Auto-detect → install the latest driver."
+      - "NVIDIA: open GeForce Experience or download from nvidia.com → install latest Game Ready."
+      - "Reboot after installation."
+    ru:
+      - "AMD: запусти AMD Software → Auto-detect → поставь свежий драйвер."
+      - "NVIDIA: GeForce Experience или вручную с nvidia.com → поставь свежий Game Ready."
+      - "Перезагрузить ПК после установки."
+  match:
+    all:
+      - system:
+          field: any_gpu_driver_year
+          lt: "2024"
+
+- id: hw.os_too_old
+  category: hardware
+  severity: critical
+  confidence: high
+  evidence_source: "https://store.steampowered.com/app/261550/"
+  requires_sources: [crash_tag]
+  title:
+    en: "Windows 7 or 8 is no longer supported by Bannerlord"
+    ru: "Bannerlord не поддерживает Windows 7 / 8"
+  description:
+    en: |
+      Bannerlord 1.2+ requires Windows 10 or 11. On Windows 7/8 the game can launch
+      but crashes are unavoidable.
+    ru: |
+      Bannerlord 1.2+ требует Windows 10 или 11. На 7/8 игра может запуститься,
+      но крашей не избежать.
+  fix:
+    en:
+      - "Upgrade to Windows 10 or 11."
+    ru:
+      - "Обновись до Windows 10 или 11."
+  match:
+    any:
+      - system:
+          field: os
+          contains: "Windows 7"
+      - system:
+          field: os
+          contains: "Windows 8"
+
+- id: hw.pagefile_disabled_or_tiny
+  category: hardware
+  severity: warning
+  confidence: high
+  evidence_source: "https://learn.microsoft.com/en-us/windows/client-management/determine-appropriate-page-file-size"
+  requires_sources: [crash_tag]
+  title:
+    en: "Page file is exhausted or disabled"
+    ru: "Файл подкачки исчерпан или выключен"
+  description:
+    en: |
+      Less than 1 GB free in the Windows page file. With heavy mods this leads
+      to access violation crashes.
+    ru: |
+      Меньше 1 ГБ свободного в файле подкачки Windows. На тяжёлых модах это
+      приводит к access violation.
+  fix:
+    en:
+      - "System Properties → Advanced → Performance → Settings → Advanced → Virtual Memory → Custom 32–64 GB on an SSD."
+      - "Reboot after applying."
+    ru:
+      - "Система → Дополнительные параметры → Производительность → Параметры → Дополнительно → Виртуальная память → Особый размер 32–64 ГБ на SSD."
+      - "Перезагрузить ПК после изменения."
+  match:
+    all:
+      - system:
+          field: page_file_available_mb
+          lt: "1024"

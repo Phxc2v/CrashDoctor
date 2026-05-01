@@ -1,0 +1,66 @@
+- id: save.null_ref_load
+  category: saves
+  severity: critical
+  confidence: medium
+  evidence_source: "https://forums.taleworlds.com/threads/null-ref-when-loading-save.451889/"
+  requires_sources: [log_line]
+  title:
+    en: "NullReferenceException while loading save"
+    ru: "NullReferenceException при загрузке сейва"
+  description:
+    en: |
+      An object referenced by the save no longer exists in the current data set.
+      Common when you disable/uninstall a mod that the save depended on.
+    ru: |
+      Объект, на который ссылается сейв, больше не существует в текущих данных.
+      Часто бывает после отключения/удаления мода, от которого зависел сейв.
+  fix:
+    en:
+      - "Re-enable any mods you disabled since this save was made."
+      - "If the mod was deleted permanently — start a new game (this save is gone)."
+      - "Use Save Editor for Bannerlord to remove the dead reference (advanced)."
+    ru:
+      - "Включи обратно моды, которые отключал после создания сейва."
+      - "Если мод удалён навсегда — этот сейв не вытащить, начинай новую."
+      - "Через Save Editor for Bannerlord можно вычистить мёртвую ссылку (продвинуто)."
+  match:
+    all:
+      - log_line:
+          contains: "NullReferenceException"
+      - any:
+          - log_line:
+              contains: "MBObjectManager.GetObject"
+          - log_line:
+              contains: "LoadSaveGame"
+
+- id: save.read_failed
+  category: saves
+  severity: critical
+  confidence: high
+  evidence_source: "https://forums.taleworlds.com/threads/failed-to-read-save.444222/"
+  requires_sources: [log_line]
+  title:
+    en: "Save file is corrupt or unreadable"
+    ru: "Файл сохранения повреждён или нечитаем"
+  description:
+    en: |
+      The save file structure can't be parsed. Disk error during write or game
+      crashed mid-save.
+    ru: |
+      Структура файла сейва не парсится. Ошибка диска при записи или игра
+      крашнулась посреди сохранения.
+  fix:
+    en:
+      - "Try an earlier autosave (Continue → manage saves)."
+      - "Run chkdsk on the SSD/HDD where Documents/Mount and Blade II Bannerlord/Game Saves/ lives."
+      - "Make autosaves more frequent: Options → Game → Autosave Interval."
+    ru:
+      - "Загрузи более ранний автосейв (Continue → управление сейвами)."
+      - "Проверь диск через chkdsk там, где лежит Documents/Mount and Blade II Bannerlord/Game Saves/."
+      - "Сделай автосейвы чаще: Опции → Игра → Интервал автосохранения."
+  match:
+    any:
+      - log_line:
+          contains: "Failed to read save"
+      - log_line:
+          contains: "save file is corrupt"
