@@ -4,4 +4,9 @@
   <DefaultLanguage>auto</DefaultLanguage>
   <ShowRawLogs>false</ShowRawLogs>
   <RulesReloadOnOpen>false</RulesReloadOnOpen>
+  <!-- ShowForceCrashButton: when true, the "Force crash (test)" red button appears in the bottom bar.
+       It calls kernel32!RaiseException with EXCEPTION_ACCESS_VIOLATION (0xC0000005) so Bannerlord's
+       native crash dumper fires and writes a real dump to ProgramData/.../crashes/<ts>/ (which is a
+       junction to Modules/CrashDoctor/cache/). For developer/debug use only. -->
+  <ShowForceCrashButton>false</ShowForceCrashButton>
 </Settings>
