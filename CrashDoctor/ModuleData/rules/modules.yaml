@@ -154,6 +154,157 @@
       - log_line:
           contains: "MissingMethodException"
 
+- id: harmony.stray_dll_in_main_bin
+  category: harmony
+  severity: critical
+  confidence: high
+  evidence_source: "Harmony-stray catalog 2026-05-02"
+  requires_sources: [log_line]
+  title:
+    en: "Stray 0Harmony.dll in game's main bin folder"
+    ru: "Лишний 0Harmony.dll в основной bin-папке игры"
+  description:
+    en: |
+      Cannot load: Bannerlord.Harmony.dll. A stray copy of 0Harmony.dll has
+      been dropped into <Bannerlord>/bin/Win64_Shipping_Client/ (instead of
+      Modules/Bannerlord.Harmony/bin/...). The native loader picks up that
+      copy first and fails the version check. Common after manual Harmony
+      installs or Vortex deploy bugs.
+    ru: |
+      Cannot load: Bannerlord.Harmony.dll. Лишняя копия 0Harmony.dll лежит в
+      <Bannerlord>/bin/Win64_Shipping_Client/ (вместо Modules/Bannerlord.Harmony/bin/...).
+      Нативный загрузчик берёт эту копию первой и проваливает версионную
+      проверку. Часто после ручной установки Harmony или багов Vortex deploy.
+  fix:
+    en:
+      - "Open <Bannerlord install>/bin/Win64_Shipping_Client/ in Explorer."
+      - "Delete 0Harmony.dll if present (the legitimate one lives under Modules/Bannerlord.Harmony/bin/Win64_Shipping_Client/)."
+      - "Re-launch the game."
+      - "If using Vortex — switch to manual install for Bannerlord.Harmony."
+    ru:
+      - "Открой <Bannerlord>/bin/Win64_Shipping_Client/ в проводнике."
+      - "Удали 0Harmony.dll, если он там есть (правильный лежит в Modules/Bannerlord.Harmony/bin/Win64_Shipping_Client/)."
+      - "Перезапусти игру."
+      - "Если используешь Vortex — переходи на ручную установку Bannerlord.Harmony."
+  match:
+    all:
+      - log_line:
+          contains: "Bannerlord.Harmony.dll"
+      - any:
+          - log_line:
+              contains: "Cannot load"
+          - log_line:
+              contains: "Could not resolve type with token"
+
+- id: blse.format_exception_locale
+  category: blse
+  severity: critical
+  confidence: high
+  evidence_source: "BLSE 1.6.4 regression catalog 2026-05-02"
+  requires_sources: [log_line]
+  title:
+    en: "BLSE 1.6.4 startup FormatException — locale regression"
+    ru: "BLSE 1.6.4 краш на старте FormatException — регрессия локали"
+  description:
+    en: |
+      FormatException inside TaleWorlds.GauntletUI.PrefabSystem.ConstantDefinition.GetValue_Patch2.
+      Known BLSE 1.6.4 regression with non-en-US locales (Russian, EU). The
+      patched method tries to parse a number using the system culture and
+      blows up. Fixed by downgrading BLSE.
+    ru: |
+      FormatException внутри TaleWorlds.GauntletUI.PrefabSystem.ConstantDefinition.GetValue_Patch2.
+      Известная регрессия BLSE 1.6.4 с не-en-US локалями (русская, европейские).
+      Запатченный метод парсит число по системной культуре и падает. Лечится
+      даунгрейдом BLSE.
+  fix:
+    en:
+      - "Downgrade BLSE to 1.6.3 from butr.link/butrloader (the previous release)."
+      - "Or temporarily change Windows region to English (US) — System Settings → Time & Language → Region → English."
+      - "Watch for BLSE 1.6.5+ with the fix."
+    ru:
+      - "Откати BLSE до 1.6.3 с butr.link/butrloader (предыдущий релиз)."
+      - "Или временно поставь регион Windows English (US) — Параметры → Время и язык → Регион → Английский."
+      - "Жди BLSE 1.6.5+ с фиксом."
+  match:
+    all:
+      - log_line:
+          contains: "ConstantDefinition.GetValue_Patch2"
+      - any:
+          - log_line:
+              contains: "FormatException"
+          - log_line:
+              contains: "GauntletUI.PrefabSystem"
+
+- id: butterlib.string_reader_settings
+  category: butr
+  severity: critical
+  confidence: high
+  evidence_source: "ButterLibSettings catalog 2026-05-02 — manual fix FIX-014"
+  requires_sources: [log_line]
+  title:
+    en: "ButterLib settings file is corrupt"
+    ru: "Файл настроек ButterLib битый"
+  description:
+    en: |
+      System.IO.StringReader..ctor inside ButterLib.Options.SettingsProvider.
+      The user's per-mod ModSettings JSON for ButterLib has been corrupted (often
+      after a botched mod uninstall or partial save). ButterLib hard-fails on load.
+    ru: |
+      System.IO.StringReader..ctor внутри ButterLib.Options.SettingsProvider.
+      JSON-настройки ButterLib в папке ModSettings пользователя битые (часто
+      после неаккуратного удаления мода или частичного сохранения). ButterLib
+      падает при загрузке.
+  fix:
+    en:
+      - "Delete the folder Documents/Mount and Blade II Bannerlord/Configs/ModSettings/ButterLib/ ."
+      - "Launch the game — ButterLib will recreate defaults."
+    ru:
+      - "Удали папку Documents/Mount and Blade II Bannerlord/Configs/ModSettings/ButterLib/ ."
+      - "Запусти игру — ButterLib пересоздаст настройки заново."
+  match:
+    all:
+      - log_line:
+          contains: "ButterLib.Options.SettingsProvider"
+      - log_line:
+          contains: "StringReader"
+
+- id: mcm.prefab_injector_field_info
+  category: mcm
+  severity: critical
+  confidence: high
+  evidence_source: "MCM-Prefab catalog 2026-05-02"
+  requires_sources: [log_line]
+  title:
+    en: "MCM PrefabInjector ArgumentNullException fieldInfo"
+    ru: "MCM PrefabInjector ArgumentNullException fieldInfo"
+  description:
+    en: |
+      MCM.UI.Functionality.Injectors.PrefabInjector throws ArgumentNullException
+      with parameter name 'fieldInfo'. Specific to MCM 4.0.7 (TypeInit chain on
+      old ModLib-shaped settings) and MCM 5.0.4 preset-load regression.
+    ru: |
+      MCM.UI.Functionality.Injectors.PrefabInjector выбрасывает ArgumentNullException
+      с именем параметра 'fieldInfo'. Специфично для MCM 4.0.7 (TypeInit-цепочка
+      на старых ModLib-настройках) и регрессии MCM 5.0.4 на загрузке preset.
+  fix:
+    en:
+      - "Update MCM to 4.3.13 or 5.0.5+ from NexusMods."
+      - "If on MCM 4.0.7 with old ModLib mods — uninstall any ModLib-shaped settings."
+      - "Update UIExtenderEx alongside MCM (they share the prefab pipeline)."
+    ru:
+      - "Обнови MCM до 4.3.13 или 5.0.5+ с NexusMods."
+      - "Если стоит MCM 4.0.7 со старыми ModLib-модами — снеси настройки ModLib-форма."
+      - "Параллельно обнови UIExtenderEx (они делят prefab-конвейер)."
+  match:
+    all:
+      - log_line:
+          contains: "PrefabInjector"
+      - any:
+          - log_line:
+              contains: "ArgumentNullException"
+          - log_line:
+              contains: "fieldInfo"
+
 - id: harmony.patch_exception
   category: harmony
   severity: critical

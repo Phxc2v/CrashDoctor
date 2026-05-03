@@ -1,0 +1,47 @@
+- id: m58_heavy_vram_apps
+  title:
+    en: "Close heavy VRAM-eating background apps"
+    ru: "Закрыть жрущие VRAM фоновые приложения"
+  description:
+    en: |
+      A separate scan from M5.7 — focused not on D3D-hooking troublemakers but on apps that
+      simply hold a large slice of dedicated GPU memory while running. With TOR + Bannerlord
+      already sitting at 5–8 GB VRAM at 1080p+, having any of these in the background is
+      enough to push CreateTexture2D over the line on a mid-range card.
+
+      Worst offenders (1.5 GB+ even idle): VR runtimes (Oculus / Meta Quest Link, SteamVR
+      compositor, Windows Mixed Reality), AI / LLM tools (Ollama, LM Studio, Stable Diffusion,
+      ComfyUI), video editors (DaVinci Resolve, Adobe Premiere / After Effects, Topaz Video AI).
+      Second tier (0.5–2 GB): Chrome / Edge / Firefox with many tabs and HW acceleration on,
+      OBS Studio in Game Capture mode, NVIDIA Broadcast, Epic Games Launcher, Wallpaper Engine.
+    ru: |
+      Отдельный скан помимо M5.7 — здесь не «D3D-hook ломатели», а просто приложения которые
+      держат большой кусок видеопамяти пока запущены. На TOR + Bannerlord в 1080p+ карта уже
+      под 5–8 ГБ VRAM, и любое из этих приложений в фоне способно уронить следующий
+      CreateTexture2D на mid-range карте.
+
+      Худшие (≥ 1.5 ГБ даже в idle): VR-runtimes (Oculus / Meta Quest Link, SteamVR
+      compositor, Windows Mixed Reality), AI / LLM (Ollama, LM Studio, Stable Diffusion,
+      ComfyUI), видеоредакторы (DaVinci Resolve, Adobe Premiere / After Effects, Topaz Video AI).
+      Второй эшелон (0.5–2 ГБ): Chrome / Edge / Firefox с большим количеством вкладок и
+      hardware acceleration, OBS Studio в режиме Game Capture, NVIDIA Broadcast, Epic Games
+      Launcher, Wallpaper Engine.
+  details:
+    en:
+      - "Apply opens Task Manager — close apps via their own UI when possible. Killing VR runtimes cold can lock the headset until reboot."
+      - "VR runtimes: Oculus / Meta Quest Link, SteamVR (vrcompositor / vrserver), Mixed Reality Portal, Virtual Desktop Streamer."
+      - "AI / LLM: Ollama, LM Studio, Stable Diffusion (A1111 / ComfyUI)."
+      - "Video / 3D: DaVinci Resolve, Adobe Premiere Pro, Adobe After Effects, Topaz Video AI, Blender, Photoshop, Lightroom."
+      - "Streaming / capture: OBS Studio, NVIDIA Broadcast, NVIDIA ShadowPlay, XSplit."
+      - "Browsers (HW accel + many tabs): Chrome, Edge, Firefox, Brave, Opera GX."
+      - "Other: Epic Games Launcher (background videos), Discord (HW accel + overlay), Wallpaper Engine."
+      - "Re-scan after closing apps to confirm the card cleared."
+    ru:
+      - "«Применить» откроет Диспетчер задач — закрывай приложения через их собственный UI когда возможно. Убийство VR-runtime «насильно» может залипнуть шлем до перезагрузки."
+      - "VR-runtimes: Oculus / Meta Quest Link, SteamVR (vrcompositor / vrserver), Mixed Reality Portal, Virtual Desktop Streamer."
+      - "AI / LLM: Ollama, LM Studio, Stable Diffusion (A1111 / ComfyUI)."
+      - "Видео / 3D: DaVinci Resolve, Adobe Premiere Pro, Adobe After Effects, Topaz Video AI, Blender, Photoshop, Lightroom."
+      - "Стриминг / запись: OBS Studio, NVIDIA Broadcast, NVIDIA ShadowPlay, XSplit."
+      - "Браузеры (с HW accel + много вкладок): Chrome, Edge, Firefox, Brave, Opera GX."
+      - "Остальное: Epic Games Launcher (фоновые видео), Discord (HW accel + оверлей), Wallpaper Engine."
+      - "После закрытия — пересканируй, чтобы убедиться что карта освободилась."

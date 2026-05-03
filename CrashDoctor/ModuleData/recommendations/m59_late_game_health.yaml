@@ -1,0 +1,57 @@
+- id: m59_late_game_health
+  title:
+    en: "Late-game campaign health check"
+    ru: "Проверка здоровья поздней кампании"
+  description:
+    en: |
+      Reads live Campaign.Current to estimate whether the save is heading toward known
+      late-game crash territory. None of these issues have a fingerprint in the crash
+      log — they degrade the campaign over hours and then hit on the next save load.
+      This is the only "look-ahead" diagnostic in Crash Doctor.
+
+      Thresholds (from collected catalog of late-game CTDs):
+
+      * Hero bloat — 800+ alive heroes. Save bloat, daily-tick lag, and load-time NRE
+        cascades become near-certain. Heroes Must Die (Nexus 1164) culls dynamically.
+      * Snowball — 40%+ of starting kingdoms eliminated before day 200. Causes faction-
+        merger NREs and KingdomDestructionAction crashes. Diplomacy (Nexus 832) gives
+        NAPs and political-cost-driven peace, slowing snowball.
+      * War cascade — 3+ simultaneous wars on the player kingdom. Stresses the AI and
+        accelerates economic collapse. Diplomacy + AutoBlocker handle it.
+      * Long campaign — day 500+ with 600+ heroes. Memory leak risk; restart session
+        every 60–90 minutes; consider a new campaign.
+
+      Only fires when Campaign.Current is non-null. After a fresh game start with no
+      save loaded, the card stays hidden.
+    ru: |
+      Читает живой Campaign.Current, чтобы оценить, не идёт ли сейв в зону известных
+      late-game крашей. Ни один из этих симптомов не оставляет отпечатка в крэш-логе —
+      они деградируют кампанию часами и бьют на следующей загрузке сейва. Это
+      единственная «прогнозная» диагностика в Crash Doctor.
+
+      Пороги (из каталога late-game CTD):
+
+      * Перебор героев — 800+ живых. Распухание сейва, лаги daily-tick и каскадные
+        NRE на загрузке становятся почти неизбежными. Heroes Must Die (Nexus 1164)
+        динамически прореживает.
+      * Снежный ком — 40%+ начальных королевств уничтожено до дня 200. Даёт NRE
+        слияния фракций и KingdomDestructionAction. Diplomacy (Nexus 832) добавляет
+        пакты о ненападении и мир по политической цене — тормозит снежок.
+      * Каскад войн — 3+ одновременные войны с королевством игрока. Перегружает AI и
+        ускоряет экономический коллапс. Diplomacy + AutoBlocker лечат.
+      * Долгая кампания — день 500+ с 600+ героев. Риск утечки памяти; перезапускай
+        сессию каждые 60–90 минут; подумай о новой кампании.
+
+      Срабатывает только когда Campaign.Current не null. Если сейв ещё не загружен
+      после старта игры — карточка не показывается.
+  details:
+    en:
+      - "Apply opens the most relevant fix-mod page on NexusMods (Heroes Must Die / Diplomacy / Death Reduced)."
+      - "Card is informational — no auto-apply. Install the mod, restart the game, re-scan to verify."
+      - "If everything is fine: card stays hidden (Healthy / NotApplicable)."
+      - "Only meaningful AFTER you've loaded a save in this session — Campaign.Current is null in fresh main menu."
+    ru:
+      - "«Применить» откроет самую релевантную страницу мод-фикса на NexusMods (Heroes Must Die / Diplomacy / Death Reduced)."
+      - "Карточка информативная — auto-apply нет. Поставь мод, перезапусти игру, пересканируй для подтверждения."
+      - "Если всё в норме — карточка не показывается (Healthy / NotApplicable)."
+      - "Имеет смысл только ПОСЛЕ загрузки сейва в этой сессии — Campaign.Current null в свежем главном меню."

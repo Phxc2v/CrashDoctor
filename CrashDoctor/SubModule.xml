@@ -2,7 +2,7 @@
 <Module>
   <Id value="CrashDoctor" />
   <Name value="Crash Doctor" />
-  <Version value="v1.3.2" />
+  <Version value="v1.3.10" />
   <DefaultModule value="false" />
   <ModuleCategory value="Singleplayer" />
   <ModuleType value="Community" />

@@ -43,6 +43,88 @@
               path: "Display Devices 1/Card name"
               contains: "Radeon RX"
 
+- id: gpu.shader_compile_x3004_tbn
+  category: gpu
+  severity: critical
+  confidence: high
+  evidence_source: "BL-001/002 catalog 2026-05-02"
+  requires_sources: [log_line]
+  title:
+    en: "Shader compile error X3004 — undeclared identifier '_TBN'"
+    ru: "Ошибка компиляции шейдера X3004 — неопределённый '_TBN'"
+  description:
+    en: |
+      The HLSL compiler rejected particle_shading.rsh (or similar .rs/.rsh) with
+      X3004 'undeclared identifier _TBN'. Triggered by an ancient/corrupt shader
+      cache after a Bannerlord update — the compiled cache was built against a
+      different shader source. Common after BL 1.4–1.5, 1.7–1.8, or any major
+      patch where TaleWorlds renamed a varying.
+    ru: |
+      HLSL-компилятор отклонил particle_shading.rsh (или похожий .rs/.rsh) с
+      X3004 'undeclared identifier _TBN'. Триггер — древний/сломанный кэш
+      шейдеров после апдейта Bannerlord: скомпилированный кэш собран против
+      другой версии исходников. Часто после BL 1.4–1.5, 1.7–1.8 или любого
+      крупного патча где TaleWorlds переименовали varying.
+  fix:
+    en:
+      - "Open Crash Doctor → System tune-up → 'Clear Bannerlord shader cache'."
+      - "Steam → Bannerlord → Properties → Installed Files → Verify integrity."
+      - "Launch the game and pick 'Build Shader Cache' from main menu — wait it out."
+      - "If on AMD: NVIDIA Shader Cache settings don't apply, but lower in-game Shader Quality to Medium."
+      - "If on NVIDIA: NVIDIA Control Panel → Manage 3D settings → Shader Cache Size = Unlimited."
+    ru:
+      - "Открой Crash Doctor → Настройка системы → «Очистить кэш шейдеров Bannerlord»."
+      - "Steam → Bannerlord → Свойства → Установленные файлы → Проверить целостность."
+      - "Запусти игру и нажми «Build Shader Cache» в главном меню — дождись завершения."
+      - "На AMD: настройки NVIDIA Shader Cache не применимы, но в игре понизь Shader Quality до Medium."
+      - "На NVIDIA: NVIDIA Control Panel → Manage 3D settings → Shader Cache Size = Unlimited."
+  match:
+    any:
+      - log_line:
+          contains: "X3004"
+      - log_line:
+          contains: "undeclared identifier '_TBN'"
+      - log_line:
+          contains: "Error compiling shader file"
+
+- id: gpu.create_shader_resource_view_fail
+  category: gpu
+  severity: critical
+  confidence: high
+  evidence_source: "TOR-007 catalog 2026-05-02"
+  requires_sources: [log_line]
+  title:
+    en: "D3D11 CreateShaderResourceView failed — tessellation overflow on TOR"
+    ru: "D3D11 CreateShaderResourceView упал — переполнение тесселяции в TOR"
+  description:
+    en: |
+      rglGPU_device::create_gpu_buffer hit CreateShaderResourceView fail, GPU
+      device suspended, often DXGI_ERROR_DEVICE_REMOVED right after. Known TOR
+      pattern: tessellation + scene buffer overflow on heavy locations
+      (Bretonnian villages, Mousillon tavern). The driver kills the device.
+    ru: |
+      rglGPU_device::create_gpu_buffer наткнулся на падение CreateShaderResourceView,
+      GPU device suspended, часто следом DXGI_ERROR_DEVICE_REMOVED. Известный
+      TOR-паттерн: переполнение буфера сцены при тесселяции на тяжёлых локациях
+      (бретонские деревни, таверна Мусийона). Драйвер убивает device.
+  fix:
+    en:
+      - "Documents/Mount and Blade II Bannerlord/engine_config.txt → set tesselation = 0."
+      - "In-game: Options → Graphics → Terrain Quality = Medium, Static Shadows ON."
+      - "Open Crash Doctor → System tune-up → 'Clear Bannerlord shader cache'."
+      - "Update GPU driver to latest WHQL."
+    ru:
+      - "Documents/Mount and Blade II Bannerlord/engine_config.txt → tesselation = 0."
+      - "В игре: Опции → Графика → Terrain Quality на Medium, Static Shadows ВКЛ."
+      - "Открой Crash Doctor → Настройка системы → «Очистить кэш шейдеров Bannerlord»."
+      - "Обнови драйвер GPU до последней WHQL."
+  match:
+    any:
+      - log_line:
+          contains: "CreateShaderResourceView failed"
+      - log_line:
+          contains: "create_gpu_buffer"
+
 - id: gpu.shader_cache_corrupt
   category: gpu
   severity: warning
@@ -176,6 +258,83 @@
       - log_line:
           contains: "0x887A0006"
 
+- id: gpu.create_texture_array_invalidarg
+  category: gpu
+  severity: critical
+  confidence: high
+  evidence_source: "https://learn.microsoft.com/en-us/windows/win32/api/d3d11/nf-d3d11-id3d11device-createtexture2d"
+  requires_sources: [log_line]
+  title:
+    en: "D3D11 CreateTexture2D failed (E_INVALIDARG) — texture-array limit hit"
+    ru: "D3D11 CreateTexture2D не сработал (E_INVALIDARG) — превышен лимит texture-array"
+  description:
+    en: |
+      The Bannerlord renderer (rglGPU_device::create_texture_array) called
+      ID3D11Device::CreateTexture2D and got back E_INVALIDARG ("The parameter
+      is incorrect" / "Параметр задан неверно"). This is NOT out of memory and
+      NOT TDR — D3D11 rejected the texture-array descriptor itself.
+
+      Most common trigger on TOR: an oversized Battle Size (BattleSizeResized
+      mod) combined with TOR_Armory + custom troop mods produces a unit-material
+      array that exceeds D3D11's hard limits — ArraySize > 2048, or a format /
+      MipLevels combination the driver refuses. New AMD RDNA 4 cards (RX 9070,
+      9070 XT) are stricter about these descriptors than older NVIDIA drivers,
+      so the same setup that "worked" on a 30-series card crashes on a 9070 XT.
+
+      Second common trigger: a VR runtime is running in the background. Oculus
+      / Meta Quest Link (OVRServer_x64), SteamVR (vrcompositor / vrserver), and
+      Windows Mixed Reality reserve 1.5–3 GB of VRAM for the headset compositor
+      even when the headset is idle / not on your face. With TOR + a 1440p+
+      desktop already eating most of the card, that reservation is enough to
+      starve the texture-array allocation and make CreateTexture2D fail.
+    ru: |
+      Рендерер Bannerlord (rglGPU_device::create_texture_array) вызвал
+      ID3D11Device::CreateTexture2D и получил E_INVALIDARG («Параметр задан
+      неверно»). Это НЕ нехватка памяти и НЕ TDR — сам дескриптор
+      texture-array отвергнут D3D11.
+
+      Самая частая причина на TOR: задранный Battle Size (через мод
+      BattleSizeResized) в связке с TOR_Armory и кастомными trooper-модами
+      даёт массив материалов юнитов, который пробивает жёсткие лимиты D3D11 —
+      ArraySize > 2048 или несовместимая комбинация формата / MipLevels.
+      Новые карты AMD RDNA 4 (RX 9070, 9070 XT) проверяют дескрипторы строже,
+      чем старые драйверы NVIDIA — то же самое сочетание, которое «работало»
+      на 30-серии, падает на 9070 XT.
+
+      Вторая частая причина: в фоне работает VR-runtime. Oculus / Meta Quest
+      Link (OVRServer_x64), SteamVR (vrcompositor / vrserver), Windows Mixed
+      Reality резервируют 1.5–3 ГБ VRAM под compositor шлема — даже если шлем
+      в покое и не на голове. На TOR + 1440p+ десктопе, где карта уже под
+      нагрузкой, этого резерва хватает чтобы съесть бюджет под texture-array
+      и уронить CreateTexture2D.
+  fix:
+    en:
+      - "If you have a VR headset: fully close Oculus/Meta Quest Link AND SteamVR AND Windows Mixed Reality Portal before launching Bannerlord. Check Task Manager for OVRServer_x64.exe / vrcompositor.exe / vrserver.exe / MixedRealityPortal.exe — kill them. Disconnect the headset cable. They reserve 1.5–3 GB of VRAM each, even idle."
+      - "Lower Battle Size first. If you use BattleSizeResized — try 200, then 128 (native cap). If a 200-vs-200 fight loads cleanly, you've confirmed the texture-array limit was the cause."
+      - "If lowering Battle Size still crashes — temporarily disable troop/armor mods that add many unique materials (LoreHardcore, custom-troop overhauls). Re-enable one at a time."
+      - "In-game: Options → Graphics → Texture Quality = Medium. Smaller textures shrink the array footprint."
+      - "AMD Adrenalin: open the Bannerlord.exe profile and turn OFF AFMF, Anti-Lag/Anti-Lag+, HYPR-RX, Image Sharpening, Radeon Boost. The driver overlay can also corrupt texture descriptors — disable it (Alt+R)."
+      - "If on a brand-new RDNA 4 card (RX 9070 / 9070 XT): try the previous WHQL Adrenalin instead of the latest one. Beta/Preview drivers regularly break old DX11 games."
+      - "Toggle the renderer: Bannerlord launcher → Options → Use DirectX 12 (or back to DX11). RDNA 4 is often more stable on DX12 path."
+      - "AFTER changing any graphics setting (Texture Quality / Shader Quality / etc.): REBOOT the PC, open Crash Doctor → System tune-up → 'Clear Bannerlord shader cache', launch the game, Main Menu → 'Build Shader Cache' and wait 20–60 minutes. Skip any of these and the next launch crashes on the imperial-soldier splash."
+      - "If nothing helps — file a screenshot of the error popup plus rgl_log_<PID>.txt + watchdog_log_<PID>.txt to the mod author."
+    ru:
+      - "Если есть VR-шлем — полностью закрой Oculus/Meta Quest Link, SteamVR и Windows Mixed Reality Portal перед запуском Bannerlord. В Диспетчере задач прибей OVRServer_x64.exe / vrcompositor.exe / vrserver.exe / MixedRealityPortal.exe. Отключи кабель шлема. Каждый из них держит 1.5–3 ГБ VRAM даже когда шлем не активен."
+      - "Снизь Battle Size в первую очередь. Если стоит BattleSizeResized — попробуй 200, потом 128 (нативный потолок). Если бой 200 на 200 грузится без вылета — корень найден, лимит texture-array."
+      - "Если падает и на сниженном размере — временно отключи моды на отряды/броню с большим числом уникальных материалов (LoreHardcore, кастомные trooper-моды). Включай по одному."
+      - "В игре: Опции → Графика → Качество текстур = Medium. Текстуры меньше — массив занимает меньше."
+      - "AMD Adrenalin: открой профиль Bannerlord.exe и ВЫКЛЮЧИ AFMF, Anti-Lag/Anti-Lag+, HYPR-RX, Image Sharpening, Radeon Boost. Оверлей драйвера тоже бьёт по дескрипторам — выключи (Alt+R)."
+      - "Если карта свежая RDNA 4 (RX 9070 / 9070 XT) — поставь предыдущую WHQL Adrenalin вместо последней. Beta/Preview-драйверы регулярно ломают старые DX11-игры."
+      - "Попробуй сменить рендерер: лаунчер Bannerlord → Опции → Use DirectX 12 (или обратно на DX11). RDNA 4 чаще стабильнее на DX12."
+      - "ПОСЛЕ любого изменения настройки графики (Texture Quality / Shader Quality и т.д.): ПЕРЕЗАГРУЗИ ПК, открой Crash Doctor → Настройка системы → «Очистить кэш шейдеров Bannerlord», запусти игру, Главное меню → «Build Shader Cache» и жди 20–60 мин. Пропустишь хоть один шаг — на следующем запуске игра упадёт на заставке с имперским солдатом."
+      - "Если ничего не помогло — приложи скриншот окна ошибки + rgl_log_<PID>.txt + watchdog_log_<PID>.txt и пришли автору мода."
+  match:
+    any:
+      - log_line:
+          contains: "create_texture_array failed"
+      - log_line:
+          contains: "rglGPU_device::create_texture_array"
+
 - id: gpu.shader_compile_oom
   category: gpu
   severity: critical
@@ -212,7 +371,7 @@
       50+ ГБ на системном диске и обновить драйвер GPU.
   fix:
     en:
-      - "Crash Doctor → System tune-up → 'Clear Bannerlord shader cache' (deletes BOTH game/Shaders/D3D11/compressed_shaders_cache.sack AND C:\ProgramData\Mount and Blade II Bannerlord\Shaders)."
+      - "Crash Doctor → System tune-up → 'Clear Bannerlord shader cache' (deletes BOTH game/Shaders/D3D11/compressed_shaders_cache.sack AND C:/ProgramData/Mount and Blade II Bannerlord/Shaders)."
       - "Crash Doctor → System tune-up → if engine_config card appears, apply it (sets terrain_quality to 2 — required, lower values cause this exact crash on TOR)."
       - "Free at least 50 GB on C: (Disk Cleanup → Temporary files; Steam → Properties → Installed Files → Verify integrity)."
       - "Update the GPU driver to the latest WHQL (NVIDIA / AMD website, not Windows Update)."
@@ -221,7 +380,7 @@
       - "Reboot once before relaunching so the page file is reset."
       - "Patience: 'Build Shader Cache' on TOR takes 10–50 minutes. Don't close the game, don't open Chrome / Discord during compilation."
     ru:
-      - "Crash Doctor → Настройка системы → «Очистить кэш шейдеров Bannerlord» (удаляет ОБА: game\Shaders\D3D11\compressed_shaders_cache.sack И C:\ProgramData\Mount and Blade II Bannerlord\Shaders)."
+      - "Crash Doctor → Настройка системы → «Очистить кэш шейдеров Bannerlord» (удаляет ОБА: game/Shaders/D3D11/compressed_shaders_cache.sack И C:/ProgramData/Mount and Blade II Bannerlord/Shaders)."
       - "Crash Doctor → Настройка системы → если появилась карточка про engine_config — применить (поднимает terrain_quality до 2 — обязательно, ниже даёт ровно этот краш на TOR)."
       - "Освободить минимум 50 ГБ на C: (Очистка диска → временные файлы; Steam → Свойства → Установленные файлы → Проверить целостность)."
       - "Обновить драйвер GPU до последней WHQL (с сайта NVIDIA / AMD, не через Windows Update)."
