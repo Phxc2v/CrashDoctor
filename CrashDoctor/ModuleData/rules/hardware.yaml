@@ -92,6 +92,57 @@
           field: active_gpu_vram_mb
           lt: "2048"
 
+- id: hw.gpu_vram_likely_low
+  category: hardware
+  severity: warning
+  confidence: medium
+  evidence_source: "TOR-bug-corpus.md - VRAM thresholds"
+  requires_sources: [crash_tag]
+  title:
+    en: "GPU likely under-VRAMed for TOR (under 6 GB reported)"
+    ru: "У видеокарты, похоже, мало VRAM для TOR (меньше 6 ГБ)"
+  description:
+    en: |
+      DXDIAG reports under 6 GB dedicated VRAM on the active GPU. TOR + Bannerlord
+      at 1080p+ wants 6+ GB; below that, expect "out of video memory" or
+      CreateTexture2D failures during heavy battles or armor-mod loads.
+
+      Important caveat: DXDIAG is known to misreport VRAM on modern cards. AMD
+      RX 7000/9000 series and several high-end NVIDIA cards (RTX 4080/4090 in
+      some configurations) get capped at 3072–4095 MB in the report even though
+      the card has 12-24 GB physically. If your card is one of those and the
+      game otherwise runs fine — ignore this card. Otherwise the warning is real.
+    ru: |
+      DXDIAG показал меньше 6 ГБ выделенной VRAM на активной видеокарте. TOR на
+      Bannerlord в 1080p+ хочет 6+ ГБ; ниже — будут «out of video memory» или
+      падения CreateTexture2D на тяжёлых битвах и загрузке armor-модов.
+
+      Важная оговорка: DXDIAG известен тем, что врёт по VRAM на современных
+      картах. AMD RX 7000/9000 и некоторые топовые NVIDIA (RTX 4080/4090) в
+      отчёте могут показывать 3072–4095 МБ, хотя у карты физически 12-24 ГБ.
+      Если у тебя такая карта и игра в целом работает — игнорируй эту карточку.
+      Иначе предупреждение реально.
+  fix:
+    en:
+      - "If you actually own RX 7700 XT / 7800 XT / 7900 / 9070 / RTX 4070 Super+ / 4080 / 4090 / 5080 / 5090: ignore this card — DXDIAG misreports your VRAM. Move on."
+      - "Otherwise: in-game Options → Graphics → Texture Quality = Medium, Texture Budget = Medium, Shadow Quality = Medium."
+      - "Close every VRAM-eating background app before launching: VR runtimes (Oculus, SteamVR, Mixed Reality Portal), AI tools (Ollama, LM Studio, Stable Diffusion), video editors (DaVinci Resolve, Premiere, After Effects), browsers with many tabs (Chrome / Edge / Firefox / Brave), OBS in Game Capture mode."
+      - "Open Crash Doctor → System tune-up → 'Heavy VRAM apps' card if it appeared — it lists what's actually running on your machine right now."
+      - "If your GPU has under 4 GB physical VRAM: heavy mods (TOR + armor packs) are not realistic. Run Native Bannerlord or pick lighter mods."
+      - "AFTER changing any graphics setting: REBOOT the PC, then Crash Doctor → System tune-up → 'Clear Bannerlord shader cache', then Main Menu → 'Build Shader Cache' (20–60 min). Skip any of these → game crashes on splash next launch."
+    ru:
+      - "Если у тебя на самом деле RX 7700 XT / 7800 XT / 7900 / 9070 / RTX 4070 Super+ / 4080 / 4090 / 5080 / 5090 — игнорируй эту карточку, DXDIAG занижает твой VRAM. Иди дальше."
+      - "Иначе: в игре Опции → Графика → Texture Quality = Medium, Texture Budget = Medium, Shadow Quality = Medium."
+      - "Закрой все жрущие VRAM фоновые приложения перед запуском: VR-runtimes (Oculus, SteamVR, Mixed Reality Portal), AI (Ollama, LM Studio, Stable Diffusion), видео-редакторы (DaVinci Resolve, Premiere, After Effects), браузеры с большим количеством вкладок (Chrome / Edge / Firefox / Brave), OBS в режиме Game Capture."
+      - "Открой Crash Doctor → Настройка системы → карточку «Тяжёлые VRAM-приложения», если появилась — там видно что реально запущено сейчас на твоём ПК."
+      - "Если у видеокарты физически меньше 4 ГБ VRAM — тяжёлые моды (TOR + броня) нереальны. Играй на ванильном Bannerlord или выбирай лёгкие моды."
+      - "ПОСЛЕ любого изменения настройки графики: ПЕРЕЗАГРУЗИ ПК, потом Crash Doctor → Настройка системы → «Очистить кэш шейдеров Bannerlord», потом Главное меню → «Build Shader Cache» (20–60 мин). Пропустишь — игра упадёт на заставке."
+  match:
+    all:
+      - system:
+          field: active_gpu_vram_mb
+          lt: "6144"
+
 - id: hw.driver_outdated
   category: hardware
   severity: warning

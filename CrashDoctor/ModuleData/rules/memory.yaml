@@ -66,3 +66,110 @@
     all:
       - log_line:
           contains: "bad_alloc"
+
+- id: native.access_violation_taleworlds
+  category: native
+  severity: critical
+  confidence: high
+  evidence_source: "BL-032 catalog 2026-05-02"
+  requires_sources: [log_line]
+  title:
+    en: "Access violation in TaleWorlds.MountAndBlade native code"
+    ru: "Access violation в нативе TaleWorlds.MountAndBlade"
+  description:
+    en: |
+      System.AccessViolationException with Source=TaleWorlds.MountAndBlade — native
+      engine corruption in Bannerlord 1.2.10 / 1.2.11. Documented TaleWorlds
+      regression. Crash is random and not caused by mods.
+    ru: |
+      System.AccessViolationException с Source=TaleWorlds.MountAndBlade — порча
+      нативного движка в Bannerlord 1.2.10 / 1.2.11. Задокументированная
+      регрессия TaleWorlds. Краш случайный и не из-за модов.
+  fix:
+    en:
+      - "Update Bannerlord to 1.2.12+ or downgrade to 1.2.9 via Steam beta branch."
+      - "Reset GPU clocks to default (no overclock / undervolt)."
+      - "Verify integrity of game files in Steam."
+    ru:
+      - "Обнови Bannerlord до 1.2.12+ или откатись на 1.2.9 через Steam beta."
+      - "Сбрось разгон GPU на default (никакого OC / UV)."
+      - "Steam → Проверить целостность файлов игры."
+  match:
+    all:
+      - log_line:
+          contains: "AccessViolationException"
+      - log_line:
+          contains: "TaleWorlds.MountAndBlade"
+
+- id: native.stack_overflow
+  category: native
+  severity: critical
+  confidence: high
+  evidence_source: "BL-034 catalog 2026-05-02"
+  requires_sources: [log_line]
+  title:
+    en: "Stack overflow (0xC00000FD) — recursive AI loop"
+    ru: "Stack overflow (0xC00000FD) — рекурсивный AI loop"
+  description:
+    en: |
+      Process exited with STATUS_STACK_OVERFLOW (exit code 0xC00000FD). Vanilla
+      Bannerlord cause: a recursive AI loop (BannerBearer search, troop upgrade
+      cycle). Known and fixed in 1.1.0 — almost always means the campaign save
+      was started on an older buggy version.
+    ru: |
+      Процесс завершился со STATUS_STACK_OVERFLOW (exit code 0xC00000FD). Корень
+      в ванильном Bannerlord — рекурсивный AI loop (поиск BannerBearer, цикл
+      апгрейда юнитов). Известно и фикшено в 1.1.0 — почти всегда означает, что
+      кампания начата на старой багованной версии.
+  fix:
+    en:
+      - "Update Bannerlord to the latest patch."
+      - "If save started on 1.0.x — start a new campaign."
+      - "If reproducible on a specific battle — disable AI mods one by one (RBM, AI overhauls)."
+    ru:
+      - "Обнови Bannerlord до последнего патча."
+      - "Если сейв начат на 1.0.x — стартани новую кампанию."
+      - "Если краш воспроизводится на конкретной битве — отключай AI-моды по одному (RBM, AI-оверхолы)."
+  match:
+    any:
+      - log_line:
+          contains: "0xC00000FD"
+      - log_line:
+          contains: "STATUS_STACK_OVERFLOW"
+
+- id: native.lordshall_div_by_zero
+  category: native
+  severity: critical
+  confidence: high
+  evidence_source: "BL-040 catalog 2026-05-02"
+  requires_sources: [log_line]
+  title:
+    en: "Lord's Hall fight DivideByZeroException"
+    ru: "DivideByZeroException на бое в Lord's Hall"
+  description:
+    en: |
+      LordsHallFightMissionController+MissionSide.SpawnTroops divides by zero
+      because the scene's spawn-point count is zero. Specific Lord's Hall siege
+      stage on certain fiefs.
+    ru: |
+      LordsHallFightMissionController+MissionSide.SpawnTroops делится на ноль —
+      в сцене ноль точек спавна. Специфичный баг Lord's Hall на определённых
+      городах.
+  fix:
+    en:
+      - "Avoid the Lord's Hall stage of this specific siege — sally out / surrender / pick another fief."
+      - "Reload to the pre-siege save and try a different settlement."
+      - "If the bug is reproducible on a particular fief — report on TaleWorlds forums with scene name."
+    ru:
+      - "Избегай этапа Lord's Hall в этой конкретной осаде — вылазка / сдаться / другой город."
+      - "Загрузи сейв до осады и атакуй другой город."
+      - "Если краш повторяется на конкретном городе — отпиши на TaleWorlds-форум с названием сцены."
+  match:
+    all:
+      - log_line:
+          contains: "LordsHallFightMissionController"
+      - any:
+          - log_line:
+              contains: "DivideByZero"
+          - log_line:
+              contains: "SpawnTroops"

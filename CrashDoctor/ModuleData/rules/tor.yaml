@@ -259,3 +259,151 @@
     any:
       - log_line: { contains: "gaming.desktop.x64_shipping_client" }
       - log_line: { contains: "Microsoft.Mount" }
+
+- id: tor.assimilation_swap_troops
+  category: tor
+  severity: critical
+  confidence: high
+  evidence_source: "TOR-015 catalog 2026-05-02 — Nexus 8872 TOR Assimilation Crash Fix"
+  requires_sources: [log_line]
+  title:
+    en: "TOR Assimilation IndexOutOfRange — Hunger Woods / wraith bind crash"
+    ru: "TOR Assimilation IndexOutOfRange — краш в Hunger Woods / на bind wraiths"
+  description:
+    en: |
+      System.IndexOutOfRangeException inside TroopRoster.AddToCountsAtIndex →
+      AssimilationCampaignBehavior.SwapTroopsIfNeeded. The trigger is
+      "summon wraiths" / "bind wraiths" interactions in Hunger Woods, or any
+      vampire-army assimilation where the companion roster index falls out of
+      bounds. Confirmed common late-game bug.
+    ru: |
+      System.IndexOutOfRangeException внутри TroopRoster.AddToCountsAtIndex →
+      AssimilationCampaignBehavior.SwapTroopsIfNeeded. Триггер — взаимодействия
+      «summon wraiths» / «bind wraiths» в Hunger Woods, или любая ассимиляция
+      вампирской армии, где индекс ростера компаньона выходит за пределы.
+      Известный регулярный late-game баг.
+  fix:
+    en:
+      - "Install TOR Assimilation Crash Fix from NexusMods (mod 8872) — direct patch on the affected method."
+      - "Until installed: avoid 'summon wraiths' / 'bind wraiths' interactions; do not visit Hunger Woods with vampire armies + companions."
+      - "If reproducible on save load — restore to a save before the first wraith bind."
+    ru:
+      - "Поставь TOR Assimilation Crash Fix с NexusMods (мод 8872) — прямой патч на сломанный метод."
+      - "До установки: избегай «summon wraiths» / «bind wraiths»; не заходи в Hunger Woods вампирской армией + компаньонами."
+      - "Если падает на загрузке сейва — откатись до момента первого bind wraith."
+  match:
+    all:
+      - log_line:
+          contains: "AssimilationCampaignBehavior.SwapTroopsIfNeeded"
+
+- id: tor.party_size_limit_npe_with_ig
+  category: tor
+  severity: critical
+  confidence: high
+  evidence_source: "TOR-091 catalog 2026-05-02 — Nexus 8884 TOR-IG Party Size Fix"
+  requires_sources: [log_line]
+  title:
+    en: "TOR + Improved Garrisons — PartySizeLimitModel NRE / silent bonus loss"
+    ru: "TOR + Improved Garrisons — NRE в PartySizeLimitModel / тихая потеря бонусов"
+  description:
+    en: |
+      NullReferenceException in PartySizeLimitModel.GetPartyMemberSizeLimit. The
+      well-known TOR + Improved Garrisons interaction: both mods replace the
+      party-size model and stomp on each other. Either crash on tick, or silent
+      loss of all TOR party-size bonuses (Skirmisher / Knight orders perks).
+    ru: |
+      NullReferenceException в PartySizeLimitModel.GetPartyMemberSizeLimit.
+      Известное взаимодействие TOR + Improved Garrisons: оба мода подменяют
+      модель размера отряда и затирают друг друга. Либо краш на тике, либо
+      тихая потеря всех TOR-бонусов размера отряда (перки Skirmisher / Knight).
+  fix:
+    en:
+      - "Install TOR-IG Party Size Fix from NexusMods (mod 8884)."
+      - "Alternative: disable Improved Garrisons (TOR has its own garrison balance)."
+    ru:
+      - "Поставь TOR-IG Party Size Fix с NexusMods (мод 8884)."
+      - "Альтернатива: отключи Improved Garrisons (у TOR свой баланс гарнизонов)."
+  match:
+    all:
+      - log_line:
+          contains: "PartySizeLimitModel"
+      - any:
+          - log_line:
+              contains: "GetPartyMemberSizeLimit"
+          - log_line:
+              contains: "NullReferenceException"
+
+- id: tor.ds_battle_results_invalid_cast
+  category: tor
+  severity: critical
+  confidence: high
+  evidence_source: "TOR-093 catalog 2026-05-02 — Nexus 8874 DS Compatibility Patch"
+  requires_sources: [log_line]
+  title:
+    en: "TOR + Distinguished Service — InvalidCast on battle results"
+    ru: "TOR + Distinguished Service — InvalidCast на итогах боя"
+  description:
+    en: |
+      InvalidCastException inside DSBattleLogic.ShowBattleResults — Distinguished
+      Service casts a TOR-extended PartyBase to its vanilla type and fails. Crash
+      on the post-battle screen, save is fine.
+    ru: |
+      InvalidCastException внутри DSBattleLogic.ShowBattleResults — Distinguished
+      Service кастит TOR-расширенный PartyBase к ванильному типу и падает. Краш
+      на экране итогов боя, сейв при этом цел.
+  fix:
+    en:
+      - "Install DS Compatibility Patch for TOR from NexusMods (mod 8874)."
+      - "Alternative: disable Distinguished Service while playing TOR."
+    ru:
+      - "Поставь DS Compatibility Patch for TOR с NexusMods (мод 8874)."
+      - "Альтернатива: отключи Distinguished Service на время прохождения TOR."
+  match:
+    all:
+      - log_line:
+          contains: "DSBattleLogic.ShowBattleResults"
+      - any:
+          - log_line:
+              contains: "InvalidCastException"
+          - log_line:
+              contains: "PartyBase"
+
+- id: tor.windsofmagic_access_violation
+  category: tor
+  severity: critical
+  confidence: medium
+  evidence_source: "TOR-021/022 catalog 2026-05-02"
+  requires_sources: [log_line]
+  title:
+    en: "TOR Winds of Magic / spell-cast access violation"
+    ru: "TOR Winds of Magic / spell-cast access violation"
+  description:
+    en: |
+      0xC0000005 access violation in / near WindsOfMagic / SpellCast code paths.
+      ~95% reproducible during mass-cast vampire / necrarch siege spells with a
+      large army. Native engine + magic-particle interaction problem.
+    ru: |
+      0xC0000005 access violation в / рядом с кодом WindsOfMagic / SpellCast.
+      ~95% воспроизводимый сценарий — массовый каст вампирских / некрарховых
+      осадных спеллов в крупной армии. Проблема взаимодействия native-движка и
+      магических частиц.
+  fix:
+    en:
+      - "In-game Options → Graphics: lower Particle Detail and Particle Quality to Low."
+      - "Remove RTS Camera mod if installed — it amplifies the crash on AoE casts."
+      - "Avoid mass-cast vampire siege spells; manage caster lord's spell selection."
+      - "Update TOR_Core (WITM 1.13a fixes part of this)."
+    ru:
+      - "В игре: Опции → Графика → Particle Detail и Particle Quality на Low."
+      - "Убери RTS Camera, если стоит — он усиливает краш на AoE-кастах."
+      - "Избегай массового каста вампирских осадных спеллов; контролируй заклинания у caster-лорда."
+      - "Обнови TOR_Core (WITM 1.13a фиксит часть этого)."
+  match:
+    all:
+      - log_line:
+          contains: "0xC0000005"
+      - any:
+          - log_line:
+              contains: "WindsOfMagic"
+          - log_line:
+              contains: "SpellCast"

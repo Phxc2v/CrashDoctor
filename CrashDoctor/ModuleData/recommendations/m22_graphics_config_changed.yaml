@@ -1,0 +1,65 @@
+- id: m22_graphics_config_changed
+  title:
+    en: "Graphics settings changed — clear shader cache before next launch"
+    ru: "Графика изменилась — очисти кэш шейдеров перед следующим запуском"
+  description:
+    en: |
+      Auto-detector for the user-driven case: you opened in-game Options → Graphics,
+      lowered Texture / Shader / Shadow / Terrain Quality (or any other graphics key),
+      saved, exited. The new values are now in engine_config.txt, but the precompiled
+      shader cache is still the one built against the OLD values. Next launch will
+      try to load it, hit a mismatch, and crash on the imperial-soldier splash —
+      same kind of crash users have been reporting after our advice "lower Texture
+      Quality".
+
+      Crash Doctor stores a snapshot of graphics-relevant keys in its state folder
+      on every run. When the snapshot diverges from the live engine_config, this
+      card surfaces with a one-button fix: clear the shader cache + sync the
+      snapshot. Apply this BEFORE rebooting and rebuilding the cache from the
+      main menu.
+
+      MANDATORY sequence after Apply (skip → splash crash):
+        1. REBOOT the PC.
+        2. Launch Bannerlord.
+        3. Main Menu → 'Build Shader Cache' → wait 20–60 minutes.
+        4. Don't close the game during compile, don't open Chrome / Discord.
+
+      First run note: if no snapshot exists yet, Crash Doctor records baseline
+      silently and stays Healthy. The card only fires when graphics keys actually
+      change between sessions.
+    ru: |
+      Авто-детектор для пользовательского сценария: ты открыл в игре Опции → Графика,
+      понизил Texture / Shader / Shadow / Terrain Quality (или любой другой графический
+      ключ), сохранил, вышел. Новые значения записаны в engine_config.txt, а кэш
+      шейдеров остался под СТАРЫЕ. Следующий запуск попытается его загрузить,
+      наткнётся на mismatch, и игра рухнет на заставке с имперским солдатом — тот
+      самый краш на который жаловались юзеры после нашего совета «понизь Texture
+      Quality».
+
+      Crash Doctor хранит снэпшот графических ключей в своей state-папке при каждом
+      запуске. Когда снэпшот расходится с живым engine_config, карточка появляется
+      с одной кнопкой: очистить кэш шейдеров + синхронизировать снэпшот. Применяй
+      ДО перезагрузки и пересборки кэша из главного меню.
+
+      ОБЯЗАТЕЛЬНАЯ последовательность после «Применить» (пропустишь — краш на заставке):
+        1. ПЕРЕЗАГРУЗИ ПК.
+        2. Запусти Bannerlord.
+        3. Главное меню → «Build Shader Cache» → жди 20–60 минут.
+        4. НЕ закрывай игру в это время, НЕ открывай Chrome / Discord.
+
+      Первый запуск: если снэпшота ещё нет, Crash Doctor молча запишет baseline и
+      останется Healthy. Карточка появится только когда графические ключи реально
+      изменятся между сессиями.
+  details:
+    en:
+      - "Snapshot file: <Documents>/Mount and Blade II Bannerlord/CrashDoctor/state/engine_config_snapshot.txt"
+      - "Apply clears: ProgramData/Shaders + game/Shaders/D3D11/compressed_shaders_cache.sack + per-module .sack files (all to Recycle Bin)."
+      - "Snapshot is updated to current values after Apply — next Detect returns Healthy."
+      - "Tracked keys: texture / shader / terrain / shadow / particle / postfx / DLSS / antialiasing / resolution. Sound, mouse, gamma keys are NOT tracked."
+      - "Not reversible: shader cache is in the Recycle Bin if you really need it back; otherwise the game just rebuilds it."
+    ru:
+      - "Файл снэпшота: <Documents>/Mount and Blade II Bannerlord/CrashDoctor/state/engine_config_snapshot.txt"
+      - "«Применить» удаляет: ProgramData/Shaders + game/Shaders/D3D11/compressed_shaders_cache.sack + per-module .sack-файлы (всё в Корзину)."
+      - "Снэпшот обновится на текущие значения после «Применить» — следующий Detect вернёт Healthy."
+      - "Отслеживаемые ключи: texture / shader / terrain / shadow / particle / postfx / DLSS / antialiasing / разрешение. Звук, мышь, гамма — НЕ отслеживаются."
+      - "Откат не предусмотрен: кэш шейдеров в Корзине, если очень надо — восстанови оттуда; иначе игра просто пересоберёт."

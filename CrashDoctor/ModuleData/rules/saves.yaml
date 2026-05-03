@@ -64,3 +64,87 @@
           contains: "Failed to read save"
       - log_line:
           contains: "save file is corrupt"
+
+- id: save.warparty_clan_late_game
+  category: saves
+  severity: critical
+  confidence: high
+  evidence_source: "BL-013 / LATE-003 catalog 2026-05-02 — Null Hero Fix Nexus 4728"
+  requires_sources: [log_line]
+  title:
+    en: "Late-game save load NRE — stale war party / clan reference"
+    ru: "NRE при загрузке поздней кампании — мёртвая ссылка на клан/отряд"
+  description:
+    en: |
+      WarPartyComponent.get_Clan or WarPartyComponent.OnFinalize hits null inside
+      MobileParty.OnRemoveParty / PreAfterLoad during save load. The save holds
+      a reference to a clan or hero that was eliminated, but the cleanup logic
+      didn't drop the back-reference. Cascades around day 100+ when first
+      kingdoms start dying.
+    ru: |
+      WarPartyComponent.get_Clan или WarPartyComponent.OnFinalize падает на null
+      внутри MobileParty.OnRemoveParty / PreAfterLoad при загрузке сейва. В
+      сейве осталась ссылка на уничтоженный клан или героя, а логика очистки
+      её не удалила. Каскадирует с дня 100+, когда начинают умирать первые
+      королевства.
+  fix:
+    en:
+      - "Install Null Hero Fix from NexusMods (mod 4728) — patches the validator to skip dead refs."
+      - "Reload an earlier save if the crash is on every load attempt."
+      - "If using Diplomacy mod — update it; old versions are the most common source."
+    ru:
+      - "Поставь Null Hero Fix с NexusMods (мод 4728) — патчит валидатор, чтобы он пропускал мёртвые ссылки."
+      - "Если падает на каждой загрузке — откатись на более ранний сейв."
+      - "Если стоит мод Diplomacy — обнови; старые версии — самый частый источник."
+  match:
+    all:
+      - any:
+          - log_line:
+              contains: "WarPartyComponent"
+          - log_line:
+              contains: "WarPartyComponent.get_Clan"
+      - any:
+          - log_line:
+              contains: "PreAfterLoad"
+          - log_line:
+              contains: "OnRemoveParty"
+          - log_line:
+              contains: "OnFinalize"
+
+- id: save.pregnancy_baby_npe
+  category: saves
+  severity: critical
+  confidence: high
+  evidence_source: "LATE-014 catalog 2026-05-02 — Baby Of Rare Culture Crash Fix Nexus 9487"
+  requires_sources: [log_line]
+  title:
+    en: "Pregnancy / birth NRE — companion of rare culture"
+    ru: "NRE на беременности / рождении — компаньон редкой культуры"
+  description:
+    en: |
+      HeroCreator.DeliverOffSpring → PregnancyCampaignBehavior.CheckOffspringsToDeliver
+      crashes when a child is born to a companion whose culture has no body-property
+      template (typical for rare / non-native cultures introduced by mods like TOR).
+    ru: |
+      HeroCreator.DeliverOffSpring → PregnancyCampaignBehavior.CheckOffspringsToDeliver
+      падает на рождении ребёнка от компаньона с культурой, у которой нет
+      body-property шаблона (типичный кейс для редких / не-нативных культур из
+      модов вроде TOR).
+  fix:
+    en:
+      - "Install Baby Of Rare Culture Crash Fix from NexusMods (mod 9487)."
+      - "Workaround until install: console-kill the pregnant companion (campaign.kill_hero) before the due date — save first."
+      - "Avoid recruiting wanderer companions of unusual cultures for marriage if you can't install the fix."
+    ru:
+      - "Поставь Baby Of Rare Culture Crash Fix с NexusMods (мод 9487)."
+      - "Workaround до установки: через консоль убей беременного компаньона (campaign.kill_hero) до родов — сначала сделай сейв."
+      - "Не бери в жёны/мужья wanderer-компаньонов с необычной культурой, если нет фикса."
+  match:
+    all:
+      - any:
+          - log_line:
+              contains: "HeroCreator.DeliverOffSpring"
+          - log_line:
+              contains: "PregnancyCampaignBehavior.CheckOffspringsToDeliver"
+          - log_line:
+              contains: "DeliverOffSpring"
