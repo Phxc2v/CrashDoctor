@@ -1,0 +1,22 @@
+- id: m33_engine_config
+  title:
+    en: "Fix TOR-incompatible values in engine_config.txt"
+    ru: "Исправить TOR-несовместимые значения в engine_config.txt"
+  description:
+    en: |
+      A few engine_config.txt values are known to cause d3d crashes, OOM in big battles,
+      or sound-occlusion freezes specifically on TOR. Crash Doctor only touches keys
+      with a documented bad effect; everything else is preserved verbatim.
+    ru: |
+      Часть значений в engine_config.txt вызывают d3d-краши, OOM в больших битвах
+      и фризы со звуком именно на TOR. Crash Doctor трогает только те ключи, у которых
+      есть подтверждённый плохой эффект; остальное сохраняется как есть.
+  details:
+    en:
+      - "engine_config.txt is backed up before rewriting."
+      - "Comments and unknown keys are kept untouched."
+      - "Reversible from the History tab."
+    ru:
+      - "engine_config.txt сохраняется в backup перед перезаписью."
+      - "Комментарии и неизвестные ключи остаются как есть."
+      - "Откат возможен из вкладки Журнал."

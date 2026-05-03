@@ -1,0 +1,26 @@
+- id: m54_fullscreen_opts
+  title:
+    en: "Disable Fullscreen Optimizations for Bannerlord.exe"
+    ru: "Отключить полноэкранные оптимизации для Bannerlord.exe"
+  description:
+    en: |
+      "Fullscreen optimizations" is a Windows feature that quietly turns "exclusive fullscreen"
+      into a borderless-windowed compositor pass. It adds 1–2 frames of input lag and stalls
+      Alt-Tab for several seconds in Bannerlord. Disabling it via the AppCompatFlags registry
+      key restores true fullscreen behaviour.
+    ru: |
+      «Полноэкранные оптимизации» Windows тихо превращают «эксклюзивный полноэкранный»
+      режим в borderless-windowed через компоновщик. Это добавляет 1–2 кадра input lag и
+      замораживает Alt-Tab на несколько секунд в Bannerlord. Отключение через ключ реестра
+      AppCompatFlags возвращает настоящий полноэкранный режим.
+  details:
+    en:
+      - "No UAC needed — writes to HKCU only."
+      - "Same effect as right-clicking Bannerlord.exe → Properties → Compatibility → 'Disable fullscreen optimizations'."
+      - "Effective on next launch."
+      - "Reversible from the History tab."
+    ru:
+      - "UAC не нужен — пишет только в HKCU."
+      - "То же самое что правый клик на Bannerlord.exe → Свойства → Совместимость → «Отключить полноэкранные оптимизации»."
+      - "Действует со следующего запуска."
+      - "Откат — из вкладки Журнал."

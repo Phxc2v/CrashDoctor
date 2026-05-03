@@ -1,16 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Module>
-  <Name value="Crash Doctor" />
   <Id value="CrashDoctor" />
-  <Version value="v1.0.9" />
-  <Official value="false" />
+  <Name value="Crash Doctor" />
+  <Version value="v1.3.2" />
   <DefaultModule value="false" />
   <ModuleCategory value="Singleplayer" />
   <ModuleType value="Community" />
   <DependedModules>
-    <DependedModule Id="Native" />
-    <DependedModule Id="SandBoxCore" />
-    <DependedModule Id="Sandbox" />
+    <DependedModule Id="Native" DependentVersion="v1.3.15" />
+    <DependedModule Id="SandBoxCore" DependentVersion="v1.3.15" />
+    <DependedModule Id="Sandbox" DependentVersion="v1.3.15" />
   </DependedModules>
   <SubModules>
     <SubModule>

@@ -1,0 +1,30 @@
+- id: m32_onedrive_docs
+  title:
+    en: "Documents folder is on OneDrive"
+    ru: "Папка «Документы» на OneDrive"
+  description:
+    en: |
+      Bannerlord stores saves, configs and shader logs under Documents. When Documents is
+      redirected through OneDrive (default on new Windows installs), OneDrive's lazy-sync
+      can lock files mid-write — that corrupts saves on a long campaign — or fail log
+      rotation while the cloud is busy. The recommended fix is to mark the Bannerlord
+      folder as 'Always keep on this device' or to disable OneDrive backup of Documents
+      entirely.
+    ru: |
+      Bannerlord хранит сейвы, конфиги и логи шейдеров в папке «Документы». Когда
+      «Документы» проксированы через OneDrive (по умолчанию на свежей Windows),
+      ленивая синхронизация OneDrive может блокировать файлы при сохранении игры —
+      это калечит сейвы в долгой кампании — или ломает ротацию логов когда облако занято.
+      Рекомендованный фикс: пометить папку Bannerlord как «Всегда сохранять на этом
+      устройстве» или полностью отключить резервное копирование «Документов» в OneDrive.
+  details:
+    en:
+      - "Apply opens the Bannerlord folder in Documents."
+      - "Right-click 'Mount and Blade II Bannerlord' → 'Always keep on this device' (forces local copy)."
+      - "Permanent fix: OneDrive Settings → Backup → Manage backup → uncheck 'Documents'."
+      - "After re-pinning, save corruption risk drops sharply on long campaigns."
+    ru:
+      - "«Применить» откроет папку Bannerlord в Документах."
+      - "Правый клик по «Mount and Blade II Bannerlord» → «Всегда сохранять на этом устройстве» (форсит локальную копию)."
+      - "Полный фикс: OneDrive → Настройки → Резервное копирование → снять галку «Документы»."
+      - "После репина риск битых сейвов в долгой кампании резко падает."

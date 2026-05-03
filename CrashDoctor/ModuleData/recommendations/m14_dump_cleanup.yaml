@@ -1,0 +1,22 @@
+- id: m14_dump_cleanup
+  title:
+    en: "Clean up old crash dumps"
+    ru: "Очистить старые крэш-дампы"
+  description:
+    en: |
+      Each Bannerlord crash leaves a folder with a 0.5–1.5 GB minidump and log files
+      under ProgramData\Mount and Blade II Bannerlord\crashes\. Over time these eat
+      tens of GB of disk space and slow down loading.
+    ru: |
+      Каждый краш Bannerlord оставляет папку с минидампом 0.5–1.5 ГБ и логами в
+      ProgramData\Mount and Blade II Bannerlord\crashes\. Со временем они съедают
+      десятки ГБ места и тормозят загрузку.
+  details:
+    en:
+      - "The 3 most recent crash folders are kept for diagnostic continuity."
+      - "Older folders go to the Windows Recycle Bin and can be restored from there."
+      - "No reboot required."
+    ru:
+      - "Последние 3 папки крашей сохраняются — на случай если понадобятся для диагностики."
+      - "Остальные уезжают в корзину Windows и могут быть восстановлены оттуда."
+      - "Перезагрузка не нужна."

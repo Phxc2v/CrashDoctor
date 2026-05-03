@@ -1,0 +1,29 @@
+- id: m11_pagefile
+  title:
+    en: "Increase pagefile to 40 / 60 GB for TOR"
+    ru: "Увеличить pagefile до 40 / 60 ГБ для TOR"
+  description:
+    en: |
+      TOR ships ~30 GB of assets and recompiles thousands of shader variants on the
+      first run. With Windows-managed pagefile this often runs out of commit memory
+      and crashes with «Application crashed because it could not get new memory».
+      Setting pagefile to 40000 / 60000 MB (initial / max) on C: fixes it.
+    ru: |
+      TOR — это ~30 ГБ ассетов и тысячи вариантов шейдеров, которые компилируются
+      при первом запуске. При автоматическом pagefile Windows этого commit-памяти
+      часто не хватает, и игра падает с «Application crashed because it could not get
+      new memory». Задание pagefile 40000 / 60000 МБ (начальный / максимум) на C:
+      это лечит.
+  details:
+    en:
+      - "Click Apply: Windows shows one UAC consent dialog — click Yes."
+      - "Requires a reboot — Windows reads pagefile settings only at boot."
+      - "The HKLM registry branch is exported to a .reg backup before rewriting."
+      - "Reversible from the History tab."
+      - "Needs ≥ 65 GB free on any fixed drive — Crash Doctor picks the best one automatically."
+    ru:
+      - "Нажми «Применить»: Windows покажет диалог UAC — нажми «Да»."
+      - "Нужна перезагрузка — Windows читает настройки pagefile только при загрузке."
+      - "Ветка реестра HKLM сохраняется в .reg-бэкап перед перезаписью."
+      - "Откат возможен из вкладки Журнал."
+      - "Нужно ≥ 65 ГБ свободно на любом диске — Crash Doctor сам выберет подходящий."

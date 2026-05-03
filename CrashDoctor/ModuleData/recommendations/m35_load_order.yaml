@@ -1,0 +1,29 @@
+- id: m35_load_order
+  title:
+    en: "Fix mod load order in LauncherData.xml"
+    ru: "Починить порядок модов в LauncherData.xml"
+  description:
+    en: |
+      Bannerlord crashes on startup or modules silently fail when the load order
+      doesn't match the canonical TOR sequence. Native game modules first, then
+      Harmony / ButterLib / UIExtenderEx / MCM, then community mods, then TOR_*.
+    ru: |
+      Bannerlord падает на старте или модули молча не работают, если порядок
+      загрузки не совпадает с каноническим порядком TOR. Сначала Native-модули,
+      потом Harmony / ButterLib / UIExtenderEx / MCM, затем коммьюнити-моды,
+      затем TOR_*.
+  details:
+    en:
+      - "LauncherData.xml is backed up before rewriting."
+      - "Only the order changes — no mod is added, removed or disabled."
+      - "Reversible from the History tab if anything looks wrong."
+      - "After applying: launch the game DIRECTLY via Play. Do NOT manually drag mods up/down"
+      - "in the TaleWorlds launcher window — that overwrites the order back to what the launcher"
+      - "thinks is correct. With BLSE Launcher installed, the order sticks regardless."
+    ru:
+      - "LauncherData.xml сохраняется в backup перед перезаписью."
+      - "Меняется только порядок — ни один мод не добавляется, не удаляется и не отключается."
+      - "Откат возможен из вкладки Журнал, если что-то пойдёт не так."
+      - "После применения: запусти игру кнопкой Play и НЕ двигай моды вручную вверх/вниз"
+      - "в окне TaleWorlds launcher'а — иначе он перезапишет порядок обратно по своей логике."
+      - "С установленным BLSE Launcher порядок сохраняется в любом случае."

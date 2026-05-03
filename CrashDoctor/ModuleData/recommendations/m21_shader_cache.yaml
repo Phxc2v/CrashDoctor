@@ -1,0 +1,24 @@
+- id: m21_shader_cache
+  title:
+    en: "Clear Bannerlord shader cache"
+    ru: "Очистить кэш шейдеров Bannerlord"
+  description:
+    en: |
+      The shader cache holds compiled GPU shaders. After a Bannerlord or TOR update, or after
+      a GPU driver change, the cache may become stale and trigger d3d errors, black screens,
+      or shader-compile crashes ("Error compiling shader file: ...particle_shading.rs").
+    ru: |
+      Кэш шейдеров содержит скомпилированные GPU-шейдеры. После обновления Bannerlord/TOR
+      или смены драйвера GPU кэш может стать несовместимым, вызывая d3d-ошибки, чёрный
+      экран и краши при компиляции шейдеров («Error compiling shader file: ...particle_shading.rs»).
+  details:
+    en:
+      - "Files are moved to the Windows Recycle Bin and can be restored if needed."
+      - "First Bannerlord launch after this will spend 10–60 minutes recompiling shaders."
+      - "Use the main-menu 'Build Shader Cache' button right after restarting the game,"
+      - "otherwise the first battle will stutter heavily."
+    ru:
+      - "Файлы уезжают в корзину Windows и могут быть восстановлены."
+      - "Первый запуск Bannerlord после очистки будет долго (10–60 минут) перекомпилировать шейдеры."
+      - "Сразу после очистки нажмите «Build Shader Cache» в главном меню,"
+      - "иначе первое сражение будет очень сильно фризить."

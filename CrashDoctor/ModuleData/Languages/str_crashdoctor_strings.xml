@@ -42,5 +42,51 @@
     <string id="cd_clear_preview" text="Will delete: {DEL} of {TOTAL} crash folders" />
     <string id="cd_checkbox_on" text="[X]" />
     <string id="cd_checkbox_off" text="[ ]" />
+
+    <!-- v1.1.0 — tabs / tune-up / history -->
+    <string id="cd_tab_crashes" text="Crash diagnosis" />
+    <string id="cd_tab_tuneup" text="System tune-up" />
+    <string id="cd_tab_history" text="History" />
+
+    <string id="cd_tuneup_scanning" text="Checking system..." />
+    <string id="cd_tuneup_summary" text="{ISSUES} issues found, {HEALTHY} checks passed" />
+    <string id="cd_tuneup_summary_actionable" text="Found {COUNT} issue(s) needing attention." />
+    <string id="cd_tuneup_all_good" text="No issues found. If a crash still happens, open the «Crash diagnosis» tab." />
+    <string id="cd_tuneup_scan_failed" text="Scan failed. See crashdoctor.log." />
+    <string id="cd_tuneup_evidence_header" text="Evidence:" />
+    <string id="cd_tuneup_btn_rescan" text="Re-scan" />
+    <string id="cd_tuneup_btn_apply" text="Apply" />
+    <string id="cd_tuneup_btn_details_show" text="Details" />
+    <string id="cd_tuneup_btn_details_hide" text="Hide details" />
+    <string id="cd_tuneup_btn_open_uac" text="Open UAC settings" />
+    <string id="cd_details_btn_close" text="Close" />
+    <string id="cd_details_header" text="More details:" />
+    <string id="cd_tuneup_badge_admin" text="admin required" />
+    <string id="cd_tuneup_badge_reboot" text="reboot required" />
+    <string id="cd_tuneup_badge_reversible" text="reversible" />
+    <string id="cd_tuneup_badge_no_undo" text="no rollback" />
+    <string id="cd_tuneup_reboot_pending" text="⟳ Settings applied — REBOOT the PC for them to take effect." />
+    <string id="cd_apply_reboot_title" text="Reboot required" />
+    <string id="cd_apply_reboot_default" text="Settings applied. REBOOT the PC for them to take effect." />
+    <string id="cd_apply_done_title" text="Applied" />
+    <string id="cd_apply_done_default" text="Settings applied." />
+    <string id="cd_apply_failed_title" text="Apply failed" />
+    <string id="cd_apply_failed_default" text="Apply failed. See crashdoctor.log." />
+    <string id="cd_btn_ok" text="OK" />
+    <string id="cd_tuneup_btn_show_all" text="Show all" />
+    <string id="cd_tuneup_btn_show_actionable" text="Show actionable only" />
+    <string id="cd_tuneup_summary_show_all" text="Showing all {TOTAL} modules ({ACTIONABLE} actionable, {HEALTHY} healthy, {SKIPPED} not applicable)." />
+
+    <string id="cd_history_count" text="{COUNT} entries" />
+    <string id="cd_history_empty" text="No remediation history yet." />
+    <string id="cd_history_load_failed" text="Failed to load history. See crashdoctor.log." />
+    <string id="cd_history_btn_refresh" text="Refresh" />
+    <string id="cd_history_btn_clear_all" text="Clear history" />
+    <string id="cd_history_result_ok" text="applied" />
+    <string id="cd_history_result_fail" text="failed" />
+    <string id="cd_history_items_count" text="{COUNT} items affected" />
+    <string id="cd_history_reboot_pending" text="reboot pending" />
+    <string id="cd_history_rolled_back_at" text="rolled back {WHEN}" />
+    <string id="cd_history_btn_rollback" text="Rollback" />
   </strings>
 </base>
