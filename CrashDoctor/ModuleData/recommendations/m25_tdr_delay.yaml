@@ -1,0 +1,36 @@
+- id: m25_tdr_delay
+  title:
+    en: "Raise GPU timeout (TdrDelay) for TOR shader compile"
+    ru: "Поднять GPU-таймаут (TdrDelay) для компиляции шейдеров TOR"
+  description:
+    en: |
+      Windows kills any GPU command that doesn't return within 2 seconds (TDR — Timeout
+      Detection and Recovery). TOR's pbr_metallic.rs / faceshader_high.rs routinely take
+      5-15 seconds per dispatch on a single shader permutation, so the OS thinks the GPU
+      hung and kills it — leading to "out of memory during compilation" cascades and
+      DXGI device-removed crashes during "Build Shader Cache".
+
+      This module raises TdrDelay and TdrDdiDelay to 60 seconds, giving the compiler
+      enough time to finish each permutation. Safe Microsoft-recommended workaround;
+      reversible.
+    ru: |
+      Windows убивает любую GPU-команду, которая не вернула управление за 2 секунды
+      (TDR — Timeout Detection and Recovery). pbr_metallic.rs / faceshader_high.rs в TOR
+      компилируются по 5–15 с на одну перестановку шейдера — ОС думает что GPU завис и
+      бьёт по рукам. Получаешь каскад «out of memory during compilation» и DXGI
+      device-removed во время «Build Shader Cache».
+
+      Модуль поднимает TdrDelay и TdrDdiDelay до 60 секунд — у компилятора будет время
+      доделать каждую перестановку. Безопасный обходной путь, рекомендованный Microsoft;
+      обратимый.
+  details:
+    en:
+      - "Click Apply: Windows shows one UAC consent dialog — click Yes."
+      - "Requires a reboot — Windows reads TDR settings only at boot."
+      - "Reversible from the History tab."
+      - "Set TdrDelay = TdrDdiDelay = 60 (seconds). Default is 2 / 5."
+    ru:
+      - "Нажми «Применить»: Windows покажет диалог UAC — нажми «Да»."
+      - "Нужна перезагрузка — Windows читает настройки TDR только при загрузке."
+      - "Откат — из вкладки Журнал."
+      - "Ставит TdrDelay = TdrDdiDelay = 60 (секунд). По умолчанию 2 / 5."

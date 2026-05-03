@@ -1,0 +1,22 @@
+- id: m37_unblock_dll
+  title:
+    en: "Unblock module DLLs (Windows SmartScreen)"
+    ru: "Разблокировать DLL модулей (Windows SmartScreen)"
+  description:
+    en: |
+      Windows SmartScreen blocks DLLs after extracting a mod from a downloaded archive.
+      Bannerlord cannot load blocked DLLs and crashes on startup with "Cannot load ...".
+      This is the #1 fix recommended for Bannerlord and TOR mod issues.
+    ru: |
+      Windows SmartScreen блокирует DLL после распаковки архива мода.
+      Bannerlord не может загрузить заблокированные DLL и падает на старте с «Cannot load ...».
+      Это главный фикс №1 в community-инструкциях по TOR.
+  details:
+    en:
+      - "We remove the NTFS Zone.Identifier alternate data stream from each DLL."
+      - "The DLL file itself is not modified — only the 'downloaded from internet' marker is removed."
+      - "No reboot required. Restart Bannerlord to take effect."
+    ru:
+      - "Удаляем NTFS-поток Zone.Identifier у каждой заблокированной DLL."
+      - "Сам файл DLL не изменяется — удаляется только метка «скачано из интернета»."
+      - "Перезагрузка не нужна. Перезапустите Bannerlord для применения."

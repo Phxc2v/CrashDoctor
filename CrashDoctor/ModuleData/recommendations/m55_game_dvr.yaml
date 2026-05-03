@@ -1,0 +1,26 @@
+- id: m55_game_dvr
+  title:
+    en: "Disable Game DVR / Xbox Game Bar"
+    ru: "Отключить Game DVR / Xbox Game Bar"
+  description:
+    en: |
+      Windows' background recording (Game DVR / Xbox Game Bar) hooks DXGI to record gameplay
+      and steals 5-15 % FPS in Bannerlord. It's also a documented trigger for "GPU device
+      removed" crashes during long TOR battles. Microsoft's own perf guides recommend turning
+      it off for any demanding game.
+    ru: |
+      Фоновая запись игр Windows (Game DVR / Xbox Game Bar) перехватывает DXGI для записи
+      геймплея и съедает 5–15 % FPS в Bannerlord. Также документированный триггер крашей
+      «GPU device removed» в долгих битвах TOR. Сама Microsoft рекомендует выключать его
+      для тяжёлых игр.
+  details:
+    en:
+      - "Click Apply: Windows shows one UAC consent dialog — click Yes."
+      - "Effective immediately — no reboot required."
+      - "Sets HKLM Policies AllowGameDVR=0, HKCU GameDVR_Enabled=0, AppCaptureEnabled=0."
+      - "Reversible from the History tab."
+    ru:
+      - "Нажми «Применить»: Windows покажет диалог UAC — нажми «Да»."
+      - "Действует сразу — перезагрузка не нужна."
+      - "Ставит HKLM Policies AllowGameDVR=0, HKCU GameDVR_Enabled=0, AppCaptureEnabled=0."
+      - "Откат — из вкладки Журнал."

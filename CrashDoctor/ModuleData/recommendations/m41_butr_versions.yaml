@@ -1,0 +1,22 @@
+- id: m41_butr_versions
+  title:
+    en: "Check BUTR / BLSE versions"
+    ru: "Проверить версии BUTR / BLSE"
+  description:
+    en: |
+      BLSE 1.6.3 and 1.6.4 ship a known regression that crashes the game on startup
+      with a FormatException in TaleWorlds.GauntletUI.PrefabSystem.ConstantDefinition.
+      The fix is to downgrade to BLSE 1.6.2.
+    ru: |
+      BLSE 1.6.3 и 1.6.4 содержат известную регрессию — игра падает на старте
+      с FormatException в TaleWorlds.GauntletUI.PrefabSystem.ConstantDefinition.
+      Исправление — откат до BLSE 1.6.2.
+  details:
+    en:
+      - "Crash Doctor cannot install/uninstall BLSE itself."
+      - "«Apply» opens the BLSE NexusMods page in your browser — download 1.6.2 manually."
+      - "After installing 1.6.2, restart Bannerlord."
+    ru:
+      - "Crash Doctor не может сам ставить/удалять BLSE."
+      - "«Применить» откроет страницу BLSE на NexusMods — скачайте 1.6.2 вручную."
+      - "После установки 1.6.2 перезапустите Bannerlord."

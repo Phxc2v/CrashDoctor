@@ -41,6 +41,52 @@
     <string id="cd_clear_done" text="Удалено файлов: {COUNT}. При необходимости восстанови из Корзины Windows." />
     <string id="cd_clear_preview" text="Будет удалено: {DEL} из {TOTAL} крашей" />
     <string id="cd_checkbox_on" text="[X]" />
-    <string id="cd_checkbox_off" text="[  ]" />
+    <string id="cd_checkbox_off" text="[ ]" />
+
+    <!-- v1.1.0 — tabs / tune-up / history -->
+    <string id="cd_tab_crashes" text="Диагностика крашей" />
+    <string id="cd_tab_tuneup" text="Настройка системы" />
+    <string id="cd_tab_history" text="Журнал" />
+
+    <string id="cd_tuneup_scanning" text="Проверяем систему..." />
+    <string id="cd_tuneup_summary" text="Найдено проблем: {ISSUES}, проверок пройдено: {HEALTHY}" />
+    <string id="cd_tuneup_summary_actionable" text="Найдено проблем, требующих внимания: {COUNT}." />
+    <string id="cd_tuneup_all_good" text="Проблем не найдено. Если краш всё-таки случился, открой вкладку «Диагностика крашей»." />
+    <string id="cd_tuneup_scan_failed" text="Сканирование сорвалось. См. crashdoctor.log." />
+    <string id="cd_tuneup_evidence_header" text="Что нашли:" />
+    <string id="cd_tuneup_btn_rescan" text="Пересканировать" />
+    <string id="cd_tuneup_btn_apply" text="Применить" />
+    <string id="cd_tuneup_btn_details_show" text="Подробнее" />
+    <string id="cd_tuneup_btn_details_hide" text="Скрыть подробности" />
+    <string id="cd_tuneup_btn_open_uac" text="Открыть настройки UAC" />
+    <string id="cd_details_btn_close" text="Закрыть" />
+    <string id="cd_details_header" text="Подробности:" />
+    <string id="cd_tuneup_badge_admin" text="нужны права админа" />
+    <string id="cd_tuneup_badge_reboot" text="нужна перезагрузка" />
+    <string id="cd_tuneup_badge_reversible" text="откат возможен" />
+    <string id="cd_tuneup_badge_no_undo" text="без отката" />
+    <string id="cd_tuneup_reboot_pending" text="⟳ Настройки применены — ПЕРЕЗАГРУЗИ ПК, чтобы они вступили в силу." />
+    <string id="cd_apply_reboot_title" text="Нужна перезагрузка" />
+    <string id="cd_apply_reboot_default" text="Настройки применены. ПЕРЕЗАГРУЗИ ПК, чтобы они вступили в силу." />
+    <string id="cd_apply_done_title" text="Применено" />
+    <string id="cd_apply_done_default" text="Настройки применены." />
+    <string id="cd_apply_failed_title" text="Не удалось применить" />
+    <string id="cd_apply_failed_default" text="Не удалось применить. См. crashdoctor.log." />
+    <string id="cd_btn_ok" text="ОК" />
+    <string id="cd_tuneup_btn_show_all" text="Показать все" />
+    <string id="cd_tuneup_btn_show_actionable" text="Только проблемы" />
+    <string id="cd_tuneup_summary_show_all" text="Показаны все {TOTAL} модулей ({ACTIONABLE} требуют действий, {HEALTHY} в порядке, {SKIPPED} неприменимы)." />
+
+    <string id="cd_history_count" text="Записей: {COUNT}" />
+    <string id="cd_history_empty" text="Журнал пока пуст." />
+    <string id="cd_history_load_failed" text="Не удалось загрузить журнал. См. crashdoctor.log." />
+    <string id="cd_history_btn_refresh" text="Обновить" />
+    <string id="cd_history_btn_clear_all" text="Очистить журнал" />
+    <string id="cd_history_result_ok" text="применено" />
+    <string id="cd_history_result_fail" text="ошибка" />
+    <string id="cd_history_items_count" text="Затронуто пунктов: {COUNT}" />
+    <string id="cd_history_reboot_pending" text="нужна перезагрузка" />
+    <string id="cd_history_rolled_back_at" text="откат: {WHEN}" />
+    <string id="cd_history_btn_rollback" text="Откатить" />
   </strings>
 </base>

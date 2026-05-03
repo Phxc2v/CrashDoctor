@@ -1,0 +1,26 @@
+- id: m13_disk_space
+  title:
+    en: "Free up disk space (system + install drive)"
+    ru: "Освободить место на дисках (системный + диск с игрой)"
+  description:
+    en: |
+      Bannerlord with TOR needs serious headroom: 50+ GB on C: for shader compile + pagefile
+      growth, plus 20+ GB on the game's install drive for the shader cache itself. Running
+      out during "Build Shader Cache" gives "out of memory during compilation" cascades and
+      corrupted save files.
+    ru: |
+      Bannerlord с TOR требует серьёзный запас места: 50+ ГБ на C: для компиляции
+      шейдеров + рост pagefile, плюс 20+ ГБ на диске где стоит игра для самого кэша
+      шейдеров. Если место кончится во время «Build Shader Cache» — каскад
+      «out of memory during compilation» и битые сейвы.
+  details:
+    en:
+      - "Apply opens Windows Disk Cleanup — Crash Doctor doesn't touch user files itself."
+      - "Clean Temporary files, old Windows updates, Recycle Bin."
+      - "Steam → Bannerlord → Properties → Installed Files → Verify integrity may also free orphaned shader cache."
+      - "Re-scan Crash Doctor after you finish."
+    ru:
+      - "«Применить» откроет «Очистку диска» Windows — Crash Doctor не трогает пользовательские файлы."
+      - "Почисти Временные файлы, старые обновления Windows, Корзину."
+      - "Steam → Bannerlord → Свойства → Установленные файлы → Проверить целостность тоже может освободить осиротевший кэш шейдеров."
+      - "Пересканируй Crash Doctor когда закончишь."

@@ -54,24 +54,53 @@
     ru: "Кэш шейдеров повреждён или недоступен"
   description:
     en: |
-      The log shows hundreds of "Missing shader from sack" messages. This usually
-      means the shader cache is broken, the GPU driver does not support the shader
-      pipeline, or the disk had write errors during installation.
+      What the shader cache is: a precompiled archive of every visual effect Bannerlord
+      uses (lighting, particles, terrain, character skin, weather...). The game compiles
+      it once on the first run for your specific GPU + driver combo and then reuses it.
+      Without a valid cache the engine has to compile shaders on the fly while loading
+      a battle — that is what causes the long freeze followed by a crash.
+
+      The log here shows hundreds of "Missing shader from sack" messages, which means
+      the cache is either broken, the GPU driver does not support the shader pipeline,
+      or the disk had write errors during installation.
+
+      Important: do NOT disable the Windows page file. Compiling TOR shaders peaks at
+      30+ GB of committed memory; with a disabled or tiny page file Windows runs out of
+      commit and crashes the game on the very next battle load. The fix is the opposite —
+      raise the page file, not turn it off.
     ru: |
-      В логе сотни сообщений «Missing shader from sack». Обычно это значит, что
-      кэш шейдеров поломался, драйвер видеокарты не тянет нужный pipeline, или
-      во время установки были ошибки записи на диск.
+      Что такое кэш шейдеров: предкомпилированный архив всех визуальных эффектов
+      Bannerlord (свет, частицы, ландшафт, кожа персонажа, погода…). Игра компилирует
+      его один раз при первом запуске под твою связку GPU + драйвер и потом
+      переиспользует. Без валидного кэша движку приходится компилировать шейдеры
+      на лету при загрузке битвы — именно поэтому долгий «зависший» loading
+      заканчивается крашем.
+
+      В логе сотни сообщений «Missing shader from sack» — кэш либо сломан, либо
+      драйвер не тянет нужный pipeline, либо при установке игры/мода были ошибки
+      записи на диск.
+
+      ВАЖНО: НЕ ОТКЛЮЧАЙ файл подкачки. Компиляция шейдеров TOR требует пиково 30+ ГБ
+      committed-памяти; при выключенном или маленьком файле подкачки Windows исчерпает
+      commit и игра упадёт ровно при загрузке следующей битвы. Фикс ровно
+      противоположный — увеличить файл подкачки, а не выключать.
   fix:
     en:
-      - "In-game: Options → Graphics → set Shader Quality to Low → save and restart."
+      - "Open Crash Doctor → System tune-up → 'Increase pagefile' (sets it to 40 / 60 GB) — required for TOR."
+      - "Open Crash Doctor → System tune-up → 'Clear Bannerlord shader cache' (sends old cache to Recycle Bin)."
+      - "Launch the game and pick 'Build Shader Cache' from the main menu — it takes 10–60 minutes; do not interrupt."
       - "Steam → Bannerlord → Properties → Installed Files → Verify integrity of game files."
       - "Update the GPU driver."
-      - "If the issue persists, lower texture/shadow/postfx settings one notch."
+      - "If you already disabled the page file, turn it back on (Custom 40000–60000 MB on C:) before doing anything else."
+      - "Last resort: in-game Options → Graphics → Shader Quality = Low, then save and restart."
     ru:
-      - "В игре: Опции → Графика → понизь Качество шейдеров до Low → сохрани и перезапусти."
+      - "Открой Crash Doctor → Настройка системы → «Увеличить файл подкачки» (ставит 40 / 60 ГБ) — обязательно для TOR."
+      - "Открой Crash Doctor → Настройка системы → «Очистить кэш шейдеров Bannerlord» (старый кэш уезжает в Корзину)."
+      - "Запусти игру и в главном меню нажми «Build Shader Cache» — займёт 10–60 минут, не прерывай процесс."
       - "Steam → Bannerlord → Свойства → Установленные файлы → Проверить целостность."
       - "Обновить драйвер видеокарты."
-      - "Если не помогло — понизь Texture/Shadow/PostFX на ступень."
+      - "Если ты уже отключил файл подкачки — ВЕРНИ его (Особый размер 40000–60000 МБ на C:) перед всем остальным."
+      - "В крайнем случае: Опции → Графика → Качество шейдеров = Low, сохрани и перезапусти."
   match:
     all:
       - log_line:
@@ -146,3 +175,65 @@
     all:
       - log_line:
           contains: "0x887A0006"
+
+- id: gpu.shader_compile_oom
+  category: gpu
+  severity: critical
+  confidence: high
+  evidence_source: "https://steamcommunity.com/workshop/filedetails/discussion/3025574678/800093831719686553/"
+  requires_sources: [log_line]
+  title:
+    en: "Shader compilation runs out of memory (TOR pbr_metallic / horse / faceshader)"
+    ru: "Не хватает памяти при компиляции шейдеров TOR (pbr_metallic / horse / faceshader)"
+  description:
+    en: |
+      The Direct3D shader compiler ran out of memory while building TOR's heaviest
+      shaders (pbr_metallic.rs, horse.rs, faceshader_high.rs). Symptoms: cascading
+      Windows error dialogs "Error compiling shader file ... out of memory during
+      compilation" or "internal error: pdb append failed / debug info append failed,
+      byte count too large". The game crashes after ~15 min of "Build Shader Cache".
+
+      This is NOT the same as "system page file too small". The D3DCompiler has its
+      own per-process address-space limits and chokes on TOR's complex shaders even
+      when the page file is huge. The proven workaround is to delete BOTH shader caches
+      (game + ProgramData), make sure terrain_quality is 2 or higher, free 50+ GB on
+      the system drive, and update the GPU driver.
+    ru: |
+      Компилятор Direct3D исчерпал память при сборке самых тяжёлых шейдеров TOR
+      (pbr_metallic.rs, horse.rs, faceshader_high.rs). Симптомы: каскад окошек
+      Windows «Error compiling shader file ... out of memory during compilation»
+      или «internal error: pdb append failed / debug info append failed, byte count
+      too large». Игра падает после ~15 минут «Build Shader Cache».
+
+      Это НЕ то же самое, что «маленький файл подкачки». У D3DCompiler свои лимиты
+      адресного пространства, и он давится на сложных шейдерах TOR даже при
+      огромном pagefile. Рабочий обходной путь: удалить ОБА кэша шейдеров
+      (игровой + ProgramData), убедиться что terrain_quality ≥ 2, освободить
+      50+ ГБ на системном диске и обновить драйвер GPU.
+  fix:
+    en:
+      - "Crash Doctor → System tune-up → 'Clear Bannerlord shader cache' (deletes BOTH game/Shaders/D3D11/compressed_shaders_cache.sack AND C:\ProgramData\Mount and Blade II Bannerlord\Shaders)."
+      - "Crash Doctor → System tune-up → if engine_config card appears, apply it (sets terrain_quality to 2 — required, lower values cause this exact crash on TOR)."
+      - "Free at least 50 GB on C: (Disk Cleanup → Temporary files; Steam → Properties → Installed Files → Verify integrity)."
+      - "Update the GPU driver to the latest WHQL (NVIDIA / AMD website, not Windows Update)."
+      - "Unsubscribe from any OLD versions of TOR (e.g. Core, RoR, Music) in Steam Workshop and delete leftover folders in Modules/. Re-subscribe to the current ones only."
+      - "Lower in-game Texture Quality to Medium before launching 'Build Shader Cache' the next time — TOR documents 32+ GB RAM peaks for High textures."
+      - "Reboot once before relaunching so the page file is reset."
+      - "Patience: 'Build Shader Cache' on TOR takes 10–50 minutes. Don't close the game, don't open Chrome / Discord during compilation."
+    ru:
+      - "Crash Doctor → Настройка системы → «Очистить кэш шейдеров Bannerlord» (удаляет ОБА: game\Shaders\D3D11\compressed_shaders_cache.sack И C:\ProgramData\Mount and Blade II Bannerlord\Shaders)."
+      - "Crash Doctor → Настройка системы → если появилась карточка про engine_config — применить (поднимает terrain_quality до 2 — обязательно, ниже даёт ровно этот краш на TOR)."
+      - "Освободить минимум 50 ГБ на C: (Очистка диска → временные файлы; Steam → Свойства → Установленные файлы → Проверить целостность)."
+      - "Обновить драйвер GPU до последней WHQL (с сайта NVIDIA / AMD, не через Windows Update)."
+      - "Отписаться от СТАРЫХ версий TOR (Core, RoR, Music) в Steam Workshop и удалить оставшиеся папки в Modules/. Подписаться только на актуальные."
+      - "В игре понизить Texture Quality до Medium перед следующим «Build Shader Cache» — TOR документирует пики 32+ ГБ ОЗУ на High."
+      - "Перезагрузить ПК один раз перед перезапуском, чтобы page file сбросился."
+      - "Терпение: «Build Shader Cache» в TOR идёт 10–50 минут. Не закрывай игру, не открывай Chrome / Discord на время компиляции."
+  match:
+    any:
+      - log_line:
+          contains: "out of memory during compilation"
+      - log_line:
+          contains: "pdb append failed"
+      - log_line:
+          contains: "debug info append failed"

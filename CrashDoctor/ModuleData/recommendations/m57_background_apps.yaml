@@ -1,0 +1,27 @@
+- id: m57_background_apps
+  title:
+    en: "Close known-problematic background apps"
+    ru: "Закрыть проблемные фоновые приложения"
+  description:
+    en: |
+      Some popular utilities hook into D3D11 / DXGI to draw overlays, capture frames, or sync
+      RGB lighting with game state. They are documented to corrupt Bannerlord's shader state
+      or trigger DXGI device-removed crashes. Crash Doctor lists every running offender from
+      a curated list — kill them in Task Manager before launching.
+    ru: |
+      Некоторые популярные утилиты перехватывают D3D11 / DXGI чтобы рисовать оверлеи,
+      записывать кадры или синхронизировать RGB-подсветку с игрой. Документировано как
+      ломатели состояния шейдеров Bannerlord и триггеры DXGI device-removed. Crash Doctor
+      перечисляет всех запущенных нарушителей из проверенного списка — убей их в
+      Диспетчере задач перед запуском.
+  details:
+    en:
+      - "Apply opens Task Manager. Crash Doctor doesn't kill processes automatically — some are part of audio/RGB drivers."
+      - "Killed processes can be restarted from Start Menu after Bannerlord exits."
+      - "List includes RTSS, MSI Afterburner OSD, Discord overlay, Nahimic, SignalRGB, iCUE, OBS Game Capture, XSplit."
+      - "After killing — re-scan Crash Doctor."
+    ru:
+      - "«Применить» откроет Диспетчер задач. Crash Doctor не убивает процессы сам — некоторые часть аудио/RGB-драйверов."
+      - "Убитые процессы можно перезапустить из меню «Пуск» после выхода из Bannerlord."
+      - "Список: RTSS, MSI Afterburner OSD, оверлей Discord, Nahimic, SignalRGB, iCUE, OBS Game Capture, XSplit."
+      - "После убийства — пересканируй Crash Doctor."
