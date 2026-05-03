@@ -7,6 +7,27 @@
 
 ---
 
+## v1.3.11 — Translation completeness patch (2026-05-03)
+
+Hotfix накопившихся переводов сразу после v1.3.10:
+
+- **Опечатка в RU recommendations**: в `m33_engine_config.yaml:50` была неловкая
+  смесь латиницы и кириллицы — `resуверный backup`. Должно быть `резервная копия`.
+  Исправлено.
+- **17 английских error messages теперь имеют RU-пары.** Везде где код ловил
+  `Exception ex` и возвращал `ApplyResult.FailLocalized(ex.Message, "Внутренняя
+  ошибка: " + ex.Message)`, английская сторона показывала голый `ex.Message`
+  без префикса, а русская — с «Внутренняя ошибка:». Симметризовано на
+  `"Internal error: " + ex.Message`.
+- **13 orphan `ApplyResult.Fail()` в M14 / M21 / M33 / M35 / M37** заменены на
+  `ApplyResult.FailLocalized(en, ru)`. Раньше:
+  - M14 / M21 / M37 Rollback (`"is not reversible from Crash Doctor"`)
+  - M33 Apply / Rollback validation messages
+  - M35 Apply / Rollback validation messages
+  Теперь у каждого failure-message есть русская пара.
+
+Никаких функциональных изменений — только переводы. Билд / тесты без регрессий.
+
 ## v1.3.10 — More crash patterns + late-game health + reliability fixes (2026-05-03)
 
 Накопительный релиз поверх v1.3.2. 18 новых правил, 2 новых Tune-Up модуля, переработанная

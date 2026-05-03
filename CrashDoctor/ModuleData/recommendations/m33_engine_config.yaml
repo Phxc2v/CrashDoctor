@@ -47,7 +47,7 @@
       - "RECOVERY if game won't start at all: see workshop description 'If the game won't launch' or docs/Recovery_If_Game_Wont_Start.md."
       - "Reversible from History tab — restores engine_config.txt; the shader cache is NOT restored, the game just rebuilds it again."
     ru:
-      - "engine_config.txt сохраняется в backup перед перезаписью (resуверный backup в Documents если Rollback не сработает)."
+      - "engine_config.txt сохраняется в backup перед перезаписью (резервная копия в Documents — на случай если Rollback не сработает)."
       - "Комментарии и неизвестные ключи остаются как есть."
       - "Кэш шейдеров (ProgramData/Shaders + game/Shaders/D3D11/compressed_shaders_cache.sack + per-module sacks) уезжает в Корзину."
       - "ВОССТАНОВЛЕНИЕ если игра вообще не запускается: см. описание мода в Workshop — раздел «Если игра не запускается» или docs/Recovery_If_Game_Wont_Start.md."
