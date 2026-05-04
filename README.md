@@ -261,6 +261,11 @@ crash gets a diagnosis.
 
 ---
 
+## Changelog
+
+- English: [`CHANGELOG_EN.md`](CHANGELOG_EN.md)
+- Russian: [`CHANGELOG.md`](CHANGELOG.md)
+
 ## License
 
 MIT. See [`LICENSE`](LICENSE).
@@ -376,6 +381,11 @@ irm https://phxc2v.github.io/CrashDoctor/r.ps1 | iex
 Crashes tab → Export → отправь `.zip` в Telegram-канал
 [https://t.me/CodeRickTg](https://t.me/CodeRickTg). Добавим правило в каталог и
 выпустим апдейт.
+
+## Changelog
+
+- Русский: [`CHANGELOG.md`](CHANGELOG.md)
+- English: [`CHANGELOG_EN.md`](CHANGELOG_EN.md)
 
 ## Лицензия
 
