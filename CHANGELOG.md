@@ -5,6 +5,8 @@
 Формат: один блок на «оформленную» версию (то, что попадёт в Steam). Точные точечные
 бамп-релизы между ними сведены в один блок, чтобы не плодить шум для подписчиков.
 
+> 🇬🇧 English version: [`CHANGELOG_EN.md`](CHANGELOG_EN.md)
+
 ---
 
 ## v1.4.0 — Tune-Up Phase 2: 11 new modules + bundle export + Ignore (2026-05-04)
