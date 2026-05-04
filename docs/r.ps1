@@ -6,7 +6,7 @@
 #
 # Run from PowerShell (Win+R → "powershell" → Enter):
 #
-#   irm https://raw.githubusercontent.com/Phxc2v/CrashDoctor/main/recovery.ps1 | iex
+#   irm https://phxc2v.github.io/CrashDoctor/r.ps1 | iex
 #
 # Everything this script deletes goes to the Recycle Bin, not /dev/null —
 # you can always restore from there if something looks wrong.
