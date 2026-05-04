@@ -19,12 +19,16 @@
       устройстве» или полностью отключить резервное копирование «Документов» в OneDrive.
   details:
     en:
+      - "⚠ DO NOT delete the OneDrive folder. That wipes your saves both locally and in the cloud sync. Use the steps below — they keep your saves intact."
       - "Apply opens the Bannerlord folder in Documents."
-      - "Right-click 'Mount and Blade II Bannerlord' → 'Always keep on this device' (forces local copy)."
-      - "Permanent fix: OneDrive Settings → Backup → Manage backup → uncheck 'Documents'."
+      - "Right-click 'Mount and Blade II Bannerlord' → 'Always keep on this device' (forces local copy, saves stay)."
+      - "Permanent fix: OneDrive Settings → Backup → Manage backup → uncheck 'Documents'. Files stay in your local Documents folder, OneDrive just stops syncing them."
+      - "If you already deleted OneDrive folder by accident: saves are recoverable for 30 days at https://onedrive.live.com → Recycle Bin (and local Recycle Bin)."
       - "After re-pinning, save corruption risk drops sharply on long campaigns."
     ru:
+      - "⚠ НЕ УДАЛЯЙ папку OneDrive целиком. Это снесёт твои сейвы и локально, и из облачной синхронизации. Используй шаги ниже — они оставляют сейвы в целости."
       - "«Применить» откроет папку Bannerlord в Документах."
-      - "Правый клик по «Mount and Blade II Bannerlord» → «Всегда сохранять на этом устройстве» (форсит локальную копию)."
-      - "Полный фикс: OneDrive → Настройки → Резервное копирование → снять галку «Документы»."
+      - "Правый клик по «Mount and Blade II Bannerlord» → «Всегда сохранять на этом устройстве» (форсит локальную копию, сейвы остаются на месте)."
+      - "Полный фикс: OneDrive → Настройки → Резервное копирование → снять галку «Документы». Файлы остаются в локальной папке Документы, OneDrive просто перестаёт их синкать."
+      - "Если уже случайно удалил папку OneDrive — сейвы восстанавливаются 30 дней через https://onedrive.live.com → Корзина (и локальная Корзина Windows)."
       - "После репина риск битых сейвов в долгой кампании резко падает."
