@@ -1,0 +1,29 @@
+{
+  "_comment": "Known-bad GPU driver versions for Bannerlord+TOR. Match by vendor (substring of GPU.Name) and exact driver version (Win32_VideoController.DriverVersion). When a row matches, surface the card with severity='warning' and the human-readable reason. Update this list when new bad drivers come out — bug report channel: t.me/CodeRickTg.",
+  "_source_format": {
+    "vendor_match": "Substring case-insensitive matched against GPU.Name. Use 'NVIDIA' / 'AMD' / 'Intel'.",
+    "driver_version": "Exact match against Win32_VideoController.DriverVersion (e.g. '31.0.15.5222'). For range matches use a list of versions.",
+    "reason_en": "One-line human reason. Why this driver is bad.",
+    "reason_ru": "Same in Russian.",
+    "fix_en": "Recommended action ('upgrade to N+' / 'roll back to N-')",
+    "fix_ru": "Same in Russian."
+  },
+  "drivers": [
+    {
+      "vendor_match": "NVIDIA",
+      "driver_version": "31.0.15.5222",
+      "reason_en": "NVIDIA Game Ready 526.86 — known TDR / DXGI_ERROR_DEVICE_HUNG cascade in TOR shader compilation.",
+      "reason_ru": "NVIDIA Game Ready 526.86 — известная серия TDR / DXGI_ERROR_DEVICE_HUNG при компиляции шейдеров TOR.",
+      "fix_en": "Upgrade to 528.02 or newer via NVIDIA app / GeForce Experience.",
+      "fix_ru": "Обнови до 528.02 или новее через NVIDIA app / GeForce Experience."
+    },
+    {
+      "vendor_match": "AMD",
+      "driver_version": "31.0.21001.45007",
+      "reason_en": "AMD Adrenalin 24.10.1 — reported CreateShaderResourceView failures during TOR siege battles.",
+      "reason_ru": "AMD Adrenalin 24.10.1 — отчёты про CreateShaderResourceView fail в осадных битвах TOR.",
+      "fix_en": "Roll back to 24.9.1 via Adrenalin Settings → Updates → Previous, or upgrade to 24.10.2+.",
+      "fix_ru": "Откатись на 24.9.1 через Adrenalin → Настройки → Обновления → Предыдущая, или обнови до 24.10.2+."
+    }
+  ]
+}

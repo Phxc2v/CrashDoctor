@@ -1,0 +1,9 @@
+{
+  "_comment": "SHA-256 known-good hashes for files we care about. Used by M4.2 to detect tampering, partial downloads, or AV-quarantined corruption. Empty by default — populate when ready by running tools/update_integrity_manifest.ps1 against a clean reference install. Match by relative path under <module_root>.",
+  "_format": {
+    "module": "Module Id (e.g. 'TOR_Core', 'Bannerlord.Harmony', 'CrashDoctor').",
+    "version": "Optional — only check this entry when SubModule.xml Version matches.",
+    "files": "Map of relative-path-from-module-root → expected SHA-256 hex (lowercase)."
+  },
+  "modules": []
+}

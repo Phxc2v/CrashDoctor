@@ -1,0 +1,43 @@
+- id: m42_integrity_check
+  title:
+    en: "SHA-256 integrity check against shipped manifest"
+    ru: "Проверка целостности SHA-256 по shipped-манифесту"
+  description:
+    en: |
+      Catches: partial Workshop downloads (Steam said "subscribed" but a file is
+      shorter than expected), AV-quarantined DLLs that came back zero-byte,
+      manual user edits to mod files, and tampering / "premium fix" malware DLLs
+      swapping on top of the legit mod.
+
+      The manifest lives in `ModuleData/integrity_manifest.json`. By default it
+      is empty — populated only when we have a verified-clean reference install
+      to hash against. Until then, the card stays NotApplicable and hidden, so
+      no false positives on a fresh install.
+
+      Apply doesn't touch files; it just opens the Steam Workshop page so the
+      user can re-subscribe to the affected mod (canonical fix for Workshop
+      corruption).
+    ru: |
+      Ловит: частичные докачки Workshop'а (Steam говорит «подписан», но файл
+      короче ожидаемого), AV-карантин нашей DLL (которая вернулась 0 байт),
+      ручные правки мод-файлов пользователем, а также подмену файлов
+      малварью / «premium fix»-DLL, поверх легитимного мода.
+
+      Манифест — в `ModuleData/integrity_manifest.json`. По умолчанию пуст —
+      заполняется только когда есть верифицированная чистая reference-установка
+      для хэшей. До тех пор карточка остаётся NotApplicable и скрыта,
+      без false positive на свежей установке.
+
+      «Применить» файлы не трогает; открывает страницу Steam Workshop чтобы
+      переподписаться на затронутый мод (каноничный фикс corruption Workshop'а).
+  details:
+    en:
+      - "Read-only check. Hash algorithm: SHA-256."
+      - "Empty manifest = NotApplicable (card hidden)."
+      - "Apply opens steam://url/CommunityFilePage/261550."
+      - "Not reversible (read-only)."
+    ru:
+      - "Только проверка. Алгоритм: SHA-256."
+      - "Пустой манифест = NotApplicable (карточка скрыта)."
+      - "«Применить» откроет steam://url/CommunityFilePage/261550."
+      - "Откат не предусмотрен (read-only)."

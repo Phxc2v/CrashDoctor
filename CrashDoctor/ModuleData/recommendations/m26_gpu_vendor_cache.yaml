@@ -1,0 +1,38 @@
+- id: m26_gpu_vendor_cache
+  title:
+    en: "Clear GPU vendor shader cache (NVIDIA / AMD / Intel)"
+    ru: "Очистить vendor-кэш шейдеров (NVIDIA / AMD / Intel)"
+  description:
+    en: |
+      Complements M2.1 (which cleans Bannerlord's own shader cache). This module clears
+      the GPU driver's OWN shader cache, which lives in `%LOCALAPPDATA%\NVIDIA\DXCache`
+      (NVIDIA), `%LOCALAPPDATA%\AMD\DxCache` and `\AMD\DXC` (AMD), or
+      `%LOCALAPPDATA%\Intel\ShaderCache` (Intel).
+
+      After a driver update or a major GPU swap these caches go stale and cause
+      CreateShaderResourceView failures and DXGI_ERROR_DEVICE_REMOVED — symptoms that
+      look identical to a Bannerlord-cache problem but ARE NOT fixed by clearing
+      Bannerlord's side. If M2.1 didn't help and you still see device-removed crashes,
+      try this one too.
+    ru: |
+      Дополняет M2.1 (тот чистит собственный кэш Bannerlord). Этот модуль чистит кэш шейдеров
+      ДРАЙВЕРА GPU — лежит в `%LOCALAPPDATA%\NVIDIA\DXCache` (NVIDIA),
+      `%LOCALAPPDATA%\AMD\DxCache` и `\AMD\DXC` (AMD), или
+      `%LOCALAPPDATA%\Intel\ShaderCache` (Intel).
+
+      После апдейта драйвера или замены GPU эти кэши деградируют и вызывают
+      CreateShaderResourceView fail и DXGI_ERROR_DEVICE_REMOVED — симптомы выглядят
+      как проблема с кэшем Bannerlord, но очисткой только Bannerlord-кэша НЕ лечатся.
+      Если M2.1 не помог и продолжают приходить device-removed крэши — попробуй
+      и этот тоже.
+  details:
+    en:
+      - "Threshold for 'NeedsAction': vendor-cache symptom strings in recent crash logs OR cache > 2 GB."
+      - "Files go to the Recycle Bin and can be restored."
+      - "Affects ALL DirectX games on the system (not just Bannerlord) — they'll spend a few extra seconds on next launch rebuilding their vendor caches. Acceptable trade-off."
+      - "Not reversible from Crash Doctor."
+    ru:
+      - "Порог для 'NeedsAction': симптом-строки vendor-кэша в свежих крэш-логах ИЛИ объём > 2 ГБ."
+      - "Файлы уезжают в Корзину, можно восстановить."
+      - "Затрагивает ВСЕ DirectX-игры (не только Bannerlord) — на следующем запуске они потратят несколько лишних секунд на rebuild vendor-кэшей. Допустимый компромисс."
+      - "Откат из Crash Doctor не предусмотрен."

@@ -1,0 +1,38 @@
+- id: m23_gpu_info
+  title:
+    en: "GPU info — model, accurate VRAM, driver version"
+    ru: "Информация о GPU — модель, точный VRAM, версия драйвера"
+  description:
+    en: |
+      Read-only display. Pulls live data from `Win32_VideoController` (name, driver
+      version, driver date) and the device class registry key for accurate VRAM.
+
+      WMI's `AdapterRAM` field is uint32 — saturates at 4 GB on any modern card,
+      so we go straight to the registry's `HardwareInformation.qwMemorySize`
+      (REG_QWORD, 64-bit). That matches what NVIDIA / AMD / Intel control panels
+      report. No DXGI / Vortice dependency.
+
+      Use this to grab "what GPU + driver + VRAM you actually have" when reporting
+      a bug. Crash Doctor cannot upgrade hardware.
+    ru: |
+      Только информация. Берёт живые данные из `Win32_VideoController` (имя,
+      версия драйвера, дата драйвера) и реестра — для точного VRAM.
+
+      Поле `AdapterRAM` в WMI — uint32, обрезает на 4 ГБ на любой современной
+      карте, поэтому идём напрямую в реестр в `HardwareInformation.qwMemorySize`
+      (REG_QWORD, 64-бит). Совпадает с тем что показывают панели NVIDIA / AMD /
+      Intel. Без зависимости на DXGI / Vortice.
+
+      Используй карточку чтобы взять «какая у меня GPU + драйвер + VRAM» для
+      баг-репорта. Crash Doctor железо не апгрейдит.
+  details:
+    en:
+      - "Source 1: Win32_VideoController WMI."
+      - "Source 2: HKLM\\SYSTEM\\CurrentControlSet\\Control\\Class\\{4d36e968-...}\\NNNN\\HardwareInformation.qwMemorySize."
+      - "Read-only — Apply button does nothing destructive."
+      - "Not reversible (read-only)."
+    ru:
+      - "Источник 1: WMI Win32_VideoController."
+      - "Источник 2: HKLM\\SYSTEM\\CurrentControlSet\\Control\\Class\\{4d36e968-...}\\NNNN\\HardwareInformation.qwMemorySize."
+      - "Только просмотр — «Применить» не делает ничего деструктивного."
+      - "Откат не предусмотрен (read-only)."

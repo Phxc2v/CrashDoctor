@@ -1,0 +1,40 @@
+- id: m24_bad_driver
+  title:
+    en: "Known-bad GPU driver detection"
+    ru: "Детект GPU-драйвера из known-bad списка"
+  description:
+    en: |
+      Looks up your live driver version against a shipped JSON manifest of
+      known-bad versions reported by the community on the Telegram channel.
+      Surfaces the exact reason (e.g. "TDR cascade in TOR shader compile") and
+      the recommended action (upgrade to N+ / roll back to N-).
+
+      Crash Doctor never installs or rolls back drivers — too risky and vendor-
+      specific. Apply opens the relevant vendor's driver page. You handle the
+      install yourself.
+
+      The manifest lives in ModuleData/bad_drivers.json and is data-edited.
+      Spot a new bad driver? Drop a note in t.me/CodeRickTg and we'll add a row.
+    ru: |
+      Сверяет твою живую версию драйвера со списком known-bad версий из JSON-
+      манифеста, обновляемого сообществом через Telegram-канал. Показывает
+      точную причину (например, "TDR-каскад при компиляции шейдеров TOR") и
+      рекомендуемое действие (обновить до N+ / откатить на N-).
+
+      Crash Doctor сам драйверы не ставит и не откатывает — слишком рискованно
+      и vendor-specific. «Применить» откроет страницу драйверов нужного
+      vendor'а. Установку делаешь сам.
+
+      Манифест — в ModuleData/bad_drivers.json, редактируется данными. Нашёл
+      новый плохой драйвер? Напиши в t.me/CodeRickTg, добавим запись.
+  details:
+    en:
+      - "Source: ModuleData/bad_drivers.json (manifest)."
+      - "Match: vendor substring in GPU name + exact driver-version string."
+      - "Apply opens vendor driver page (NVIDIA / AMD / Intel)."
+      - "Not reversible — Apply only opens URLs."
+    ru:
+      - "Источник: ModuleData/bad_drivers.json (манифест)."
+      - "Сравнение: vendor-подстрока в имени GPU + точная строка версии драйвера."
+      - "«Применить» откроет страницу драйверов vendor'а (NVIDIA / AMD / Intel)."
+      - "Откат не предусмотрен — кнопка только открывает URL."

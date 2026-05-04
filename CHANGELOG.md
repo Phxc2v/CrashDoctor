@@ -7,6 +7,114 @@
 
 ---
 
+## v1.4.0 — Tune-Up Phase 2: 11 new modules + bundle export + Ignore (2026-05-04)
+
+**Новые модули ремедиации (10):** `M1.2 RAM check`, `M1.5 TEMP cleanup`, `M2.3 GPU info`,
+`M2.4 Bad driver`, `M2.6 GPU vendor cache`, `M3.6 Dependency graph`, `M4.2 SHA-256
+integrity`, `M5.2 VC++ Redistributable`, `M5.3 .NET Runtime`, `M5.6 Pending reboot`,
+`M6.1 DirectX runtime`, `M6.2 HwSchMode`. Покрытие категорий 1–6 из ТЗ-2 закрыто
+на ≈80%.
+
+**Crash bundle export.** Кнопка Export теперь создаёт ZIP с полной папкой краша
+(crash_tags + rgl_log + module_list + watchdog + minidump до 100 МБ) + наш
+`diagnosis.txt` + двуязычный `READ_ME_FIRST.txt` с инструкцией куда отправить.
+Имя файла говорит само за себя: `crashdoctor_unrecognised_<ts>.zip` если краш
+не распознан, `crashdoctor_bundle_<ts>.zip` если да. Старый text-only export
+оставался бесполезным когда диагнозов 0 — теперь поддержке отправляется всё
+сырьё.
+
+**Кнопка «Игнорировать» на Tune-Up карточках.** Persistent ignore-list в
+`state/ignored_recommendations.json`, ключ — fingerprint детекта (severity +
+summary + sorted evidence lines). При изменении состояния fingerprint меняется,
+карточка возвращается на экран. Apply success стирает ignores для модуля.
+
+**Парсер модулей выдерживает ранние крэши.** `CrashCollector.BuildModules` теперь
+fallback'ится на парсинг `[Runtime][Arguments][..._MODULES_*A*B*..._MODULES_]` если
+секция `Used Modules` отсутствует (Bannerlord не успевает её записать когда падает
+на module init). Без fallback все правила с `module_list:` молча промахивались на
+этих крэшах — отсюда «не распознан» на конфликтах вроде NavalDLC + TOR_Core.
+
+**iGPU detection через rgl_log.** Новое правило `hw.igpu_actually_selected` матчит
+строку `Selected graphics adapter: [N] <name>` — это authoritative источник, а не
+порядок устройств в DxDiag. На машинах где DxDiag перечисляет iGPU как
+`Display Devices 0`, но игра реально рендерится на дискретке, ложно-позитива
+больше не будет.
+
+**Whitelist карт где DxDiag врёт VRAM.** RTX 4070+/4080/4090, RTX 3080 Ti/3090,
+RX 7700+/7800+/7900, RX 9070, Arc A770/B580 — все имеют ≥12 ГБ физически, но
+DxDiag иногда репортит 3-4 ГБ из-за uint32 saturation в `Win32_VideoController.
+AdapterRAM`. `SystemMatcher.MatchGpuField('vram_mb')` для `lt`/`lte` теперь
+скипает эти карты (false-positive `hw.gpu_vram_likely_low` на реальном RTX 4080
+Laptop был как раз об этом).
+
+**Новые crash-rule'ы (8):**
+- `tor.naval_dlc_conflict` — Naval DLC (War Sails) несовместим с TOR
+- `assets.tpac_corrupted_workshop_mod` — `.tpac` пакет повреждён, evidence
+  показывает Workshop ID мода
+- `assets.tpac_oversized_pool` — pack > 256 МБ memory pool limit
+- `assets.file_read_failed_verify_install` — generic IO fail
+- `game.conversation_nre_executecontinue` — NRE в диалоге, типичный
+  CharacterReload/BannerCraft конфликт
+- `engine.team_index_invalid_burst` — combat-mod team registration storm
+- `game.integrity_check_failed` — `Game Integrity is Achieved = False`
+- `mods.heavy_stack_with_tor` — TOR + 5+ unofficial мода (через новый
+  `module_list: { count_above: "5", excluding_official: "true" }` matcher)
+
+**`UnhandledExceptionHandler`.** Регистрируется на `OnSubModuleLoad` ДО любых
+наших операций. Слушает `AppDomain.UnhandledException` + `FirstChanceException`,
+пишет managed stack в `crashdoctor.log` без swallow'инга. Throttle на 200
+first-chance per session, фильтр `TaleWorlds.*` шумных catches.
+
+**MSBuild target `SyncSubModuleXmlVersion`.** `<Version>` в csproj автоматически
+синкается в `<Version value="vX.Y.Z" />` `SubModule.xml` через `BeforeTargets="Build"`.
+Memory rule `feedback_version_bump_two_places` теперь автоматизирована.
+
+**UI / UX фиксы.**
+- Apply скрывается на informational модулях (M1.2 RAM, M2.3 GPU info) — нечего
+  применять, кнопка убирает confusion
+- UAC-required + URL-only модули запускаются sync, без BusyTracker overlay —
+  раньше overlay застревал, потому что UAC dialog / браузер отнимал фокус и
+  `OnFrameTick` приостанавливался
+- Описание crash-карточки имеет фикс высоту, не наезжает на Fix steps
+- M2.6 GPU vendor cache использует прямой `File.Delete` — VB.FileSystem ранее
+  показывала Windows access-denied dialog'и на драйвер-locked файлах
+- M1.2 RAM теперь читает WMI Win32_PhysicalMemory.Capacity первой — точное
+  число DIMM-планок (16384 MB), не reduced-by-firmware-reservation значение
+
+**Recovery doc bilingual split.** `docs/Recovery_If_Game_Wont_Start_EN.md` +
+`_RU.md`. README.md ссылается на нужную версию по языку секции.
+
+**Public README fix.** Битая ссылка `docs/Recovery_If_Game_Wont_Start.md` на
+public github перезалита на `docs/RECOVERY.md` (commit `077d8bf..d01e4bd`).
+
+---
+
+## v1.3.12 — .tpac async I/O fault detection (2026-05-04)
+
+Новое правило `assets.tpac_async_read_burst` — детектит классическую сигнатуру
+ошибки асинхронного чтения сжатых ассетов Bannerlord. Когда движок не может
+прочитать `.tpac` (битый файл / антивирус блокирует / I/O ошибка диска), он
+спамит warning `Trying to make partial read on compressed asset data` десятки-
+сотни раз перед managed-исключением CLR (`0xE0434352`). У реальных клиентов
+с TOR + большими Workshop-модами этот паттерн встречается регулярно.
+
+Триггер — ≥ 100 вхождений partial-read warning в логе. Severity: critical,
+confidence: medium (мы знаем сигнатуру, но первопричин 4 — Verify integrity,
+переподписка на Workshop, антивирус-исключение, `chkdsk`).
+
+**Bonus fix в матчере:** `LogLineMatcher` теперь корректно понимает дедуп-
+суффикс `(×N)`, который вешает `LogNormalizer.DedupConsecutive` на серии
+одинаковых строк. Без этого `count_at_least` видел 1 hit вместо N для любого
+паттерна с одинаковым текстом — потенциально шатало `gpu.shader_cache_corrupt`
+и любые будущие burst-правила.
+
+Также `Trying to make partial read on compressed asset` и `Unable to open
+file for asynchronous read` добавлены в `LogNormalizer.SignificantTokens` —
+теперь эти строки попадают в `SignificantLogLines`, не только в Last200
+fallback.
+
+---
+
 ## v1.3.11 — Translation completeness patch (2026-05-03)
 
 Hotfix накопившихся переводов сразу после v1.3.10:

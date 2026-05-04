@@ -1,0 +1,194 @@
+- id: mission.deployment_formation_clear_crash
+  category: mission
+  severity: warning
+  confidence: medium
+  evidence_source: "Real client log 2026-05-04 (Гевор) — log truncates immediately after 'Selected formations being cleared' during pre-battle troop transfer."
+  requires_sources: [log_line]
+  title:
+    en: "Crash during pre-battle deployment phase (formation troop transfer)"
+    ru: "Краш в фазе расстановки перед боем (перенос юнитов между формациями)"
+  description:
+    en: |
+      Real-world signature from a client crash: log ends right after a troop-transfer
+      between formations + 'Selected formations being cleared' line, mid-battle in
+      the deployment screen. The next line never gets written — the game dies inside
+      Mission's formation/troop-roster manipulation. Strongly correlated with mods
+      that patch deployment / troop-pool logic (RestoreLordTroops, RBM, custom
+      faction mods that override DeploymentMissionController).
+
+      Without a managed stack trace (BetterExceptionWindow / BLSE) we can't name
+      the patcher. Install BLSE if this repeats — see m41 module.
+    ru: |
+      Сигнатура с реального клиентского краша: лог обрывается сразу после переноса
+      войск между формациями + строки 'Selected formations being cleared', в
+      середине фазы расстановки. Следующая строка не успевает записаться — игра
+      умирает внутри манипуляции formation/troop-roster в Mission. Сильно коррелирует
+      с модами, которые патчат deployment / troop-pool логику (RestoreLordTroops,
+      RBM, кастомные мод-фракции с override DeploymentMissionController).
+
+      Без managed-стека (BetterExceptionWindow / BLSE) патчер не назовём.
+      Поставь BLSE на следующую сессию — см. модуль m41.
+  fix:
+    en:
+      - "Try a battle WITHOUT moving troops between formations in deployment — if it still crashes, the cause is elsewhere; if it doesn't, the trigger is confirmed."
+      - "Disable mods that patch troop pool / deployment one at a time: RestoreLordTroops, RBM, custom factions. Re-enable in groups to find the culprit."
+      - "Steam → Verify integrity (catches partial Bannerlord install if a deployment asset is missing)."
+      - "Install BLSE + BetterExceptionWindow before next session — captures managed stack with patcher name."
+      - "If campaign-wide: send the crash_report.html (after BLSE is installed) to t.me/CodeRickTg."
+    ru:
+      - "Попробуй бой БЕЗ перемещения войск между формациями в расстановке — если всё равно крашится, причина в другом; если нет — триггер подтверждён."
+      - "Отключай по одному моды, патчащие troop pool / deployment: RestoreLordTroops, RBM, кастомные фракции. Включай по группам — ищи виновника."
+      - "Steam → Проверить целостность (ловит частичный install если отсутствует deployment-ассет)."
+      - "Поставь BLSE + BetterExceptionWindow к следующей сессии — поймает managed-стек с именем патчера."
+      - "Если повторяется — пришли crash_report.html (после установки BLSE) в t.me/CodeRickTg."
+  match:
+    all:
+      - log_line:
+          contains: "transfers"
+          regex: "transfers \\d+ units? to"
+      - log_line:
+          contains: "Selected formations being cleared"
+
+- id: mission.inventory_screen_crash
+  category: mission
+  severity: warning
+  confidence: medium
+  evidence_source: "TOR-bug-corpus.md TOR-014 — multiple Steam Community comments. Signature: rgl_log truncates on inventory-screen open."
+  requires_sources: [log_line]
+  title:
+    en: "Crash on inventory screen open (equipment-mod conflict)"
+    ru: "Краш при открытии инвентаря (конфликт equipment-мода)"
+  description:
+    en: |
+      Click on the inventory tab → game dies. Signature in rgl_log: last entries
+      show GauntletInventoryScreen.HandleActivate / HandleResume followed by no
+      further content (game crashed during inventory population). On TOR
+      installs the typical cause is an equipment mod (OpenSourceArmory,
+      ExpandedArmoury, Distinguished Service) that breaks TOR's equipment IDs.
+
+      Vanilla can also hit this if a mod added an item to a hero's equipment that
+      no longer exists (mod uninstalled mid-save).
+    ru: |
+      Клик на вкладку инвентарь → игра падает. Сигнатура в rgl_log: последние
+      записи — GauntletInventoryScreen.HandleActivate / HandleResume, после
+      них пустота (игра упала во время заполнения инвентаря). На TOR-установках
+      типовая причина — equipment-мод (OpenSourceArmory, ExpandedArmoury,
+      Distinguished Service), ломающий equipment ID'ы TOR.
+
+      Ванилла тоже может упасть если мод добавил герою вещь, которой теперь
+      нет (мод удалили посреди сейва).
+  fix:
+    en:
+      - "Disable equipment mods (OpenSourceArmory, ExpandedArmoury, Distinguished Service) and try again."
+      - "If using TOR + Distinguished Service — install the TOR DS Compat Patch on Nexus."
+      - "If problem persists vanilla: load an earlier save before the equipment mod was added/removed."
+      - "Steam → Verify integrity to confirm no missing equipment XMLs."
+    ru:
+      - "Отключи equipment-моды (OpenSourceArmory, ExpandedArmoury, Distinguished Service) и попробуй снова."
+      - "Если стоит TOR + Distinguished Service — поставь TOR DS Compat Patch с Nexus."
+      - "Если проблема осталась на чистой ванилле: загрузи более ранний сейв ДО добавления/удаления equipment-мода."
+      - "Steam → Проверить целостность — убедиться что XML с экипировкой не пропали."
+  match:
+    all:
+      - log_line:
+          contains: "GauntletInventoryScreen"
+      - any:
+          - log_line:
+              contains: "EquipmentElement"
+          - log_line:
+              contains: "Equipment.GetEquipmentFromSlot"
+          - log_line:
+              contains: "TransferItem"
+
+- id: mission.loot_screen_crash
+  category: mission
+  severity: warning
+  confidence: low
+  evidence_source: "TOR-bug-corpus.md TOR-015 — Steam Community comments. Confidence low because signature is weak (rgl_log just ends after 'battle won')."
+  requires_sources: [log_line]
+  title:
+    en: "Crash on loot screen after battle"
+    ru: "Краш на экране лута после боя"
+  description:
+    en: |
+      Battle ends → loot screen → crash. Often a NullReference inside
+      MissionAfterMath / LootCampaignBehavior, triggered by a third-party
+      loot-modifying mod (Loot Anywhere, Loot Filter) that patched logic
+      after the underlying class signature changed.
+
+      Confidence is low — the rgl_log signature is just 'battle won' followed
+      by silence. Without a crash_report.html from BLSE we can't pin it.
+    ru: |
+      Бой кончился → экран лута → краш. Часто это NullReference в
+      MissionAfterMath / LootCampaignBehavior, спровоцированный сторонним
+      loot-модом (Loot Anywhere, Loot Filter), который запатчил логику —
+      и логика поменялась под ним.
+
+      Confidence низкий — сигнатура в rgl_log только 'battle won' и тишина.
+      Без crash_report.html от BLSE точно не диагностируем.
+  fix:
+    en:
+      - "Disable loot-modifying mods (Loot Anywhere, Loot Filter, custom drop-rate mods)."
+      - "Reload the pre-battle save and try the same battle again — if reproducible, mod conflict; if not, race condition (won't repeat reliably)."
+      - "Install BLSE + BetterExceptionWindow for managed stack on next occurrence."
+    ru:
+      - "Отключи loot-моды (Loot Anywhere, Loot Filter, кастомные drop-rate моды)."
+      - "Загрузи сейв ДО боя и попробуй тот же бой ещё раз — если воспроизводится, конфликт мода; если нет — race-condition (стабильно не повторится)."
+      - "Поставь BLSE + BetterExceptionWindow — на следующем краше будет managed-стек."
+  match:
+    all:
+      - log_line:
+          contains: "MissionAfterMath"
+      - any:
+          - log_line:
+              contains: "NullReference"
+          - log_line:
+              contains: "LootCampaignBehavior"
+
+- id: mp.steam_session_init_fail
+  category: networking
+  severity: warning
+  confidence: medium
+  evidence_source: "Common Steam multiplayer session init failures — Steam Community discussions."
+  requires_sources: [log_line]
+  title:
+    en: "Steam session init failed — multiplayer / Workshop sync broken"
+    ru: "Не удалось инициировать сессию Steam — multiplayer / Workshop sync сломаны"
+  description:
+    en: |
+      Bannerlord couldn't establish a Steam session. Means: SteamAPI handshake
+      failed, Workshop API didn't respond, or the user's Steam client is offline.
+      Multiplayer entirely unavailable; Workshop-mod auto-update doesn't run;
+      cloud saves don't sync.
+
+      Most common cause is Steam in offline mode (or its login token expired).
+      Less common: Steam process not running, antivirus blocking SteamAPI64.dll,
+      or transient Steam outage (check steamstat.us).
+    ru: |
+      Bannerlord не смог установить сессию Steam. Означает: SteamAPI handshake
+      провалился, Workshop API не ответил, или клиент Steam офлайн. Multiplayer
+      недоступен; авто-обновление Workshop-модов не работает; cloud-сейвы
+      не синхронизируются.
+
+      Самая частая причина — Steam в offline-режиме (или login token истёк).
+      Реже: процесс Steam не запущен, антивирус блокирует SteamAPI64.dll,
+      или временный отказ Steam (проверь steamstat.us).
+  fix:
+    en:
+      - "Restart Steam: full quit from system tray (right-click → Exit), wait 10 seconds, relaunch."
+      - "Steam → click your username → 'Go online' if it shows offline."
+      - "Antivirus exclusion: add SteamAPI64.dll path (typically <Steam>\\steamapps\\common\\Mount & Blade II Bannerlord\\bin\\Win64_Shipping_Client\\)."
+      - "Check Steam status at https://steamstat.us — if 'Steam API' is red, wait it out."
+    ru:
+      - "Перезапусти Steam: полный выход из системного трея (ПКМ → Выход), подожди 10 секунд, запусти заново."
+      - "Steam → клик по имени → 'В сеть' если показывает offline."
+      - "Исключение антивируса: добавь путь к SteamAPI64.dll (обычно <Steam>\\steamapps\\common\\Mount & Blade II Bannerlord\\bin\\Win64_Shipping_Client\\)."
+      - "Проверь статус Steam на https://steamstat.us — если 'Steam API' красный, ждать."
+  match:
+    any:
+      - log_line:
+          contains: "SteamAPI_Init failed"
+      - log_line:
+          contains: "Steam session could not be initialized"
+      - log_line:
+          contains: "SteamAPI returned error"

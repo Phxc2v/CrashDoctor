@@ -1,0 +1,34 @@
+- id: m56_pending_reboot
+  title:
+    en: "Windows has a pending reboot"
+    ru: "Windows ждёт отложенный перезапуск"
+  description:
+    en: |
+      Modded Bannerlord (especially TOR) is hyper-sensitive to half-applied driver
+      updates and pagefile changes. If Windows is sitting on a queued reboot —
+      from a Windows Update, a driver install, or a renamed-on-boot file operation —
+      the affected component is in a half-state. Players say "Crash Doctor said
+      TdrDelay was set to 60s" but it's not actually live yet, and they hit shader
+      OOM crashes on the very next launch.
+
+      Card surfaces only when at least one of three Microsoft-documented reboot
+      signals is present.
+    ru: |
+      Модовый Bannerlord (особенно TOR) гипер-чувствителен к недоприменённым
+      апдейтам драйверов и настройкам pagefile. Если Windows накопил отложенный
+      перезапуск — от Windows Update, установки драйвера, или операции
+      переименования файлов на boot — соответствующий компонент в half-state.
+      Игроки говорят «Crash Doctor сказал TdrDelay = 60s» но настройка ещё не
+      применена, и они ловят shader OOM на следующем запуске.
+
+      Карточка появляется только если есть хотя бы один из трёх Microsoft-
+      документированных признаков отложенного перезапуска.
+  details:
+    en:
+      - "Sources: HKLM Component Based Servicing\\RebootPending, WindowsUpdate\\Auto Update\\RebootRequired, Session Manager\\PendingFileRenameOperations."
+      - "Apply schedules a 60-second reboot via shutdown.exe /r /t 60. Cancel with shutdown /a."
+      - "Read-only detect. Reboot itself is not reversible (well, you can't un-reboot)."
+    ru:
+      - "Источники: HKLM Component Based Servicing\\RebootPending, WindowsUpdate\\Auto Update\\RebootRequired, Session Manager\\PendingFileRenameOperations."
+      - "«Применить» назначает перезапуск через 60 секунд (shutdown.exe /r /t 60). Отмена — shutdown /a."
+      - "Только детект. Сам перезапуск не откатывается (нельзя un-reboot)."

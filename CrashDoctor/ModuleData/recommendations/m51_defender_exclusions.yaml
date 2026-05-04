@@ -1,0 +1,38 @@
+- id: m51_defender_exclusions
+  title:
+    en: "Add Bannerlord folders to Windows Defender exclusions"
+    ru: "Добавить папки Bannerlord в исключения Windows Defender"
+  description:
+    en: |
+      Windows Defender's real-time scan stays on top of every file write. During TOR
+      shader compilation Bannerlord writes 30+ GB of intermediate files in seconds,
+      and Defender's I/O hooking creates contention that the engine logs as «Trying
+      to make partial read on compressed asset data» — a known precursor to async-
+      I/O fault crashes (see assets.tpac_async_read_burst rule).
+
+      Adding the install + Workshop folders to Defender's exclusion list eliminates
+      the contention WITHOUT disabling Defender system-wide. If you have a third-
+      party AV (Kaspersky, ESET, Avast), add the same paths there manually — Defender
+      exclusions don't propagate to other security suites.
+    ru: |
+      Real-time скан Windows Defender'а сидит на каждой записи в файл. При компиляции
+      шейдеров TOR Bannerlord пишет 30+ ГБ промежуточных файлов за секунды, и I/O-хуки
+      Defender'а создают contention, который движок логирует как «Trying to make
+      partial read on compressed asset data» — известный прекурсор крэша async-I/O
+      (см. правило assets.tpac_async_read_burst).
+
+      Добавление папки игры и Workshop'а в exclusion list устраняет contention БЕЗ
+      отключения Defender'а на всю систему. Если стоит сторонний AV (Kaspersky, ESET,
+      Avast) — добавь те же пути там вручную, исключения Defender'а на сторонние
+      продукты не распространяются.
+  details:
+    en:
+      - "Action: `Add-MpPreference -ExclusionPath` for game install + Workshop content folder (261550)."
+      - "Single UAC dialog. Reversible from History tab (`Remove-MpPreference`)."
+      - "Does NOT disable Windows Defender — only excludes those two folders."
+      - "Third-party antivirus is not affected — add the same paths in its UI manually."
+    ru:
+      - "Действие: `Add-MpPreference -ExclusionPath` для папки игры + Workshop content (261550)."
+      - "Один UAC-диалог. Откат из вкладки Журнал (`Remove-MpPreference`)."
+      - "Defender НЕ отключается — только исключаются эти две папки."
+      - "Сторонний AV не затрагивается — добавь те же пути в его UI вручную."

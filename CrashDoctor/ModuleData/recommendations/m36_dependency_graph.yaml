@@ -1,0 +1,42 @@
+- id: m36_dependency_graph
+  title:
+    en: "SubModule.xml dependency graph audit"
+    ru: "Аудит графа зависимостей SubModule.xml"
+  description:
+    en: |
+      Catches the most common mod-config crash — "subscribed to mod X but forgot
+      its dependency Y" — BEFORE the player launches and hits a NullReferenceException
+      5 minutes into the campaign. Walks every SubModule.xml in <game>\Modules\
+      and <workshop>\261550\<id>\, builds the dependency graph, and flags:
+
+      - Missing hard dependency (Mod X needs Y, Y isn't installed). Critical.
+      - Version mismatch (Mod X needs Y >= v1.2.3, installed Y is older). Warning.
+      - Duplicate module Id across game+workshop (Bannerlord picks one at random).
+
+      Optional dependencies (DependedModuleMetadata with optional="true") are
+      respected — missing optionals are silently ignored.
+    ru: |
+      Ловит самый частый mod-config краш — «подписался на мод X, но забыл его
+      зависимость Y» — ДО того как игрок запустится и поймает NullReferenceException
+      через 5 минут кампании. Обходит каждый SubModule.xml в <game>\Modules\ и
+      <workshop>\261550\<id>\, строит граф зависимостей, помечает:
+
+      - Отсутствующая жёсткая зависимость (Мод X требует Y, Y не установлен). Critical.
+      - Несовпадение версий (X требует Y >= v1.2.3, установлен старее). Warning.
+      - Дубликат Id в game+workshop (Bannerlord выбирает один наугад).
+
+      Опциональные зависимости (DependedModuleMetadata с optional="true") учитываются —
+      отсутствующие опциональные молча игнорируем.
+  details:
+    en:
+      - "Read-only XML audit. We never modify SubModule.xml or LauncherData.xml."
+      - "Apply opens Steam Workshop for Bannerlord (subscribe to missing deps yourself)."
+      - "Optional deps with optional=\"true\" are excluded from missing-dep checks."
+      - "Version compare strips 'v'/'e' prefix and splits on '.'/'-'. Unparseable versions skip the check (no false positives)."
+      - "Not reversible (audit only)."
+    ru:
+      - "Только XML-аудит. Мы не меняем SubModule.xml и LauncherData.xml."
+      - "«Применить» откроет Steam Workshop для Bannerlord (на отсутствующие зависимости подписываешься сам)."
+      - "Опциональные зависимости с optional=\"true\" исключаются из проверки missing-dep."
+      - "Сравнение версий убирает префикс 'v'/'e' и сплитит по '.'/'-'. Нечитаемые версии пропускаем (нет false positive)."
+      - "Откат не предусмотрен (только аудит)."

@@ -1,0 +1,33 @@
+- id: m12_ram_check
+  title:
+    en: "RAM check — TOR needs 16 GB+"
+    ru: "Проверка RAM — TOR'у нужно 16+ ГБ"
+  description:
+    en: |
+      Read-only check. Bannerlord docs say 6 GB minimum / 8 GB recommended for vanilla,
+      but TOR (The Old Realms) reliably needs 16 GB or more — siege battles peak at
+      14 GB working set, big map zones at 10–12 GB. Below that you'll hit pagefile
+      thrashing and shader-compile OOM crashes that no Tune-Up can fix.
+
+      Crash Doctor cannot upgrade hardware. This card just tells you whether your
+      box meets the bar.
+    ru: |
+      Только проверка. Документация Bannerlord говорит 6 ГБ минимум / 8 ГБ
+      рекомендовано для ванилы, но TOR (The Old Realms) стабильно требует 16+ ГБ —
+      пик working set'а в осадных битвах достигает 14 ГБ, на больших картах
+      10–12 ГБ. Меньше — гарантированно трэшинг pagefile'а и OOM при компиляции
+      шейдеров, которые никакой Tune-Up не лечит.
+
+      Crash Doctor не может апгрейдить железо. Карточка просто говорит — твой
+      ПК соответствует требованиям или нет.
+  details:
+    en:
+      - "Source: Win32_PhysicalMemory + GlobalMemoryStatusEx."
+      - "Threshold: 8 GB (vanilla) / 16 GB (TOR detected)."
+      - "Apply opens Microsoft's RAM upgrade docs — Crash Doctor never installs hardware."
+      - "Not reversible (read-only)."
+    ru:
+      - "Источник: Win32_PhysicalMemory + GlobalMemoryStatusEx."
+      - "Порог: 8 ГБ (ваниль) / 16 ГБ (обнаружен TOR)."
+      - "«Применить» открывает страницу Microsoft про апгрейд RAM — Crash Doctor железо не ставит."
+      - "Откат не предусмотрен (read-only)."

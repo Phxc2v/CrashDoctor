@@ -1,0 +1,35 @@
+- id: m62_hwsch_mode
+  title:
+    en: "Hardware-Accelerated GPU Scheduling (HAGS) state"
+    ru: "Состояние Hardware-Accelerated GPU Scheduling (HAGS)"
+  description:
+    en: |
+      HAGS is a Win10 2004+ / Win11 feature that hands GPU command-queue management
+      to the driver. On modern drivers (NVIDIA 535+, AMD Adrenalin 24.x) it's
+      stable; on older drivers combined with TOR's heavy shader-compile workload,
+      it produces TDR / DXGI_ERROR_DEVICE_HUNG cascades and shader-OOM crashes
+      during "Build Shader Cache".
+
+      Card surfaces only when HAGS is ON and TOR is installed — the risky combo.
+      Plain vanilla, or HAGS=Off, leaves the card hidden.
+    ru: |
+      HAGS — фича Win10 2004+ / Win11, которая отдаёт GPU command-queue драйверу.
+      На современных драйверах (NVIDIA 535+, AMD Adrenalin 24.x) — стабильно;
+      на старых вместе с тяжёлой shader-compile нагрузкой TOR — даёт TDR /
+      DXGI_ERROR_DEVICE_HUNG каскады и shader-OOM краши при «Build Shader Cache».
+
+      Карточка появляется только когда HAGS ВКЛЮЧЁН и установлен TOR — рисковая
+      связка. На чистой ванилле или HAGS=Off карточка скрыта.
+  details:
+    en:
+      - "Source: HKLM\\SYSTEM\\CurrentControlSet\\Control\\GraphicsDrivers\\HwSchMode (1=Off, 2=On)."
+      - "Apply opens Settings → System → Display → Graphics → Default graphics settings."
+      - "Toggle requires REBOOT — change isn't live until next boot."
+      - "Crash Doctor never writes the registry — Windows owns this toggle."
+      - "Not reversible (we don't touch it)."
+    ru:
+      - "Источник: HKLM\\SYSTEM\\CurrentControlSet\\Control\\GraphicsDrivers\\HwSchMode (1=Off, 2=On)."
+      - "«Применить» откроет Параметры → Система → Дисплей → Графика → Стандартные параметры графики."
+      - "Переключатель требует ПЕРЕЗАГРУЗКИ — не применится до следующего boot'а."
+      - "Crash Doctor в реестр не пишет — этим переключателем владеет Windows."
+      - "Откат не предусмотрен (мы его не трогаем)."

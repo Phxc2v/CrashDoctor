@@ -1,0 +1,276 @@
+# Misc engine signatures observed in real client crashes 2026-05-03 (NCVFIVE box).
+# These are not GPU/asset-specific; live here to keep hardware.yaml focused.
+
+- id: game.conversation_nre_executecontinue
+  category: engine
+  severity: critical
+  confidence: high
+  evidence_source: "Real client crash 2026-05-03 21:12 — NRE inside MissionConversationVM.ExecuteContinue, conversation with Imperial notable Aldebrand, voice-asset missing for JIJnrSq0/RCUGYkGP"
+  requires_sources: [log_line]
+  title:
+    en: "NullReferenceException in conversation Continue button"
+    ru: "NullReferenceException в кнопке Continue диалога"
+  description:
+    en: |
+      Bannerlord's conversation system crashed inside ExecuteContinue on the VM
+      MissionConversationVM, with Inner message "Object reference not set to an
+      instance of an object." Symptom of a half-initialised conversation state
+      machine: a campaign behaviour is reading a Hero/CharacterObject reference
+      that's no longer alive (notable removed mid-conversation), or a missing
+      voice asset is taking the dialog branch into a null code path.
+
+      Often paired with "Voice object for text id is not found: <id>" lines —
+      missing voice can be a translation-layer issue (TOR_RU_Translation,
+      community translation packs) but rarely the root cause. Root is usually
+      a mod that patches Conversation* classes:
+      - CharacterReload (known to break conversation flow when loading a saved
+        roster mid-session)
+      - BannerCraft (replaces some notable interaction VMs)
+      - BetterSmithingContinued (overrides smith dialog branches)
+    ru: |
+      Conversation-система Bannerlord упала внутри ExecuteContinue на VM
+      MissionConversationVM, Inner message «Object reference not set to an
+      instance of an object.» Симптом полу-инициализированного состояния:
+      campaign behaviour читает reference на Hero/CharacterObject, которого
+      уже нет (notable удалили посреди диалога), или missing voice уводит
+      ветку диалога в null code path.
+
+      Часто рядом «Voice object for text id is not found: <id>» — missing
+      voice может быть проблемой translation-layer (TOR_RU_Translation,
+      community-переводы), но редко корневая причина. Корень обычно —
+      мод, патчащий Conversation*-классы:
+      - CharacterReload (ломает conversation flow при загрузке сохранённого
+        roster'а посреди сессии)
+      - BannerCraft (замещает часть notable interaction VM)
+      - BetterSmithingContinued (override smith dialog branch'ей)
+  fix:
+    en:
+      - "Reload an earlier save (before the conversation that crashed) and try a different action — if it works, the conversation context is poisoned, not the build."
+      - "Disable CharacterReload, BannerCraft, BetterSmithingContinued one at a time and replay. The mod whose absence makes the dialog finish is the culprit."
+      - "Update the suspect mods to latest version — late-2025 fixes shipped for several conversation patchers."
+      - "Install BLSE + BetterExceptionWindow if you don't have them. Next NRE will name the patcher in the managed stack."
+      - "If Voice object errors are persistent for the same NPC: re-subscribe to TOR_RU_Translation (or your translation pack) — voice index file may be truncated."
+    ru:
+      - "Загрузи более ранний сейв (до диалога который упал) и попробуй другое действие — если работает, отравлен контекст конкретного диалога, не сборка."
+      - "Отключай CharacterReload, BannerCraft, BetterSmithingContinued по одному и проверяй. Мод, без которого диалог дотягивается до конца, и есть виновник."
+      - "Обнови подозрительные моды до свежих версий — в конце 2025 много фиксов conversation-патчеров."
+      - "Поставь BLSE + BetterExceptionWindow если их нет. Следующий NRE назовёт патчер в managed-стеке."
+      - "Если Voice object ошибки повторяются на одном NPC — переподпишись на TOR_RU_Translation (или свой translation pack), voice index файл может быть обрезан."
+  match:
+    all:
+      - log_line:
+          contains: "Exception occurred inside invoke: ExecuteContinue"
+      - any:
+          - log_line:
+              contains: "MissionConversationVM"
+          - log_line:
+              contains: "Object reference not set to an instance of an object"
+
+- id: hw.igpu_actually_selected
+  category: hardware
+  severity: critical
+  confidence: high
+  evidence_source: "Heuristic — rgl_log Selected graphics adapter line is the authoritative active GPU, NOT crash_tags Display Devices ordering (which DxDiag picks by output port, not by which one renders)"
+  requires_sources: [log_line]
+  title:
+    en: "Bannerlord is rendering on integrated GPU (rgl_log Selected adapter)"
+    ru: "Bannerlord рендерится на встроенной видеокарте (Selected adapter в rgl_log)"
+  description:
+    en: |
+      Bannerlord's rgl_log records "Selected graphics adapter: [N] <name>" on
+      every launch — this is the definitive answer to "what GPU is rendering",
+      independent of how DxDiag orders Display Devices in crash_tags.txt.
+
+      In this crash the selected adapter is an integrated chip (Intel UHD/HD/
+      Iris/Xe iGPU, AMD Radeon Graphics/Vega, Apple). With TOR + heavy mods at
+      1080p, expect crashes on shader compile, big-mission load, or the first
+      complex VFX (spells, fire, blood). Vanilla without TOR may work on Low
+      quality.
+
+      If your machine HAS a discrete GPU, Windows / driver / monitor wiring is
+      forcing the iGPU. Several knobs below.
+    ru: |
+      rgl_log Bannerlord на каждом запуске пишет «Selected graphics adapter:
+      [N] <name>» — это окончательный ответ на «какой GPU рендерит»,
+      независимо от того как DxDiag сортирует Display Devices в crash_tags.txt.
+
+      В этом крэше selected adapter — встроенная карта (Intel UHD/HD/Iris/Xe
+      iGPU, AMD Radeon Graphics/Vega, Apple). С TOR + тяжёлыми модами в 1080p
+      жди крэши на shader compile, загрузке большой миссии, или первом
+      сложном VFX (спеллы, огонь, кровь). Ванилла без TOR может работать на
+      Low-качестве.
+
+      Если у машины ЕСТЬ дискретная GPU — Windows / драйвер / провод монитора
+      форсит iGPU. Несколько способов починить ниже.
+  fix:
+    en:
+      - "Check if your laptop has a dedicated GPU: Win+R → dxdiag → Display tab — there should be a 'Display Devices 1' with NVIDIA/AMD/Radeon RX/Arc (NOT 'Radeon Graphics' which is the iGPU)."
+      - "Force Bannerlord to dGPU: Settings → System → Display → Graphics → Add Bannerlord.exe → 'High performance'. NVIDIA Control Panel → Manage 3D settings → Program Settings → Bannerlord → 'High-performance NVIDIA processor'."
+      - "In-game: Options → Graphics → first tab → Graphics Adapter → pick the dGPU. If the option is missing, edit Documents\\Mount and Blade II Bannerlord\\Configs\\engine_config.txt and set graphics_adapter from 0 to 1, save, restart."
+      - "Plug your external monitor into the dGPU output, not the iGPU port. On many laptops the iGPU owns the internal display while HDMI/DP goes through the dGPU."
+      - "Disable battery saver while playing — laptops aggressively park the dGPU on battery."
+      - "No dGPU at all: TOR is not viable on iGPU. Run vanilla Bannerlord on Low quality or pick a lighter mod stack."
+    ru:
+      - "Проверь наличие дискретки: Win+R → dxdiag → Display — должно быть 'Display Devices 1' с NVIDIA/AMD/Radeon RX/Arc (НЕ 'Radeon Graphics' — это iGPU)."
+      - "Заставь Bannerlord использовать дискретку: Параметры → Система → Дисплей → Графика → Добавь Bannerlord.exe → 'Высокая производительность'. NVIDIA Control Panel → Управление 3D → Программные настройки → Bannerlord → 'Высокопроизводительный процессор NVIDIA'."
+      - "В игре: Опции → Графика → первая вкладка → Графический адаптер → выбери дискретку. Если опции нет — в Documents\\Mount and Blade II Bannerlord\\Configs\\engine_config.txt поменяй graphics_adapter с 0 на 1, сохрани, перезапусти."
+      - "Подключи внешний монитор в выход ДИСКРЕТКИ, не в iGPU-порт. У многих ноутбуков iGPU держит внутренний экран, а HDMI/DP идёт через дискретку."
+      - "Отключи режим экономии заряда — ноутбук агрессивно паркует дискретку на батарее."
+      - "Нет дискретки вообще: TOR на iGPU нежизнеспособен. Играй ванильный Bannerlord на Low или выбирай лёгкий мод-набор."
+  match:
+    all:
+      - log_line:
+          regex: "Selected graphics adapter:.*\\b(Intel\\(R\\) UHD|Intel\\(R\\) HD|Intel\\(R\\) Iris|Intel\\(R\\) Xe Graphics|Radeon\\(TM\\) Graphics|Radeon\\(TM\\) Vega|AMD Ryzen.*Graphics|Apple M)"
+
+- id: engine.team_index_invalid_burst
+  category: engine
+  severity: warning
+  confidence: medium
+  evidence_source: "Real client crashes 2026-05-03 — repeating SCRIPT ERROR is_enemy: other_team_index_invalid! 30+ times in rgl_log_errors before crash"
+  requires_sources: [log_line]
+  title:
+    en: "Engine team-index storm (combat-mod adds invalid team to mission)"
+    ru: "Шторм SCRIPT ERROR по team-индексу (combat-мод добавляет невалидную команду)"
+  description:
+    en: |
+      Bannerlord's mission engine spammed "Condition not satisfied:
+      IMono_MBTeam::is_enemy: other_team_index_invalid!" dozens of times before
+      the crash. The engine is being asked to evaluate hostility for a Team
+      whose index isn't registered in the mission's team table.
+
+      Almost always a mod side-effect: a battle/combat mod adds an extra Team
+      to the mission without registering through Mission.Teams.Add, or removes
+      a team while AI/UI logic still holds a stale reference. Top offenders
+      historically: combat-overhaul mods (RBM and forks), custom-faction mods,
+      AI mods that script their own bandit/hostile teams. TOR itself is clean.
+
+      The errors don't crash on their own — they're symptoms. The actual crash
+      usually follows when the next system tries to act on the bad team
+      (pathfinding, banner draw, formation order, spawn resolver).
+    ru: |
+      Mission-движок Bannerlord перед крэшем спамил «Condition not satisfied:
+      IMono_MBTeam::is_enemy: other_team_index_invalid!» десятки раз. Движок
+      просят посчитать вражду для Team, чей индекс не зарегистрирован в
+      таблице команд миссии.
+
+      Почти всегда побочка мода: combat/battle мод добавляет лишнюю Team в
+      миссию без регистрации через Mission.Teams.Add, или убирает команду пока
+      AI/UI код держит устаревший reference. Исторически виновники: combat-
+      overhaul моды (RBM и форки), кастомные фракции, AI-моды со скриптовыми
+      bandit/hostile командами. TOR сам тут чистый.
+
+      Сами ошибки в краш не уронят — это симптомы. Реальный краш приходит
+      когда следующая система пытается действовать на эту битую команду
+      (pathfinding, отрисовка знамени, formation order, spawn resolver).
+  fix:
+    en:
+      - "Disable combat-overhaul mods one at a time and replay the same battle: RBM (Realistic Battle Mod), PartialParry, UnblockableThrust, BannerCraft, custom-faction mods. The mod whose removal silences the storm is the culprit."
+      - "Update suspect mods to the latest version — many fixes around team registration shipped in 2025."
+      - "If you can reproduce reliably: install BLSE + BetterExceptionWindow before the next attempt. The managed stack will name the patcher."
+      - "After identifying the bad mod: report it to the mod author with the crash bundle."
+    ru:
+      - "Отключай combat-overhaul моды по одному и повтори тот же бой: RBM (Realistic Battle Mod), PartialParry, UnblockableThrust, BannerCraft, кастомные фракции. Мод, удаление которого глушит шторм, и есть виновник."
+      - "Обнови подозрительные моды до свежих версий — в 2025 много фиксов вокруг team registration."
+      - "Если стабильно воспроизводится — поставь BLSE + BetterExceptionWindow до следующей попытки. Managed-стек назовёт патчер."
+      - "Найдя битый мод — отдай автору bundle с крашем."
+  match:
+    all:
+      - log_line:
+          contains: "is_enemy: other_team_index_invalid"
+
+- id: game.integrity_check_failed
+  category: tor_compatibility
+  severity: warning
+  confidence: medium
+  evidence_source: "Real client crashes 2026-05-03 — crash_tags 'Game Integrity is Achieved = False' with unofficial modules listed (always informational with mods present)"
+  requires_sources: [crash_tag]
+  title:
+    en: "Bannerlord's own integrity check failed"
+    ru: "Внутренняя проверка целостности Bannerlord провалилась"
+  description:
+    en: |
+      Bannerlord's crash dumper recorded `Game Integrity is Achieved = False`.
+      The engine's self-check noticed the build state isn't a clean vanilla
+      install. With unofficial modules in the same crash_tags block, the flag
+      is informational and expected — TaleWorlds rejects modded crash reports
+      automatically. Without unofficial modules, it means a vanilla file was
+      replaced or version-mismatched.
+
+      Either way, support has to triage this themselves; auto-pipeline at
+      TaleWorlds will not touch it.
+    ru: |
+      CrashDumper Bannerlord записал `Game Integrity is Achieved = False`.
+      Self-check движка увидел, что состояние сборки — не чистый vanilla
+      install. Если в том же crash_tags блоке есть неофициальные модули —
+      флаг информативный и ожидаемый, TaleWorlds авто-отклоняет модовые
+      crash-отчёты. Если модов нет — значит ванильный файл заменён или
+      версии не совпадают.
+
+      В любом случае разбирается человек; авто-пайплайн TaleWorlds не
+      возьмёт.
+  fix:
+    en:
+      - "If you have mods (you do — check 'Used Modules' in evidence): the flag is normal, don't worry. Send the bundle to t.me/CodeRickTg, the support team handles modded crashes."
+      - "If you DON'T have mods and still see this: Steam Verify integrity (catches replaced vanilla files), then reinstall any conflicting overlay tools (NVIDIA Filters, Reshade, MSI Afterburner OSD)."
+      - "Crash Doctor → Tune-Up → 'SHA-256 integrity check' card catches mod-side corruption that Steam Verify misses."
+    ru:
+      - "Если есть моды (они в evidence в 'Used Modules' перечислены) — флаг нормальный, не волнуйся. Отправь bundle в t.me/CodeRickTg, поддержка занимается модовыми крэшами."
+      - "Если модов НЕТ и всё равно видишь — Steam Verify integrity (ловит подменённые ванильные файлы), потом переустанови overlay-инструменты (NVIDIA Filters, Reshade, MSI Afterburner OSD)."
+      - "Карточка «SHA-256 integrity check» в Crash Doctor → Tune-Up ловит порчу со стороны модов, которую Steam Verify пропускает."
+  match:
+    all:
+      - crash_tag:
+          path: "Campaign Dump Integrity/Game Integrity is Achieved"
+          contains: "False"
+
+- id: mods.heavy_stack_with_tor
+  category: tor_compatibility
+  severity: warning
+  confidence: low
+  evidence_source: "Real client crashes 2026-05-03 — 24-mod stack on TOR, repeated NRE/team-index/asset-corrupt cascades; correlation between mod count and crash frequency from Telegram corpus"
+  requires_sources: [module_list]
+  title:
+    en: "Heavy mod stack on top of TOR (20+ mods loaded)"
+    ru: "Тяжёлый мод-стек поверх TOR (загружено 20+ модов)"
+  description:
+    en: |
+      You have 20+ unofficial modules active alongside TOR. TOR alone overrides
+      18 game models and patches 40+ vanilla classes via Harmony; combat /
+      leveling / smithing mods on top of that compete for the same patch
+      surface and frequently lose race conditions in mid-mission code.
+
+      Not a crash on its own — informational. But: when an unrecognised crash
+      shows up on a 20-mod stack, the troubleshooting playbook is "halve the
+      mod list and rerun" rather than chasing a specific symptom. Crash Doctor's
+      pattern catalogue assumes a clean-ish TOR install; on top of a heavy mod
+      stack false-negatives go up.
+    ru: |
+      У тебя 20+ неофициальных модулей активно вместе с TOR. Один TOR override-
+      ит 18 game-моделей и патчит 40+ ванильных классов через Harmony;
+      combat / leveling / smithing моды поверх этого конкурируют за ту же
+      patch surface и часто проигрывают race condition'ы в mid-mission коде.
+
+      Сам по себе не краш — информативный сигнал. Но: когда нераспознанный
+      краш приходит на 20-мод стеке, playbook не «искать конкретный симптом»,
+      а «половинь модлист и перепроверь». Каталог паттернов Crash Doctor
+      рассчитан на относительно чистую TOR-установку; на тяжёлом стеке
+      false-negative'ов больше.
+  fix:
+    en:
+      - "Halve-the-mod-list debugging: disable half of your non-TOR mods (combat, leveling, smithing groups). Replay the crash scenario. If it doesn't crash — re-enable half of those, repeat. Binary search finds the culprit in log2(N) attempts."
+      - "Top suspects when crash is mid-mission: combat-overhauls (RBM, PartialParry, UnblockableThrust). Top suspects when crash is in conversation/inventory: CharacterReload, BannerCraft, BetterSmithingContinued."
+      - "If you do not have time for binary search: report the crash bundle to t.me/CodeRickTg with the full module list. Triage there."
+    ru:
+      - "Половинь-мод-лист дебаг: отключи половину non-TOR модов (combat, leveling, smithing группы). Повтори сценарий краша. Если не падает — включи половину обратно, повтори. Binary search найдёт виновника за log2(N) попыток."
+      - "Главные подозреваемые если краш в бою: combat-overhaul'ы (RBM, PartialParry, UnblockableThrust). Если краш в диалоге/инвентаре: CharacterReload, BannerCraft, BetterSmithingContinued."
+      - "Если на binary search нет времени — отправь crash bundle в t.me/CodeRickTg с полным module list. Разберут на месте."
+  match:
+    all:
+      - module_list: { id: "TOR_Core", has: "true" }
+      # Heuristic: TOR + 5+ unofficial modules (excludes Native/SandBox/StoryMode/etc).
+      # Catches typical "heavy stack" configurations regardless of WHICH BUTR libs the
+      # user runs — original AND-of-five-specifics didn't fire on Phoenix's stack
+      # (TOR + Harmony + LoreHardcore + 9 others, no ButterLib/UIExtender/MCM).
+      - module_list:
+          count_above: "5"
+          excluding_official: "true"

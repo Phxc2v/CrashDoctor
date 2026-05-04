@@ -56,6 +56,7 @@
     <string id="cd_tuneup_evidence_header" text="Evidence:" />
     <string id="cd_tuneup_btn_rescan" text="Re-scan" />
     <string id="cd_tuneup_btn_apply" text="Apply" />
+    <string id="cd_tuneup_btn_ignore" text="Ignore" />
     <string id="cd_tuneup_btn_details_show" text="Details" />
     <string id="cd_tuneup_btn_details_hide" text="Hide details" />
     <string id="cd_tuneup_btn_open_uac" text="Open UAC settings" />
