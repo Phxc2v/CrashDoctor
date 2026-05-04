@@ -112,7 +112,7 @@ advice or directly in Options → Graphics) the game can crash on the imperial-
 soldier splash. The shader cache was built against the old settings; the new
 settings need a fresh build. Crash Doctor's M2.2 module catches this
 automatically when you next open the menu, but if the game won't even start —
-follow [`docs/Recovery_If_Game_Wont_Start.md`](docs/Recovery_If_Game_Wont_Start.md):
+follow [`docs/RECOVERY.md`](docs/RECOVERY.md):
 
 1. Delete `Documents\Mount and Blade II Bannerlord\Configs\engine_config.txt`
 2. Delete `C:\ProgramData\Mount and Blade II Bannerlord\Shaders\` (entire folder)
@@ -238,7 +238,7 @@ Calradia Expanded, RBM, Banner Kings и т.д. Без интернета, без
 После понижения Texture/Shader Quality (через Crash Doctor или вручную в
 Options → Graphics) игра может упасть на splash-screen — кэш шейдеров под
 старые настройки. M2.2 ловит это автоматически, но если игра уже не
-запускается — см. [`docs/Recovery_If_Game_Wont_Start.md`](docs/Recovery_If_Game_Wont_Start.md).
+запускается — см. [`docs/RECOVERY.md`](docs/RECOVERY.md).
 
 ## Сообщить о нераспознанном краше
 
