@@ -181,8 +181,29 @@ After lowering Texture / Shader / Shadow Quality (either via Crash Doctor's
 advice or directly in Options → Graphics) the game can crash on the imperial-
 soldier splash. The shader cache was built against the old settings; the new
 settings need a fresh build. Crash Doctor's M2.2 module catches this
-automatically when you next open the menu, but if the game won't even start —
-follow [`docs/Recovery_If_Game_Wont_Start_EN.md`](docs/Recovery_If_Game_Wont_Start_EN.md):
+automatically when you next open the menu, but if the game won't even start
+the in-game UI is unreachable.
+
+### Recovery script (one-line PowerShell)
+
+The mod ships a standalone PowerShell rescue tool — `recovery.ps1` — that
+runs without admin rights, sends everything to the Recycle Bin (so you can
+undo), and offers a menu: reset graphics config, clear shader caches, full
+reset, disable third-party mods, diagnostic info.
+
+Open PowerShell (Win+R → `powershell` → Enter) and run **one line**:
+
+```
+irm https://phxc2v.github.io/CrashDoctor/r.ps1 | iex
+```
+
+Full documentation of what the script does, every menu option, and the safety
+guarantees: [`docs/RECOVERY.md`](docs/RECOVERY.md) (also browsable at
+[phxc2v.github.io/CrashDoctor/RECOVERY](https://phxc2v.github.io/CrashDoctor/RECOVERY)).
+
+### Manual steps (if you don't want to run the script)
+
+Follow [`docs/Recovery_If_Game_Wont_Start_EN.md`](docs/Recovery_If_Game_Wont_Start_EN.md):
 
 1. Delete `Documents\Mount and Blade II Bannerlord\Configs\engine_config.txt`
 2. Delete `C:\ProgramData\Mount and Blade II Bannerlord\Shaders\` (entire folder)
@@ -326,8 +347,29 @@ Calradia Expanded, RBM, Banner Kings и т.д. Без интернета, без
 
 После понижения Texture/Shader Quality (через Crash Doctor или вручную в
 Options → Graphics) игра может упасть на splash-screen — кэш шейдеров под
-старые настройки. M2.2 ловит это автоматически, но если игра уже не
-запускается — см. [`docs/Recovery_If_Game_Wont_Start_RU.md`](docs/Recovery_If_Game_Wont_Start_RU.md).
+старые настройки. M2.2 ловит это автоматически в игре, но если игра уже
+не стартует — внутриигровой UI недоступен.
+
+### Скрипт восстановления (одна строка PowerShell)
+
+Мод поставляется со standalone PS-скриптом `recovery.ps1` — без прав
+администратора, всё удаляет в Корзину (можно восстановить), показывает меню:
+сброс настроек графики, очистка кэшей шейдеров, полный сброс, отключение
+сторонних модов, диагностика.
+
+Открой PowerShell (Win+R → `powershell` → Enter) и запусти **одну строку**:
+
+```
+irm https://phxc2v.github.io/CrashDoctor/r.ps1 | iex
+```
+
+Полное описание: что делает каждый пункт меню и какие гарантии безопасности —
+в [`docs/RECOVERY.md`](docs/RECOVERY.md) (или открыть в браузере:
+[phxc2v.github.io/CrashDoctor/RECOVERY](https://phxc2v.github.io/CrashDoctor/RECOVERY)).
+
+### Ручной откат (если не хочешь запускать скрипт)
+
+См. [`docs/Recovery_If_Game_Wont_Start_RU.md`](docs/Recovery_If_Game_Wont_Start_RU.md).
 
 ## Сообщить о нераспознанном краше
 
