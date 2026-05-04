@@ -31,8 +31,25 @@ function Write-Banner {
 function Write-Ok       ($msg) { Write-Host "  [OK]   $msg" -ForegroundColor Green }
 function Write-Warn     ($msg) { Write-Host "  [WARN] $msg" -ForegroundColor Yellow }
 function Write-Err      ($msg) { Write-Host "  [ERR]  $msg" -ForegroundColor Red }
-function Write-Info     ($msg) { Write-Host "  [..]   $msg" -ForegroundColor Gray }
-function Write-Section  ($msg) { Write-Host ''; Write-Host "-- $msg" -ForegroundColor Cyan }
+function Write-Info     ($msg) { Write-Host "  $msg"        -ForegroundColor Gray }
+function Write-Section  ($msg) { Write-Host ''; Write-Host "-- $msg" -ForegroundColor Cyan; Write-Host '' }
+function Write-Heading  ($msg) { Write-Host "  $msg" -ForegroundColor White }
+
+function Write-DiagPath {
+    param([string]$Label, $Path)
+    Write-Host '    ' -NoNewline
+    Write-Host $Label -ForegroundColor White
+    if (-not $Path) {
+        Write-Host '      (not detected)' -ForegroundColor DarkGray
+        return
+    }
+    if (Test-Path $Path) {
+        Write-Host "      $Path" -ForegroundColor Green
+    } else {
+        Write-Host "      $Path" -ForegroundColor DarkGray -NoNewline
+        Write-Host '   (missing)' -ForegroundColor DarkGray
+    }
+}
 
 # -----------------------------------------------------------------------------
 # Path detection
@@ -295,43 +312,41 @@ function Action-DisableAllMods {
 function Action-Diagnostic {
     param($P)
     Write-Section 'Diagnostic info'
+
+    Write-Heading 'System paths'
+    Write-DiagPath -Label 'Documents'   -Path $P.Documents
+    Write-DiagPath -Label 'ProgramData' -Path $P.ProgramData
+    Write-DiagPath -Label 'Game dir'    -Path $P.GameDir
     Write-Host ''
-    Write-Info "Bannerlord Documents:    $($P.Documents)"
-    Write-Info "  exists:                $(Test-Path $P.Documents)"
-    Write-Info "Bannerlord ProgramData:  $($P.ProgramData)"
-    Write-Info "  exists:                $(Test-Path $P.ProgramData)"
-    Write-Info "Bannerlord game dir:     $(if ($P.GameDir) { $P.GameDir } else { '(not detected)' })"
+
+    Write-Heading 'Config & cache files'
+    Write-DiagPath -Label 'engine_config.txt'    -Path $P.EngineConfig
+    Write-DiagPath -Label 'BannerlordConfig.txt' -Path $P.BannerlordCfg
+    Write-DiagPath -Label 'LauncherData.xml'     -Path $P.LauncherData
+    Write-DiagPath -Label 'ProgramData\Shaders'  -Path $P.ProgramDataShaders
     Write-Host ''
-    Write-Info 'Files of interest:'
-    foreach ($pair in @(
-        @('engine_config.txt    ', $P.EngineConfig),
-        @('BannerlordConfig.txt ', $P.BannerlordCfg),
-        @('LauncherData.xml     ', $P.LauncherData),
-        @('ProgramData\Shaders\ ', $P.ProgramDataShaders)
-    )) {
-        $exists = Test-Path $pair[1]
-        $tag = if ($exists) { '[present]' } else { '[absent] ' }
-        $colour = if ($exists) { 'Green' } else { 'DarkGray' }
-        Write-Host "  $tag  $($pair[0]) -> $($pair[1])" -ForegroundColor $colour
-    }
-    Write-Host ''
+
+    Write-Heading 'Recent crash dumps'
     if (Test-Path $P.CrashesDir) {
         $latest = Get-ChildItem -Path $P.CrashesDir -Directory -ErrorAction SilentlyContinue |
                   Sort-Object LastWriteTime -Descending | Select-Object -First 3
         if ($latest) {
-            Write-Info 'Latest crash dump folders:'
             foreach ($d in $latest) {
-                Write-Host ('    {0}  ({1:yyyy-MM-dd HH:mm})' -f $d.Name, $d.LastWriteTime) -ForegroundColor White
+                Write-Host ('    {0:yyyy-MM-dd HH:mm}   {1}' -f $d.LastWriteTime, $d.Name) -ForegroundColor Gray
             }
         } else {
-            Write-Info 'No crash dump folders found.'
+            Write-Host '    (none)' -ForegroundColor DarkGray
         }
+    } else {
+        Write-Host '    (crashes folder does not exist yet)' -ForegroundColor DarkGray
     }
     Write-Host ''
+
+    Write-Heading 'Bannerlord process'
     if (Test-BannerlordRunning) {
-        Write-Warn 'Bannerlord IS currently running — close it before any reset.'
+        Write-Host '    RUNNING — close it before any reset' -ForegroundColor Yellow
     } else {
-        Write-Ok 'Bannerlord is not running.'
+        Write-Host '    not running' -ForegroundColor Gray
     }
 }
 
