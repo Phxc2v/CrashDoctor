@@ -1,0 +1,38 @@
+- id: m15_temp_cleanup
+  title:
+    en: "Clean stale %TEMP% files"
+    ru: "Очистить старые файлы из %TEMP%"
+  description:
+    en: |
+      Bannerlord's shader compiler and TaleWorlds.Native FMOD layer write intermediate
+      scratch files to the user's %TEMP% folder. On a long-running install %TEMP% hits
+      5–20 GB and Windows starts running out of scratch space — that's when shader-
+      compile OOM crashes show up at the most random moments.
+
+      Per-file deletion only: skips anything locked by another process (Steam, Edge,
+      Office, OneDrive). Only files older than 7 days are touched. Safe to run while
+      other apps are open. Bannerlord must be closed (the launcher itself can hold
+      handles to /Temp/RGL_*.tmp shader scratch files).
+    ru: |
+      Компилятор шейдеров Bannerlord и нативный FMOD-слой пишут промежуточные scratch-
+      файлы в пользовательский %TEMP%. На долго работающей установке %TEMP% разрастается
+      до 5–20 ГБ и Windows перестаёт хватать scratch-пространства — отсюда OOM-крэши
+      компилятора шейдеров в самые неожиданные моменты.
+
+      Поштучное удаление: всё, что заблокировано другим процессом (Steam, Edge, Office,
+      OneDrive) — пропускается. Удаляются только файлы старше 7 дней. Безопасно запускать
+      с открытыми приложениями. Bannerlord должен быть закрыт (лаунчер держит хэндлы
+      на /Temp/RGL_*.tmp файлы компилятора).
+  details:
+    en:
+      - "Path: $env:TEMP (typically %LOCALAPPDATA%\\Temp)."
+      - "Threshold for 'NeedsAction' card: total %TEMP% > 1 GB."
+      - "Only files older than 7 days are deleted; newer files are scratch from active apps."
+      - "Files go to the Recycle Bin where possible (some Shell-locked items go straight to /dev/null)."
+      - "Not reversible from Crash Doctor."
+    ru:
+      - "Путь: $env:TEMP (обычно %LOCALAPPDATA%\\Temp)."
+      - "Порог появления карточки: суммарно %TEMP% > 1 ГБ."
+      - "Удаляются только файлы старше 7 дней; новее — это scratch активных приложений."
+      - "По возможности файлы уезжают в Корзину (часть Shell-заблокированных удаляется напрямую)."
+      - "Откат из Crash Doctor не предусмотрен."

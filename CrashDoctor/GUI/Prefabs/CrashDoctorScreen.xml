@@ -87,18 +87,18 @@
                                 VerticalAlignment="Top" MarginTop="56" MarginLeft="20"
                                 Brush.FontSize="18" Brush.FontColor="#D8B040FF" Text="@DiagnosisSeverity" />
 
-                    <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren"
+                    <!-- Description has a fixed height ceiling so a long crash explanation can't grow past
+                         its box and overlap the fix-steps list below. The "Что делать:" label that used
+                         to sit between description and steps was removed because the description
+                         already ends with a clear handoff and the label was visually colliding with
+                         long descriptions on a CoverChildren layout. -->
+                    <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="200"
                                 VerticalAlignment="Top" MarginTop="86" MarginLeft="20" MarginRight="20"
                                 Brush.FontSize="20" Brush.FontColor="#E8DCC4FF" Text="@DiagnosisDescription" />
 
-                    <TextWidget IsVisible="@HasFixSteps"
-                                WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="28"
-                                VerticalAlignment="Top" MarginTop="280" MarginLeft="20"
-                                Brush.FontSize="22" Brush.FontColor="#F4E1C4FF" Text="@LabelFixSteps" />
-
                     <ScrollablePanel IsVisible="@HasFixSteps"
                                      WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="240"
-                                     VerticalAlignment="Top" MarginTop="320" MarginLeft="20" MarginRight="20"
+                                     VerticalAlignment="Top" MarginTop="300" MarginLeft="20" MarginRight="20"
                                      ClipContents="true" AutoHideScrollBars="true">
                       <Children>
                         <ListPanel DataSource="{DiagnosisFixSteps}" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren"
@@ -198,10 +198,12 @@
                                        MarginRight="28" MarginBottom="22"
                                        StackLayout.LayoutMethod="HorizontalLeftToRight">
                               <Children>
-                                <ButtonWidget DoNotPassEventsToChildren="true" IsVisible="@IsNeedsAction"
+                                <!-- Apply: hidden for informational-only modules (M1.2 RAM, M2.3 GPU info)
+                                     where there's nothing to actually apply. ShowApplyButton handles that. -->
+                                <ButtonWidget DoNotPassEventsToChildren="true" IsVisible="@ShowApplyButton"
                                               IsEnabled="@IsApplyEnabled"
                                               Command.Click="ExecuteApply" Brush="Popup.Done.Button"
-                                              WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="200" SuggestedHeight="48"
+                                              WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="180" SuggestedHeight="48"
                                               MarginRight="10">
                                   <Children>
                                     <TextWidget DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
@@ -209,8 +211,20 @@
                                                 Brush.TextHorizontalAlignment="Center" Text="@LabelBtnApply" />
                                   </Children>
                                 </ButtonWidget>
+                                <!-- Ignore: persistent dismiss. Re-surfaces when detection fingerprint
+                                     changes (new evidence / different severity / different summary). -->
+                                <ButtonWidget DoNotPassEventsToChildren="true" IsVisible="@ShowIgnoreButton"
+                                              Command.Click="ExecuteIgnore" Brush="Popup.Cancel.Button"
+                                              WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="160" SuggestedHeight="48"
+                                              MarginRight="10">
+                                  <Children>
+                                    <TextWidget DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
+                                                Brush="Popup.Button.Text" Brush.FontSize="16"
+                                                Brush.TextHorizontalAlignment="Center" Text="@LabelBtnIgnore" />
+                                  </Children>
+                                </ButtonWidget>
                                 <ButtonWidget DoNotPassEventsToChildren="true" Command.Click="ExecuteShowDetails" Brush="Popup.Cancel.Button"
-                                              WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="200" SuggestedHeight="48">
+                                              WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="180" SuggestedHeight="48">
                                   <Children>
                                     <TextWidget DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
                                                 Brush="Popup.Button.Text" Brush.FontSize="16"
@@ -709,7 +723,7 @@
                                HorizontalAlignment="Center" VerticalAlignment="Bottom" MarginBottom="18"
                                StackLayout.LayoutMethod="HorizontalLeftToRight">
                       <Children>
-                        <ButtonWidget DoNotPassEventsToChildren="true" IsVisible="@DetailsIsNeedsAction"
+                        <ButtonWidget DoNotPassEventsToChildren="true" IsVisible="@DetailsShowApplyButton"
                                       IsEnabled="@DetailsIsApplyEnabled"
                                       Command.Click="ExecuteDetailsApply" Brush="Popup.Done.Button"
                                       WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="200" SuggestedHeight="54"

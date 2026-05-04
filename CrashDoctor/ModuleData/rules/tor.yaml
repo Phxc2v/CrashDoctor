@@ -407,3 +407,56 @@
               contains: "WindsOfMagic"
           - log_line:
               contains: "SpellCast"
+
+- id: tor.naval_dlc_conflict
+  category: tor_compatibility
+  severity: critical
+  confidence: high
+  evidence_source: "Real client crash 2026-05-04 (Phoenix) — NavalDLC + TOR_Core in module list, game terminates without managed exception during scene load."
+  requires_sources: [module_list]
+  title:
+    en: "Naval DLC (War Sails) is incompatible with TOR"
+    ru: "Naval DLC (War Sails) несовместим с TOR"
+  description:
+    en: |
+      The Naval DLC (TaleWorlds' "War Sails" content; ships as a SubModule with
+      Id="NavalDLC") replaces the vanilla campaign map with a sea-bearing version
+      and reworks party movement, scene transitions, and several hard-coded
+      campaign behaviours. The Old Realms completely overrides the campaign map
+      via TOR_Environment + TOR_Core. The two cannot share a save: party-position
+      reads, scene names and faction-territory bindings diverge — the game crashes
+      either during initial save load, on the first map-encounter scene, or
+      silently terminates without writing a managed stack trace.
+
+      No fix exists short of disabling one of them. The TOR team has stated they
+      do NOT plan to add Naval DLC compat (the campaign map rewrite is too deep).
+    ru: |
+      Naval DLC (контент TaleWorlds «War Sails»; в лаунчере проходит как
+      SubModule с Id="NavalDLC") меняет ванильную карту кампании на версию
+      с морями и переписывает party movement, переходы сцен и часть hard-coded
+      campaign behaviours. The Old Realms полностью переопределяет карту через
+      TOR_Environment + TOR_Core. Один сейв на двоих не уживёт — чтение позиций
+      партий, имена сцен, привязки территорий фракций расходятся, и игра падает
+      либо на загрузке сейва, либо на первой scene-сцене карты, либо молча
+      завершается без managed-стека.
+
+      Фикса нет — только отключить одно из двух. Команда TOR явно сказала,
+      что Naval DLC compat делать НЕ планируют (переписан слишком большой
+      кусок карты).
+  fix:
+    en:
+      - "Pick one: TOR or Naval DLC. They cannot coexist."
+      - "Launcher → uncheck NavalDLC if you want to play TOR."
+      - "Launcher → uncheck TOR_Core, TOR_Environment, TOR_Armory and any TOR_* sub-modules if you want to play Naval DLC."
+      - "DO NOT load a save that was started with one mod-set under the other — load order changes mid-save will corrupt the campaign state."
+      - "If a save is already poisoned (started TOR, added Naval, can't roll back): start a new campaign from the appropriate config."
+    ru:
+      - "Выбери одно: TOR или Naval DLC. Вместе не работают."
+      - "Лаунчер → сними галку с NavalDLC если хочешь играть TOR."
+      - "Лаунчер → сними галки с TOR_Core, TOR_Environment, TOR_Armory и любых TOR_* подмодулей если хочешь играть Naval DLC."
+      - "НЕ загружай сейв, начатый с одним набором модов, под другим — смена load order'а посреди сейва ломает состояние кампании."
+      - "Если сейв уже отравлен (начал на TOR, добавил Naval, отката нет) — заводи новую кампанию под нужный конфиг."
+  match:
+    all:
+      - module_list: { id: "TOR_Core", has: "true" }
+      - module_list: { id: "NavalDLC", has: "true" }

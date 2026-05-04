@@ -1,0 +1,34 @@
+- id: m61_directx_runtime
+  title:
+    en: "DirectX 11 runtime + feature level check"
+    ru: "Проверка DirectX 11 runtime + feature level"
+  description:
+    en: |
+      Bannerlord's renderer hard-requires D3D feature level 11_0 — TaleWorlds.Native
+      links against d3d11.dll directly and there's no fallback path. On stripped
+      Win10/11 LTSC builds, on Wine/Proton without DXVK, or on machines where the
+      GPU adapter exposes only FL10_x, the launcher silently fails with
+      "TaleWorlds.MountAndBlade.dll could not be loaded" and players blame mods.
+
+      Card surfaces only when d3d11.dll is missing, when D3D11CreateDevice fails,
+      or when the highest available feature level is below 11_0.
+    ru: |
+      Рендерер Bannerlord жёстко требует D3D feature level 11_0 — TaleWorlds.Native
+      слинкован с d3d11.dll напрямую, fallback'а нет. На урезанных билдах Win10/11
+      LTSC, на Wine/Proton без DXVK, или на машинах где GPU экспонирует только
+      FL10_x, лаунчер молча падает с «TaleWorlds.MountAndBlade.dll could not be
+      loaded» — игроки винят моды.
+
+      Карточка появляется только если d3d11.dll отсутствует, D3D11CreateDevice
+      провалился, или максимальный feature level ниже 11_0.
+  details:
+    en:
+      - "Read-only probe via D3D11CreateDevice (hardware driver type)."
+      - "Apply opens https://www.microsoft.com/en-us/download/details.aspx?id=35 — DirectX End-User Runtime."
+      - "If the issue is feature level (FL10_x card), no installer fixes it — GPU itself is too old."
+      - "Not reversible."
+    ru:
+      - "Только зонд через D3D11CreateDevice (hardware driver type)."
+      - "«Применить» откроет https://www.microsoft.com/en-us/download/details.aspx?id=35 — DirectX End-User Runtime."
+      - "Если проблема в feature level (карта FL10_x), установщик не поможет — сам GPU слишком старый."
+      - "Откат не предусмотрен."

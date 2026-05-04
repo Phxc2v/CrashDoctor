@@ -90,3 +90,76 @@
               contains: "Master.bank"
           - log_line:
               contains: "bank failed"
+
+- id: assets.tpac_async_read_burst
+  category: assets
+  severity: critical
+  confidence: medium
+  evidence_source: "https://steamcommunity.com/app/261550/discussions/0/3722820118820333415/ + https://steamcommunity.com/workshop/filedetails/discussion/3233297311/4363501716022599051/"
+  requires_sources: [log_line]
+  title:
+    en: "Async I/O fault on compressed asset (.tpac) — engine couldn't read pack"
+    ru: "Ошибка асинхронного чтения сжатого ассета (.tpac) — движок не смог прочитать пак"
+  description:
+    en: |
+      The log shows a heavy burst of "Trying to make partial read on compressed
+      asset data" warnings (often dozens to hundreds of times in a row), which is
+      a known signature of an async I/O fault on Bannerlord's .tpac packages —
+      the compressed archives that hold meshes, textures and icons. When this
+      pattern precedes a managed CLR exception (0xE0434352), the engine usually
+      threw a System.IO.FileNotFoundException or async-read failure that nobody
+      caught, and the game went down.
+
+      Forum-confirmed root causes for this exact pattern:
+        1. Corrupt or partially-downloaded .tpac in the base game (typically
+           Modules/Native/AssetPackages/pack0.tpac) or in a Workshop mod.
+        2. Antivirus / Defender real-time scan blocking async file handles
+           opened by the engine on large .tpac reads.
+        3. Disk I/O errors (failing sector, USB-attached storage timing out,
+           HDD under heavy load while the game streams an asset).
+        4. Modded asset that references a file the mod author forgot to ship.
+
+      Without BLSE + ButterLib installed, Bannerlord won't write a managed stack
+      trace to rgl_log, so we can't name the exact .tpac that failed — only the
+      symptom class. Install BLSE before the next session if this repeats.
+    ru: |
+      В логе серия предупреждений "Trying to make partial read on compressed
+      asset data" (часто десятки-сотни подряд) — это известная сигнатура
+      ошибки асинхронного I/O на .tpac-паках Bannerlord (сжатые архивы с
+      мешами, текстурами, иконками). Когда такой всплеск идёт перед managed-
+      исключением CLR (0xE0434352) — движок обычно бросил
+      System.IO.FileNotFoundException или async-read failure, который никто
+      не поймал, и игра упала.
+
+      Форумно-подтверждённые первопричины именно этого паттерна:
+        1. Битый или не до конца скачанный .tpac в базе игры (обычно
+           Modules/Native/AssetPackages/pack0.tpac) или в Workshop-моде.
+        2. Антивирус / Defender real-time блокирует асинхронные файловые
+           хэндлы, которые движок открывает на больших .tpac.
+        3. I/O-ошибки на диске (битый сектор, USB-носитель с таймаутами,
+           HDD под нагрузкой во время стриминга ассета).
+        4. Модовый ассет ссылается на файл, который автор мода забыл
+           положить в архив.
+
+      Без установленных BLSE + ButterLib Bannerlord не пишет managed-стек в
+      rgl_log, поэтому точное имя битого .tpac определить невозможно — только
+      класс проблемы. Если краш повторится — поставь BLSE перед следующей
+      сессией, тогда мы получим точный стек.
+  fix:
+    en:
+      - "Steam → Bannerlord → Properties → Installed Files → Verify integrity (rebuilds Native pack0.tpac if it's broken)."
+      - "Resubscribe to your large content mods on Steam Workshop: unsubscribe → close Steam → delete the mod folder under steamapps\\workshop\\content\\261550\\<id>\\ → reopen Steam → re-subscribe (forces a clean redownload — Workshop has no built-in 'verify')."
+      - "Add the Bannerlord install folder and steamapps\\workshop\\content\\261550 to your antivirus / Windows Defender exclusion list, then restart the PC."
+      - "Run 'chkdsk C: /f' from an admin console (will require a reboot) — confirms the disk holding the game has no I/O errors."
+      - "Install BLSE + ButterLib for the next session — they make Bannerlord write a managed stack trace, so we can name the exact failing .tpac next time."
+    ru:
+      - "Steam → Bannerlord → Свойства → Установленные файлы → Проверить целостность (если сломан Native pack0.tpac — Steam докачает)."
+      - "Перекачай свои крупные контентные моды через Workshop: отписаться → закрыть Steam → удалить папку мода в steamapps\\workshop\\content\\261550\\<id>\\ → открыть Steam → подписаться обратно (Workshop сам по себе не верифицирует, нужен ручной reset)."
+      - "Добавь папку игры и steamapps\\workshop\\content\\261550 в исключения антивируса / Windows Defender, затем перезагрузи ПК."
+      - "Прогони 'chkdsk C: /f' в админ-консоли (потребуется перезагрузка) — подтвердит, что на диске с игрой нет I/O-ошибок."
+      - "Поставь BLSE + ButterLib к следующей сессии — они заставят Bannerlord писать managed-стек, и в следующий раз мы укажем конкретный битый .tpac."
+  match:
+    all:
+      - log_line:
+          contains: "partial read on compressed asset"
+          count_at_least: "100"

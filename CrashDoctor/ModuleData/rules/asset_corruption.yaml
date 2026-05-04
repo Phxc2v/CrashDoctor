@@ -1,0 +1,168 @@
+# Asset corruption / I/O failure rules. Patterns observed in real client crashes
+# 2026-05-03 (NCVFIVE box) + corpus from Telegram support channel. Bannerlord's
+# IO layer doesn't recover from these — the next mission load that touches the
+# missing/corrupt asset crashes the process.
+
+- id: assets.tpac_corrupted_workshop_mod
+  category: assets
+  severity: critical
+  confidence: high
+  evidence_source: "Real client crash 2026-05-03 — pack5.tpac of Workshop 3025575223 (TOR_Core) failed async read, followed by missing skeletons (orc/troll/goblin/dwarf) and 200+ particle systems"
+  requires_sources: [log_line]
+  title:
+    en: "Workshop mod has a corrupted .tpac asset pack"
+    ru: "У Workshop-мода повреждён .tpac-пакет ассетов"
+  description:
+    en: |
+      Bannerlord could not asynchronously read a .tpac asset pack from a Workshop
+      mod folder, then logged "ERROR: File read failed! Please try to verify
+      your installation!". The pack number and Workshop ID in evidence tell us
+      WHICH mod corrupted (compare the numeric ID against your Steam Workshop
+      subscriptions).
+
+      Once a .tpac fails to load, every prefab/skeleton/particle declared inside
+      it is missing for the rest of the session. Typical knock-on effects:
+      - "Unable to find particle system with name <psys_blaze_small_1, comet_of_sigmar, ...>"
+      - "Emitter hierarchy does not match invalid_particle-invalid_particle"
+      - Missing skeletons silently fall back to invalid_particle, then crash on
+        first agent spawn that needed them (orcs, trolls, goblins on TOR).
+
+      Cause is almost always Steam download interruption or AV quarantine — the
+      file is on disk but truncated / zero-byte / blocked.
+    ru: |
+      Bannerlord не смог асинхронно прочитать .tpac-пакет ассетов из папки
+      Workshop-мода, после чего записал «ERROR: File read failed! Please try to
+      verify your installation!». Номер pack-а и Workshop ID в evidence
+      указывают КАКОЙ мод повреждён (сверь числовой ID со своим списком Steam
+      Workshop подписок).
+
+      Если .tpac не загрузился — каждый prefab/скелет/particle, объявленный
+      в нём, отсутствует до конца сессии. Типичные последствия:
+      - «Unable to find particle system with name <psys_blaze_small_1, comet_of_sigmar, ...>»
+      - «Emitter hierarchy does not match invalid_particle-invalid_particle»
+      - Пропавшие скелеты тихо падают в invalid_particle, потом краш на первом
+        spawn'е агента, которому они нужны (орки, тролли, гоблины в TOR).
+
+      Причина почти всегда — обрыв загрузки Steam или AV-карантин: файл на
+      диске, но обрезан / 0 байт / заблокирован.
+  fix:
+    en:
+      - "Find the Workshop ID in evidence (the number after /261550/<id>/). Open https://steamcommunity.com/sharedfiles/filedetails/?id=<id> to see which mod it is."
+      - "Steam → Workshop → Subscribed → find the mod → Unsubscribe. Wait 30 seconds for Steam to delete its files. Then Subscribe again — full re-download."
+      - "If the same .tpac fails after re-subscribing: Windows Defender → Protection history → restore any quarantined Bannerlord/Workshop files, add Workshop folder to Defender exclusions manually (Settings → Privacy & Security → Windows Security → Virus & threat protection → Manage settings → Add or remove exclusions → Add an exclusion → Folder)."
+      - "Steam → Bannerlord → Properties → Installed Files → Verify integrity. Catches the rare case where a vanilla .tpac corrupted (mods are NOT touched by Steam Verify)."
+      - "Crash Doctor → Tune-Up → 'SHA-256 integrity check' card spots silent corruption that Steam Verify can't see (Workshop mods)."
+    ru:
+      - "Найди Workshop ID в evidence (число после /261550/<id>/). Открой https://steamcommunity.com/sharedfiles/filedetails/?id=<id> — увидишь какой это мод."
+      - "Steam → Workshop → Подписки → найди мод → Отписаться. Подожди 30 секунд — Steam удалит файлы. Потом Подписаться заново — полная re-download."
+      - "Если тот же .tpac падает после re-subscribe: Windows Defender → Журнал защиты → восстанови карантинные файлы Bannerlord/Workshop, добавь Workshop folder в исключения Defender вручную (Параметры → Безопасность Windows → Защита от вирусов и угроз → Управление настройками → Добавление или удаление исключений → Папка)."
+      - "Steam → Bannerlord → Свойства → Установленные файлы → Проверить целостность. Ловит редкий кейс когда повреждён ванильный .tpac (моды Steam Verify не трогает)."
+      - "Карточка «SHA-256 integrity check» в Crash Doctor → Tune-Up ловит молчаливую порчу, которую Verify не видит (Workshop-моды)."
+  match:
+    all:
+      - log_line:
+          contains: "Unable to open file for asynchronous read operation"
+      - any:
+          - log_line:
+              contains: "File read failed"
+          - log_line:
+              regex: "\\.tpac"
+
+- id: assets.tpac_oversized_pool
+  category: assets
+  severity: warning
+  confidence: medium
+  evidence_source: "Real client crash 2026-05-03 — pack0.tpac (663 MB) > memory pool limit (256 MB), Workshop 3025579210"
+  requires_sources: [log_line]
+  title:
+    en: "Asset pack exceeds Bannerlord's memory pool limit"
+    ru: "Pack ассетов превышает лимит memory pool Bannerlord"
+  description:
+    en: |
+      Bannerlord logged "Performance warning read N byte from <path>/pack0.tpac
+      is bigger than memory pool limit M" — a single .tpac payload outgrew the
+      256 MB asset cache. The engine handles this by streaming chunks instead
+      of caching, which slows mission loads and inflates VRAM/RAM thrash. With
+      modest hardware (under 32 GB RAM, under 8 GB VRAM) plus TOR + heavy mods,
+      the contention can lead to "out of memory" cascades on next scene change.
+
+      Doesn't crash on its own — symptom of a custom-content-heavy mod stack.
+      Common offenders: 4K texture packs ("Improved Visuals", "RealisticBattle"
+      armor packs), large city overhauls, vampire-castle prefab packs.
+    ru: |
+      Bannerlord записал «Performance warning read N byte from <path>/pack0.tpac
+      is bigger than memory pool limit M» — один .tpac payload не помещается в
+      256 МБ asset cache. Движок обходит это streaming'ом по кускам, но это
+      замедляет загрузку миссий и сильнее давит VRAM/RAM. На скромном железе
+      (меньше 32 ГБ RAM, меньше 8 ГБ VRAM) + TOR + тяжёлые моды contention
+      может привести к каскадным «out of memory» на следующей сцене.
+
+      Сам по себе не крашит — симптом перегруженного мод-стека с тяжёлым
+      кастом-контентом. Типичные виновники: 4K текстур-паки («Improved
+      Visuals», RealisticBattle броня), большие city overhauls, prefab-паки
+      под vampire castles.
+  fix:
+    en:
+      - "Identify the heaviest texture/prefab mods in your stack — Workshop ID is in evidence. If you don't strictly need them, unsubscribe."
+      - "Lower in-game Texture Quality and Texture Budget by one notch each. Frees several hundred MB of pool space."
+      - "Close memory-hungry background apps before launching: browsers (Chrome / Edge), VR runtimes, AI tools (Ollama). Crash Doctor → Tune-Up → 'Heavy VRAM apps' lists what's running right now."
+      - "Increase pagefile to 32+ GB system-managed (Crash Doctor → Tune-Up → 'Pagefile' card) — gives the streaming layer a fallback when pool is saturated."
+    ru:
+      - "Найди самые тяжёлые текстур/prefab моды в стеке — Workshop ID в evidence. Если без них можно — отпишись."
+      - "Понизь в игре Texture Quality и Texture Budget на одну ступень каждый. Освободит несколько сотен МБ pool'а."
+      - "Закрой memory-hungry фоновые приложения перед запуском: браузеры (Chrome / Edge), VR-runtimes, AI (Ollama). Crash Doctor → Tune-Up → «Heavy VRAM apps» покажет что сейчас работает."
+      - "Подними pagefile до 32+ ГБ system-managed (Crash Doctor → Tune-Up → «Pagefile»). Streaming-слою будет куда упасть если pool насыщен."
+  match:
+    all:
+      - log_line:
+          contains: "is bigger than memory pool limit"
+
+- id: assets.file_read_failed_verify_install
+  category: assets
+  severity: critical
+  confidence: high
+  evidence_source: "Real client crash 2026-05-03 — rgl_log_errors line 'ERROR: File read failed! Please try to verify your installation!' wrapped by hash banner"
+  requires_sources: [log_line]
+  title:
+    en: "Bannerlord asset file read failed (verify your installation)"
+    ru: "Не удалось прочитать файл ассетов Bannerlord (проверь установку)"
+  description:
+    en: |
+      Bannerlord's IO layer threw "ERROR: File read failed! Please try to verify
+      your installation!" without a clear preceding async-read tag, so we can't
+      pinpoint a specific mod. Generic IO failure: a file the engine expected to
+      read isn't readable. Typical causes:
+
+      - Steam download was interrupted (file shorter than the manifest entry).
+      - Antivirus quarantined a .dll / .tpac after a Windows update — the file
+        is still on disk but zero bytes.
+      - A mod was uninstalled mid-session and the player kept playing.
+      - Bad disk sector — rare on SSDs, common on aging HDDs.
+    ru: |
+      IO-слой Bannerlord выбросил «ERROR: File read failed! Please try to
+      verify your installation!» без чёткого тега async-read, и мы не можем
+      указать на конкретный мод. Generic IO-fail: файл, который движок
+      ожидал прочитать, не читается. Типичные причины:
+
+      - Загрузка Steam прервалась (файл короче чем в манифесте).
+      - Антивирус положил .dll / .tpac в карантин после Windows update —
+        файл на диске, но размером 0 байт.
+      - Мод удалили посреди сессии, а игрок продолжил играть.
+      - Битый сектор диска — редко на SSD, часто на старых HDD.
+  fix:
+    en:
+      - "Steam → Bannerlord → Properties → Installed Files → Verify integrity of game files. Re-downloads any short/missing files."
+      - "Crash Doctor → Tune-Up → 'SHA-256 integrity check' card. Spots Workshop-mod corruption (Steam Verify only checks game files, not mods)."
+      - "Check Windows Defender → Protection history. Restore any Bannerlord-related quarantined items, then add the install + Workshop folders to exclusions manually (Settings → Privacy & Security → Windows Security → Virus & threat protection → Manage settings → Add or remove exclusions → Folder)."
+      - "If the issue persists across Verify + Restore: re-subscribe to all Workshop mods (Steam Workshop → Subscriptions → unsubscribe → resubscribe). Forces full re-download."
+      - "Old HDD: run `chkdsk /r` on the drive Bannerlord lives on. Bad-sector remap can recover the file if the disk is the culprit."
+    ru:
+      - "Steam → Bannerlord → Свойства → Установленные файлы → Проверить целостность. Перекачивает короткие/пропавшие файлы."
+      - "Карточка «SHA-256 integrity check» в Crash Doctor → Tune-Up. Ловит порчу Workshop-модов (Steam Verify проверяет только файлы игры, не моды)."
+      - "Проверь Windows Defender → Журнал защиты. Восстанови карантинные файлы Bannerlord и добавь папки игры + Workshop в исключения вручную (Параметры → Безопасность Windows → Защита от вирусов и угроз → Управление настройками → Добавление или удаление исключений → Папка)."
+      - "Если после Verify + Restore проблема осталась — переподпишись на все Workshop-моды (Steam Workshop → Подписки → отписаться → подписаться заново). Force full re-download."
+      - "Старый HDD: выполни `chkdsk /r` на диске где живёт Bannerlord. Bad-sector remap может восстановить файл если виноват диск."
+  match:
+    all:
+      - log_line:
+          contains: "ERROR: File read failed"

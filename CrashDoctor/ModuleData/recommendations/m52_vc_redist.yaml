@@ -1,0 +1,34 @@
+- id: m52_vc_redist
+  title:
+    en: "Visual C++ 2015-2022 x64 Redistributable check"
+    ru: "Проверка Visual C++ 2015-2022 x64 Redistributable"
+  description:
+    en: |
+      Bannerlord ships native DLLs (TaleWorlds.Native.dll, FMOD, libcrypto) that link
+      against vcruntime140.dll and msvcp140.dll from the Visual C++ 2015-2022 x64
+      runtime. If the system has only the x86 redist or none, the launcher fails to
+      load TaleWorlds.MountAndBlade.dll with BadImageFormatException — players think
+      it's a mod conflict and start uninstalling things at random.
+
+      Card surfaces only when x64 redist is missing or older than 14.30 (the VS2022
+      baseline that Bannerlord 1.3.x is built against).
+    ru: |
+      Bannerlord использует нативные DLL (TaleWorlds.Native.dll, FMOD, libcrypto),
+      которые слинкованы с vcruntime140.dll и msvcp140.dll из Visual C++ 2015-2022
+      x64 runtime. Если на системе только x86-редист или вообще ничего, лаунчер
+      не загрузит TaleWorlds.MountAndBlade.dll и упадёт с BadImageFormatException —
+      игрок будет думать что это конфликт модов и начнёт удалять моды наугад.
+
+      Карточка появляется только если x64-редист отсутствует или версия меньше
+      14.30 (минимум для Bannerlord 1.3.x, собранного под VS2022).
+  details:
+    en:
+      - "Read-only. Apply opens https://aka.ms/vs/17/release/vc_redist.x64.exe in your browser."
+      - "Crash Doctor never downloads or installs software itself."
+      - "Source: HKLM\\SOFTWARE\\Microsoft\\VisualStudio\\14.0\\VC\\Runtimes\\x64."
+      - "Not reversible."
+    ru:
+      - "Только проверка. «Применить» откроет https://aka.ms/vs/17/release/vc_redist.x64.exe в браузере."
+      - "Crash Doctor сам ничего не качает и не устанавливает."
+      - "Источник: HKLM\\SOFTWARE\\Microsoft\\VisualStudio\\14.0\\VC\\Runtimes\\x64."
+      - "Откат не предусмотрен."

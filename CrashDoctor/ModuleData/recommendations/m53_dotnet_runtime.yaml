@@ -1,0 +1,32 @@
+- id: m53_dotnet_runtime
+  title:
+    en: ".NET Framework 4.7.2+ check"
+    ru: "Проверка .NET Framework 4.7.2+"
+  description:
+    en: |
+      Bannerlord 1.3.x and the BUTR family of mods (BLSE, ButterLib, MCM) target
+      net472. The classic .NET Framework registry key (HKLM\SOFTWARE\Microsoft\NET
+      Framework Setup\NDP\v4\Full) tells us what's actually on the box. Below 4.7.2
+      you'll get BadImageFormatException at module load time.
+
+      We don't use `dotnet --list-runtimes` — that's for .NET Core / .NET 5+ and
+      doesn't list classic Framework. Registry is the authoritative source.
+    ru: |
+      Bannerlord 1.3.x и семейство BUTR (BLSE, ButterLib, MCM) собраны под net472.
+      Классическая ветка реестра .NET Framework (HKLM\SOFTWARE\Microsoft\NET
+      Framework Setup\NDP\v4\Full) говорит, что реально установлено. Меньше 4.7.2 —
+      на загрузке модулей будет BadImageFormatException.
+
+      Мы НЕ используем `dotnet --list-runtimes` — он для .NET Core / .NET 5+ и
+      классический Framework не показывает. Реестр — авторитетный источник.
+  details:
+    en:
+      - "Apply opens Microsoft's .NET 4.8 download page (latest supported on Win10, fully back-compatible)."
+      - "Source: HKLM Release DWORD value mapped to friendly version name."
+      - "Threshold: 461808 (.NET 4.7.2)."
+      - "Not reversible."
+    ru:
+      - "«Применить» откроет страницу загрузки .NET 4.8 от Microsoft (последний на Win10, обратная совместимость)."
+      - "Источник: HKLM Release DWORD, маппится в человекочитаемое имя."
+      - "Порог: 461808 (.NET 4.7.2)."
+      - "Откат не предусмотрен."
