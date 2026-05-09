@@ -53,7 +53,7 @@ Previously `actionable++` ran **before** the IgnoreStore check — the counter i
 - **Default `Enabled = false`** — opt-in. The user enables it from the Performance tab or via Ctrl+P in the in-game HUD.
 - **Two-file settings** (`CrashDoctorSettings`): defaults in `ModuleData/CrashDoctorSettings.xml` (Workshop, gets overwritten by Steam on every mod update) + user overrides in `Documents/Mount and Blade II Bannerlord/CrashDoctor/state/user_settings.xml` (Steam validation can't reach it, survives mod updates). `Save()` writes **diff only** against the post-defaults snapshot — state stays minimal so future Workshop defaults can flow through to the user without being shadowed by stale duplicates.
 - **HUD visibility and Master state persist across sessions** independent of save game. Ctrl+O / Ctrl+P write straight to state.xml. Bannerlord restart, PC restart, mod update — state survives.
-- **Hotkeys work on vanilla and any mod, even when Master is OFF.** Bootstrap no longer aborts on `Enabled=false` — every patch installs, F1–F4 prefixes gate at runtime via `RuntimeMasterEnabled` (early-return when master is off, overhead near zero). That way the user can flip Master from inside the game with Ctrl+P, no restart needed.
+- **Hotkeys work on vanilla and any mod, even when Master is OFF.** Bootstrap no longer aborts on `Enabled=false` — every patch installs, throttle prefixes gate at runtime via `RuntimeMasterEnabled` (early-return when master is off, overhead near zero). That way the user can flip Master from inside the game with Ctrl+P, no restart needed.
 - The `RuntimeMasterEnabled` settings field collapsed into `Enabled` — single source of truth. `IPerfHost.SetSetting<T>` (new interface method) used by the HUD to persist runtime flips.
 
 **HUD — UX fixes:**
@@ -88,11 +88,11 @@ Vanilla TaleWorlds launcher compares `DependentVersion` strictly across all 4 co
 
 New "Optimization" section in the Tune-Up tab — opt-in performance throttle for the
 campaign map. 5 independently-toggleable mechanisms:
-- F1: hourly tick early-exit for distant invisible parties (biggest FPS win)
-- F2: bucket-spread for distant town/castle ticks (villages always tick — food production safe)
-- F3: rate-limit AI ticks of distant parties to 2 Hz
-- F4: frame-skip for distant party visuals (OFF by default — flicker risk)
-- F5: in-game HUD with throttle stats, hotkey **Ctrl+O**, EN/RU (default EN)
+- Distant parties: hourly-tick early-exit for invisible far-away parties (biggest FPS win)
+- Settlements: bucket-spread for distant town / castle ticks (villages always tick — food production safe)
+- Distant AI: rate-limit AI ticks of far-away parties to 2 Hz
+- Distant visuals: frame-skip for far-away party visuals (OFF by default — flicker risk)
+- In-game HUD: throttle stats, hotkey **Ctrl+O**, EN/RU (auto-detect)
 
 **Section gating:** appears only when The Old Realms / EE1700 is loaded, or the user
 explicitly enabled "Always show" in advanced. If Bannerlord.Harmony is missing, the

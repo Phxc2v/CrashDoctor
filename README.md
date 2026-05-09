@@ -129,11 +129,11 @@ or just a large `MobileParty` count):
 
 | Mechanism | What it skips | Default |
 |---|---|---|
-| **F1** Distant party hourly tick | `HourlyTick` for invisible far-away parties | ON |
-| **F2** Settlement bucket-spread | Far-away towns / castles tick every 16 game-hours instead of every hour (villages always tick — food production safe) | ON |
-| **F3** AI rate-limit | Distant invisible parties think 2 Hz instead of every frame | ON |
-| **F4** Visual frame-skip | Distant party visual updates batched (OFF by default — minor flicker risk) | OFF |
-| **F5** In-game HUD | Live counters + FPS sparkline + A/B comparison overlay on the map | ON |
+| Distant party hourly tick | `HourlyTick` for invisible far-away parties | ON |
+| Settlement bucket-spread | Far-away towns / castles tick every 16 game-hours instead of every hour (villages always tick — food production safe) | ON |
+| Distant AI rate-limit | Distant invisible parties think 2 Hz instead of every frame | ON |
+| Distant visual frame-skip | Distant party visual updates batched (OFF by default — minor flicker risk) | OFF |
+| In-game HUD | Live counters + FPS sparkline + A/B comparison overlay on the map | ON |
 
 **Hotkeys** (campaign map):
 - `Ctrl+P` — toggle the throttle. Persistent: written to
@@ -151,9 +151,9 @@ and OFF states** before showing a delta — anything sooner is dominated by
 GPU clock ramp / shader-cache warmup, not optimization.
 
 Works on **vanilla Bannerlord and any mod-mix**, not only TOR. The four
-patches install regardless of master state; F1–F4 prefixes early-return
-when master is OFF, so overhead with throttle disabled is one boolean
-check per call.
+throttle patches install regardless of master state; their prefixes
+early-return when master is OFF, so overhead with throttle disabled is
+one boolean check per call.
 
 **Requires `Bannerlord.Harmony`.** Without it Crash Doctor still loads
 normally; the Performance tab shows a CTA with a button that opens the
@@ -374,11 +374,11 @@ Calradia Expanded, RBM, Banner Kings и т.д. Без интернета, без
 - **Оптимизация** — отдельная вкладка + окно прямо в игре на карте кампании.
   Помогает на больших мод-сборках (TOR, EE1700) или когда у тебя на карте
   много отрядов и FPS падает. Что делает:
-  - **F1** не считает почасовое обновление далёких невидимых отрядов (даёт самый большой прирост FPS)
-  - **F2** реже обновляет далёкие города и замки (деревни обновляются как раньше — еда в порядке)
-  - **F3** ИИ далёких отрядов думает 2 раза в секунду вместо каждого кадра
-  - **F4** реже обновляет анимации далёких отрядов (ВЫКЛ по умолчанию — может слегка мелькать)
-  - **F5** окно в углу карты со счётчиками, FPS и сравнением «с оптимизацией / без»
+  - **Далёкие отряды** — не считает почасовое обновление далёких невидимых отрядов (даёт самый большой прирост FPS)
+  - **Города и замки** — реже обновляет далёкие города и замки (деревни обновляются как раньше — еда в порядке)
+  - **ИИ далёких отрядов** — думает 2 раза в секунду вместо каждого кадра
+  - **Анимации далёких отрядов** — реже обновляются (ВЫКЛ по умолчанию — может слегка мелькать)
+  - **Окно в углу карты** — счётчики, FPS и сравнение «с оптимизацией / без»
 
   **Горячие клавиши на карте:**
   - `Ctrl+P` — включить или выключить оптимизацию мгновенно, без перезапуска
