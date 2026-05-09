@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Prefab>
+  <Window>
+    <!-- Mid-size panel: 360×290. Big enough to read at 1080p / 1440p without dominating
+         the screen. Visual row has @VisualRowVisible binding so it can hide cleanly when
+         F4 is off (no more "0 пропущено" noise). -->
+    <Widget IsVisible="@IsVisible"
+            WidthSizePolicy="Fixed" HeightSizePolicy="Fixed"
+            SuggestedWidth="360" SuggestedHeight="370"
+            HorizontalAlignment="Right" VerticalAlignment="Top"
+            MarginTop="55" MarginRight="12"
+            Sprite="BlankWhiteSquare_9" Color="#000000C8">
+      <Children>
+        <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
+                Sprite="frame_9" ExtendLeft="12" ExtendTop="12" ExtendRight="12" ExtendBottom="12"
+                IsEnabled="false" />
+
+        <!-- Hide/show hint — sits directly above the master ON/OFF line, bottom-anchored.
+             Same column position so the eye reads two short rows without scanning. The
+             panel has plenty of vertical space, so we put it here rather than crowding the
+             stats list above. Bilingual via @HideHintText (set from MapScreenHUDPatch). -->
+        <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="18"
+                    HorizontalAlignment="Center" VerticalAlignment="Bottom"
+                    MarginLeft="14" MarginRight="12" MarginBottom="42"
+                    Brush.FontSize="12" Brush.FontColor="#CFCFCFFF"
+                    Brush.TextHorizontalAlignment="Center" Text="@HideHintText" />
+
+        <!-- Master ON/OFF state line — bottom-anchored bold colored text. -->
+        <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="26"
+                    HorizontalAlignment="Center" VerticalAlignment="Bottom"
+                    MarginLeft="14" MarginRight="12" MarginBottom="12"
+                    Brush.FontSize="15" Brush.FontColor="@MasterButtonColor"
+                    Brush.TextHorizontalAlignment="Center" Text="@MasterButtonText" />
+
+        <ListPanel WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren"
+                   StackLayout.LayoutMethod="VerticalBottomToTop"
+                   MarginTop="10" MarginLeft="14" MarginRight="12" MarginBottom="72">
+          <Children>
+            <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="16"
+                        Brush.FontSize="11" Brush.FontColor="@ExceptionColor"
+                        Brush.TextHorizontalAlignment="Left" Text="@ExceptionText" MarginTop="2" />
+            <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="20"
+                        Brush.FontSize="13" Brush.FontColor="#FFD745FF"
+                        Brush.TextHorizontalAlignment="Left" Text="@TotalText" MarginTop="4" />
+            <!-- Visual row hidden when F4 disabled to keep the panel uncluttered. -->
+            <TextWidget IsVisible="@VisualRowVisible"
+                        WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="18"
+                        Brush.FontSize="12" Brush.FontColor="#DDDDDDFF"
+                        Brush.TextHorizontalAlignment="Left" Text="@VisualText" MarginTop="2" />
+            <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="18"
+                        Brush.FontSize="12" Brush.FontColor="#DDDDDDFF"
+                        Brush.TextHorizontalAlignment="Left" Text="@AiText" MarginTop="2" />
+            <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="18"
+                        Brush.FontSize="12" Brush.FontColor="#DDDDDDFF"
+                        Brush.TextHorizontalAlignment="Left" Text="@SettlementsText" MarginTop="2" />
+            <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="18"
+                        Brush.FontSize="12" Brush.FontColor="#DDDDDDFF"
+                        Brush.TextHorizontalAlignment="Left" Text="@PartiesText" MarginTop="2" />
+            <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="20"
+                        Brush.FontSize="16" Brush.FontColor="#66FF8DFF"
+                        Brush.TextHorizontalAlignment="Left" Text="@SparklineText" MarginTop="2" />
+
+            <!-- A/B comparison block — persists across Ctrl+P toggles so the user sees the
+                 accumulated impact of optimization on FPS. Each line updates only while its
+                 state is active; the diff line goes green when ON wins, red when OFF wins. -->
+            <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="18"
+                        Brush.FontSize="12" Brush.FontColor="@AvgDiffColor"
+                        Brush.TextHorizontalAlignment="Left" Text="@AvgDiffText" MarginTop="2" />
+            <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="18"
+                        Brush.FontSize="13" Brush.FontColor="#FF6E6EFF"
+                        Brush.TextHorizontalAlignment="Left" Text="@AvgOffText" MarginTop="1" />
+            <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="18"
+                        Brush.FontSize="13" Brush.FontColor="#7AC07AFF"
+                        Brush.TextHorizontalAlignment="Left" Text="@AvgOnText" MarginTop="1" />
+
+            <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="22"
+                        Brush.FontSize="15" Brush.FontColor="#FFFFFFFF"
+                        Brush.TextHorizontalAlignment="Left" Text="@FpsText" MarginTop="3" />
+            <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="16"
+                        Brush.FontSize="11" Brush.FontColor="#DDDDDDFF"
+                        Brush.TextHorizontalAlignment="Left" Text="@StatusText" MarginTop="2" />
+            <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="20"
+                        Brush.FontSize="14" Brush.FontColor="#66FF8DFF"
+                        Brush.TextHorizontalAlignment="Left" Text="@TitleText" />
+          </Children>
+        </ListPanel>
+      </Children>
+    </Widget>
+  </Window>
+</Prefab>

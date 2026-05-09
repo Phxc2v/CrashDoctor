@@ -125,6 +125,7 @@
   fix:
     en:
       - "If you actually own RX 7700 XT / 7800 XT / 7900 / 9070 / RTX 4070 Super+ / 4080 / 4090 / 5080 / 5090: ignore this card — DXDIAG misreports your VRAM. Move on."
+      - "If you're on a gaming laptop with both an integrated GPU and a discrete one (NVIDIA Optimus / AMD SmartShift — Lenovo Legion, ASUS ROG, MSI, Razer, etc.): DXDIAG always under-reports the discrete card's VRAM through the iGPU view. Your real VRAM is whatever the manufacturer listed (commonly 8 GB on RTX 4060 Laptop, 12 GB on 4070 Laptop, etc.). Ignore this card."
       - "Otherwise: in-game Options → Graphics → Texture Quality = Medium, Texture Budget = Medium, Shadow Quality = Medium."
       - "Close every VRAM-eating background app before launching: VR runtimes (Oculus, SteamVR, Mixed Reality Portal), AI tools (Ollama, LM Studio, Stable Diffusion), video editors (DaVinci Resolve, Premiere, After Effects), browsers with many tabs (Chrome / Edge / Firefox / Brave), OBS in Game Capture mode."
       - "Open Crash Doctor → System tune-up → 'Heavy VRAM apps' card if it appeared — it lists what's actually running on your machine right now."
@@ -132,6 +133,7 @@
       - "AFTER changing any graphics setting: REBOOT the PC, then Crash Doctor → System tune-up → 'Clear Bannerlord shader cache', then Main Menu → 'Build Shader Cache' (20–60 min). Skip any of these → game crashes on splash next launch."
     ru:
       - "Если у тебя на самом деле RX 7700 XT / 7800 XT / 7900 / 9070 / RTX 4070 Super+ / 4080 / 4090 / 5080 / 5090 — игнорируй эту карточку, DXDIAG занижает твой VRAM. Иди дальше."
+      - "Если ты на игровом ноутбуке с встроенной + дискретной картой (NVIDIA Optimus / AMD SmartShift — Lenovo Legion, ASUS ROG, MSI, Razer и т.д.): DXDIAG всегда занижает VRAM дискретки через iGPU view. Реальный VRAM = тот, что указал производитель (типично 8 ГБ на RTX 4060 Laptop, 12 ГБ на 4070 Laptop и т.д.). Игнорируй эту карточку."
       - "Иначе: в игре Опции → Графика → Texture Quality = Medium, Texture Budget = Medium, Shadow Quality = Medium."
       - "Закрой все жрущие VRAM фоновые приложения перед запуском: VR-runtimes (Oculus, SteamVR, Mixed Reality Portal), AI (Ollama, LM Studio, Stable Diffusion), видео-редакторы (DaVinci Resolve, Premiere, After Effects), браузеры с большим количеством вкладок (Chrome / Edge / Firefox / Brave), OBS в режиме Game Capture."
       - "Открой Crash Doctor → Настройка системы → карточку «Тяжёлые VRAM-приложения», если появилась — там видно что реально запущено сейчас на твоём ПК."

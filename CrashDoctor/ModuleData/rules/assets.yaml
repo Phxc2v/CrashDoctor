@@ -95,7 +95,7 @@
   category: assets
   severity: critical
   confidence: medium
-  evidence_source: "https://steamcommunity.com/app/261550/discussions/0/3722820118820333415/ + https://steamcommunity.com/workshop/filedetails/discussion/3233297311/4363501716022599051/"
+  evidence_source: "https://steamcommunity.com/app/261550/discussions/0/3722820118820333415/"
   requires_sources: [log_line]
   title:
     en: "Async I/O fault on compressed asset (.tpac) — engine couldn't read pack"
@@ -111,17 +111,12 @@
       caught, and the game went down.
 
       Forum-confirmed root causes for this exact pattern:
-        1. Corrupt or partially-downloaded .tpac in the base game (typically
-           Modules/Native/AssetPackages/pack0.tpac) or in a Workshop mod.
-        2. Antivirus / Defender real-time scan blocking async file handles
-           opened by the engine on large .tpac reads.
-        3. Disk I/O errors (failing sector, USB-attached storage timing out,
-           HDD under heavy load while the game streams an asset).
-        4. Modded asset that references a file the mod author forgot to ship.
+      1. Corrupt or partially-downloaded .tpac in the base game (typically Modules/Native/AssetPackages/pack0.tpac) or in a Workshop mod.
+      2. Antivirus / Defender real-time scan blocking async file handles opened by the engine on large .tpac reads.
+      3. Disk I/O errors (failing sector, USB-attached storage timing out, HDD under heavy load while the game streams an asset).
+      4. Modded asset that references a file the mod author forgot to ship.
 
-      Without BLSE + ButterLib installed, Bannerlord won't write a managed stack
-      trace to rgl_log, so we can't name the exact .tpac that failed — only the
-      symptom class. Install BLSE before the next session if this repeats.
+      Without BLSE + ButterLib installed, Bannerlord won't write a managed stack trace to rgl_log, so we can't name the exact .tpac that failed — only the symptom class. Install BLSE before the next session if this repeats.
     ru: |
       В логе серия предупреждений "Trying to make partial read on compressed
       asset data" (часто десятки-сотни подряд) — это известная сигнатура
@@ -132,19 +127,12 @@
       не поймал, и игра упала.
 
       Форумно-подтверждённые первопричины именно этого паттерна:
-        1. Битый или не до конца скачанный .tpac в базе игры (обычно
-           Modules/Native/AssetPackages/pack0.tpac) или в Workshop-моде.
-        2. Антивирус / Defender real-time блокирует асинхронные файловые
-           хэндлы, которые движок открывает на больших .tpac.
-        3. I/O-ошибки на диске (битый сектор, USB-носитель с таймаутами,
-           HDD под нагрузкой во время стриминга ассета).
-        4. Модовый ассет ссылается на файл, который автор мода забыл
-           положить в архив.
+      1. Битый или не до конца скачанный .tpac в базе игры (обычно Modules/Native/AssetPackages/pack0.tpac) или в Workshop-моде.
+      2. Антивирус / Defender real-time блокирует асинхронные файловые хэндлы, которые движок открывает на больших .tpac.
+      3. I/O-ошибки на диске (битый сектор, USB-носитель с таймаутами, HDD под нагрузкой во время стриминга ассета).
+      4. Модовый ассет ссылается на файл, который автор мода забыл положить в архив.
 
-      Без установленных BLSE + ButterLib Bannerlord не пишет managed-стек в
-      rgl_log, поэтому точное имя битого .tpac определить невозможно — только
-      класс проблемы. Если краш повторится — поставь BLSE перед следующей
-      сессией, тогда мы получим точный стек.
+      Без установленных BLSE + ButterLib Bannerlord не пишет managed-стек в rgl_log, поэтому точное имя битого .tpac определить невозможно — только класс проблемы. Если краш повторится — поставь BLSE перед следующей сессией, тогда мы получим точный стек.
   fix:
     en:
       - "Steam → Bannerlord → Properties → Installed Files → Verify integrity (rebuilds Native pack0.tpac if it's broken)."

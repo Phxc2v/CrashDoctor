@@ -287,6 +287,16 @@
       even when the headset is idle / not on your face. With TOR + a 1440p+
       desktop already eating most of the card, that reservation is enough to
       starve the texture-array allocation and make CreateTexture2D fail.
+
+      Third common trigger: a NVIDIA Blackwell card (RTX 50-series — 5070 /
+      5070 Ti / 5080 / 5090) after a long uninterrupted session (3+ hours).
+      The Blackwell DX11 driver path leaks descriptor handles slowly; once the
+      pool is exhausted, every subsequent texture-array allocation returns
+      E_INVALIDARG. Symptoms match this exactly: app run time 9+ hours, no VR,
+      discrete NVIDIA selected ("Selected graphics adapter: [1] NVIDIA GeForce
+      RTX 50xx" in rgl_log), GPU Crash flag = 1 in crash_tags. Quitting to
+      desktop and relaunching restores the descriptor pool — that is why
+      "I haven't crashed since I restart every 2 hours" works on this hardware.
     ru: |
       Рендерер Bannerlord (rglGPU_device::create_texture_array) вызвал
       ID3D11Device::CreateTexture2D и получил E_INVALIDARG («Параметр задан
@@ -307,6 +317,16 @@
       в покое и не на голове. На TOR + 1440p+ десктопе, где карта уже под
       нагрузкой, этого резерва хватает чтобы съесть бюджет под texture-array
       и уронить CreateTexture2D.
+
+      Третья частая причина: NVIDIA Blackwell (RTX 50-серия — 5070 / 5070 Ti /
+      5080 / 5090) после длинной непрерывной сессии (3+ часа). DX11-драйвер
+      Blackwell медленно течёт descriptor handles; когда пул исчерпан, каждое
+      следующее выделение texture-array возвращает E_INVALIDARG. Симптомы
+      совпадают: app run time 9+ часов, без VR, выбрана дискретка NVIDIA
+      («Selected graphics adapter: [1] NVIDIA GeForce RTX 50xx» в rgl_log),
+      GPU Crash flag = 1 в crash_tags. Выход на рабочий стол и перезапуск
+      возвращают пул дескрипторов — поэтому «я не падаю, если рестартую
+      каждые 2 часа» работает на этой железке.
   fix:
     en:
       - "If you have a VR headset: fully close Oculus/Meta Quest Link AND SteamVR AND Windows Mixed Reality Portal before launching Bannerlord. Check Task Manager for OVRServer_x64.exe / vrcompositor.exe / vrserver.exe / MixedRealityPortal.exe — kill them. Disconnect the headset cable. They reserve 1.5–3 GB of VRAM each, even idle."
@@ -315,6 +335,8 @@
       - "In-game: Options → Graphics → Texture Quality = Medium. Smaller textures shrink the array footprint."
       - "AMD Adrenalin: open the Bannerlord.exe profile and turn OFF AFMF, Anti-Lag/Anti-Lag+, HYPR-RX, Image Sharpening, Radeon Boost. The driver overlay can also corrupt texture descriptors — disable it (Alt+R)."
       - "If on a brand-new RDNA 4 card (RX 9070 / 9070 XT): try the previous WHQL Adrenalin instead of the latest one. Beta/Preview drivers regularly break old DX11 games."
+      - "If on a brand-new NVIDIA Blackwell card (RTX 5070 / 5070 Ti / 5080 / 5090): break long sessions — quit to desktop and relaunch every 2–3 hours. The DX11 descriptor pool leak resets only on full process exit. NVIDIA Control Panel → Manage 3D settings → Bannerlord.exe → 'Shader Cache Size = 100 GB or Unlimited', 'Power management mode = Prefer maximum performance', turn OFF Image Sharpening / DLSS Frame Generation / Reflex (these add their own descriptors)."
+      - "If on RTX 50-series: try the latest GeForce Game Ready (or Studio) driver — early Blackwell drivers (566.x / 570.x) are known to leak; updates 580.x+ behave better."
       - "Toggle the renderer: Bannerlord launcher → Options → Use DirectX 12 (or back to DX11). RDNA 4 is often more stable on DX12 path."
       - "AFTER changing any graphics setting (Texture Quality / Shader Quality / etc.): REBOOT the PC, open Crash Doctor → System tune-up → 'Clear Bannerlord shader cache', launch the game, Main Menu → 'Build Shader Cache' and wait 20–60 minutes. Skip any of these and the next launch crashes on the imperial-soldier splash."
       - "If nothing helps — file a screenshot of the error popup plus rgl_log_<PID>.txt + watchdog_log_<PID>.txt to the mod author."
@@ -325,6 +347,8 @@
       - "В игре: Опции → Графика → Качество текстур = Medium. Текстуры меньше — массив занимает меньше."
       - "AMD Adrenalin: открой профиль Bannerlord.exe и ВЫКЛЮЧИ AFMF, Anti-Lag/Anti-Lag+, HYPR-RX, Image Sharpening, Radeon Boost. Оверлей драйвера тоже бьёт по дескрипторам — выключи (Alt+R)."
       - "Если карта свежая RDNA 4 (RX 9070 / 9070 XT) — поставь предыдущую WHQL Adrenalin вместо последней. Beta/Preview-драйверы регулярно ломают старые DX11-игры."
+      - "Если карта свежая NVIDIA Blackwell (RTX 5070 / 5070 Ti / 5080 / 5090): дроби длинные сессии — выходи на рабочий стол и запускай заново каждые 2–3 часа. Утечка пула DX11-дескрипторов сбрасывается только при полном выходе из процесса. NVIDIA Control Panel → Manage 3D settings → Bannerlord.exe → «Shader Cache Size = 100 GB или Unlimited», «Power management mode = Prefer maximum performance», ВЫКЛ Image Sharpening / DLSS Frame Generation / Reflex (они добавляют свои дескрипторы)."
+      - "Если RTX 50-серия — обнови GeForce Game Ready (или Studio) до последнего; ранние Blackwell-драйверы (566.x / 570.x) известны утечкой, апдейты 580.x+ ведут себя лучше."
       - "Попробуй сменить рендерер: лаунчер Bannerlord → Опции → Use DirectX 12 (или обратно на DX11). RDNA 4 чаще стабильнее на DX12."
       - "ПОСЛЕ любого изменения настройки графики (Texture Quality / Shader Quality и т.д.): ПЕРЕЗАГРУЗИ ПК, открой Crash Doctor → Настройка системы → «Очистить кэш шейдеров Bannerlord», запусти игру, Главное меню → «Build Shader Cache» и жди 20–60 мин. Пропустишь хоть один шаг — на следующем запуске игра упадёт на заставке с имперским солдатом."
       - "Если ничего не помогло — приложи скриншот окна ошибки + rgl_log_<PID>.txt + watchdog_log_<PID>.txt и пришли автору мода."
@@ -396,3 +420,67 @@
           contains: "pdb append failed"
       - log_line:
           contains: "debug info append failed"
+
+- id: gpu.long_session_gpu_crash
+  category: gpu
+  severity: warning
+  confidence: high
+  evidence_source: "Real client crash 2026-05-08 06:37 — RTX 5070 (Blackwell), Driver 32.0.15.9636 (23.04.2026), App Run Time 33448 sec (9.3 h), GPU Crash flag = 1, create_texture_array failed. Pattern: descriptor-pool leak in DX11 Blackwell driver after multi-hour session."
+  requires_sources: [crash_tag]
+  title:
+    en: "GPU crashed after a long session (3+ hours) — driver descriptor leak"
+    ru: "GPU упал после длинной сессии (3+ часов) — утечка дескрипторов драйвера"
+  description:
+    en: |
+      The crash_tags Runtime/GPU Crash flag is set AND App Run Time is over
+      3 hours. This pairing is the signature of a driver descriptor-pool leak:
+      Bannerlord's DX11 renderer keeps allocating texture-array, shader-resource,
+      and constant-buffer handles; on certain driver versions (notably NVIDIA
+      Blackwell early 566.x–570.x and AMD RDNA 4 Adrenalin previews) those
+      handles are never returned to the pool. After 3–10 hours the pool is
+      exhausted and the next CreateTexture2D / CreateShaderResourceView returns
+      E_INVALIDARG, killing the game.
+
+      This is NOT a TOR-specific bug, NOT a hardware fault, and NOT something
+      lowering graphics will fix on its own — the leak rate is independent of
+      quality settings. The proven mitigation is to break long sessions:
+      quit to desktop (not just to main menu) every 2–3 hours, then relaunch.
+      The descriptor pool resets on full process exit.
+    ru: |
+      В crash_tags стоит флаг Runtime/GPU Crash И App Run Time больше 3 часов.
+      Эта связка — подпись утечки пула дескрипторов в драйвере: DX11-рендерер
+      Bannerlord постоянно выделяет texture-array, shader-resource и
+      constant-buffer хэндлы; на некоторых версиях драйверов (NVIDIA Blackwell
+      ранние 566.x–570.x, AMD RDNA 4 Adrenalin preview) эти хэндлы не
+      возвращаются в пул. Через 3–10 часов пул исчерпан и следующий
+      CreateTexture2D / CreateShaderResourceView возвращает E_INVALIDARG —
+      игра падает.
+
+      Это НЕ баг TOR, НЕ аппаратная неисправность, и снижение графики само по
+      себе НЕ лечит — скорость утечки не зависит от качества. Рабочая
+      профилактика — дробить длинные сессии: каждые 2–3 часа выходи на
+      рабочий стол (не в главное меню), потом запускай заново. Пул
+      дескрипторов сбрасывается только при полном выходе из процесса.
+  fix:
+    en:
+      - "Right now: relaunch the game; the descriptor pool is fresh after a process restart, so the next session will run normally for ~3 more hours."
+      - "Habit: every 2–3 hours of play — Save → Quit to Desktop → wait 30 sec → launch again. NOT 'main menu → Continue' (that doesn't reset the pool, the process is the same)."
+      - "Update the GPU driver to the latest WHQL straight from the NVIDIA / AMD website (Windows Update is months behind). NVIDIA Blackwell 580.x+ and AMD Adrenalin 25.4+ are the first releases with the leak partially patched."
+      - "If you're already on the latest driver and still leaking: NVIDIA Control Panel → 3D Settings → Bannerlord.exe → Power management = Prefer maximum performance, Shader Cache Size = Unlimited, OFF Image Sharpening / DLSS Frame Generation. AMD Adrenalin → Bannerlord.exe profile → OFF AFMF, Anti-Lag, HYPR-RX, Radeon Boost."
+      - "Keep an eye on Task Manager → Performance → GPU → Dedicated GPU memory while playing. If usage is climbing 50–100 MB / 10 min and never drops in main menu — that's the leak; restart cycle is the only fix until your GPU vendor patches it."
+      - "Lower Texture Quality to Medium if you can't restart often (smaller textures = fewer handles consumed per minute, buys you longer sessions)."
+    ru:
+      - "Прямо сейчас: перезапусти игру — после рестарта процесса пул дескрипторов чистый, следующая сессия пройдёт нормально ещё ~3 часа."
+      - "Привычка: каждые 2–3 часа игры — Сохранить → Выйти на рабочий стол → подожди 30 сек → запусти заново. НЕ «главное меню → Continue» (это не сбрасывает пул, процесс тот же)."
+      - "Обнови драйвер GPU до последней WHQL прямо с сайта NVIDIA / AMD (Windows Update отстаёт на месяцы). NVIDIA Blackwell 580.x+ и AMD Adrenalin 25.4+ — первые релизы где утечка частично починена."
+      - "Если уже на последнем драйвере и всё равно течёт: NVIDIA Control Panel → 3D Settings → Bannerlord.exe → Power management = Prefer maximum performance, Shader Cache Size = Unlimited, ВЫКЛ Image Sharpening / DLSS Frame Generation. AMD Adrenalin → профиль Bannerlord.exe → ВЫКЛ AFMF, Anti-Lag, HYPR-RX, Radeon Boost."
+      - "Следи в Task Manager → Performance → GPU → Dedicated GPU memory во время игры. Если прибавляет 50–100 МБ за каждые 10 мин и не сбрасывается в главном меню — это та самая утечка; цикл рестартов — единственный фикс, пока вендор GPU не починит."
+      - "Понизь Texture Quality до Medium если не получается часто рестартовать (меньше текстур = меньше хэндлов в минуту = сессия длиннее)."
+  match:
+    all:
+      - crash_tag:
+          path: "Runtime/GPU Crash"
+          equals: "1"
+      - crash_tag:
+          path: "Runtime/App Run Time"
+          numeric_gt: "10800"

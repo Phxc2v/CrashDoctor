@@ -87,25 +87,30 @@
                                 VerticalAlignment="Top" MarginTop="56" MarginLeft="20"
                                 Brush.FontSize="18" Brush.FontColor="#D8B040FF" Text="@DiagnosisSeverity" />
 
-                    <!-- Description has a fixed height ceiling so a long crash explanation can't grow past
-                         its box and overlap the fix-steps list below. The "Что делать:" label that used
-                         to sit between description and steps was removed because the description
-                         already ends with a clear handoff and the label was visually colliding with
-                         long descriptions on a CoverChildren layout. -->
-                    <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="200"
-                                VerticalAlignment="Top" MarginTop="86" MarginLeft="20" MarginRight="20"
-                                Brush.FontSize="20" Brush.FontColor="#E8DCC4FF" Text="@DiagnosisDescription" />
+                    <!-- Description sits inside a ScrollablePanel so long crash explanations get
+                         scrollbars instead of Gauntlet auto-shrinking the font to "fit". The inner
+                         TextWidget uses CoverChildren so word-wrap actually reflows lines. -->
+                    <ScrollablePanel WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="210"
+                                     VerticalAlignment="Top" MarginTop="86" MarginLeft="20" MarginRight="20"
+                                     ClipContents="true" AutoHideScrollBars="true">
+                      <Children>
+                        <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren"
+                                    Brush.FontSize="18" Brush.FontColor="#E8DCC4FF" Text="@DiagnosisDescription" />
+                      </Children>
+                    </ScrollablePanel>
 
+                    <!-- Fix-step rows must wrap, not shrink: long advice strings (~200 chars) used to
+                         render in a smaller font next to short steps, producing a visual zebra. -->
                     <ScrollablePanel IsVisible="@HasFixSteps"
                                      WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="240"
-                                     VerticalAlignment="Top" MarginTop="300" MarginLeft="20" MarginRight="20"
+                                     VerticalAlignment="Top" MarginTop="306" MarginLeft="20" MarginRight="20"
                                      ClipContents="true" AutoHideScrollBars="true">
                       <Children>
                         <ListPanel DataSource="{DiagnosisFixSteps}" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren"
                                    StackLayout.LayoutMethod="VerticalBottomToTop">
                           <ItemTemplate>
-                            <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="28"
-                                        Brush.FontSize="20" Brush.FontColor="#E8DCC4FF" MarginTop="6"
+                            <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren"
+                                        Brush.FontSize="18" Brush.FontColor="#E8DCC4FF" MarginTop="8"
                                         Text="@Display" />
                           </ItemTemplate>
                         </ListPanel>
@@ -142,6 +147,131 @@
                             Sprite="BlankWhiteSquare_9" Brush.Color="#3A2A1AFF"
                             Brush.FontSize="18" Brush.FontColor="#FFB060FF"
                             Brush.TextHorizontalAlignment="Center" Text="@TuneUpRebootPendingText" />
+
+                <!-- (Optimization section moved to its own tab — see IsPerformanceTabActive below.) -->
+                <Widget IsVisible="false"
+                        WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="0"
+                        Sprite="StdAssets\Popup\canvas">
+                  <Children>
+                    <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
+                            Sprite="frame_9" ExtendLeft="14" ExtendTop="14" ExtendRight="14" ExtendBottom="14"
+                            IsEnabled="false" />
+
+                    <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="28"
+                                VerticalAlignment="Top" MarginLeft="24" MarginTop="14" MarginRight="24"
+                                Brush.FontSize="22" Brush.FontColor="#F4E1C4FF"
+                                Brush.TextHorizontalAlignment="Left" Text="@PerfSectionTitle" />
+                    <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="22"
+                                VerticalAlignment="Top" MarginLeft="24" MarginTop="44" MarginRight="24"
+                                Brush.FontSize="14" Brush.FontColor="#988673FF"
+                                Brush.TextHorizontalAlignment="Left" Text="@PerfSectionReasonHint" />
+
+                    <!-- BRANCH A: Harmony missing — install CTA -->
+                    <TextWidget IsVisible="@PerfSectionShowCta"
+                                WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="80"
+                                VerticalAlignment="Top" MarginLeft="32" MarginRight="32" MarginTop="80"
+                                Brush.FontSize="16" Brush.FontColor="#FFB060FF"
+                                Brush.TextHorizontalAlignment="Center" Text="@PerfHarmonyCtaText" />
+                    <ButtonWidget IsVisible="@PerfSectionShowCta" DoNotPassEventsToChildren="true"
+                                  Command.Click="ExecuteOpenHarmonyWorkshop" Brush="Popup.Done.Button"
+                                  WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="540" SuggestedHeight="48"
+                                  HorizontalAlignment="Center" VerticalAlignment="Top" MarginTop="180">
+                      <Children>
+                        <TextWidget DoNotAcceptEvents="true"
+                                    WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
+                                    Brush="Popup.Button.Text" Brush.TextHorizontalAlignment="Center"
+                                    Text="@LabelBtnOpenHarmonyWorkshop" />
+                      </Children>
+                    </ButtonWidget>
+
+                    <!-- BRANCH B: Harmony present — status + toggles -->
+                    <TextWidget IsVisible="@PerfSectionShowToggles"
+                                WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="20"
+                                VerticalAlignment="Top" MarginLeft="24" MarginRight="24" MarginTop="74"
+                                Brush.FontSize="14" Brush.FontColor="#7AC07AFF"
+                                Brush.TextHorizontalAlignment="Left" Text="@PerfStatusText" />
+                    <TextWidget IsVisible="@PerfSectionShowToggles"
+                                WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="20"
+                                VerticalAlignment="Top" MarginLeft="24" MarginRight="24" MarginTop="96"
+                                Brush.FontSize="14" Brush.FontColor="#D8B040FF"
+                                Brush.TextHorizontalAlignment="Left" Text="@PerfSavedText" />
+
+                    <ButtonWidget IsVisible="@PerfSectionShowToggles" DoNotPassEventsToChildren="true"
+                                  Command.Click="ExecuteTogglePerfMaster" Brush="ButtonBrush1"
+                                  WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="30"
+                                  VerticalAlignment="Top" MarginLeft="24" MarginRight="24" MarginTop="124">
+                      <Children>
+                        <TextWidget DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
+                                    Brush.FontSize="15" Brush.FontColor="#F4E1C4FF" Brush.TextHorizontalAlignment="Left" MarginLeft="14"
+                                    Text="@PerfMasterCheckboxText" />
+                      </Children>
+                    </ButtonWidget>
+
+                    <ButtonWidget IsVisible="@PerfSectionShowToggles" DoNotPassEventsToChildren="true"
+                                  Command.Click="ExecuteTogglePerfF1" Brush="ButtonBrush1"
+                                  WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="600" SuggestedHeight="26"
+                                  VerticalAlignment="Top" HorizontalAlignment="Left"
+                                  MarginLeft="24" MarginTop="158">
+                      <Children><TextWidget DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
+                                            Brush.FontSize="13" Brush.FontColor="#E8DCC4FF" Brush.TextHorizontalAlignment="Left" MarginLeft="10"
+                                            Text="@PerfF1CheckboxText" /></Children>
+                    </ButtonWidget>
+                    <ButtonWidget IsVisible="@PerfSectionShowToggles" DoNotPassEventsToChildren="true"
+                                  Command.Click="ExecuteTogglePerfF2" Brush="ButtonBrush1"
+                                  WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="600" SuggestedHeight="26"
+                                  VerticalAlignment="Top" HorizontalAlignment="Right"
+                                  MarginRight="24" MarginTop="158">
+                      <Children><TextWidget DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
+                                            Brush.FontSize="13" Brush.FontColor="#E8DCC4FF" Brush.TextHorizontalAlignment="Left" MarginLeft="10"
+                                            Text="@PerfF2CheckboxText" /></Children>
+                    </ButtonWidget>
+                    <ButtonWidget IsVisible="@PerfSectionShowToggles" DoNotPassEventsToChildren="true"
+                                  Command.Click="ExecuteTogglePerfF3" Brush="ButtonBrush1"
+                                  WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="600" SuggestedHeight="26"
+                                  VerticalAlignment="Top" HorizontalAlignment="Left"
+                                  MarginLeft="24" MarginTop="188">
+                      <Children><TextWidget DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
+                                            Brush.FontSize="13" Brush.FontColor="#E8DCC4FF" Brush.TextHorizontalAlignment="Left" MarginLeft="10"
+                                            Text="@PerfF3CheckboxText" /></Children>
+                    </ButtonWidget>
+                    <ButtonWidget IsVisible="@PerfSectionShowToggles" DoNotPassEventsToChildren="true"
+                                  Command.Click="ExecuteTogglePerfF4" Brush="ButtonBrush1"
+                                  WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="600" SuggestedHeight="26"
+                                  VerticalAlignment="Top" HorizontalAlignment="Right"
+                                  MarginRight="24" MarginTop="188">
+                      <Children><TextWidget DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
+                                            Brush.FontSize="13" Brush.FontColor="#E8DCC4FF" Brush.TextHorizontalAlignment="Left" MarginLeft="10"
+                                            Text="@PerfF4CheckboxText" /></Children>
+                    </ButtonWidget>
+                    <ButtonWidget IsVisible="@PerfSectionShowToggles" DoNotPassEventsToChildren="true"
+                                  Command.Click="ExecuteTogglePerfF5" Brush="ButtonBrush1"
+                                  WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="600" SuggestedHeight="26"
+                                  VerticalAlignment="Top" HorizontalAlignment="Left"
+                                  MarginLeft="24" MarginTop="218">
+                      <Children><TextWidget DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
+                                            Brush.FontSize="13" Brush.FontColor="#E8DCC4FF" Brush.TextHorizontalAlignment="Left" MarginLeft="10"
+                                            Text="@PerfF5CheckboxText" /></Children>
+                    </ButtonWidget>
+                    <ButtonWidget IsVisible="@PerfSectionShowToggles" DoNotPassEventsToChildren="true"
+                                  Command.Click="ExecuteTogglePerfHudLanguage" Brush="ButtonBrush1"
+                                  WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="600" SuggestedHeight="26"
+                                  VerticalAlignment="Top" HorizontalAlignment="Right"
+                                  MarginRight="24" MarginTop="218">
+                      <Children><TextWidget DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
+                                            Brush.FontSize="13" Brush.FontColor="#E8DCC4FF" Brush.TextHorizontalAlignment="Left" MarginLeft="10"
+                                            Text="@PerfHudLanguageCheckboxText" /></Children>
+                    </ButtonWidget>
+
+                    <ButtonWidget IsVisible="@PerfSectionShowToggles" DoNotPassEventsToChildren="true"
+                                  Command.Click="ExecuteTogglePerfAlwaysShow" Brush="ButtonBrush1"
+                                  WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="22"
+                                  VerticalAlignment="Top" MarginLeft="24" MarginRight="24" MarginTop="248">
+                      <Children><TextWidget DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
+                                            Brush.FontSize="12" Brush.FontColor="#988673FF" Brush.TextHorizontalAlignment="Left" MarginLeft="10"
+                                            Text="@PerfAlwaysShowCheckboxText" /></Children>
+                    </ButtonWidget>
+                  </Children>
+                </Widget>
 
                 <!-- Vanilla Bannerlord scroll pattern: ScrollablePanel needs ClipRect+InnerPanel+
                      VerticalScrollbar attributes to wire it to a sibling ScrollbarWidget. Without
@@ -401,65 +531,387 @@
           </Children>
         </Widget>
 
-        <!-- ===================== TAB STRIP (placed AFTER tab panels so it sits on top of the Z-stack) ===================== -->
+        <!-- ===================== TAB 4: OPTIMIZATION (PerfTuneUp) =====================
+             Each toggle is a self-contained card: title (what it does) + plain-language
+             description (for non-technical users) + an explicit ON/OFF button whose label
+             color tells you the current state at a glance.
+             Branches by HarmonyMissing: install-CTA mode vs full toggle list. -->
+        <Widget IsVisible="@IsPerformanceTabActive"
+                WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
+                MarginTop="190" MarginBottom="120" MarginLeft="80" MarginRight="80">
+          <Children>
+            <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="Popup.Inner.Bg">
+              <Children>
+                <!-- Section title + context hint -->
+                <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="32"
+                            VerticalAlignment="Top" MarginTop="14" MarginLeft="24" MarginRight="24"
+                            Brush.FontSize="24" Brush.FontColor="#F4E1C4FF"
+                            Brush.TextHorizontalAlignment="Left" Text="@PerfSectionTitle" />
+                <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="22"
+                            VerticalAlignment="Top" MarginTop="50" MarginLeft="24" MarginRight="24"
+                            Brush.FontSize="14" Brush.FontColor="#988673FF"
+                            Brush.TextHorizontalAlignment="Left" Text="@PerfSectionReasonHint" />
+
+                <!-- BRANCH A: Bannerlord.Harmony missing — install CTA. -->
+                <Widget IsVisible="@PerfSectionShowCta"
+                        WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
+                        MarginTop="100" MarginLeft="60" MarginRight="60">
+                  <Children>
+                    <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="100"
+                                VerticalAlignment="Top" MarginTop="40"
+                                Brush.FontSize="18" Brush.FontColor="#FFB060FF"
+                                Brush.TextHorizontalAlignment="Center" Text="@PerfHarmonyCtaText" />
+                    <ButtonWidget DoNotPassEventsToChildren="true"
+                                  Command.Click="ExecuteOpenHarmonyWorkshop" Brush="Popup.Done.Button"
+                                  WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="640" SuggestedHeight="60"
+                                  HorizontalAlignment="Center" VerticalAlignment="Top" MarginTop="180">
+                      <Children>
+                        <TextWidget DoNotAcceptEvents="true"
+                                    WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
+                                    Brush="Popup.Button.Text" Brush.FontSize="18"
+                                    Brush.TextHorizontalAlignment="Center" Text="@LabelBtnOpenHarmonyWorkshop" />
+                      </Children>
+                    </ButtonWidget>
+                  </Children>
+                </Widget>
+
+                <!-- BRANCH B: Harmony present — status header + scrollable list of toggle cards -->
+                <Widget IsVisible="@PerfSectionShowToggles"
+                        WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
+                        MarginTop="86" MarginBottom="40">
+                  <Children>
+                    <!-- Status / saved-counter strip -->
+                    <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="22"
+                                VerticalAlignment="Top" MarginTop="0" MarginLeft="24" MarginRight="24"
+                                Brush.FontSize="15" Brush.FontColor="#7AC07AFF"
+                                Brush.TextHorizontalAlignment="Left" Text="@PerfStatusText" />
+                    <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="22"
+                                VerticalAlignment="Top" MarginTop="26" MarginLeft="24" MarginRight="24"
+                                Brush.FontSize="15" Brush.FontColor="#D8B040FF"
+                                Brush.TextHorizontalAlignment="Left" Text="@PerfSavedText" />
+                    <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="18"
+                                VerticalAlignment="Bottom" MarginBottom="0" MarginLeft="24" MarginRight="24"
+                                Brush.FontSize="12" Brush.FontColor="#988673AA"
+                                Brush.TextHorizontalAlignment="Center" Text="@PerfRestartHintText" />
+
+                    <!-- Scrollable card list. Pattern matches the TuneUp tab's recommendations
+                         scroller — same ClipRect+InnerPanel+VerticalScrollbar plumbing. -->
+                    <Widget Id="PerfScrollWrap" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
+                            MarginTop="60" MarginBottom="28" MarginLeft="12" MarginRight="32">
+                      <Children>
+                        <ScrollablePanel Id="PerfScroll" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
+                                         AutoHideScrollBars="true"
+                                         ClipRect="PerfClipRect" InnerPanel="PerfClipRect\PerfInnerStack"
+                                         VerticalScrollbar="..\PerfScrollbar">
+                          <Children>
+                            <Widget Id="PerfClipRect" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" ClipContents="true">
+                              <Children>
+                                <!-- Static stack of 8 cards. Each card 130 px tall, 12 px gap baked into MarginTop. -->
+                                <Widget Id="PerfInnerStack" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="950">
+                                  <Children>
+
+                                    <!-- ============ Card: Master (master switch) ============ -->
+                                    <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="118"
+                                            VerticalAlignment="Top" MarginTop="0" MarginLeft="20" MarginRight="20"
+                                            Sprite="StdAssets\Popup\canvas">
+                                      <Children>
+                                        <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
+                                                Sprite="frame_9" ExtendLeft="14" ExtendTop="14" ExtendRight="14" ExtendBottom="14"
+                                                IsEnabled="false" />
+                                        <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="28"
+                                                    VerticalAlignment="Top" MarginLeft="28" MarginTop="14" MarginRight="200"
+                                                    Brush.FontSize="20" Brush.FontColor="#F4E1C4FF"
+                                                    Brush.TextHorizontalAlignment="Left" Text="@PerfMasterTitle" />
+                                        <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="60"
+                                                    VerticalAlignment="Top" MarginLeft="28" MarginTop="46" MarginRight="200"
+                                                    Brush.FontSize="14" Brush.FontColor="#C8B898FF"
+                                                    Brush.TextHorizontalAlignment="Left" Text="@PerfMasterDesc" />
+                                        <ButtonWidget DoNotPassEventsToChildren="true" Command.Click="ExecuteTogglePerfMaster"
+                                                      Brush="ButtonBrush1"
+                                                      WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="150" SuggestedHeight="60"
+                                                      HorizontalAlignment="Right" VerticalAlignment="Center" MarginRight="28">
+                                          <Children>
+                                            <TextWidget DoNotAcceptEvents="true"
+                                                        WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
+                                                        Brush.FontSize="22" Brush.FontColor="@PerfMasterButtonColor"
+                                                        Brush.TextHorizontalAlignment="Center" Text="@PerfMasterButtonText" />
+                                          </Children>
+                                        </ButtonWidget>
+                                      </Children>
+                                    </Widget>
+
+                                    <!-- ============ Card: F1 ============ -->
+                                    <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="118"
+                                            VerticalAlignment="Top" MarginTop="130" MarginLeft="20" MarginRight="20"
+                                            Sprite="StdAssets\Popup\canvas">
+                                      <Children>
+                                        <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
+                                                Sprite="frame_9" ExtendLeft="14" ExtendTop="14" ExtendRight="14" ExtendBottom="14"
+                                                IsEnabled="false" />
+                                        <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="28"
+                                                    VerticalAlignment="Top" MarginLeft="28" MarginTop="14" MarginRight="200"
+                                                    Brush.FontSize="20" Brush.FontColor="#F4E1C4FF"
+                                                    Brush.TextHorizontalAlignment="Left" Text="@PerfF1Title" />
+                                        <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="60"
+                                                    VerticalAlignment="Top" MarginLeft="28" MarginTop="46" MarginRight="200"
+                                                    Brush.FontSize="14" Brush.FontColor="#C8B898FF"
+                                                    Brush.TextHorizontalAlignment="Left" Text="@PerfF1Desc" />
+                                        <ButtonWidget DoNotPassEventsToChildren="true" Command.Click="ExecuteTogglePerfF1"
+                                                      Brush="ButtonBrush1"
+                                                      WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="150" SuggestedHeight="60"
+                                                      HorizontalAlignment="Right" VerticalAlignment="Center" MarginRight="28">
+                                          <Children>
+                                            <TextWidget DoNotAcceptEvents="true"
+                                                        WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
+                                                        Brush.FontSize="22" Brush.FontColor="@PerfF1ButtonColor"
+                                                        Brush.TextHorizontalAlignment="Center" Text="@PerfF1ButtonText" />
+                                          </Children>
+                                        </ButtonWidget>
+                                      </Children>
+                                    </Widget>
+
+                                    <!-- ============ Card: F2 ============ -->
+                                    <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="118"
+                                            VerticalAlignment="Top" MarginTop="260" MarginLeft="20" MarginRight="20"
+                                            Sprite="StdAssets\Popup\canvas">
+                                      <Children>
+                                        <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
+                                                Sprite="frame_9" ExtendLeft="14" ExtendTop="14" ExtendRight="14" ExtendBottom="14"
+                                                IsEnabled="false" />
+                                        <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="28"
+                                                    VerticalAlignment="Top" MarginLeft="28" MarginTop="14" MarginRight="200"
+                                                    Brush.FontSize="20" Brush.FontColor="#F4E1C4FF"
+                                                    Brush.TextHorizontalAlignment="Left" Text="@PerfF2Title" />
+                                        <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="60"
+                                                    VerticalAlignment="Top" MarginLeft="28" MarginTop="46" MarginRight="200"
+                                                    Brush.FontSize="14" Brush.FontColor="#C8B898FF"
+                                                    Brush.TextHorizontalAlignment="Left" Text="@PerfF2Desc" />
+                                        <ButtonWidget DoNotPassEventsToChildren="true" Command.Click="ExecuteTogglePerfF2"
+                                                      Brush="ButtonBrush1"
+                                                      WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="150" SuggestedHeight="60"
+                                                      HorizontalAlignment="Right" VerticalAlignment="Center" MarginRight="28">
+                                          <Children>
+                                            <TextWidget DoNotAcceptEvents="true"
+                                                        WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
+                                                        Brush.FontSize="22" Brush.FontColor="@PerfF2ButtonColor"
+                                                        Brush.TextHorizontalAlignment="Center" Text="@PerfF2ButtonText" />
+                                          </Children>
+                                        </ButtonWidget>
+                                      </Children>
+                                    </Widget>
+
+                                    <!-- ============ Card: F3 ============ -->
+                                    <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="118"
+                                            VerticalAlignment="Top" MarginTop="390" MarginLeft="20" MarginRight="20"
+                                            Sprite="StdAssets\Popup\canvas">
+                                      <Children>
+                                        <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
+                                                Sprite="frame_9" ExtendLeft="14" ExtendTop="14" ExtendRight="14" ExtendBottom="14"
+                                                IsEnabled="false" />
+                                        <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="28"
+                                                    VerticalAlignment="Top" MarginLeft="28" MarginTop="14" MarginRight="200"
+                                                    Brush.FontSize="20" Brush.FontColor="#F4E1C4FF"
+                                                    Brush.TextHorizontalAlignment="Left" Text="@PerfF3Title" />
+                                        <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="60"
+                                                    VerticalAlignment="Top" MarginLeft="28" MarginTop="46" MarginRight="200"
+                                                    Brush.FontSize="14" Brush.FontColor="#C8B898FF"
+                                                    Brush.TextHorizontalAlignment="Left" Text="@PerfF3Desc" />
+                                        <ButtonWidget DoNotPassEventsToChildren="true" Command.Click="ExecuteTogglePerfF3"
+                                                      Brush="ButtonBrush1"
+                                                      WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="150" SuggestedHeight="60"
+                                                      HorizontalAlignment="Right" VerticalAlignment="Center" MarginRight="28">
+                                          <Children>
+                                            <TextWidget DoNotAcceptEvents="true"
+                                                        WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
+                                                        Brush.FontSize="22" Brush.FontColor="@PerfF3ButtonColor"
+                                                        Brush.TextHorizontalAlignment="Center" Text="@PerfF3ButtonText" />
+                                          </Children>
+                                        </ButtonWidget>
+                                      </Children>
+                                    </Widget>
+
+                                    <!-- ============ Card: F4 ============ -->
+                                    <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="118"
+                                            VerticalAlignment="Top" MarginTop="520" MarginLeft="20" MarginRight="20"
+                                            Sprite="StdAssets\Popup\canvas">
+                                      <Children>
+                                        <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
+                                                Sprite="frame_9" ExtendLeft="14" ExtendTop="14" ExtendRight="14" ExtendBottom="14"
+                                                IsEnabled="false" />
+                                        <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="28"
+                                                    VerticalAlignment="Top" MarginLeft="28" MarginTop="14" MarginRight="200"
+                                                    Brush.FontSize="20" Brush.FontColor="#F4E1C4FF"
+                                                    Brush.TextHorizontalAlignment="Left" Text="@PerfF4Title" />
+                                        <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="60"
+                                                    VerticalAlignment="Top" MarginLeft="28" MarginTop="46" MarginRight="200"
+                                                    Brush.FontSize="14" Brush.FontColor="#C8B898FF"
+                                                    Brush.TextHorizontalAlignment="Left" Text="@PerfF4Desc" />
+                                        <ButtonWidget DoNotPassEventsToChildren="true" Command.Click="ExecuteTogglePerfF4"
+                                                      Brush="ButtonBrush1"
+                                                      WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="150" SuggestedHeight="60"
+                                                      HorizontalAlignment="Right" VerticalAlignment="Center" MarginRight="28">
+                                          <Children>
+                                            <TextWidget DoNotAcceptEvents="true"
+                                                        WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
+                                                        Brush.FontSize="22" Brush.FontColor="@PerfF4ButtonColor"
+                                                        Brush.TextHorizontalAlignment="Center" Text="@PerfF4ButtonText" />
+                                          </Children>
+                                        </ButtonWidget>
+                                      </Children>
+                                    </Widget>
+
+                                    <!-- ============ Card: F5 (HUD) ============ -->
+                                    <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="118"
+                                            VerticalAlignment="Top" MarginTop="650" MarginLeft="20" MarginRight="20"
+                                            Sprite="StdAssets\Popup\canvas">
+                                      <Children>
+                                        <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
+                                                Sprite="frame_9" ExtendLeft="14" ExtendTop="14" ExtendRight="14" ExtendBottom="14"
+                                                IsEnabled="false" />
+                                        <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="28"
+                                                    VerticalAlignment="Top" MarginLeft="28" MarginTop="14" MarginRight="200"
+                                                    Brush.FontSize="20" Brush.FontColor="#F4E1C4FF"
+                                                    Brush.TextHorizontalAlignment="Left" Text="@PerfF5Title" />
+                                        <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="60"
+                                                    VerticalAlignment="Top" MarginLeft="28" MarginTop="46" MarginRight="200"
+                                                    Brush.FontSize="14" Brush.FontColor="#C8B898FF"
+                                                    Brush.TextHorizontalAlignment="Left" Text="@PerfF5Desc" />
+                                        <ButtonWidget DoNotPassEventsToChildren="true" Command.Click="ExecuteTogglePerfF5"
+                                                      Brush="ButtonBrush1"
+                                                      WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="150" SuggestedHeight="60"
+                                                      HorizontalAlignment="Right" VerticalAlignment="Center" MarginRight="28">
+                                          <Children>
+                                            <TextWidget DoNotAcceptEvents="true"
+                                                        WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
+                                                        Brush.FontSize="22" Brush.FontColor="@PerfF5ButtonColor"
+                                                        Brush.TextHorizontalAlignment="Center" Text="@PerfF5ButtonText" />
+                                          </Children>
+                                        </ButtonWidget>
+                                      </Children>
+                                    </Widget>
+
+                                    <!-- (HUD language card removed — locale auto-detected from Bannerlord.) -->
+
+                                    <!-- ============ Card: AlwaysShow ============ -->
+                                    <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="118"
+                                            VerticalAlignment="Top" MarginTop="780" MarginLeft="20" MarginRight="20"
+                                            Sprite="StdAssets\Popup\canvas">
+                                      <Children>
+                                        <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
+                                                Sprite="frame_9" ExtendLeft="14" ExtendTop="14" ExtendRight="14" ExtendBottom="14"
+                                                IsEnabled="false" />
+                                        <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="28"
+                                                    VerticalAlignment="Top" MarginLeft="28" MarginTop="14" MarginRight="200"
+                                                    Brush.FontSize="20" Brush.FontColor="#F4E1C4FF"
+                                                    Brush.TextHorizontalAlignment="Left" Text="@PerfAlwaysShowTitle" />
+                                        <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="60"
+                                                    VerticalAlignment="Top" MarginLeft="28" MarginTop="46" MarginRight="200"
+                                                    Brush.FontSize="14" Brush.FontColor="#C8B898FF"
+                                                    Brush.TextHorizontalAlignment="Left" Text="@PerfAlwaysShowDesc" />
+                                        <ButtonWidget DoNotPassEventsToChildren="true" Command.Click="ExecuteTogglePerfAlwaysShow"
+                                                      Brush="ButtonBrush1"
+                                                      WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="150" SuggestedHeight="60"
+                                                      HorizontalAlignment="Right" VerticalAlignment="Center" MarginRight="28">
+                                          <Children>
+                                            <TextWidget DoNotAcceptEvents="true"
+                                                        WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
+                                                        Brush.FontSize="22" Brush.FontColor="@PerfAlwaysShowButtonColor"
+                                                        Brush.TextHorizontalAlignment="Center" Text="@PerfAlwaysShowButtonText" />
+                                          </Children>
+                                        </ButtonWidget>
+                                      </Children>
+                                    </Widget>
+
+                                  </Children>
+                                </Widget>
+                              </Children>
+                            </Widget>
+                          </Children>
+                        </ScrollablePanel>
+                        <ScrollbarWidget Id="PerfScrollbar"
+                                         WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent"
+                                         SuggestedWidth="10" HorizontalAlignment="Right" VerticalAlignment="Top"
+                                         MarginTop="6" MarginBottom="6" MarginRight="-22"
+                                         AlignmentAxis="Vertical" Handle="PerfScrollbarHandle"
+                                         MaxValue="100" MinValue="0">
+                          <Children>
+                            <Widget WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="4"
+                                    HorizontalAlignment="Center"
+                                    Sprite="BlankWhiteSquare_9" Color="#5a4033FF" AlphaFactor="0.4" />
+                            <ImageWidget Id="PerfScrollbarHandle"
+                                         WidthSizePolicy="Fixed" HeightSizePolicy="Fixed"
+                                         SuggestedHeight="40" SuggestedWidth="10"
+                                         HorizontalAlignment="Center" Brush="FaceGen.Scrollbar.Handle" />
+                          </Children>
+                        </ScrollbarWidget>
+                      </Children>
+                    </Widget>
+                  </Children>
+                </Widget>
+              </Children>
+            </Widget>
+          </Children>
+        </Widget>
+
+        <!-- ===================== TAB STRIP (placed AFTER tab panels so it sits on top of the Z-stack) =====================
+             Four tabs: Crashes, Tune-up, History, Optimization. Widths reduced to fit a 4th
+             button on the same horizontal strip. Active-tab strip indicator widgets below
+             were removed in this layout pass — the active button is implied by content. -->
         <ListPanel WidthSizePolicy="CoverChildren" HeightSizePolicy="Fixed" SuggestedHeight="66"
                    HorizontalAlignment="Center" VerticalAlignment="Top" MarginTop="100"
                    StackLayout.LayoutMethod="HorizontalLeftToRight">
           <Children>
             <ButtonWidget DoNotPassEventsToChildren="true" Command.Click="ExecuteShowCrashesTab"
                           Brush="Popup.Done.Button"
-                          WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="340" SuggestedHeight="66"
+                          WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="270" SuggestedHeight="66"
                           MarginRight="8">
               <Children>
                 <TextWidget DoNotAcceptEvents="true"
                             WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
-                            Brush="Popup.Button.Text" Brush.FontSize="18"
+                            Brush="Popup.Button.Text" Brush.FontSize="16"
                             Brush.TextHorizontalAlignment="Center" Text="@LabelTabCrashes" />
               </Children>
             </ButtonWidget>
             <ButtonWidget DoNotPassEventsToChildren="true" Command.Click="ExecuteShowTuneUpTab"
                           Brush="Popup.Done.Button"
-                          WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="340" SuggestedHeight="66"
+                          WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="270" SuggestedHeight="66"
                           MarginRight="8">
               <Children>
                 <TextWidget DoNotAcceptEvents="true"
                             WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
-                            Brush="Popup.Button.Text" Brush.FontSize="18"
+                            Brush="Popup.Button.Text" Brush.FontSize="16"
                             Brush.TextHorizontalAlignment="Center" Text="@LabelTabTuneUp" />
               </Children>
             </ButtonWidget>
             <ButtonWidget DoNotPassEventsToChildren="true" Command.Click="ExecuteShowHistoryTab"
                           Brush="Popup.Done.Button"
-                          WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="280" SuggestedHeight="66">
+                          WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="220" SuggestedHeight="66"
+                          MarginRight="8">
               <Children>
                 <TextWidget DoNotAcceptEvents="true"
                             WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
-                            Brush="Popup.Button.Text" Brush.FontSize="18"
+                            Brush="Popup.Button.Text" Brush.FontSize="16"
                             Brush.TextHorizontalAlignment="Center" Text="@LabelTabHistory" />
+              </Children>
+            </ButtonWidget>
+            <ButtonWidget DoNotPassEventsToChildren="true" Command.Click="ExecuteShowPerformanceTab"
+                          Brush="Popup.Done.Button"
+                          WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="270" SuggestedHeight="66">
+              <Children>
+                <TextWidget DoNotAcceptEvents="true"
+                            WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
+                            Brush="Popup.Button.Text" Brush.FontSize="16"
+                            Brush.TextHorizontalAlignment="Center" Text="@LabelTabPerformance" />
               </Children>
             </ButtonWidget>
           </Children>
         </ListPanel>
 
-        <!-- Active-tab indicator stripe just below the tab buttons -->
+        <!-- Single decorative line under the tab strip — replaces the per-tab active-indicator
+             widgets that didn't fit the 4-tab layout. -->
         <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="1316" SuggestedHeight="3"
                 HorizontalAlignment="Center" VerticalAlignment="Top" MarginTop="162"
                 Brush.Color="#3A2E1FAA" />
-        <Widget IsVisible="@IsCrashesTabActive"
-                WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="340" SuggestedHeight="3"
-                HorizontalAlignment="Center" VerticalAlignment="Top"
-                MarginTop="162" MarginRight="608" MarginLeft="0"
-                Brush.Color="#F4E1C4FF" />
-        <Widget IsVisible="@IsTuneUpTabActive"
-                WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="340" SuggestedHeight="3"
-                HorizontalAlignment="Center" VerticalAlignment="Top"
-                MarginTop="162"
-                Brush.Color="#F4E1C4FF" />
-        <Widget IsVisible="@IsHistoryTabActive"
-                WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="280" SuggestedHeight="3"
-                HorizontalAlignment="Center" VerticalAlignment="Top"
-                MarginTop="162" MarginLeft="668" MarginRight="0"
-                Brush.Color="#F4E1C4FF" />
 
         <!-- ===================== Version label (always visible) ===================== -->
         <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="700" SuggestedHeight="22"

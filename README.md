@@ -121,6 +121,44 @@ Every Apply / Rollback is journaled with timestamp and result. Rolled-back
 entries stay visible with a green "rolled back HH:MM" badge. Reversible entries
 are preserved when the history is cleared so `.reg` backups don't get orphaned.
 
+### ⚡ Optimization (PerfTuneUp) — campaign-map throttle
+
+A separate **Performance** tab plus an in-game HUD on the campaign map.
+Targets four CPU hotspots that scale poorly on big mod stacks (TOR, EE1700,
+or just a large `MobileParty` count):
+
+| Mechanism | What it skips | Default |
+|---|---|---|
+| **F1** Distant party hourly tick | `HourlyTick` for invisible far-away parties | ON |
+| **F2** Settlement bucket-spread | Far-away towns / castles tick every 16 game-hours instead of every hour (villages always tick — food production safe) | ON |
+| **F3** AI rate-limit | Distant invisible parties think 2 Hz instead of every frame | ON |
+| **F4** Visual frame-skip | Distant party visual updates batched (OFF by default — minor flicker risk) | OFF |
+| **F5** In-game HUD | Live counters + FPS sparkline + A/B comparison overlay on the map | ON |
+
+**Hotkeys** (campaign map):
+- `Ctrl+P` — toggle the throttle. Persistent: written to
+  `Documents\Mount and Blade II Bannerlord\CrashDoctor\state\user_settings.xml`
+  and survives mod updates.
+- `Ctrl+O` — show / hide the HUD overlay. Same persistence.
+
+The throttle is **opt-in** — Master starts OFF on first install. The HUD
+shows up immediately so the user can see it exists; it just reads
+"OPTIMIZATION: OFF" until they press `Ctrl+P` (or flip the master toggle
+in the Performance tab).
+
+The A/B FPS comparison line waits for **5 minutes of activity in BOTH ON
+and OFF states** before showing a delta — anything sooner is dominated by
+GPU clock ramp / shader-cache warmup, not optimization.
+
+Works on **vanilla Bannerlord and any mod-mix**, not only TOR. The four
+patches install regardless of master state; F1–F4 prefixes early-return
+when master is OFF, so overhead with throttle disabled is one boolean
+check per call.
+
+**Requires `Bannerlord.Harmony`.** Without it Crash Doctor still loads
+normally; the Performance tab shows a CTA with a button that opens the
+Workshop page.
+
 ---
 
 ## Crash bundle export
@@ -333,6 +371,35 @@ Calradia Expanded, RBM, Banner Kings и т.д. Без интернета, без
   сохраняются в `.reg`-бэкапы в Documents до изменения. Кнопка **Игнорировать**
   скрывает карточку до тех пор пока её состояние реально не изменится.
 - **Журнал** — каждое Apply/Rollback с таймстампом и откатом.
+- **Оптимизация** — отдельная вкладка + окно прямо в игре на карте кампании.
+  Помогает на больших мод-сборках (TOR, EE1700) или когда у тебя на карте
+  много отрядов и FPS падает. Что делает:
+  - **F1** не считает почасовое обновление далёких невидимых отрядов (даёт самый большой прирост FPS)
+  - **F2** реже обновляет далёкие города и замки (деревни обновляются как раньше — еда в порядке)
+  - **F3** ИИ далёких отрядов думает 2 раза в секунду вместо каждого кадра
+  - **F4** реже обновляет анимации далёких отрядов (ВЫКЛ по умолчанию — может слегка мелькать)
+  - **F5** окно в углу карты со счётчиками, FPS и сравнением «с оптимизацией / без»
+
+  **Горячие клавиши на карте:**
+  - `Ctrl+P` — включить или выключить оптимизацию мгновенно, без перезапуска
+    игры. Твой выбор записывается в
+    `Documents\Mount and Blade II Bannerlord\CrashDoctor\state\user_settings.xml`
+    и переживает любое обновление мода.
+  - `Ctrl+O` — показать или скрыть окно оптимизации. Тоже запоминается.
+
+  По умолчанию оптимизация **выключена** — юзер сам включает кнопкой в
+  Crash Doctor или `Ctrl+P` на карте. Окно появляется сразу, чтобы было
+  видно что фича есть; пишет «ОПТИМИЗАЦИЯ ВЫКЛ» пока не нажмёшь `Ctrl+P`.
+  Сравнение «с оптимизацией / без» показывает реальную разницу FPS только
+  после **5 минут реальной игры в каждом режиме** — раньше первая минута
+  давала шум, потому что видеокарта только разгонялась.
+
+  Работает на **ванильном Bannerlord и любой модной сборке**, не только на
+  TOR. Когда выключено — мод не делает ничего, нагрузки нет.
+
+  **Нужен мод `Bannerlord.Harmony`.** Без него Crash Doctor работает как
+  обычно; во вкладке Оптимизация будет кнопка для установки Harmony из
+  Steam Workshop.
 
 ## Экспорт нераспознанного краша
 

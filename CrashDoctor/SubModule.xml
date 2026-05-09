@@ -7,10 +7,30 @@
   <ModuleCategory value="Singleplayer" />
   <ModuleType value="Community" />
   <DependedModules>
+    <!-- Bannerlord.Harmony deliberately NOT listed here. The vanilla TaleWorlds launcher
+         compares DependentVersion as exact 4-component equality — every patch release
+         (v2.4.0.0 → v2.4.1.0 → v2.4.2.0 → ...) mismatches and triggers a CAUTION dialog
+         on every launch. There is no version we can pin that survives a single Harmony
+         update. So we drop the entry entirely and rely on:
+           1. DependedModuleMetadatas below — picked up by BLSE / Vortex / BUTR launchers
+              to enforce "Harmony loads before us" regardless of user drag-n-drop order.
+           2. HarmonyDetector.IsLoaded() in SubModule.OnBeforeInitialModuleScreenSetAsRoot,
+              which runs AFTER every other mod's OnSubModuleLoad — by that point 0Harmony.dll
+              is in AppDomain if the user subscribed to Bannerlord.Harmony at all. If it
+              isn't, PerfTuneUp stays dormant and the Performance tab shows the install CTA.
+         Native/Sandbox version pins stay — those are the engine, every player is on the
+         same v1.3.15 there's nothing to mismatch with. -->
     <DependedModule Id="Native" DependentVersion="v1.3.15" />
     <DependedModule Id="SandBoxCore" DependentVersion="v1.3.15" />
     <DependedModule Id="Sandbox" DependentVersion="v1.3.15" />
   </DependedModules>
+  <DependedModuleMetadatas>
+    <!-- Community extension parsed by BLSE / BUTR.LauncherManager / Vortex. Vanilla
+         TaleWorlds launcher ignores this section entirely (XSD marks it community-only),
+         which is exactly what we want — no version comparison, no CAUTION dialog. The
+         metadata still tells BUTR-aware tooling to load Bannerlord.Harmony BEFORE us. -->
+    <DependedModuleMetadata id="Bannerlord.Harmony" order="LoadBeforeThis" optional="true" />
+  </DependedModuleMetadatas>
   <SubModules>
     <SubModule>
       <Name value="CrashDoctor SubModule" />

@@ -89,5 +89,53 @@
     <string id="cd_history_reboot_pending" text="нужна перезагрузка" />
     <string id="cd_history_rolled_back_at" text="откат: {WHEN}" />
     <string id="cd_history_btn_rollback" text="Откатить" />
+
+    <!-- ==== PerfTuneUp (Оптимизация) tab ==== -->
+    <string id="cd_tab_performance" text="Оптимизация" />
+    <string id="cd_perf_section_title" text="Оптимизация" />
+    <string id="cd_perf_btn_on" text="ВКЛ" />
+    <string id="cd_perf_btn_off" text="ВЫКЛ" />
+
+    <!-- Карточки: заголовок + понятное описание (без техжаргона) -->
+    <string id="cd_perf_master_label" text="Включить оптимизацию" />
+    <string id="cd_perf_master_desc" text="Главный переключатель. Если ВЫКЛ — никакая оптимизация ниже не работает. Включи, чтобы заработали все опции, которые ты отметил." />
+
+    <string id="cd_perf_f1_label" text="Далёкие отряды: пропускать почасовые обновления" />
+    <string id="cd_perf_f1_desc" text="Снижает нагрузку на процессор от далёких невидимых отрядов (караваны, разбойники, лорды на другом конце карты). Самый большой прирост FPS. Твой отряд и видимые враги работают как обычно." />
+
+    <string id="cd_perf_f2_label" text="Далёкие города/замки: обновлять реже" />
+    <string id="cd_perf_f2_desc" text="Далёкие города и замки обновляются раз в 16 игровых часов вместо каждого часа. Деревни обновляются всегда — еда производится без изменений. Игрок ничего не заметит." />
+
+    <string id="cd_perf_f3_label" text="Далёкий AI: думать чуть реже" />
+    <string id="cd_perf_f3_desc" text="Далёкие отряды, которые ты не видишь, принимают решения 2 раза в секунду вместо каждого кадра. AI всё равно работает корректно — просто перестаёт нагружать твой CPU когда ты его не видишь." />
+
+    <string id="cd_perf_f4_label" text="Анимация далёких отрядов: реже (рискованно)" />
+    <string id="cd_perf_f4_desc" text="Анимация далёких невидимых отрядов обновляется реже. По умолчанию ВЫКЛ — может слегка мерцать когда отряды появляются у края экрана. Включай только если очень нужен FPS." />
+
+    <string id="cd_perf_f5_label" text="Панель статистики на карте (Ctrl+O)" />
+    <string id="cd_perf_f5_desc" text="Показывает маленькую панель прямо на карте кампании с живыми цифрами — доказательство того, что оптимизация реально работает. Открыть/закрыть: Ctrl+O на карте." />
+
+    <string id="cd_perf_always_show_label" text="Резерв (всегда оставлять вкладку)" />
+    <string id="cd_perf_always_show_desc" text="Отмечать вкладку «Оптимизация» как «рекомендовано для тебя» даже если тяжёлые моды (TOR / EE1700) не обнаружены. Для тех, кто понимает что делает." />
+
+    <string id="cd_perf_hud_lang_title" text="Язык панели статистики" />
+    <string id="cd_perf_hud_lang_desc" text="Язык внутриигровой панели статистики (Ctrl+O). По умолчанию английский; переключи на русский если предпочитаешь. Эта вкладка настроек всегда на языке твоего Bannerlord." />
+
+    <!-- Статус / подсказки -->
+    <string id="cd_perf_status_ok" text="{COUNT}/{TOTAL} проверок пройдено" />
+    <string id="cd_perf_status_off" text="Подсистема отключена. Причина в логе." />
+    <string id="cd_perf_saved_label" text="Сэкономлено: {COUNT} тиков ({PERCENT}%)" />
+    <string id="cd_perf_restart_hint" text="Подсказка: изменения вступят в силу после перезапуска Bannerlord." />
+
+    <!-- Контекстные подсказки сверху вкладки -->
+    <string id="cd_perf_reason_tor" text="Обнаружен The Old Realms — эта вкладка для тебя." />
+    <string id="cd_perf_reason_ee1700" text="Обнаружен Empires of Europe 1700 — эта вкладка для тебя." />
+    <string id="cd_perf_reason_always" text="Включено «Всегда показывать»." />
+    <string id="cd_perf_reason_harmony" text="Не найден Bannerlord.Harmony — установи его, чтобы включить Оптимизацию." />
+    <string id="cd_perf_reason_none" text="Тяжёлые моды вроде The Old Realms получают наибольшую пользу. На ванильном Bannerlord обычно не нужно." />
+
+    <!-- Bannerlord.Harmony отсутствует — CTA -->
+    <string id="cd_perf_disabled_no_harmony" text="Не найден Bannerlord.Harmony. Установите и активируйте его в Steam Workshop перед этим модом, чтобы включить оптимизацию." />
+    <string id="cd_perf_btn_open_harmony" text="Открыть Bannerlord.Harmony в Steam Workshop" />
   </strings>
 </base>
