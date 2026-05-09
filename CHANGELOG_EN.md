@@ -10,6 +10,126 @@ subscribers.
 
 ---
 
+## 2026-05-09 — Persist user choices, vanilla support, false-positive cleanup
+
+> Visible mod version stays `v1.4.0` forever. This entry describes an internal build.
+
+**Crash rules — new signatures:**
+
+- `gpu.long_session_gpu_crash` — new rule. Fires on `[Runtime][GPU Crash]=1` AND `[Runtime][App Run Time]` > 3 hours. Signature of a DX11 descriptor-pool leak in NVIDIA Blackwell drivers (RTX 50-series, early 566.x–570.x) and AMD RDNA 4 Adrenalin previews. Advice — break sessions every 2–3 hours, update GPU driver, monitor VRAM in Task Manager. Confidence: high.
+- `gpu.create_texture_array_invalidarg` — extended with a third trigger: NVIDIA Blackwell long-session leak. Previous coverage was VR runtime + AMD RDNA 4 only. NVIDIA-specific fix steps added (NVCP power management, off DLSS Frame Generation, Game Ready 580.x+). Description mirrors the real 2026-05-08 crash (RTX 5070, 9.3-hour session).
+
+**Crash matcher engine — numeric_gt + locale-decimal-comma support:**
+
+`crash_tag` matcher now supports `numeric_gt` / `numeric_gte` / `numeric_lte` (was `numeric_lt`-only). And — **TaleWorlds writes fractional values with the OS locale's decimal comma** (`33448,0682471` on Russian Windows for App Run Time). The matcher now normalises comma → period before comparing, otherwise `gpu.long_session_gpu_crash` would silently miss every RU-locale crash.
+
+**System detection — Optimus / SmartShift hybrid laptops:**
+
+- `SystemInfo.HasHybridGraphics()` — detects ≥1 iGPU AND ≥1 dGPU enumerated in Display Devices. Signature of a gaming laptop with hybrid graphics (Lenovo Legion, ASUS ROG, MSI, Razer, etc.). On those rigs DxDiag reports the **discrete card's VRAM through the iGPU adapter view**, under-reporting it to 3072 MB — for RTX 4060 Laptop (real 8 GB), 4070 Laptop (12 GB), 4080 Laptop (12 GB).
+- `SystemMatcher.MatchGpuField('vram_mb')` for `lt`/`lte` is now **suppressed** for any non-integrated GPU on a hybrid laptop, regardless of model. Previously only the explicit whitelist (4070/4080/4090, 9070, RX 7700+) covered it. Mobile variants are now automatic.
+- iGPU is NOT suppressed — if the game actually rendered on the 780M / UHD 630, `hw.vram_below_minimum` still fires correctly.
+
+**Tune-Up — false-positive cleanup:**
+
+- **M1.5 Temp cleanup**: card no longer "stays stuck" after Apply with 0 deletions. Detect previously gated on `total ≥ 1 GB`, but Apply only touches files older than 7 days — fresh temp files meant 0 deleted, Detect saw 5 GB again → card resurfaced. Now the card only shows when `stale ≥ 200 MB` (something Apply can actually delete). Plus a session-flag: if every stale file in Apply was locked, the card stays hidden until the next Bannerlord launch.
+- **M5.6 Pending reboot**: dropped `PendingFileRenameOperations` from the signal list (it's almost always non-empty on a healthy system — Defender quarantine, telemetry tooling self-update). Added a 10-minute fresh-boot grace via WMI `Win32_OperatingSystem.LastBootUpTime` — `CBS\RebootPending` sometimes isn't cleared after a real reboot, and users were seeing the card 30 seconds after powering on the PC.
+
+**M2.1 Shader cache — ReadOnly strip for Workshop folders:**
+
+If Bannerlord logs ≥ 50 `Missing shader from sack: pbr_terrain` lines in a single file, Detect sets `Payload[strip_readonly] = true`. Apply now clears the ReadOnly attribute from every file / subfolder before `DeleteDirectory`/`DeleteFile`. Steam Workshop occasionally pins downloaded files read-only → SendToRecycleBin used to fail with access denied. Best-effort: per-item failures swallowed into `Logger.Warn`.
+
+**Tune-Up — stuck progress overlay after Apply launches an external app:**
+
+Users hit this bug: clicking Apply on "close memory-hogging apps" (M5.8) → Crash Doctor launches Task Manager → user returns to the game and the progress overlay is sitting there, refusing to close. Two-pronged fix:
+- **Extended `RunsApplySync` whitelist** in `TuneUpTabVM` — every module whose Apply launches a focus-stealing external window now takes the sync path with **no overlay at all**: `M1.2` (RAM check, URL), `M1.3` (cleanmgr), `M3.2` (explorer), `M4.1` (Workshop URL), `M5.7` / `M5.8` (taskmgr), `M5.9` (URL). Whitelist grew from 7 modules to 13.
+- **Added a watchdog in `BusyTracker`**: if the overlay sits for more than 30 seconds without a detail / progress update, `CrashDoctorVM.TickFrame` force-closes it. Safety net for any future regression — even if a new module forgets to call `End()`, the system self-heals after 30 s.
+
+**Tune-Up tab — "Found N issues" counter fix:**
+
+Previously `actionable++` ran **before** the IgnoreStore check — the counter included cards the user explicitly hid. If all 3 NeedsAction detections were in the ignore list → status said "Found 3 issues" with an empty list under it. Split into `actionableTotal` (for the dev-mode "Show all" line) and `actionableShown` (cards rendered) — the status line now matches the actual list count.
+
+**PerfTuneUp — persistence and UX rework:**
+
+- **Default `Enabled = false`** — opt-in. The user enables it from the Performance tab or via Ctrl+P in the in-game HUD.
+- **Two-file settings** (`CrashDoctorSettings`): defaults in `ModuleData/CrashDoctorSettings.xml` (Workshop, gets overwritten by Steam on every mod update) + user overrides in `Documents/Mount and Blade II Bannerlord/CrashDoctor/state/user_settings.xml` (Steam validation can't reach it, survives mod updates). `Save()` writes **diff only** against the post-defaults snapshot — state stays minimal so future Workshop defaults can flow through to the user without being shadowed by stale duplicates.
+- **HUD visibility and Master state persist across sessions** independent of save game. Ctrl+O / Ctrl+P write straight to state.xml. Bannerlord restart, PC restart, mod update — state survives.
+- **Hotkeys work on vanilla and any mod, even when Master is OFF.** Bootstrap no longer aborts on `Enabled=false` — every patch installs, F1–F4 prefixes gate at runtime via `RuntimeMasterEnabled` (early-return when master is off, overhead near zero). That way the user can flip Master from inside the game with Ctrl+P, no restart needed.
+- The `RuntimeMasterEnabled` settings field collapsed into `Enabled` — single source of truth. `IPerfHost.SetSetting<T>` (new interface method) used by the HUD to persist runtime flips.
+
+**HUD — UX fixes:**
+
+- **"Hide / show: Ctrl+O" hint** now sits directly above the "OPTIMIZATION: ON Ctrl+P" line. Both hotkeys are visible at a glance, no doc-hunting.
+- **A/B FPS comparison requires 5 minutes warm-up per state.** "Diff: −11 FPS, optimization hurts" used to appear 12 seconds after Ctrl+P — meaningless numbers (GPU clock ramp, shader-cache warmup). Until 5 minutes of active time accumulate in BOTH ON and OFF, the line shows progress instead: "Measuring: 4m more in ON + 2m more in OFF".
+- **"CPU work saved: 12,345 times"** instead of `Total saved: NN%`. The old format was opaque without knowing the internals — % of what? New phrasing reframes it positively: CPU dodged N expensive operations = more FPS.
+
+**HUD — locale switches mid-session:**
+
+User changed Bannerlord language in Options → the optimization HUD stayed in the previous locale until full game restart. Root cause: `_lang` was set once in `MapScreenHUDPatch.TryApply` at bootstrap. Now `AutoDetectLanguage()` runs **on every Refresh** (every 3 s) and inside `ApplyMasterButtonVm` (Ctrl+P / OnInit). Language change applies on the next refresh tick — no game restart needed.
+
+**SubModule.xml — CAUTION dialog fix:**
+
+Vanilla TaleWorlds launcher compares `DependentVersion` strictly across all 4 components — `v2.4.0.0` ≠ `v2.4.2.0` also triggers CAUTION on every launch. There's no version pin that survives a single Harmony patch release. Solution: **dropped `<DependedModule Id="Bannerlord.Harmony" .../>` entirely**, kept only `<DependedModuleMetadatas>` with `order="LoadBeforeThis" optional="true"`. Vanilla launcher ignores metadatas (community extension), BLSE / Vortex / BUTR launchers honor them and enforce the correct load order. Harmony detection — via `HarmonyDetector.IsLoaded()` in `OnBeforeInitialModuleScreenSetAsRoot` (runs after every other mod's `OnSubModuleLoad`), 0Harmony.dll is in AppDomain by then.
+
+**Tests + fixtures.**
+
+- New fixture `tests/corpus/2026-05-08_06.37.27/` — real NVIDIA RTX 5070 Blackwell crash (9.3-hour session, GPU Crash flag, create_texture_array failed).
+- New test classes: `M21_ShaderCacheTests` (5 tests — pbr_terrain count gating + ReadOnly strip behavior) and `CrashDoctorSettingsTests` (8 tests — two-file persistence, diff-on-save, mod-update simulation).
+- New cases in `RuleEngineTests` — Optimus suppression on a hybrid laptop, gpu.long_session_gpu_crash on the real fixture, locale-comma in App Run Time.
+- 49 → 57 tests passing, build clean.
+
+---
+
+## 2026-05-08 — PerfTuneUp integration: Optimization section (internal build)
+
+> The visible mod version stays `v1.4.0` forever (Bannerlord compares it against save
+> files; on TOR a mismatch breaks the game). This entry describes an internal build.
+
+**New — Optimization (PerfTuneUp):**
+
+New "Optimization" section in the Tune-Up tab — opt-in performance throttle for the
+campaign map. 5 independently-toggleable mechanisms:
+- F1: hourly tick early-exit for distant invisible parties (biggest FPS win)
+- F2: bucket-spread for distant town/castle ticks (villages always tick — food production safe)
+- F3: rate-limit AI ticks of distant parties to 2 Hz
+- F4: frame-skip for distant party visuals (OFF by default — flicker risk)
+- F5: in-game HUD with throttle stats, hotkey **Ctrl+O**, EN/RU (default EN)
+
+**Section gating:** appears only when The Old Realms / EE1700 is loaded, or the user
+explicitly enabled "Always show" in advanced. If Bannerlord.Harmony is missing, the
+section shows a CTA with a button to open Workshop.
+
+**Coexistence** with stand-alone Performance Optimizer (GodlyAnnihilator): detected via
+Harmony id `performance.mod.bannerlord`; our overlapping patches silently skip.
+
+**Architecture / isolation:** drop-in subsystem `CrashDoctor.PerfTuneUp` at
+`CSharpMod/CrashDoctor/PerfTuneUp/`. No dependencies on the rest of Crash Doctor (only
+`System.*`, `TaleWorlds.*`, `HarmonyLib`). Single bridge — `IPerfHost`, implemented in
+`CrashDoctor.Performance.PerfHostAdapter`.
+
+**Dependency:** `Bannerlord.Harmony` added as `Optional="true"` in SubModule.xml. If the
+user doesn't have it, Crash Doctor still loads; PerfTuneUp stays dormant.
+
+**Known:** in Bannerlord debug-mode `Ctrl+O` is bound to "Score" (DebugHotKeyCategory).
+Release builds don't activate that. If it does conflict, remap via `HudHotkeyKey` /
+`HudHotkeyModifier` in `CrashDoctorSettings.xml`.
+
+---
+
+## v1.4.1 — Splash "double loader" warning (2026-05-05)
+
+After applying M2.1 / M2.2 / M3.3 (any module that wipes the shader cache)
+the next Bannerlord launch fills the splash-screen progress bar **twice**:
+modules first (normal, fast), then a long shader recompile (up to an hour).
+Players mistake the second pass for a freeze, kill the game, and leave a
+negative Workshop review.
+
+Extended the post-Apply messages in those three modules with an explicit
+line about the two passes: "Progress bar will fill TWICE. The slow second
+pass is the shader recompile, not a freeze. Don't kill the game." Same
+note added to M3.3's Preview text. No functional changes.
+
+---
+
 ## v1.4.0 — Tune-Up Phase 2: 11 new modules + bundle export + Ignore (2026-05-04)
 
 **New remediation modules (10):** `M1.2 RAM check`, `M1.5 TEMP cleanup`,

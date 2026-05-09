@@ -89,5 +89,53 @@
     <string id="cd_history_reboot_pending" text="reboot pending" />
     <string id="cd_history_rolled_back_at" text="rolled back {WHEN}" />
     <string id="cd_history_btn_rollback" text="Rollback" />
+
+    <!-- ==== PerfTuneUp (Optimization) tab ==== -->
+    <string id="cd_tab_performance" text="Optimization" />
+    <string id="cd_perf_section_title" text="Optimization" />
+    <string id="cd_perf_btn_on" text="ON" />
+    <string id="cd_perf_btn_off" text="OFF" />
+
+    <!-- Card titles + descriptions (plain language, for non-technical users) -->
+    <string id="cd_perf_master_label" text="Enable optimization" />
+    <string id="cd_perf_master_desc" text="Master switch. When OFF, all the optimizations below stop working. Turn ON to enable everything you have ticked." />
+
+    <string id="cd_perf_f1_label" text="Distant parties: skip hourly updates" />
+    <string id="cd_perf_f1_desc" text="Reduces CPU load from far-away invisible parties (caravans, raiders, lords on the other side of the map). Biggest FPS gain. Your party and visible enemies are not affected." />
+
+    <string id="cd_perf_f2_label" text="Distant towns/castles: update less often" />
+    <string id="cd_perf_f2_desc" text="Far-away towns and castles update once every 16 game-hours instead of every hour. Villages always update — food production is unaffected. You won't notice any difference." />
+
+    <string id="cd_perf_f3_label" text="Distant AI: think a bit slower" />
+    <string id="cd_perf_f3_desc" text="Far-away parties you can't see make their AI decisions twice per second instead of every frame. Their behavior stays correct — they just stop wasting your CPU when you don't see them." />
+
+    <string id="cd_perf_f4_label" text="Distant party animation: less frequent (risky)" />
+    <string id="cd_perf_f4_desc" text="Animations of far-away invisible parties update less often. OFF by default — may cause minor flicker when parties enter the screen edge. Turn ON only if you really need extra FPS." />
+
+    <string id="cd_perf_f5_label" text="In-game stats panel (Ctrl+O)" />
+    <string id="cd_perf_f5_desc" text="Shows a small panel directly on the campaign map with live numbers — proof the optimization is actually doing something. Press Ctrl+O on the map to show or hide it." />
+
+    <string id="cd_perf_always_show_label" text="Reserved (always-keep tab visible)" />
+    <string id="cd_perf_always_show_desc" text="Keep this Optimization tab marked as 'recommended for you' even if no heavy mod (TOR / EE1700) is detected. For users who know what they're doing." />
+
+    <string id="cd_perf_hud_lang_title" text="Stats panel language" />
+    <string id="cd_perf_hud_lang_desc" text="Language of the in-game stats panel (Ctrl+O). Default is English; switch to Russian if you prefer it. The settings page itself is always shown in your Bannerlord language." />
+
+    <!-- Status / hints -->
+    <string id="cd_perf_status_ok" text="{COUNT}/{TOTAL} self-tests passed" />
+    <string id="cd_perf_status_off" text="Subsystem disabled. See log for reason." />
+    <string id="cd_perf_saved_label" text="Saved: {COUNT} ticks ({PERCENT}%)" />
+    <string id="cd_perf_restart_hint" text="Tip: changes take effect after restarting Bannerlord." />
+
+    <!-- Reason hints (top of tab) -->
+    <string id="cd_perf_reason_tor" text="The Old Realms detected — this section is recommended for you." />
+    <string id="cd_perf_reason_ee1700" text="Empires of Europe 1700 detected — this section is recommended for you." />
+    <string id="cd_perf_reason_always" text="Always-show enabled in settings." />
+    <string id="cd_perf_reason_harmony" text="Bannerlord.Harmony is missing — install it to enable Optimization." />
+    <string id="cd_perf_reason_none" text="Heavy mods like The Old Realms benefit most. For vanilla Bannerlord you usually don't need this." />
+
+    <!-- Bannerlord.Harmony missing CTA -->
+    <string id="cd_perf_disabled_no_harmony" text="Bannerlord.Harmony missing — install and enable it in Steam Workshop before this mod to enable Optimization." />
+    <string id="cd_perf_btn_open_harmony" text="Open Bannerlord.Harmony in Steam Workshop" />
   </strings>
 </base>
