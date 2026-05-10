@@ -10,6 +10,101 @@ subscribers.
 
 ---
 
+## 2026-05-10 — New Saves tab, late-game crash rules, performance subsystem removed
+
+> Visible mod version stays `v1.4.0` forever.
+
+**New: Saves tab.**
+
+Crash Doctor can now diagnose your save files **before you load them** —
+just reads the JSON header of each `.sav`, no campaign launch needed. Shows
+up as a fourth main-menu tab next to Crashes, System Tune-Up, and History.
+
+Each card shows: file name, date, size, campaign day, hero level, gold,
+party size. Below that — the modlist diff between what was saved and what's
+currently active in your launcher:
+
+- **"Installed but not selected"** — the mod is installed, just unticked.
+  One-click button enables them in the launcher.
+- **"Not installed at all"** — recorded in the save but absent from your
+  launcher entirely. Button copies the IDs to clipboard so you can search
+  them on Steam Workshop / Nexus.
+- **"Selected but not in save"** — added to an existing campaign. Some are
+  documented-safe (Harmony, ButterLib, MCM — purely runtime), others are
+  not — for known unsafe-to-add mods (CalradianClans, BannerKings) we
+  surface a warning ("not save-game compatible — start a new campaign").
+- **"Version drift"** — the mod's version in the save differs from what's
+  installed now.
+
+Plus several live heuristics:
+
+- **Save body ≥ 50 MB** — almost always means orphan-party leftovers from
+  removed mods; recommends installing **Save Cleaner** (Nexus #7763).
+- **Bannerlord major-version mismatch** — saves made on 1.2.x and 1.3.x
+  are not save-compatible.
+- **Iron Man** — always recommends a backup before loading (a load crash
+  deletes the file).
+- **Known save-defining mods absent** — if the save references a mod that
+  writes to the save via `SaveableTypeDefiner` (PlayerSettlement,
+  BannerKings, TOR_Core, Dramalord, Diplomacy, ImprovedGarrisons,
+  CalradianClans) and that mod isn't installed now, we show the URL where
+  to re-install it.
+- **Late-game milestone (day ≥ 700, size ≥ 25 MB)** — known risk of
+  orphan-clan crashes (KingdomDecision NRE) in long-running campaigns.
+
+Per-card buttons: enable missing mods, disable extras, copy IDs to
+clipboard, open Save System Fix on Nexus (#1925) when there are absent
+mods, open Save Cleaner on Nexus (#7763) when bloat is detected, make a
+`.bak` backup, show in Explorer, send to Recycle Bin.
+
+---
+
+**New crash recognition rules:**
+
+- **TOR Assimilation IndexOutOfRange** — late-game TOR crash on settlement
+  faction transitions. Recommends installing the "TOR Assimilation Fix"
+  mod from Nexus.
+- **KingdomDecision on dead clan** — late vanilla (day 700+) daily-tick NRE
+  on a reference to an eliminated clan. Solutions: Save Cleaner, or load a
+  save from 1-2 days earlier.
+- **Governor change on Bannerlord 1.2.7** — known regression in the Naval
+  DLC build, fixed in 1.3.x. Recommends updating the game.
+
+---
+
+**FPS optimization module removed.**
+
+The optimization module (the "Optimization" tab + the in-game HUD on
+`Ctrl+O` / `Ctrl+P`) has been **fully removed**.
+
+Reason: on large late-game saves (3000+ parties on TOR / EE1700) testing
+showed the FPS gain was either absent or net-negative due to Bannerlord's
+internal architectural ceiling. The popular **Performance Optimizer** mod
+hits the same ceiling for the same reason. Rather than ship the illusion
+of optimization, we drop the feature.
+
+- All Harmony patches removed: `HourlyTickParty`, `HourlyTickSettlement`,
+  `MobilePartyAi.Tick`, `MobilePartyVisual.Tick`, Romance state cache,
+  distant-faction AI throttle, NPC matchmaking throttle.
+- "Optimization" tab gone from the Crash Doctor menu.
+- In-game FPS HUD removed. `Ctrl+O` / `Ctrl+P` no longer do anything.
+- All optimization settings removed from `user_settings.xml` (legacy
+  `<PerfTuneUp>` sections are silently ignored — nothing to migrate).
+- `Bannerlord.Harmony` is no longer required.
+
+What **still works**:
+- Crash log recognition with detailed bilingual diagnostics.
+- "System tune-up" tab with automated remediation cards (RAM, disk,
+  drivers, shader cache, and more).
+- History of applied fixes with rollback support.
+- The new Saves tab (see above).
+- `recovery.ps1` for the case when the game won't even launch.
+
+Technical bonus: the in-game HUD overlay technique is preserved as a
+guide for future mods in `docs/Gauntlet_HUD_Overlay.md`.
+
+---
+
 ## 2026-05-09 — Optimization HUD, new crash rules, false-positive cleanup
 
 > Visible mod version stays `v1.4.0` forever.
