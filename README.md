@@ -5,8 +5,8 @@ dumps, explains in plain English what went wrong, and applies common Windows /
 driver / engine fixes in one click.
 
 Designed for **any modded setup** — vanilla, TOR (The Old Realms), Diplomacy,
-Calradia Expanded, RBM, Banner Kings, anything. No internet, no telemetry, no
-Harmony patches, no dependencies.
+Calradia Expanded, RBM, Banner Kings, anything. No internet, no telemetry,
+no dependencies.
 
 > **Steam Workshop:** [3717685432](https://steamcommunity.com/sharedfiles/filedetails/?id=3717685432)
 > **Compatibility:** Bannerlord v1.2.x – v1.3.15 (Steam build only — Game Pass /
@@ -16,7 +16,10 @@ Harmony patches, no dependencies.
 
 ## What it does
 
-Three tabs from the Bannerlord main menu:
+Four tabs from the Bannerlord main menu — Crashes, System Tune-Up, History,
+Saves. (A prior 5th tab, "Optimization", was removed 2026-05-10 after
+late-game testing showed Bannerlord's architectural ceiling makes throttle-
+style FPS optimization non-viable.)
 
 ### 🔬 Crash diagnosis
 Scans `C:\ProgramData\Mount and Blade II Bannerlord\crashes\` and the BUTR HTML
@@ -121,43 +124,30 @@ Every Apply / Rollback is journaled with timestamp and result. Rolled-back
 entries stay visible with a green "rolled back HH:MM" badge. Reversible entries
 are preserved when the history is cleared so `.reg` backups don't get orphaned.
 
-### ⚡ Optimization (PerfTuneUp) — campaign-map throttle
+### 💾 Saves
+Reads the JSON header of every `.sav` in your `Game Saves` folder and diffs
+its mod list against your current `LauncherData.xml` — without loading the
+campaign. Each card shows day, hero, gold, party size, and surfaces:
 
-A separate **Performance** tab plus an in-game HUD on the campaign map.
-Targets four CPU hotspots that scale poorly on big mod stacks (TOR, EE1700,
-or just a large `MobileParty` count):
+- mods recorded in the save but not selected (one-click enable in launcher),
+- mods recorded but not installed at all (clipboard-copy of IDs),
+- mods selected now but absent from the save (one-click disable),
+- version drift between save and active install,
+- size bloat (≥50 MB → suggest **Save Cleaner** Nexus #7763, ≥100 MB severe),
+- Bannerlord major-version mismatch (1.2.x save in 1.3.x install),
+- Iron Man flag (always recommend backup-before-load),
+- known save-breaking-when-removed mods (PlayerSettlement, BannerKings,
+  TOR_Core, Dramalord, CalradianClans, Diplomacy, ImprovedGarrisons —
+  surfaced with the URL where to re-install),
+- known not-safe-to-add-mid-campaign mods (CalradianClans, BannerKings),
+- late-game heuristic — day ≥ 700 + size ≥ 25 MB warns about orphan-clan
+  KingdomDecision crashes that hit long campaigns.
 
-| Mechanism | What it skips | Default |
-|---|---|---|
-| Distant party hourly tick | `HourlyTick` for invisible far-away parties | ON |
-| Settlement bucket-spread | Far-away towns / castles tick every 16 game-hours instead of every hour (villages always tick — food production safe) | ON |
-| Distant AI rate-limit | Distant invisible parties think 2 Hz instead of every frame | ON |
-| Distant visual frame-skip | Distant party visual updates batched (OFF by default — minor flicker risk) | OFF |
-| In-game HUD | Live counters + FPS sparkline + A/B comparison overlay on the map | ON |
-
-**Hotkeys** (campaign map):
-- `Ctrl+P` — toggle the throttle. Persistent: written to
-  `Documents\Mount and Blade II Bannerlord\CrashDoctor\state\user_settings.xml`
-  and survives mod updates.
-- `Ctrl+O` — show / hide the HUD overlay. Same persistence.
-
-The throttle is **opt-in** — Master starts OFF on first install. The HUD
-shows up immediately so the user can see it exists; it just reads
-"OPTIMIZATION: OFF" until they press `Ctrl+P` (or flip the master toggle
-in the Performance tab).
-
-The A/B FPS comparison line waits for **5 minutes of activity in BOTH ON
-and OFF states** before showing a delta — anything sooner is dominated by
-GPU clock ramp / shader-cache warmup, not optimization.
-
-Works on **vanilla Bannerlord and any mod-mix**, not only TOR. The four
-throttle patches install regardless of master state; their prefixes
-early-return when master is OFF, so overhead with throttle disabled is
-one boolean check per call.
-
-**Requires `Bannerlord.Harmony`.** Without it Crash Doctor still loads
-normally; the Performance tab shows a CTA with a button that opens the
-Workshop page.
+Per-save action buttons: enable missing mods, disable extra mods, copy IDs to
+clipboard, open Save System Fix on Nexus (#1925), open Save Cleaner on Nexus
+(#7763), `.bak` backup, show in Explorer, send to Recycle Bin. Fully offline
+— no Bannerlord runtime touched, so it works in the main menu *before* the
+crashing save is loaded.
 
 ---
 
@@ -357,49 +347,39 @@ Calradia Expanded, RBM, Banner Kings и т.д. Без интернета, без
 
 ## Что делает
 
-Три вкладки в главном меню:
+Четыре вкладки в главном меню — Диагностика крашей, Настройка системы, Журнал,
+Сейвы. (Раньше была пятая, «Оптимизация»; убрана 2026-05-10 после long-run
+тестирования — архитектурный потолок Bannerlord не даёт стабильно ускорить
+поздние кампании через throttle-патчи.)
 
-- **Диагностика крашей** — **66 YAML-правил** под GPU/DirectX (включая авторитетный
+- **Диагностика крашей** — **66+ YAML-правил** под GPU/DirectX (включая авторитетный
   детект iGPU из rgl_log + whitelist карт где DxDiag врёт VRAM), native runtime,
   повреждённые `.tpac` ассеты, save / late-game, mission / engine (NRE в диалогах,
-  team-index шторм), TOR (включая Naval DLC + TOR conflict), мод-стек (TOR + 5+
-  неофициальных), BUTR-стек, hardware, модули (включая аудит графа зависимостей
-  SubModule.xml). Парсер модулей переживает ранние крэши через fallback на
-  `[Runtime][Arguments]` когда секция «Used Modules» отсутствует в crash_tags.txt.
+  team-index шторм), TOR (включая Naval DLC + TOR conflict, Assimilation
+  IndexOutOfRange), мод-стек (TOR + 5+ неофициальных), BUTR-стек, hardware,
+  модули (включая аудит графа зависимостей SubModule.xml). Парсер модулей
+  переживает ранние крэши через fallback на `[Runtime][Arguments]` когда секция
+  «Used Modules» отсутствует в crash_tags.txt.
 - **Настройка системы (Tune-Up)** — **26 модулей** полу-автоматической ремедиации.
   Каждый: Detect → Preview → Apply / Игнорировать / Rollback. Реестровые записи
   сохраняются в `.reg`-бэкапы в Documents до изменения. Кнопка **Игнорировать**
   скрывает карточку до тех пор пока её состояние реально не изменится.
 - **Журнал** — каждое Apply/Rollback с таймстампом и откатом.
-- **Оптимизация** — отдельная вкладка + окно прямо в игре на карте кампании.
-  Помогает на больших мод-сборках (TOR, EE1700) или когда у тебя на карте
-  много отрядов и FPS падает. Что делает:
-  - **Далёкие отряды** — не считает почасовое обновление далёких невидимых отрядов (даёт самый большой прирост FPS)
-  - **Города и замки** — реже обновляет далёкие города и замки (деревни обновляются как раньше — еда в порядке)
-  - **ИИ далёких отрядов** — думает 2 раза в секунду вместо каждого кадра
-  - **Анимации далёких отрядов** — реже обновляются (ВЫКЛ по умолчанию — может слегка мелькать)
-  - **Окно в углу карты** — счётчики, FPS и сравнение «с оптимизацией / без»
-
-  **Горячие клавиши на карте:**
-  - `Ctrl+P` — включить или выключить оптимизацию мгновенно, без перезапуска
-    игры. Твой выбор записывается в
-    `Documents\Mount and Blade II Bannerlord\CrashDoctor\state\user_settings.xml`
-    и переживает любое обновление мода.
-  - `Ctrl+O` — показать или скрыть окно оптимизации. Тоже запоминается.
-
-  По умолчанию оптимизация **выключена** — юзер сам включает кнопкой в
-  Crash Doctor или `Ctrl+P` на карте. Окно появляется сразу, чтобы было
-  видно что фича есть; пишет «ОПТИМИЗАЦИЯ ВЫКЛ» пока не нажмёшь `Ctrl+P`.
-  Сравнение «с оптимизацией / без» показывает реальную разницу FPS только
-  после **5 минут реальной игры в каждом режиме** — раньше первая минута
-  давала шум, потому что видеокарта только разгонялась.
-
-  Работает на **ванильном Bannerlord и любой модной сборке**, не только на
-  TOR. Когда выключено — мод не делает ничего, нагрузки нет.
-
-  **Нужен мод `Bannerlord.Harmony`.** Без него Crash Doctor работает как
-  обычно; во вкладке Оптимизация будет кнопка для установки Harmony из
-  Steam Workshop.
+- **Сейвы** — читает JSON-заголовок каждого `.sav` в папке Game Saves и сверяет
+  список модов с текущим `LauncherData.xml`, **не загружая кампанию**. На
+  карточке: день, герой, золото, отряд, и расхождения по модам — какие моды
+  записаны в сейве, но не активны (включить в один клик); какие записаны, но
+  вообще не установлены (скопировать IDs); какие активны, но не были в сейве
+  (выключить); разные версии. Плюс эвристики: размер сейва ≥50 МБ намекает
+  на orphan-parties (рекомендует Save Cleaner #7763); mismatch мажор-версии
+  Bannerlord (1.2.x сейв в 1.3.x игре); Iron Man (всегда советует backup
+  перед load); список известных мод-зависимостей (PlayerSettlement,
+  BannerKings, TOR_Core, Dramalord, Diplomacy и т.д.) — если такой мод записан
+  в сейве, но не установлен сейчас, выдаём ссылку где его взять. Late-game
+  эвристика: день ≥ 700 + размер ≥ 25 МБ предупреждает о crash'ах от мёртвых
+  ссылок на кланы (KingdomDecision NRE) в долгих кампаниях. Кнопки: включить/
+  выключить моды, открыть Save System Fix #1925, открыть Save Cleaner #7763,
+  `.bak`, проводник, удалить (Корзина).
 
 ## Экспорт нераспознанного краша
 

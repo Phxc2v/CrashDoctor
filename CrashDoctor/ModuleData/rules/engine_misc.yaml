@@ -274,3 +274,44 @@
       - module_list:
           count_above: "5"
           excluding_official: "true"
+
+- id: engine.governor_changed_naval_era
+  category: engine
+  severity: critical
+  confidence: medium
+  evidence_source: "Bannerlord 1.2.7 Naval DLC era — KingdomGovernorChange daily-tick crash, fixed in 1.3.x"
+  requires_sources: [log_line]
+  title:
+    en: "Governor-change crash on daily tick (Bannerlord 1.2.7 era)"
+    ru: "Краш на смене губернатора в daily tick (Bannerlord 1.2.7)"
+  description:
+    en: |
+      KingdomGovernorChange / OnGovernorChanged throws on daily tick. This is a
+      known regression in Bannerlord 1.2.7 (Naval DLC build) where the kingdom
+      decision pipeline reads a governor reference before it's wired up. Fixed
+      in 1.3.x. If the user is on 1.3.x and seeing it, root cause is a mod that
+      patches kingdom-decision flow with stale assumptions.
+    ru: |
+      KingdomGovernorChange / OnGovernorChanged падает в daily tick. Это
+      известный регресс в Bannerlord 1.2.7 (билд с Naval DLC), где kingdom
+      decision pipeline читает ссылку на губернатора до её привязки. Исправлено
+      в 1.3.x. Если игрок уже на 1.3.x и всё равно ловит — корень в моде,
+      патчащем kingdom-decision flow со старыми допущениями.
+  fix:
+    en:
+      - "Update Bannerlord to 1.3.x (1.2.7 has known governor-flow bugs)."
+      - "If already on 1.3.x — disable mods that patch kingdom decisions (Diplomacy old versions, BannerKings) one at a time."
+      - "Workaround: reload save and skip 1 day on map; the crashing decision often disappears next tick."
+    ru:
+      - "Обнови Bannerlord до 1.3.x (в 1.2.7 известные баги governor-flow)."
+      - "Если уже на 1.3.x — отключай по одному моды, патчащие kingdom decisions (старая Diplomacy, BannerKings)."
+      - "Workaround: загрузи сейв и проскочи 1 день на карте — крашащееся решение часто пропадает на следующем тике."
+  match:
+    all:
+      - any:
+          - log_line:
+              contains: "KingdomGovernorChange"
+          - log_line:
+              contains: "OnGovernorChanged"
+          - log_line:
+              contains: "GovernorChangeAction"

@@ -125,6 +125,63 @@
       - log_line:
           contains: "create_gpu_buffer"
 
+- id: gpu.terrain_shader_cache_missing
+  category: gpu
+  severity: critical
+  confidence: high
+  evidence_source: "Real client crash 2026-05-10 — save loads, MapScreen opens, hideout_place location enters → 'Bake Terrain' triggers shader load → 'Missing shader from sack: pbr_terrain' ×30+ in a single Bake → access violation 0xC0000005 in D3D11. Game gets through save deserialisation, falls only when terrain renders."
+  requires_sources: [log_line]
+  title:
+    en: "Terrain shader cache not built — game crashes when entering a location"
+    ru: "Кэш шейдеров ландшафта не построен — падает при входе в локацию"
+  description:
+    en: |
+      The save loads fine, the campaign map opens, but the moment a terrain
+      tile has to be drawn — entering a hideout, a settlement, a battle scene
+      — the engine asks the shader archive for the `pbr_terrain` family of
+      shaders and the archive returns nothing. Tens of "Missing shader from
+      sack: pbr_terrain" lines fire in a single frame and the game falls into
+      a native access violation in D3D11.
+
+      This usually means the shader cache was either never built (the user
+      skipped 'Build Shader Cache' in the main menu after a fresh install /
+      shader-cache clear) or the cache was interrupted by an Alt+Tab during
+      compilation. It can also happen when the game launches on the wrong GPU
+      (integrated Intel UHD on a laptop with a discrete NVIDIA / AMD card) —
+      the cache built for one adapter is not usable on the other.
+    ru: |
+      Сейв грузится нормально, карта кампании открывается, но как только
+      движок пытается отрисовать тайл ландшафта — вход в логово, поселение,
+      батлскин — он лезет в архив шейдеров за семейством `pbr_terrain`, а
+      там пусто. В одном кадре сыпется десяток-два сообщений «Missing shader
+      from sack: pbr_terrain», после чего игра падает с access violation в
+      D3D11.
+
+      Чаще всего причина простая: кэш шейдеров не был достроен — игрок не
+      нажал «Build Shader Cache» в главном меню после установки или после
+      очистки кэша, либо свернул игру (Alt+Tab) во время компиляции и она
+      сломалась на полпути. Бывает и аппаратный вариант: игра запустилась на
+      встроенной видеокарте (Intel UHD на ноутбуке с дискретной NVIDIA или
+      AMD), а кэш собран под другой адаптер и не подходит.
+  fix:
+    en:
+      - "Main menu of Bannerlord → 'Build Shader Cache'. Wait 10–50 minutes WITHOUT Alt+Tab — switching to a browser during compilation corrupts the cache and you have to start over."
+      - "If 'Build Shader Cache' did not help on the first try: delete C:\\ProgramData\\Mount and Blade II Bannerlord\\Shaders\\ entirely, plus every Modules\\<mod>\\Shaders\\D3D11\\compressed_shaders_cache.sack file you can find. Then 'Build Shader Cache' again."
+      - "Steam → Bannerlord → Properties → Installed Files → Verify Integrity of Game Files. Steam will redownload missing shader sources, then run 'Build Shader Cache' once more."
+      - "Laptop with two GPUs: NVIDIA Control Panel → Manage 3D Settings → Program Settings → Bannerlord.exe → Preferred GPU = 'High-performance NVIDIA processor'. AMD: Radeon Settings → Bannerlord.exe → Graphics → 'High Performance'. Then rebuild the cache once on the correct adapter."
+      - "Last-resort if the page file is disabled: turn it back on (Custom 40000–60000 MB on C:) before rebuilding — TOR shader compilation peaks at ~30 GB committed memory and a tiny page file kills the build."
+    ru:
+      - "Главное меню Bannerlord → «Build Shader Cache». Подожди 10–50 минут БЕЗ Alt+Tab — сворачивание в браузер во время компиляции ломает кэш, придётся начинать заново."
+      - "Если «Build Shader Cache» не помог с первого раза: удали папку C:\\ProgramData\\Mount and Blade II Bannerlord\\Shaders\\ целиком, плюс файлы Modules\\<имя_мода>\\Shaders\\D3D11\\compressed_shaders_cache.sack у каждого мода. Потом снова «Build Shader Cache»."
+      - "Steam → Bannerlord → Свойства → Установленные файлы → Проверить целостность. Steam перезальёт повреждённые исходники шейдеров, после этого ещё раз «Build Shader Cache»."
+      - "Ноутбук с двумя видеокартами: NVIDIA Control Panel → Управление параметрами 3D → Программные настройки → Bannerlord.exe → Предпочитаемая видеокарта = «Высокопроизводительный процессор NVIDIA». На AMD: Radeon Settings → Bannerlord.exe → Графика → «Высокая производительность». После этого собери кэш заново на правильном адаптере."
+      - "Если файл подкачки отключён — включи его (Особый размер 40000–60000 МБ на C:) ДО сборки кэша. Компиляция шейдеров TOR требует ~30 ГБ committed-памяти, на отключённом или маленьком файле подкачки сборка не дойдёт до конца."
+  match:
+    all:
+      - log_line:
+          contains: "Missing shader from sack: pbr_terrain"
+          count_at_least: "30"
+
 - id: gpu.shader_cache_corrupt
   category: gpu
   severity: warning

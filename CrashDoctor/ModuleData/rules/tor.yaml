@@ -460,3 +460,40 @@
     all:
       - module_list: { id: "TOR_Core", has: "true" }
       - module_list: { id: "NavalDLC", has: "true" }
+
+- id: tor.assimilation_indexoutofrange
+  category: saves
+  severity: critical
+  confidence: medium
+  evidence_source: "TOR Assimilation Fix Nexus #5512 — IndexOutOfRange / ArgumentOutOfRange in AssimilationCampaignBehavior on settlement-faction transition"
+  requires_sources: [log_line]
+  title:
+    en: "TOR Assimilation crash — IndexOutOfRange in settlement transition"
+    ru: "Краш TOR Assimilation — IndexOutOfRange при смене фракции города"
+  description:
+    en: |
+      AssimilationCampaignBehavior throws IndexOutOfRangeException /
+      ArgumentOutOfRangeException when a TOR settlement transitions between
+      factions in late-game. The vanilla TOR_Core code indexes into a culture
+      stringlist that doesn't have an entry for the new faction.
+    ru: |
+      AssimilationCampaignBehavior бросает IndexOutOfRangeException /
+      ArgumentOutOfRangeException когда TOR-город переходит между фракциями
+      в поздней игре. Код TOR_Core обращается по индексу к списку культур,
+      в котором нет записи для новой фракции.
+  fix:
+    en:
+      - "Install TOR Assimilation Fix from NexusMods (search 'TOR Assimilation Fix') — patches the index lookup to fall back to the source culture."
+      - "Workaround: reload an earlier save before the settlement changed hands."
+    ru:
+      - "Поставь TOR Assimilation Fix с NexusMods (искать 'TOR Assimilation Fix') — патчит индексацию, чтобы при отсутствии записи использовалась исходная культура."
+      - "Workaround: загрузи более ранний сейв до момента, как город сменил владельца."
+  match:
+    all:
+      - log_line:
+          contains: "AssimilationCampaignBehavior"
+      - any:
+          - log_line:
+              contains: "IndexOutOfRange"
+          - log_line:
+              contains: "ArgumentOutOfRange"

@@ -148,3 +148,46 @@
               contains: "PregnancyCampaignBehavior.CheckOffspringsToDeliver"
           - log_line:
               contains: "DeliverOffSpring"
+
+- id: save.kingdom_decision_orphan_clan
+  category: saves
+  severity: critical
+  confidence: high
+  evidence_source: "Late-game vanilla bug — KingdomDecisionProposalBehavior.GetRandomAnnexationDecision NRE on dead-clan reference, observed day 700+"
+  requires_sources: [log_line]
+  title:
+    en: "Late-game daily-tick crash — KingdomDecisionProposal on dead clan"
+    ru: "Поздняя кампания: краш daily tick на KingdomDecisionProposal с мёртвым кланом"
+  description:
+    en: |
+      KingdomDecisionProposalBehavior.GetRandomAnnexationDecision (or sibling
+      Decision* methods) throws NullReferenceException during AI decision tick.
+      The save still references a clan that was eliminated; vanilla cleanup
+      missed the back-pointer in the decision queue. Common day 700+ in
+      long-running campaigns.
+    ru: |
+      KingdomDecisionProposalBehavior.GetRandomAnnexationDecision (или родственные
+      Decision*-методы) бросают NullReferenceException в AI decision tick.
+      В сейве осталась ссылка на уничтоженный клан, ванильная очистка не
+      убрала back-pointer из decision queue. Часто с дня 700+ в долгих
+      кампаниях.
+  fix:
+    en:
+      - "Install Save Cleaner mod (NexusMods #7763) — prunes orphan clan/party references from the save."
+      - "Workaround: load a save from 1-2 days earlier and skip days slowly; the decision queue often resolves itself."
+      - "If reproducible on every load: this save is poisoned. Save Cleaner is the only path back, otherwise start fresh."
+    ru:
+      - "Поставь Save Cleaner (NexusMods #7763) — чистит сейв от мёртвых ссылок на кланы/отряды."
+      - "Workaround: загрузи сейв за 1-2 дня раньше и проматывай дни медленно — decision queue часто разруливается."
+      - "Если падает на каждой загрузке — сейв отравлен, Save Cleaner единственный шанс, иначе новая кампания."
+  match:
+    all:
+      - any:
+          - log_line:
+              contains: "KingdomDecisionProposalBehavior"
+          - log_line:
+              contains: "GetRandomAnnexationDecision"
+          - log_line:
+              contains: "GetRandomAnnexation"
+      - log_line:
+          contains: "NullReferenceException"
