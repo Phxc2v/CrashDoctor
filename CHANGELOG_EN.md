@@ -10,6 +10,209 @@ subscribers.
 
 ---
 
+## 2026-05-15 — Built-in save cleaner, Mods tab, Ctrl+D in-game save analysis, defensive guards, Windows TEMP relocation, support author button
+
+> Visible mod version stays `v1.4.0` forever.
+
+Large update: a full **built-in save cleaner** (previously we just pointed
+people at an external Save Cleaner on Nexus), a new **Mods tab** that
+analyses every installed module and flags issues, a **Ctrl+D** hotkey that
+opens save analysis directly from a loaded campaign, three new **optional
+defensive guards**, a new Tune-Up card that **relocates Windows TEMP** to a
+free drive, and a **Support author** button with wallet addresses.
+
+---
+
+### New: built-in save cleaner
+
+Previously, when a save had grown bloated (50+ MB, orphan parties from
+removed mods), Crash Doctor could only recommend installing a separate
+**Save Cleaner** mod from Nexus. Now cleaning runs **inside Crash Doctor** —
+no extra mod needed.
+
+What gets cleaned:
+- **Abandoned crafted items** — items that lost their owner after a
+  crafting mod was removed.
+- **Glitched parties** — mobile parties with no `PartyComponent` or with
+  no live faction binding (typical leftover of a removed mod).
+- **Corrupted log entries** — journal events holding null references to
+  heroes / settlements.
+- **Per-mod wipe** — tick the mods to wipe in the list, the cleaner
+  removes every object owned by those mods in one pass.
+
+The algorithm is conservative: the original `.sav` is **never overwritten**.
+Crash Doctor always writes a new file: `CrashDoctor_cleaned_<date>.sav`.
+If anything goes wrong, the original is intact — reload it and carry on.
+
+Adapted from **JungleDruid / bannerlord-save-cleaner** (MIT licence, the
+licence file ships inside the mod: `Saves/Cleaner/LICENSE-SaveCleaner.txt`).
+
+---
+
+### New: Mods tab
+
+A fifth tab in the Crash Doctor main menu. Analyses **every installed
+module** (not just active ones) and surfaces:
+
+- **Load issues**: missing dependencies, version mismatches, blocked DLLs
+  (Windows MOTW), dependency-graph cycles.
+- **Save safety**: mods that write to the save via `SaveableTypeDefiner` —
+  these cannot be safely added or removed mid-campaign.
+- **Module type**: pure content (XML / assets), Harmony code, BLSE plugin,
+  etc.
+- **Size**: see at a glance which mods are heavy.
+
+Each row is clickable — a popup shows the full report: DLLs, dependencies,
+analyser warnings, Workshop / Nexus link (if we recognised the mod).
+
+---
+
+### New: Ctrl+D — save analysis from inside the campaign
+
+Until now, diagnosing a save meant exiting to the main menu. Now `Ctrl+D`
+works straight from the map / town / mission:
+
+- If a campaign is loaded → opens a dedicated **save analysis screen**:
+  size, day, gold, party, mod list recorded in the save, plus buttons for
+  the built-in cleaner (see above) and for wiping specific mods out of the
+  save.
+- If at the main menu → opens the usual Crash Doctor screen.
+
+Handy when a save starts crashing or stuttering — you don't have to quit
+just to check "what's in this save".
+
+---
+
+### New: three optional defensive guards
+
+Three toggles appeared in Crash Doctor **Settings**. All **off by default** —
+opt in only after running into a problem they address:
+
+- **"Catch UI exceptions"** — wraps UI methods (inventory, encyclopedia,
+  party screens) in a Harmony finalizer. If a third-party mod throws while
+  rendering UI — the game shows a red error instead of dying. Strictly UI
+  methods, never touches gameplay logic.
+- **"Swallow mod exceptions"** — opt-in list of mods whose exceptions
+  inside mission / campaign code are silently swallowed. Lets you keep
+  playing when one known-buggy mod would otherwise crash the whole game.
+- **"Log native crashes"** — installs a Windows VEH (Vectored Exception
+  Handler). When the game dies on a native AV / heap corruption / stack
+  overflow, `crashdoctor.log` gets a timestamped line with the exception
+  code **before** TaleWorlds shows its crash dialog. Without this, native
+  crashes are only visible in `.dmp` files.
+
+Plus always-on (no toggle):
+- **Emergency save** — on unhandled exception, the mod attempts a
+  last-ditch save to `CrashDoctor_Emergency_<timestamp>.sav` before the
+  game dies. Often rescues 2-3 hours of progress.
+- **Late-game speed cap** — after the first native AV in the current
+  session, or once the world hits ≥ 800 parties, the mod refuses x8 speed
+  (a known TaleWorlds race between HourlyTick phases that deref-nulls on
+  x8 in late-game). x4 still works.
+- **Patch conflict detection** — startup self-test checks whether another
+  mod has overridden our Harmony patches. If conflicts are found, the
+  Crash Doctor main-menu button stays enabled but its tooltip lists what's
+  conflicting.
+
+---
+
+### New: Windows TEMP relocation (Tune-Up card)
+
+A new card appears in **System Tune-Up** when:
+1. The drive holding `%TEMP%` has **less than 40 GB free**.
+2. Another fixed drive has **more than 100 GB free**.
+
+Apply creates `<BigDrive>:\Temp\<your username>` and updates the user's
+`TMP` and `TEMP` environment variables to point at the new path. The
+system-wide TEMP (shared across all users) is **not touched** — admin
+rights are not required.
+
+Why: Bannerlord's shader compiler writes intermediate files into `%TEMP%`
+during "Build Shader Cache" and runtime shader recompiles. On a tight
+system drive this fails with **out of disk space** errors that surface as
+"pdb append failed" / "debug info append failed" — looks like shader bugs,
+but really TEMP is full.
+
+After Apply, **you MUST sign out of Windows and sign back in** (or
+reboot) — environment changes only take effect for new logon sessions.
+Bannerlord launched in the current session keeps using the old TEMP.
+Reversible: rollback writes the previous value back.
+
+---
+
+### New: Support author button
+
+Bottom-right of the Crash Doctor window now has a **Support the author**
+button. The popup contains:
+
+- **USDT Tron** — click copies the address to clipboard.
+- **USDT ERC-20** — click copies the address to clipboard.
+- (A Russian-card donation link is shown in the Russian localisation only.)
+
+Plus a plain note: everything I make ships for free for everyone at the
+same time. No pay-to-win updates, no donor-only content, no paying to skip
+release queues. Donating is purely optional — it just keeps me going on
+everything that's planned.
+
+The `by Phoenix · t.me/CodeRickTg` line in the bottom-left is now
+**clickable** — opens the Telegram channel in your browser.
+
+---
+
+### New crash rules for late-game
+
+A new `late_game.yaml` collects patterns specific to long campaigns
+(day 700+):
+
+- Native AV without managed stack on x8 speed (see "Late-game speed cap"
+  above — the mod now blocks this preemptively).
+- Cascade crashes from orphan clans in `KingdomDecisionProposalBehavior`.
+- Heavy saves (≥ 50 MB) → hint: "try the built-in cleaner, see Ctrl+D".
+
+---
+
+### Fixed
+
+- **Mods showed up as "not loaded"** in the "Wipe mods from the save"
+  dialog even when they were actually enabled — the mod was checking for a
+  .NET assembly, but content-only mods (TOR_Armory, TOR_Environment,
+  FastMode, LoreHardcore, the Russian translation) ship no DLL of their
+  own. We now consult the same list the launcher uses —
+  `ModuleHelper.GetActiveModules`.
+- **TOR career-perk crash failed to match** when `rgl_log` was empty and
+  the data came only from a BUTR report (BLSE without log capture). The
+  `tor.career_perk_npe` rule now triggers on either source.
+- **Save cleanup could silently report "0 objects removed"** if every
+  cleanup addon refused to run during PreClean (e.g. on a broken campaign).
+  Now it explicitly fails instead of falsely reporting success.
+- **Duplicate entries accumulating in the "Swallow mod exceptions" list**:
+  every save would persist the same mod id twice if it was already
+  duplicated. Now dedup runs before write.
+- **Stale `.tmp` files** in the settings folder after a crash mid-write.
+  The temp filename is now unique per write, and old orphan `.tmp.*`
+  siblings get swept on the next save.
+
+---
+
+### Under the hood
+
+- `recovery.ps1` and `docs/r.ps1` **removed** from the mod — PowerShell
+  scripts inside the mod are now banned by an internal rule (AV / Defender
+  liked to flag them). Recovery instructions remain in `docs/RECOVERY.md`.
+- `M21_ShaderCache` tests updated to match the 2026-05-10 change (scans
+  `crashes/` instead of `logs/`).
+- Save Cleaner adapter: the whole subsystem lives in
+  `CSharpMod/CrashDoctor/Saves/Cleaner/`, adapted from
+  JungleDruid/bannerlord-save-cleaner (MIT) — `LICENSE-SaveCleaner.txt`
+  ships next to the code.
+- Diagnostics guard subsystem (`Diagnostics/NativeCrashGuard.cs`,
+  `UIErrorGuard.cs`, `ModSwallowGuard.cs`, `EmergencySaveService.cs`,
+  `LateGameSpeedCap.cs`, `PatchConflictDetector.cs`) — Harmony patches
+  strictly wrapped in try/catch with log, no unhandled exceptions leaking
+  out of our code.
+
+---
+
 ## 2026-05-10 — New Saves tab, late-game crash rules, performance subsystem removed
 
 > Visible mod version stays `v1.4.0` forever.

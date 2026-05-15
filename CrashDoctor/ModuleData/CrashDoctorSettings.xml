@@ -9,4 +9,23 @@
        native crash dumper fires and writes a real dump to ProgramData/.../crashes/<ts>/ (which is a
        junction to Modules/CrashDoctor/cache/). For developer/debug use only. -->
   <ShowForceCrashButton>false</ShowForceCrashButton>
+  <!-- NEW (2026-05-14) EnableEmergencySave: when an unhandled exception is about to terminate the
+       process, try one last SaveAs("CrashDoctor_Emergency_<timestamp>") so the player doesn't lose
+       hours of unsaved progress. Default ON. Set false to disable if it interacts badly with
+       another save-related mod. The attempt runs AFTER the crash stack trace is already written
+       to crashdoctor.log, so disabling it doesn't affect diagnostics. -->
+  <EnableEmergencySave>true</EnableEmergencySave>
+  <!-- NEW (2026-05-14) EnableNativeCrashLogging: install a Windows Vectored Exception Handler
+       that writes one line to crashdoctor.log when a NATIVE crash occurs (access violation,
+       stack overflow, heap corruption). Default OFF because VEH is process-global and can
+       interact with other mods/debuggers. The handler is observe-only — it does NOT swallow
+       the exception, so TaleWorlds' .dmp pipeline keeps working as before. Turn ON if you want
+       a timestamp inside crashdoctor.log to correlate with the .dmp folder created by the
+       crash dialog. -->
+  <EnableNativeCrashLogging>false</EnableNativeCrashLogging>
+  <!-- NEW (2026-05-14, Phase 4) EnableUIErrorPatching: wraps a hand-picked list of UI refresh
+       methods with Harmony Finalizers so a broken third-party UI patch shows a red message
+       instead of crashing the game. Conservative — only methods that can't corrupt save state.
+       Default OFF — opt-in via Settings tab in Crash Doctor UI. -->
+  <EnableUIErrorPatching>false</EnableUIErrorPatching>
 </Settings>

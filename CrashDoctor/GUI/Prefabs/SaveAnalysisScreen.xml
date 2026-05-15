@@ -1,0 +1,311 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Prefab>
+  <Window>
+    <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent">
+      <Children>
+        <!-- 2026-05-14: Backdrop overlay removed entirely. Bannerlord's
+             sprite renderer doesn't honour the alpha byte in `Color=`, so
+             `#0000004D` rendered as solid opaque black (player saw it as
+             "broken / black screen"). Without a backdrop the GauntletLayer
+             draws only the popup canvas; everything else on screen (campaign
+             map, main menu image) keeps rendering naturally. -->
+
+        <!-- Centered popup canvas. Rebuilt 2026-05-14 to mirror native
+             SingleQueryPopup structure: outer Widget is bare (no Sprite),
+             canvas backdrop is a child Widget below the content, frame_9
+             border is a child Widget on TOP. This avoids the "Sprite on a
+             Fixed-size parent" pattern that in some Gauntlet versions
+             ignores SuggestedHeight and renders the sprite at its native
+             image height, leaving buttons floating in the un-bordered
+             stretch beneath.
+             Height 720 chosen so popup fits on 1080p with UIScale ≤ 1.5
+             without clipping. Buttons pulled up with MarginBottom=80 so
+             they sit a clear margin above frame_9's bottom ornament. -->
+        <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="1100" SuggestedHeight="720"
+                HorizontalAlignment="Center" VerticalAlignment="Center"
+                ClipContents="true">
+          <Children>
+            <!-- 1) Backdrop — `StdAssets\Popup\canvas` has a baked native image
+                 size and IGNORED SuggestedHeight in our Bannerlord build,
+                 rendering ~110-120px taller than the outer widget. That
+                 oversize sprite shoved frame_9 visually downward while child
+                 widgets (buttons) kept honouring the real 720px rect, so the
+                 buttons ended up sitting on top of the bottom-border ornament.
+                 BlankWhiteSquare_9 is a true 9-slice that strictly respects
+                 parent size; tinted dark sandy brown to match the canvas look. -->
+            <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
+                    Sprite="BlankWhiteSquare_9" Color="#1B140EFF" IsEnabled="false" />
+
+            <!-- 2) Inner content (drawn ABOVE canvas) -->
+            <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
+                    MarginTop="20" MarginBottom="20" MarginLeft="20" MarginRight="20">
+              <Children>
+
+                <!-- Header -->
+                <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="48"
+                            VerticalAlignment="Top" MarginTop="20" MarginLeft="32" MarginRight="32"
+                            Brush.FontSize="28" Brush.FontColor="#F4E1C4FF"
+                            Brush.TextHorizontalAlignment="Center" Text="@HeaderText" />
+
+                <!-- Status line under header -->
+                <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="26"
+                            VerticalAlignment="Top" MarginTop="76" MarginLeft="32" MarginRight="32"
+                            Brush.FontSize="16" Brush.FontColor="#C8B898FF"
+                            Brush.TextHorizontalAlignment="Center" Text="@StatusText" />
+
+                <!-- Scrollable report body — hard-clipped wrapper around a
+                     plain TextWidget. Same clip pattern as the wipe list so
+                     long reports can't overflow the popup boundary and
+                     visually cover the bottom button row. -->
+                <Widget IsVisible="@IsReportVisible"
+                        WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
+                        MarginTop="106" MarginBottom="210" MarginLeft="20" MarginRight="40"
+                        ClipContents="true">
+                  <Children>
+                    <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
+                                MarginLeft="14" MarginRight="14" MarginTop="4" MarginBottom="14"
+                                Brush.FontSize="15" Brush.FontColor="#E8DCC4FF"
+                                Brush.TextVerticalAlignment="Top" Text="@ReportText" />
+                  </Children>
+                </Widget>
+
+                <!-- Wipe-mode list — replaces the report area when player clicked
+                     "Удалить мод…". Properly wired ScrollablePanel (ClipRect +
+                     InnerPanel + VerticalScrollbar) so the row list CLIPS
+                     within its bounds and a scrollbar appears when there are
+                     more mods than fit. Without these attributes the inner
+                     ListPanel grew past the panel's MarginBottom and visually
+                     overlapped the bottom button row — that's what looked
+                     like "buttons going past the popup frame". -->
+                <Widget IsVisible="@IsWipeListVisible"
+                        WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
+                        MarginTop="106" MarginBottom="210" MarginLeft="20" MarginRight="40">
+                  <Children>
+                    <ScrollablePanel Id="WipeScroll"
+                                     WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
+                                     AutoHideScrollBars="true"
+                                     ClipRect="WipeClipRect"
+                                     InnerPanel="WipeClipRect\WipeList"
+                                     VerticalScrollbar="..\WipeScrollbar">
+                      <Children>
+                        <Widget Id="WipeClipRect"
+                                WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
+                                ClipContents="true">
+                          <Children>
+                            <ListPanel Id="WipeList" DataSource="{WipeMods}"
+                                       WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren"
+                                       StackLayout.LayoutMethod="VerticalBottomToTop">
+                              <ItemTemplate>
+                                <ButtonWidget DoNotPassEventsToChildren="true" Command.Click="ExecuteToggle"
+                                              WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="40"
+                                              MarginTop="2" MarginBottom="2">
+                                  <Children>
+                                    <Widget DoNotAcceptEvents="true"
+                                            WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="22" SuggestedHeight="22"
+                                            HorizontalAlignment="Left" VerticalAlignment="Center"
+                                            MarginLeft="22"
+                                            Sprite="BlankWhiteSquare_9" Color="@CheckboxColor">
+                                      <Children>
+                                        <TextWidget DoNotAcceptEvents="true"
+                                                    WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
+                                                    Brush.FontSize="18" Brush.FontColor="#1B140EFF"
+                                                    Brush.TextHorizontalAlignment="Center"
+                                                    Brush.TextVerticalAlignment="Center" Text="@CheckboxMark" />
+                                      </Children>
+                                    </Widget>
+                                    <TextWidget DoNotAcceptEvents="true"
+                                                WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
+                                                HorizontalAlignment="Left" VerticalAlignment="Center"
+                                                MarginLeft="58" MarginRight="180"
+                                                Brush.FontSize="15" Brush.FontColor="#E8DCC4FF" Text="@Name" />
+                                    <TextWidget DoNotAcceptEvents="true"
+                                                WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="160"
+                                                HorizontalAlignment="Right" VerticalAlignment="Center"
+                                                MarginRight="24"
+                                                Brush.FontSize="13" Brush.FontColor="#A87C40FF"
+                                                Brush.TextHorizontalAlignment="Right" Text="@StatusText" />
+                                  </Children>
+                                </ButtonWidget>
+                              </ItemTemplate>
+                            </ListPanel>
+                          </Children>
+                        </Widget>
+                      </Children>
+                    </ScrollablePanel>
+                    <ScrollbarWidget Id="WipeScrollbar"
+                                     WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent"
+                                     SuggestedWidth="10" HorizontalAlignment="Right" VerticalAlignment="Top"
+                                     MarginTop="6" MarginBottom="6" MarginRight="-22"
+                                     AlignmentAxis="Vertical" Handle="WipeScrollbarHandle"
+                                     MaxValue="100" MinValue="0">
+                      <Children>
+                        <Widget WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="4"
+                                HorizontalAlignment="Center"
+                                Sprite="BlankWhiteSquare_9" Color="#5a4033FF" AlphaFactor="0.4" />
+                        <ImageWidget Id="WipeScrollbarHandle"
+                                     WidthSizePolicy="Fixed" HeightSizePolicy="Fixed"
+                                     SuggestedHeight="40" SuggestedWidth="10"
+                                     HorizontalAlignment="Center" Brush="FaceGen.Scrollbar.Handle" />
+                      </Children>
+                    </ScrollbarWidget>
+                  </Children>
+                </Widget>
+
+                <!-- Progress bar: visible only while a clean/backup operation runs.
+                     Track 700×6 dim brown, fill width-bound to ProgressBarWidth (0..700)
+                     for a 5-step pipeline (start → collect → find → remove → finalise).
+                     Sits just above the bottom button row. -->
+                <Widget IsVisible="@IsProgressVisible"
+                        WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="700" SuggestedHeight="6"
+                        HorizontalAlignment="Center" VerticalAlignment="Bottom" MarginBottom="200"
+                        Sprite="BlankWhiteSquare_9" Color="#3A2E1FFF">
+                  <Children>
+                    <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed"
+                            SuggestedWidth="@ProgressBarWidth" SuggestedHeight="6"
+                            HorizontalAlignment="Left" VerticalAlignment="Top"
+                            Sprite="BlankWhiteSquare_9" Color="#7AC07AFF" />
+                  </Children>
+                </Widget>
+
+                <!-- Bottom action area — REPORT MODE
+                     5 buttons (Scan/Backup/Clean/Wipe/Close) totalled ~1200 px
+                     of horizontal real estate but inner content width is only
+                     1060 px, so the strip overflowed left+right past the popup
+                     frame. Split into TWO rows: primary save actions on top
+                     (Scan + Backup + Clean = 780 px), secondary on bottom
+                     (Wipe + Close = 410 px). Outer ListPanel stacks them
+                     bottom-to-top so the SECONDARY row sits literally at the
+                     bottom of the popup — that matches the visual hierarchy
+                     "primary actions above, exit/advanced actions below". -->
+                <ListPanel IsVisible="@IsReportVisible"
+                           WidthSizePolicy="CoverChildren" HeightSizePolicy="Fixed" SuggestedHeight="114"
+                           HorizontalAlignment="Center" VerticalAlignment="Bottom" MarginBottom="80"
+                           StackLayout.LayoutMethod="VerticalBottomToTop">
+                  <Children>
+                    <!-- TOP row first — in Gauntlet's VerticalBottomToTop stack the
+                         first child lays out at the TOP of the stack (counter-intuitive
+                         name; native SingleQueryPopup behaves the same way: Title
+                         declared first → appears at top).
+                         Top row: primary save-management actions. -->
+                    <ListPanel WidthSizePolicy="CoverChildren" HeightSizePolicy="Fixed" SuggestedHeight="52"
+                               HorizontalAlignment="Center" MarginBottom="10"
+                               StackLayout.LayoutMethod="HorizontalLeftToRight">
+                      <Children>
+                        <ButtonWidget DoNotPassEventsToChildren="true" IsEnabled="@IsNotWorking"
+                                      Command.Click="ExecuteScan" Brush="Popup.Done.Button"
+                                      WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="240" SuggestedHeight="52"
+                                      MarginRight="10">
+                          <Children>
+                            <TextWidget DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
+                                        Brush="Popup.Button.Text" Brush.FontSize="17"
+                                        Brush.TextHorizontalAlignment="Center" Text="@LabelBtnScan" />
+                          </Children>
+                        </ButtonWidget>
+                        <ButtonWidget DoNotPassEventsToChildren="true" IsEnabled="@IsNotWorking"
+                                      Command.Click="ExecuteBackup" Brush="Popup.Done.Button"
+                                      WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="280" SuggestedHeight="52"
+                                      MarginRight="10">
+                          <Children>
+                            <TextWidget DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
+                                        Brush="Popup.Button.Text" Brush.FontSize="17"
+                                        Brush.TextHorizontalAlignment="Center" Text="@LabelBtnBackup" />
+                          </Children>
+                        </ButtonWidget>
+                        <ButtonWidget DoNotPassEventsToChildren="true" IsEnabled="@IsCleanEnabled"
+                                      Command.Click="ExecuteClean" Brush="Popup.Done.Button"
+                                      WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="240" SuggestedHeight="52">
+                          <Children>
+                            <TextWidget DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
+                                        Brush="Popup.Button.Text" Brush.FontSize="17"
+                                        Brush.TextHorizontalAlignment="Center" Text="@LabelBtnClean" />
+                          </Children>
+                        </ButtonWidget>
+                      </Children>
+                    </ListPanel>
+                    <!-- BOTTOM row second — placed at the actual bottom of the popup.
+                         Holds secondary actions: open mod wipe list, exit screen. -->
+                    <ListPanel WidthSizePolicy="CoverChildren" HeightSizePolicy="Fixed" SuggestedHeight="52"
+                               HorizontalAlignment="Center"
+                               StackLayout.LayoutMethod="HorizontalLeftToRight">
+                      <Children>
+                        <ButtonWidget DoNotPassEventsToChildren="true" IsEnabled="@IsNotWorking"
+                                      Command.Click="ExecuteShowWipeList" Brush="Popup.Cancel.Button"
+                                      WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="220" SuggestedHeight="52"
+                                      MarginRight="10">
+                          <Children>
+                            <TextWidget DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
+                                        Brush="Popup.Button.Text" Brush.FontSize="17"
+                                        Brush.TextHorizontalAlignment="Center" Text="@LabelBtnWipe" />
+                          </Children>
+                        </ButtonWidget>
+                        <ButtonWidget DoNotPassEventsToChildren="true" Command.Click="ExecuteClose"
+                                      Brush="Popup.Cancel.Button"
+                                      WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="180" SuggestedHeight="52">
+                          <Children>
+                            <TextWidget DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
+                                        Brush="Popup.Button.Text" Brush.FontSize="17"
+                                        Brush.TextHorizontalAlignment="Center" Text="@LabelBtnClose" />
+                          </Children>
+                        </ButtonWidget>
+                      </Children>
+                    </ListPanel>
+                  </Children>
+                </ListPanel>
+
+                <!-- Bottom action row — WIPE-LIST MODE
+                     Visible only when the player is selecting mods to wipe. Three
+                     buttons: Back (return to report), Wipe selected (runs batch
+                     with all ticked rows), Close. The "Wipe selected" label
+                     includes the live count via @LabelBtnWipeSelected. -->
+                <ListPanel IsVisible="@IsWipeListVisible"
+                           WidthSizePolicy="CoverChildren" HeightSizePolicy="Fixed" SuggestedHeight="52"
+                           HorizontalAlignment="Center" VerticalAlignment="Bottom" MarginBottom="80"
+                           StackLayout.LayoutMethod="HorizontalLeftToRight">
+                  <Children>
+                    <ButtonWidget DoNotPassEventsToChildren="true" IsEnabled="@IsNotWorking"
+                                  Command.Click="ExecuteHideWipeList" Brush="Popup.Cancel.Button"
+                                  WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="180" SuggestedHeight="52"
+                                  MarginRight="14">
+                      <Children>
+                        <TextWidget DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
+                                    Brush="Popup.Button.Text" Brush.FontSize="17"
+                                    Brush.TextHorizontalAlignment="Center" Text="@LabelBtnBack" />
+                      </Children>
+                    </ButtonWidget>
+                    <ButtonWidget DoNotPassEventsToChildren="true" IsEnabled="@IsWipeRunButtonEnabled"
+                                  Command.Click="ExecuteRunWipeSelected" Brush="Popup.Done.Button"
+                                  WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="360" SuggestedHeight="52"
+                                  MarginRight="14">
+                      <Children>
+                        <TextWidget DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
+                                    Brush="Popup.Button.Text" Brush.FontSize="17"
+                                    Brush.TextHorizontalAlignment="Center" Text="@LabelBtnWipeSelected" />
+                      </Children>
+                    </ButtonWidget>
+                    <ButtonWidget DoNotPassEventsToChildren="true" Command.Click="ExecuteClose"
+                                  Brush="Popup.Cancel.Button"
+                                  WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="180" SuggestedHeight="52">
+                      <Children>
+                        <TextWidget DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
+                                    Brush="Popup.Button.Text" Brush.FontSize="17"
+                                    Brush.TextHorizontalAlignment="Center" Text="@LabelBtnClose" />
+                      </Children>
+                    </ButtonWidget>
+                  </Children>
+                </ListPanel>
+
+              </Children>
+            </Widget>
+
+            <!-- 3) Frame border on TOP (z-order last so its ornaments draw
+                 over everything inside the popup). IsEnabled=false so it
+                 doesn't eat input. -->
+            <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
+                    Sprite="frame_9" ExtendLeft="18" ExtendTop="18" ExtendRight="18" ExtendBottom="18"
+                    IsEnabled="false" />
+          </Children>
+        </Widget>
+      </Children>
+    </Widget>
+  </Window>
+</Prefab>

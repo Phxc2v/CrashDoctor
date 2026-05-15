@@ -48,6 +48,7 @@
     <string id="cd_tab_tuneup" text="Настройка системы" />
     <string id="cd_tab_history" text="Журнал" />
     <string id="cd_tab_saves" text="Сейвы" />
+    <string id="cd_tab_mods" text="Моды" />
     <string id="cd_saves_btn_rescan" text="Пересканировать" />
     <string id="cd_saves_btn_open_folder" text="Открыть папку Game Saves" />
     <string id="cd_saves_no_saves" text="Сейвов в папке Game Saves не найдено." />
@@ -80,6 +81,7 @@
     <string id="cd_apply_failed_default" text="Не удалось применить. См. crashdoctor.log." />
     <string id="cd_btn_ok" text="ОК" />
     <string id="cd_tuneup_btn_show_all" text="Показать все" />
+    <string id="cd_tuneup_btn_force_shader_cleanup" text="Очистить shader cache" />
     <string id="cd_tuneup_btn_show_actionable" text="Только проблемы" />
     <string id="cd_tuneup_summary_show_all" text="Показаны все {TOTAL} модулей ({ACTIONABLE} требуют действий, {HEALTHY} в порядке, {SKIPPED} неприменимы)." />
 
@@ -94,6 +96,34 @@
     <string id="cd_history_reboot_pending" text="нужна перезагрузка" />
     <string id="cd_history_rolled_back_at" text="откат: {WHEN}" />
     <string id="cd_history_btn_rollback" text="Откатить" />
+
+    <!-- NEW (2026-05-14) тексты для аварийного сохранения. Подключатся позднее когда добавим
+         UI настроек и баннер «вот файл с твоим последним прогрессом». -->
+    <string id="cd_new_badge" text="НОВОЕ" />
+    <string id="cd_emergency_save_title" text="Аварийное сохранение перед крашем" />
+    <string id="cd_emergency_save_hint" text="Если игра падает, Crash Doctor пробует один раз сохраниться, чтобы не потерять прогресс часов игры. По умолчанию включено. Выключай только если мешает другому моду, который сам делает сохранения." />
+    <string id="cd_emergency_save_made" text="Аварийное сохранение сделано: {NAME}" />
+    <string id="cd_emergency_save_failed" text="Аварийное сохранение не сработало: {REASON}" />
+    <string id="cd_emergency_save_disabled" text="Аварийное сохранение отключено в настройках." />
+    <string id="cd_new_banner_emergency_save_on" text="Аварийное сохранение перед крашем активно — твой прогресс защищён." />
+    <string id="cd_new_banner_emergency_save_off" text="Доступна новая фича: аварийное сохранение перед крашем (сейчас выключено в CrashDoctorSettings.xml)." />
+    <string id="cd_status_on" text="ВКЛ" />
+    <string id="cd_status_off" text="ВЫКЛ" />
+    <string id="cd_toggle_on_prefix" text="● ВКЛ" />
+    <string id="cd_toggle_off_prefix" text="○ ВЫКЛ" />
+    <string id="cd_toggle_emergency_save" text="Аварийное сохранение перед крашем" />
+    <string id="cd_toggle_native_crash_log" text="Лог нативных крашей" />
+    <string id="cd_native_crash_log_title" text="Лог нативных крашей" />
+    <string id="cd_native_crash_log_hint" text="Когда включено, при нативном краше (access violation, stack overflow, повреждение кучи) Crash Doctor пишет одну строку в свой лог. Сам краш не меняется — обычный креш-дамп от TaleWorlds создаётся как раньше. По умолчанию выключено." />
+    <string id="cd_patch_conflicts_badge" text="Найдено {COUNT} метод(ов), которые патчат сразу несколько модов — нажми, чтобы открыть crashdoctor.log" />
+    <string id="cd_tab_settings" text="Настройки  ★" />
+    <string id="cd_toggle_ui_error_patching" text="Глотать ошибки UI" />
+    <string id="cd_settings_title" text="Настройки Crash Doctor" />
+    <string id="cd_settings_per_mod_title" text="Глотать ошибки конкретных модов" />
+    <string id="cd_hint_emergency_save" text="Если игра вот-вот упадёт из-за ошибки в коде, Crash Doctor пробует один раз сохранить твою кампанию, чтобы не потерять прогресс. Сейв называется 'CrashDoctor_Emergency_&lt;дата_время&gt;'." />
+    <string id="cd_hint_native_crash_log" text="При нативном краше (access violation, stack overflow, повреждение кучи) Crash Doctor пишет одну строку в свой лог. Сам краш не меняется — обычный креш-дамп от TaleWorlds создаётся как раньше." />
+    <string id="cd_hint_ui_error_patching" text="Оборачивает список ключевых UI-методов (Энциклопедия, Инвентарь, Партия, Клан, Королевство, Задания). Прикрывает ТОЛЬКО UI — бои, AI, ежедневный тик и миссии остаются без защиты. Чтобы прикрыть игровую логику конкретного мода — поставь галку у мода в секции ниже." />
+    <string id="cd_hint_per_mod_section" text="Поставь галку у мода — оборачиваем его mission-колбэки (OnAgentHit, OnMissionTick и т.д.) тем же финализатором что глотает ошибки. Используй когда один мод явно сломан, а ты хочешь продолжать играть пока автор не починит." />
 
   </strings>
 </base>
