@@ -51,7 +51,11 @@
   severity: critical
   confidence: high
   evidence_source: "TOR-bug-corpus.md TOR-001"
-  requires_sources: [log_line]
+  # No requires_sources: match below is `any` between a log_line probe and a
+  # butr_report.exception probe. Listing only log_line here would gate the
+  # whole rule on log_line presence and silently skip BLSE/BUTR-only crashes
+  # where the managed stack went straight to crash_report.html without an
+  # rgl_log entry — the more diagnostic case of the two.
   title:
     en: "TOR CareerPerkMissionBehavior null reference"
     ru: "Null reference в TOR_Core.CareerPerkMissionBehavior"
@@ -147,7 +151,10 @@
   severity: critical
   confidence: high
   evidence_source: "TOR-bug-corpus.md TOR-009"
-  requires_sources: [log_line]
+  # Gate on TOR module presence — otherwise this overlaps with
+  # gpu.create_texture_array_invalidarg (which also matches `rglGPU_device::create_texture_array`)
+  # and produces two cards with similar fixes for vanilla users.
+  requires_sources: [log_line, module_list]
   title:
     en: "TOR GPU texture array allocation failed"
     ru: "TOR — GPU не выделил массив текстур"
@@ -166,6 +173,7 @@
   match:
     all:
       - log_line: { contains: "rglGPU_device::create_texture_array" }
+      - module_list: { id: "TOR_Core", has: "true" }
 
 - id: tor.ability_not_baseability
   category: tor
@@ -264,37 +272,58 @@
   category: tor
   severity: critical
   confidence: high
-  evidence_source: "TOR-015 catalog 2026-05-02 — Nexus 8872 TOR Assimilation Crash Fix"
+  # Merged 2026-05-15: was tor.assimilation_swap_troops + tor.assimilation_indexoutofrange.
+  # Both fired on AssimilationCampaignBehavior with the same underlying root
+  # cause (stale culture / roster index after a settlement faction transition)
+  # and recommended swapping in different Nexus fixes (8872 / 5512). Now one
+  # card covers both, with the fix list mentioning both patches.
+  evidence_source: "TOR-015 catalog 2026-05-02 — Nexus 8872 TOR Assimilation Crash Fix; Nexus #5512 TOR Assimilation Fix (settlement transition)"
   requires_sources: [log_line]
   title:
-    en: "TOR Assimilation IndexOutOfRange — Hunger Woods / wraith bind crash"
-    ru: "TOR Assimilation IndexOutOfRange — краш в Hunger Woods / на bind wraiths"
+    en: "TOR Assimilation crash — IndexOutOfRange (Hunger Woods / wraith bind / settlement transition)"
+    ru: "Краш TOR Assimilation — IndexOutOfRange (Hunger Woods / bind wraiths / смена фракции города)"
   description:
     en: |
-      System.IndexOutOfRangeException inside TroopRoster.AddToCountsAtIndex →
-      AssimilationCampaignBehavior.SwapTroopsIfNeeded. The trigger is
-      "summon wraiths" / "bind wraiths" interactions in Hunger Woods, or any
-      vampire-army assimilation where the companion roster index falls out of
-      bounds. Confirmed common late-game bug.
+      AssimilationCampaignBehavior throws System.IndexOutOfRangeException /
+      ArgumentOutOfRangeException. Two known triggers share the same code path:
+        - "summon wraiths" / "bind wraiths" in Hunger Woods (any vampire-army
+          assimilation where the companion roster index falls out of bounds),
+          via TroopRoster.AddToCountsAtIndex → SwapTroopsIfNeeded.
+        - Late-game settlement faction transition, where the culture stringlist
+          has no entry for the new faction.
+      Both end in the same crash signature; pick whichever Nexus patch matches
+      your situation.
     ru: |
-      System.IndexOutOfRangeException внутри TroopRoster.AddToCountsAtIndex →
-      AssimilationCampaignBehavior.SwapTroopsIfNeeded. Триггер — взаимодействия
-      «summon wraiths» / «bind wraiths» в Hunger Woods, или любая ассимиляция
-      вампирской армии, где индекс ростера компаньона выходит за пределы.
-      Известный регулярный late-game баг.
+      AssimilationCampaignBehavior бросает System.IndexOutOfRangeException /
+      ArgumentOutOfRangeException. Два известных триггера через один code path:
+        - «summon wraiths» / «bind wraiths» в Hunger Woods (любая вампирская
+          ассимиляция, где индекс ростера компаньона выходит за пределы), через
+          TroopRoster.AddToCountsAtIndex → SwapTroopsIfNeeded.
+        - Поздняя смена фракции города, когда в списке культур нет записи для
+          новой фракции.
+      Обе ветки дают одинаковую сигнатуру; выбирай Nexus-фикс по своему случаю.
   fix:
     en:
-      - "Install TOR Assimilation Crash Fix from NexusMods (mod 8872) — direct patch on the affected method."
-      - "Until installed: avoid 'summon wraiths' / 'bind wraiths' interactions; do not visit Hunger Woods with vampire armies + companions."
-      - "If reproducible on save load — restore to a save before the first wraith bind."
+      - "Install TOR Assimilation Crash Fix from NexusMods (mod 8872) — patches SwapTroopsIfNeeded directly. Covers the Hunger Woods / wraith-bind path."
+      - "Or install TOR Assimilation Fix from NexusMods (mod #5512) — patches the culture-index lookup to fall back to source culture. Covers the settlement-transition path."
+      - "Until installed: avoid 'summon wraiths' / 'bind wraiths'; don't visit Hunger Woods with vampire armies + companions."
+      - "If reproducible on save load — restore to a save before the first wraith bind or before the settlement changed hands."
     ru:
-      - "Поставь TOR Assimilation Crash Fix с NexusMods (мод 8872) — прямой патч на сломанный метод."
+      - "Поставь TOR Assimilation Crash Fix с NexusMods (мод 8872) — прямой патч на SwapTroopsIfNeeded. Покрывает Hunger Woods / bind wraiths."
+      - "Или TOR Assimilation Fix с NexusMods (мод #5512) — патчит индексацию культур, при отсутствии записи использует исходную. Покрывает смену фракции города."
       - "До установки: избегай «summon wraiths» / «bind wraiths»; не заходи в Hunger Woods вампирской армией + компаньонами."
-      - "Если падает на загрузке сейва — откатись до момента первого bind wraith."
+      - "Если падает на загрузке сейва — откатись до первого bind wraith или до смены владельца города."
   match:
     all:
       - log_line:
-          contains: "AssimilationCampaignBehavior.SwapTroopsIfNeeded"
+          contains: "AssimilationCampaignBehavior"
+      - any:
+          - log_line:
+              contains: "SwapTroopsIfNeeded"
+          - log_line:
+              contains: "IndexOutOfRange"
+          - log_line:
+              contains: "ArgumentOutOfRange"
 
 - id: tor.party_size_limit_npe_with_ig
   category: tor
@@ -461,39 +490,8 @@
       - module_list: { id: "TOR_Core", has: "true" }
       - module_list: { id: "NavalDLC", has: "true" }
 
-- id: tor.assimilation_indexoutofrange
-  category: saves
-  severity: critical
-  confidence: medium
-  evidence_source: "TOR Assimilation Fix Nexus #5512 — IndexOutOfRange / ArgumentOutOfRange in AssimilationCampaignBehavior on settlement-faction transition"
-  requires_sources: [log_line]
-  title:
-    en: "TOR Assimilation crash — IndexOutOfRange in settlement transition"
-    ru: "Краш TOR Assimilation — IndexOutOfRange при смене фракции города"
-  description:
-    en: |
-      AssimilationCampaignBehavior throws IndexOutOfRangeException /
-      ArgumentOutOfRangeException when a TOR settlement transitions between
-      factions in late-game. The vanilla TOR_Core code indexes into a culture
-      stringlist that doesn't have an entry for the new faction.
-    ru: |
-      AssimilationCampaignBehavior бросает IndexOutOfRangeException /
-      ArgumentOutOfRangeException когда TOR-город переходит между фракциями
-      в поздней игре. Код TOR_Core обращается по индексу к списку культур,
-      в котором нет записи для новой фракции.
-  fix:
-    en:
-      - "Install TOR Assimilation Fix from NexusMods (search 'TOR Assimilation Fix') — patches the index lookup to fall back to the source culture."
-      - "Workaround: reload an earlier save before the settlement changed hands."
-    ru:
-      - "Поставь TOR Assimilation Fix с NexusMods (искать 'TOR Assimilation Fix') — патчит индексацию, чтобы при отсутствии записи использовалась исходная культура."
-      - "Workaround: загрузи более ранний сейв до момента, как город сменил владельца."
-  match:
-    all:
-      - log_line:
-          contains: "AssimilationCampaignBehavior"
-      - any:
-          - log_line:
-              contains: "IndexOutOfRange"
-          - log_line:
-              contains: "ArgumentOutOfRange"
+# tor.assimilation_indexoutofrange was merged into tor.assimilation_swap_troops —
+# both rules fire on AssimilationCampaignBehavior with overlapping fixes (Nexus
+# patches 8872 and 5512) and produced two near-identical cards on the same
+# crash. The IndexOutOfRange path is now covered as a separate `any` branch in
+# the merged rule above.

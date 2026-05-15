@@ -48,6 +48,7 @@
     <string id="cd_tab_tuneup" text="System tune-up" />
     <string id="cd_tab_history" text="History" />
     <string id="cd_tab_saves" text="Saves" />
+    <string id="cd_tab_mods" text="Mods" />
     <string id="cd_saves_btn_rescan" text="Re-scan" />
     <string id="cd_saves_btn_open_folder" text="Open Game Saves folder" />
     <string id="cd_saves_no_saves" text="No saves found in your Game Saves folder." />
@@ -80,6 +81,7 @@
     <string id="cd_apply_failed_default" text="Apply failed. See crashdoctor.log." />
     <string id="cd_btn_ok" text="OK" />
     <string id="cd_tuneup_btn_show_all" text="Show all" />
+    <string id="cd_tuneup_btn_force_shader_cleanup" text="Clean shader cache" />
     <string id="cd_tuneup_btn_show_actionable" text="Show actionable only" />
     <string id="cd_tuneup_summary_show_all" text="Showing all {TOTAL} modules ({ACTIONABLE} actionable, {HEALTHY} healthy, {SKIPPED} not applicable)." />
 
@@ -94,6 +96,34 @@
     <string id="cd_history_reboot_pending" text="reboot pending" />
     <string id="cd_history_rolled_back_at" text="rolled back {WHEN}" />
     <string id="cd_history_btn_rollback" text="Rollback" />
+
+    <!-- NEW (2026-05-14) Emergency Save service strings. Surfaced when wiring a settings UI
+         and the post-crash banner that tells the player which file holds their last save. -->
+    <string id="cd_new_badge" text="NEW" />
+    <string id="cd_emergency_save_title" text="Emergency save before crash" />
+    <string id="cd_emergency_save_hint" text="If the game is about to die, Crash Doctor tries one last SaveAs so you don't lose hours of unsaved progress. Default: ON. Disable only if it interferes with another save-related mod." />
+    <string id="cd_emergency_save_made" text="Emergency save made: {NAME}" />
+    <string id="cd_emergency_save_failed" text="Emergency save did not run: {REASON}" />
+    <string id="cd_emergency_save_disabled" text="Emergency save disabled in settings." />
+    <string id="cd_new_banner_emergency_save_on" text="Emergency save before crash is active — your progress is protected." />
+    <string id="cd_new_banner_emergency_save_off" text="NEW feature available: emergency save before crash (currently OFF in CrashDoctorSettings.xml)." />
+    <string id="cd_status_on" text="ON" />
+    <string id="cd_status_off" text="OFF" />
+    <string id="cd_toggle_on_prefix" text="● ON" />
+    <string id="cd_toggle_off_prefix" text="○ OFF" />
+    <string id="cd_toggle_emergency_save" text="Emergency save before crash" />
+    <string id="cd_toggle_native_crash_log" text="Native crash logging" />
+    <string id="cd_native_crash_log_title" text="Native crash logging" />
+    <string id="cd_native_crash_log_hint" text="When ON, writes a one-line summary to crashdoctor.log when a native crash occurs (access violation, stack overflow, heap corruption). Observe-only — does not change the crash, the usual TaleWorlds dump still happens. Default OFF — opt in if you want the extra log line." />
+    <string id="cd_patch_conflicts_badge" text="{COUNT} method(s) patched by multiple mods — click for crashdoctor.log" />
+    <string id="cd_tab_settings" text="Settings  ★" />
+    <string id="cd_toggle_ui_error_patching" text="UI error swallowing" />
+    <string id="cd_settings_title" text="Crash Doctor settings" />
+    <string id="cd_settings_per_mod_title" text="Per-mod error swallowing" />
+    <string id="cd_hint_emergency_save" text="When the game is about to crash with a .NET error, Crash Doctor tries one last SaveAs so you don't lose hours of progress. Saves under 'CrashDoctor_Emergency_&lt;timestamp&gt;'." />
+    <string id="cd_hint_native_crash_log" text="Writes a one-line summary to crashdoctor.log when a native crash occurs (access violation, stack overflow, heap corruption). The crash itself is not affected — TaleWorlds' dump still happens." />
+    <string id="cd_hint_ui_error_patching" text="Wraps a hand-picked list of UI refresh methods (Encyclopedia, Inventory, Party, Clan, Kingdom, Quests). Covers UI ONLY — battles, AI, daily tick, missions stay unprotected. To also wrap a specific mod's game logic, tick that mod in the section below." />
+    <string id="cd_hint_per_mod_section" text="Tick a mod to wrap its mission callbacks (OnAgentHit, OnMissionTick, etc.) with the same swallow-on-error guard. Use when one specific mod is clearly broken but you want to keep playing while waiting on a fix." />
 
   </strings>
 </base>

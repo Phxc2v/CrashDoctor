@@ -26,13 +26,15 @@
       - "Правый клик по DLL мода → Свойства → Разблокировать (если есть галочка)."
       - "Переустанови мод под текущую версию Bannerlord."
   match:
+    # Narrow on "module" so we don't false-positive on the engine's "Cannot load
+    # font", "Couldn't load shader", "Couldn't load icon" which are unrelated
+    # and fire on perfectly healthy startups. The harmony-stray and TOR-DLL
+    # rules pick up bare "Cannot load" + their own qualifiers.
     any:
       - log_line:
           contains: "Could not load module"
       - log_line:
-          contains: "Couldn't load"
-      - log_line:
-          contains: "Cannot load"
+          regex: "(?i)(Couldn't|Cannot) load .{0,40}(module|SubModule|\\.dll)"
 
 - id: mod.bad_image_format
   category: modules

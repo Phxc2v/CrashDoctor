@@ -1,0 +1,70 @@
+- id: m27_shader_temp_relocation
+  title:
+    en: "Move Windows TEMP to a bigger drive"
+    ru: "Перенести Windows TEMP на свободный диск"
+  description:
+    en: |
+      Windows TEMP (C:\Users\<you>\AppData\Local\Temp) lives on the system
+      drive. Bannerlord's shader compiler writes intermediate files there
+      during 'Build Shader Cache' and during runtime shader recompiles. On
+      a tight system drive this fails with out-of-disk-space errors that
+      surface as 'pdb append failed' / 'debug info append failed' / shader
+      OOM crashes — they look like shader bugs but really mean TEMP is full.
+
+      This card surfaces when:
+        1. The drive holding %TEMP% has < 40 GB free.
+        2. Another fixed drive has 100+ GB free (auto-picks the biggest).
+
+      Apply will:
+        1. Create <BiggerDrive>:\Temp\<your username>.
+        2. Update HKCU\Environment TMP and TEMP to the new path.
+           Per-USER change only — system-wide TEMP (HKLM) is untouched,
+           no admin rights required.
+        3. Old %TEMP% folder is left alone (Windows manages it).
+
+      MANDATORY after Apply: SIGN OUT of Windows (or reboot). The change
+      only takes effect for NEW logon sessions. Bannerlord launched in the
+      current session keeps the old TEMP — closing Bannerlord alone is
+      not enough.
+
+      Reversible: Rollback restores the previous TMP/TEMP value.
+    ru: |
+      Windows TEMP (C:\Users\<имя>\AppData\Local\Temp) лежит на системном
+      диске. Компилятор шейдеров Bannerlord пишет туда промежуточные файлы
+      во время «Build Shader Cache» и при runtime-перекомпиляции шейдеров.
+      На зажатом системном диске это падает с out-of-disk-space ошибками,
+      которые выглядят как «pdb append failed» / «debug info append failed»
+      / shader OOM — кажутся багами шейдеров, а на деле TEMP забит.
+
+      Карточка появляется, когда:
+        1. На диске с %TEMP% свободно < 40 ГБ.
+        2. На другом фиксированном диске свободно 100+ ГБ (авто-выбор самого свободного).
+
+      «Применить»:
+        1. Создаст <БольшойДиск>:\Temp\<твоё имя>.
+        2. Изменит TMP и TEMP в HKCU\Environment на новый путь.
+           Только для ТВОЕГО пользователя — system-wide TEMP (HKLM) не трогаем,
+           админ-права не нужны.
+        3. Старая папка %TEMP% не трогается (ею управляет Windows).
+
+      ОБЯЗАТЕЛЬНО после «Применить»: ВЫЙДИ из Windows (или перезагрузка).
+      Изменение применяется только при НОВОМ входе пользователя. Bannerlord
+      запущенный в текущей сессии продолжит использовать старый TEMP —
+      закрытия одного Bannerlord недостаточно.
+
+      Откатываемо: Rollback вернёт прежнее значение TMP/TEMP.
+  details:
+    en:
+      - "Source: HKCU\\Environment\\TEMP (or %USERPROFILE%\\AppData\\Local\\Temp if unset)"
+      - "Target: <BigDrive>:\\Temp\\<username>"
+      - "Per-user only: HKLM (system-wide TEMP) is not touched. No admin rights needed."
+      - "Reversible: Rollback writes the previous value back."
+      - "After Apply: Windows sign-out (or reboot) is required for the new TEMP to take effect."
+      - "Card hides when the TEMP drive has 40+ GB free, or no other drive has 100+ GB free."
+    ru:
+      - "Источник: HKCU\\Environment\\TEMP (или %USERPROFILE%\\AppData\\Local\\Temp если не задан)"
+      - "Цель: <БольшойДиск>:\\Temp\\<имя>"
+      - "Только для пользователя: HKLM (system-wide TEMP) не трогаем. Админ-права не нужны."
+      - "Откатываемо: Rollback запишет прежнее значение."
+      - "После «Применить»: нужен выход из Windows (или перезагрузка) для применения нового TEMP."
+      - "Карточка прячется, когда на диске с TEMP 40+ ГБ свободно или ни на одном другом диске нет 100+ ГБ."

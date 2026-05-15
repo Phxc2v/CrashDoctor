@@ -42,9 +42,11 @@
       - "Поставь BLSE + BetterExceptionWindow к следующей сессии — поймает managed-стек с именем патчера."
       - "Если повторяется — пришли crash_report.html (после установки BLSE) в t.me/CodeRickTg."
   match:
+    # Drop the redundant `contains "transfers"` filter — the regex already
+    # narrows on "transfers N unit(s) to", so adding a substring check on
+    # "transfers" alone widened the pre-filter without changing the result.
     all:
       - log_line:
-          contains: "transfers"
           regex: "transfers \\d+ units? to"
       - log_line:
           contains: "Selected formations being cleared"
@@ -190,5 +192,7 @@
           contains: "SteamAPI_Init failed"
       - log_line:
           contains: "Steam session could not be initialized"
-      - log_line:
-          contains: "SteamAPI returned error"
+      # "SteamAPI returned error" dropped — it shows up as a warning on
+      # transient hiccups (network blip, Workshop temporarily offline) without
+      # crashing the game, and the recommendation here is "restart Steam",
+      # which is wrong advice for the transient case.

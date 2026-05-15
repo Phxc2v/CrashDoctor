@@ -1,0 +1,52 @@
+- id: late_game.high_speed_native_av
+  category: saves
+  severity: critical
+  confidence: high
+  evidence_source: "Crash Doctor analysis 2026-05-14: AV at SpeedUp x8 in late-game TOR campaign"
+  requires_sources: [log_line]
+  title:
+    en: "Late-game crash at x8 speed (native access violation)"
+    ru: "Краш в поздней игре на ускорении x8 (нативная ошибка)"
+  description:
+    en: |
+      The campaign has grown to a size where TaleWorlds' native HourlyTick races
+      with itself at UnstoppableFastForward (x8). A brief window between
+      world-state phases contains a transient null pointer — at x1..x4 the next
+      tick almost never lands inside that window, at x8 with 800+ parties it
+      reliably does, and the process dies with 0xC0000005 in unmanaged code.
+      No cleanup of orphan objects fixes this — the root is party count, not
+      orphans. Crash Doctor caps the speed automatically when a campaign
+      reaches that scale.
+    ru: |
+      Кампания разрослась до размера, где внутренний цикл движка на x8 не
+      успевает обработать обновление мира между фазами и натыкается на
+      временно пустую ссылку. На x1..x4 движок почти всегда проскакивает мимо
+      этого окна, на x8 при 800+ отрядах — попадает в него, и игра падает с
+      ошибкой доступа к памяти в нативном коде. Очистка осиротевших объектов
+      этого не лечит — корень проблемы в количестве отрядов, а не в мусоре.
+      Crash Doctor сам режет скорость до x4 в такой кампании.
+  fix:
+    en:
+      - "Stay at x4 maximum on the campaign map (don't press the x8 hotkey)."
+      - "Crash Doctor's late-game speed cap is already active — Campaign.TimeControlMode setter is patched to downgrade x8→x4 when party count ≥ 800 or after the first native AV in this session."
+      - "Optional: trim parties with the in-game cheats (Ctrl+Alt+~ → campaign.kill_random_clan) before re-enabling x8."
+      - "Reduce the rate parties spawn via the offending mod's settings (orc/troll/goblin spawn caps in LoreHardcore-class mods)."
+    ru:
+      - "Не превышай x4 на карте кампании (не нажимай хоткей x8)."
+      - "Crash Doctor уже сам режет скорость в такой кампании — patch на Campaign.TimeControlMode понижает x8 до x4, когда отрядов ≥800 или после первой нативной ошибки в этой сессии."
+      - "По желанию: проредить отряды через консольные читы (Ctrl+Alt+~ → campaign.kill_random_clan), потом можно вернуться к x8."
+      - "Уменьши скорость спавна отрядов в настройках мода-виновника (лимиты орков/троллей/гоблинов в модах класса LoreHardcore)."
+  match:
+    all:
+      - any:
+          - log_line:
+              regex: "SpeedUp\\s+x[8]|UnstoppableFastForward"
+          - log_line:
+              contains: "FastForward"
+      - any:
+          - log_line:
+              contains: "0xC0000005"
+          - log_line:
+              contains: "NATIVE EXCEPTION"
+          - log_line:
+              contains: "ACCESS_VIOLATION"
