@@ -303,6 +303,17 @@ freely usable in derivative diagnostic tools — please credit
 [`docs/crash_catalog_2026-05-02.txt`](docs/crash_catalog_2026-05-02.txt) as the
 source if you republish.
 
+### Third-party code
+
+The built-in save-cleaner subsystem (`Saves/Cleaner/` in the source tree;
+runs behind the **Saves** tab and the `Ctrl+D` in-campaign hotkey) is
+adapted from
+[**JungleDruid/bannerlord-save-cleaner**](https://github.com/JungleDruid/bannerlord-save-cleaner)
+(MIT licence, copyright © 2025 JungleDruid). The original MIT licence
+text is included in this repository as
+[`LICENSE-SaveCleaner.txt`](LICENSE-SaveCleaner.txt). Each adapted source
+file carries an in-header note pointing back at the upstream project.
+
 ---
 
 ## Build from source
@@ -437,3 +448,15 @@ Crashes tab → Export → отправь `.zip` в Telegram-канал
 ## Лицензия
 
 MIT. См. [`LICENSE`](LICENSE).
+
+### Сторонний код
+
+Подсистема встроенной очистки сейвов (`Saves/Cleaner/` в исходниках;
+работает за вкладкой **Сейвы** и горячей клавишей `Ctrl+D` в кампании)
+адаптирована из мода
+[**JungleDruid/bannerlord-save-cleaner**](https://github.com/JungleDruid/bannerlord-save-cleaner)
+(лицензия MIT, copyright © 2025 JungleDruid). Текст оригинальной
+MIT-лицензии включён в репозитории как
+[`LICENSE-SaveCleaner.txt`](LICENSE-SaveCleaner.txt). В каждом
+адаптированном исходнике есть header-комментарий со ссылкой на
+оригинальный проект.
