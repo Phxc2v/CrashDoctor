@@ -1,0 +1,92 @@
+- id: m28_igpu_active_on_hybrid
+  title:
+    en: "Pin Bannerlord to the high-performance GPU (hybrid laptop)"
+    ru: "Привязать Bannerlord к мощной видеокарте (гибридный лэптоп)"
+  description:
+    en: |
+      Hybrid-graphics laptops ship with two GPUs: a low-power integrated
+      GPU (Intel UHD / Iris, AMD Vega / Radeon Graphics) and a discrete
+      one (NVIDIA GeForce / RTX / GTX, AMD Radeon RX / Pro, Intel Arc).
+      The monitor output is often wired through the integrated GPU,
+      and without an explicit per-app preference Windows will run
+      Bannerlord on it — even if there's a powerful discrete GPU
+      sitting idle right next to it. The integrated GPU cannot handle
+      The Old Realms terrain shaders; in the first big battle or siege
+      you get a crash on Bake Terrain (0xC0000005), and the crash
+      catches the game mid-save-write so the save is corrupted too.
+
+      This card surfaces when ALL of these are true:
+        1. The PC has both an integrated and a discrete GPU.
+        2. The high-performance preference is NOT already pinned in
+           HKCU\Software\Microsoft\DirectX\UserGpuPreferences.
+        3. Recent crash logs prove the game ran on the integrated GPU:
+           either crash_tags shows the iGPU with an active Current Mode
+           and the dGPU with Current Mode=Unknown, OR rgl_log floods
+           "Missing shader from sack: pbr_terrain" above threshold.
+
+      Apply writes a single per-user registry value:
+        HKCU\Software\Microsoft\DirectX\UserGpuPreferences\<Bannerlord.exe>
+          = "GpuPreference=2;"
+      Same as Settings → System → Display → Graphics → Bannerlord →
+      High performance, except you don't have to hunt the exe down.
+      No admin rights, no Windows reboot. Restart Bannerlord for the
+      new GPU to take effect.
+
+      If after Apply the discrete GPU still does not engage, the laptop
+      BIOS may have a hard MUX switch or a "discrete only" mode that
+      overrides the Windows preference — check the BIOS Graphics page.
+
+      Reversible: Rollback restores the previous registry value (or
+      removes the entry if there was none before).
+    ru: |
+      Лэптопы с гибридной графикой имеют две видеокарты: слабую
+      встроенную (Intel UHD / Iris, AMD Vega / Radeon Graphics) и
+      мощную дискретную (NVIDIA GeForce / RTX / GTX, AMD Radeon RX /
+      Pro, Intel Arc). Выход монитора часто заведён через встроенную,
+      и без явной привязки Windows запускает Bannerlord именно на ней —
+      даже если рядом простаивает RTX 3050 или RX 6700M. Встроенная не
+      тянет шейдеры террейна The Old Realms; в самом начале большой
+      битвы или штурма получается вылет на Bake Terrain (0xC0000005),
+      и краш ловит игру в момент записи сейва — сейв тоже повреждается.
+
+      Карточка появляется, когда ВСЕ условия выполнены:
+        1. На ПК найдены сразу две видеокарты — встроенная и дискретная.
+        2. Высокопроизводительная видеокарта ещё НЕ привязана к
+           Bannerlord.exe в HKCU\Software\Microsoft\DirectX\UserGpuPreferences.
+        3. В свежих краш-репортах есть прямое подтверждение, что игра
+           шла на встроенной: либо в crash_tags у встроенной активный
+           Current Mode, а у дискретной Current Mode=Unknown, либо в
+           rgl_log спам "Missing shader from sack: pbr_terrain" сверх порога.
+
+      «Применить» дописывает одно значение в реестр пользователя:
+        HKCU\Software\Microsoft\DirectX\UserGpuPreferences\<Bannerlord.exe>
+          = "GpuPreference=2;"
+      То же самое, что Параметры → Дисплей → Графика → Bannerlord →
+      Высокая производительность, только не нужно искать exe вручную.
+      Без прав администратора, без перезагрузки Windows. Перезапусти
+      Bannerlord, чтобы новая видеокарта вступила в силу.
+
+      Если после «Применить» дискретная всё равно не включается — в
+      BIOS лэптопа может быть жёсткий MUX-переключатель или режим
+      «только дискретная», который перекрывает настройку Windows.
+      Посмотри страницу Graphics / Display в BIOS.
+
+      Откатываемо: Rollback вернёт прежнее значение реестра (или удалит
+      запись, если её раньше не было).
+  details:
+    en:
+      - "Source: HKCU\\Software\\Microsoft\\DirectX\\UserGpuPreferences\\<Bannerlord.exe path>"
+      - "Target: \"GpuPreference=2;\" (high-performance GPU)"
+      - "Per-user only: no admin rights, no UAC prompt, no system-wide change."
+      - "No reboot: restart Bannerlord and the new GPU is used on the next launch."
+      - "Reversible: Rollback writes the previous value back (or removes the entry)."
+      - "Card hides on single-GPU desktops, on laptops where the dGPU is already active, and when the high-performance preference is already pinned."
+      - "If the BIOS has a MUX switch or 'discrete only' mode, that overrides Windows preference."
+    ru:
+      - "Источник: HKCU\\Software\\Microsoft\\DirectX\\UserGpuPreferences\\<путь к Bannerlord.exe>"
+      - "Цель: \"GpuPreference=2;\" (высокопроизводительная видеокарта)"
+      - "Только для пользователя: админ-права не нужны, нет UAC-промпта, общесистемные настройки не трогаем."
+      - "Без перезагрузки: перезапусти Bannerlord — новая видеокарта применится при следующем запуске."
+      - "Откатываемо: Rollback запишет прежнее значение (или удалит запись, если её не было)."
+      - "Карточка прячется на стационарных ПК с одной видеокартой, на лэптопах где дискретная уже активна, и когда привязка уже выставлена."
+      - "Если в BIOS лэптопа есть MUX-переключатель или режим «только дискретная» — он перекрывает настройку Windows."
