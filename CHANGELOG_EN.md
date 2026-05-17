@@ -10,6 +10,80 @@ subscribers.
 
 ---
 
+## Next publish — Pin Bannerlord to the high-performance GPU on hybrid-graphics laptops
+
+> Visible mod version stays `v1.4.0` forever.
+
+A targeted update: a new Tune-Up card for laptops with two graphics
+adapters (Intel integrated + NVIDIA / AMD discrete). Crash Doctor notices
+when Bannerlord rendered on the weak integrated GPU and, in one click,
+pins the game to the discrete one.
+
+---
+
+### New: pin Bannerlord to the high-performance GPU on laptops (Tune-Up card)
+
+A new card shows up in **System Tune-Up** when:
+1. The PC has **both** an integrated GPU (Intel UHD / Iris, AMD Vega /
+   Radeon Graphics) **and** a discrete GPU (NVIDIA GeForce / RTX / GTX,
+   AMD Radeon RX / Pro, Intel Arc).
+2. The most recent crash reports show that the display output went
+   through the integrated GPU while the discrete one stayed idle,
+   **or** terrain shader compilation flooded the log with «Missing
+   shader from sack: pbr_terrain» (the classic stale-Intel-UHD-driver
+   symptom).
+
+«Apply» writes a single per-user registry entry telling Windows to
+launch `Bannerlord.exe` on the **high-performance GPU**. Same as the
+button under **Settings → System → Display → Graphics → Bannerlord →
+High performance**, but you do not have to hunt the exe down by hand.
+
+Why: on hybrid-graphics laptops the monitor output is usually wired
+through the integrated GPU, and without an explicit pin the game
+renders on it — even if there is an RTX 3050 or RX 6700M sitting
+right next to it. The integrated GPU cannot handle The Old Realms
+terrain shaders; in the first big battle or siege you get a
+crash-on-VRAM-exhaustion followed by a corrupted save (the crash
+catches the game mid-save-write).
+
+No admin rights, no Windows reboot — just restart Bannerlord itself
+for the new GPU to take effect. If nothing changes, the laptop BIOS
+may have a hard MUX switch or a «discrete only» mode that overrides
+the Windows preference. The card is reversible: rollback restores the
+previous registry value.
+
+The card does not show up on desktops with a single GPU or on laptops
+where the display is already routed through the discrete GPU — we do
+not push «helpful suggestions just in case».
+
+---
+
+### Fixed: «rebuild shader cache» card no longer fires on harmless settings
+
+The «Graphics settings changed — clear shader cache before next launch»
+card used to pop up after **any** change to nearly 40 different graphics
+keys: switching resolution, toggling window mode, enabling dynamic
+resolution, switching FXAA → TAA, any post-processing toggle (bloom /
+vignette / depth of field / motion blur / chromatic aberration etc.),
+changing anisotropic texture filtering, picking a DLSS mode, adjusting
+character or environment detail.
+
+The problem: none of those settings actually invalidates compiled
+shaders — the engine applies them at runtime (as per-view scene
+parameters / per-view postfx / SwapChain state). The card was asking
+players to reboot and burn 20–60 minutes rebuilding shaders **for
+nothing**.
+
+The card now only fires on the 9 settings whose change can legitimately
+require a rebuild: shader quality, terrain quality, shadow quality
+(filtering + technique), foliage, water, lighting, tessellation, and
+overall texture quality. Change anything else (for example, switch your
+monitor resolution from 1920×1080 to 2560×1440 or enable dynamic
+resolution) — Crash Doctor no longer suggests a rebuild, because it
+isn't needed there.
+
+---
+
 ## 2026-05-15 — Built-in save cleaner, Mods tab, Ctrl+D in-game save analysis, defensive guards, Windows TEMP relocation, support author button
 
 > Visible mod version stays `v1.4.0` forever.
