@@ -1,0 +1,80 @@
+- id: m76_hero_template_inflation
+  title:
+    en: "Hero template inflation (mod-spawned NPC bloat)"
+    ru: "Перебор героев по шаблону (распухание от модных NPC)"
+  description:
+    en: |
+      Surfaces when a single CharacterObject template has more than 100
+      alive Hero instances in the loaded campaign. This is the late-game
+      pattern caused by mods whose HourlyTickParty hook spawns new Heroes
+      without a cap — most visibly LoreHardcore's Greenskin recruit logic,
+      but the failure mode is template-agnostic.
+
+      Why it matters: every Hero pulls in its own Equipment, which loads
+      (and pins) a unique set of GPU textures. Once the shader cache
+      cannot keep them all resident, the game starts crashing with
+      0xC0000005 inside the renderer — most often a few seconds after a
+      fast-forward daily tick. The save itself loads fine; the damage
+      accumulates during play and only fires when the cache spills.
+      Players who removed the offending mod and kept playing the same
+      save report no further crashes — confirming the mod is the source.
+
+      What the scanner does: groups Hero.AllAliveHeroes by
+      CharacterObject.StringId, excludes the player / player clan /
+      notables from the count, and reports any template above the
+      threshold. Card stays Healthy if no template is in trouble.
+
+      What the cleaner does (when you press Clean in the Save Health
+      panel): for each template over the threshold, keeps the first 20
+      Heroes untouched (so the troop type still spawns going forward)
+      and marks the rest as removable IF they pass strict safety checks
+      — not a clan leader, not a notable, not a party leader, no family
+      ties, no settlement / governor anchor. The Save Cleaner graph
+      walker then nulls all references to those Heroes and writes a
+      separate "CrashDoctor_cleaned_*" save; your original save on disk
+      is untouched. Load the cleaned save from Load Game.
+    ru: |
+      Карточка появляется, когда у одного и того же CharacterObject
+      больше 100 живых героев. Это поздне-кампанийный паттерн от модов,
+      у которых HourlyTickParty без ограничения создаёт новых героев —
+      ярче всего видно на Greenskin-патчах LoreHardcore, но сам сбой
+      не зависит от мода.
+
+      Почему важно: каждый герой тянет за собой свой Equipment,
+      который грузит и фиксирует уникальный набор GPU-текстур. Когда
+      shader cache перестаёт держать их всех, игра начинает падать с
+      0xC0000005 внутри рендера — обычно через секунду после
+      перемотки. Сам сейв грузится нормально, ущерб копится во время
+      игры и срабатывает в момент переполнения кэша. У игроков,
+      которые сняли мод и продолжили на том же сейве, вылеты
+      пропали — это и подтверждает источник.
+
+      Что делает сканер: группирует Hero.AllAliveHeroes по
+      CharacterObject.StringId, исключает из счёта самого игрока /
+      его клан / нотаблей, и выводит шаблоны выше порога. Если
+      перебора нет — карточка остаётся Healthy.
+
+      Что делает чистка (когда нажмёшь Clean в панели Save Health):
+      по каждому шаблону свыше порога оставляет нетронутыми первые
+      20 героев (чтобы тип бойца всё ещё спавнился дальше), а
+      остальных помечает удалимыми ТОЛЬКО если они проходят строгие
+      проверки: не лидер клана, не нотабль, не лидер партии, нет
+      семейных связей, не привязан к поселению / посту губернатора.
+      После этого Save Cleaner обнулит все ссылки на этих героев и
+      запишет отдельный «CrashDoctor_cleaned_*» сейв; твой исходный
+      сейв на диске не трогается. Загрузишь чистый через Load Game.
+  details:
+    en:
+      - "Threshold: > 100 alive heroes sharing one CharacterObject template."
+      - "Keep floor: 20 heroes per template are always preserved."
+      - "Skips player, player clan, notables, lords, faction leaders, governors, settlement-anchored heroes, party leaders, prisoners, family-linked heroes (spouse / parent / child), companions, wanderers."
+      - "Removal goes through the Save Cleaner graph walker — proper ref-nulling, not a high-level Action call. The result is a separate save file; your original is untouched."
+      - "Card hides on healthy saves (NotApplicable when no campaign loaded; Healthy when every template is at or below 100)."
+      - "Symptom in the crash log: 0xC0000005 plus 'Missing shader from sack: pbr_terrain' spam in rgl_log_*.txt, typically after Speed x4-x8 fast-forward."
+    ru:
+      - "Порог: больше 100 живых героев одного шаблона CharacterObject."
+      - "Сохраняемый минимум: по каждому шаблону первые 20 героев всегда остаются."
+      - "Не трогаем: игрока, его клан, нотаблей, лордов, лидеров фракций, губернаторов, прикреплённых к поселению, лидеров партий, пленников, героев с семейными связями (супруг / родитель / ребёнок), компаньонов, странников."
+      - "Удаление идёт через graph walker Save Cleaner — настоящий null-инг ссылок, не high-level Action. Получаешь отдельный сейв-файл; исходный не трогается."
+      - "На здоровых сейвах карточка скрыта (NotApplicable если кампания не загружена; Healthy если у всех шаблонов ≤100)."
+      - "Симптом в краш-логе: 0xC0000005 плюс спам 'Missing shader from sack: pbr_terrain' в rgl_log_*.txt, как правило после перемотки x4-x8."
