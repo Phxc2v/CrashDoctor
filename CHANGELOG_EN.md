@@ -58,6 +58,61 @@ not push «helpful suggestions just in case».
 
 ---
 
+### New: hero template inflation (Save Health card + cleaner)
+
+A new card shows up in **Save Health** when a single
+`CharacterObject` template has **more than 100 alive Heroes** in the
+loaded campaign. This is the late-game pattern caused by mods whose
+`HourlyTickParty` hook spawns new Heroes without a cap — most visibly
+LoreHardcore's Greenskin recruit logic, but the failure mode is
+template-agnostic.
+
+Why it matters: every Hero pulls in its own `Equipment`, which loads
+(and pins) a unique set of GPU textures. Once the shader cache cannot
+keep them all resident, the game starts crashing with `0xC0000005`
+inside the renderer — typically a few seconds after a fast-forward
+daily tick. The save itself loads fine; the damage accumulates during
+play and only fires when the cache spills. Players who removed the
+offending mod and kept playing the same save reported no further
+crashes — confirming the diagnosis.
+
+What the cleaner does (when you press **Clean** in the Save Health
+panel): for each template over the threshold, keeps the first **20
+Heroes untouched** (so the troop type still spawns going forward) and
+marks the rest as removable **only** if they pass strict safety checks
+— not a clan leader, not a notable, not a party leader, not a prisoner,
+no settlement / governor anchor, no family ties (spouse / parent /
+child), not a companion / wanderer. The Save Cleaner graph walker then
+nulls all references to those Heroes and writes a separate
+`CrashDoctor_cleaned_<date>.sav`. Your original save on disk is
+untouched.
+
+The card hides on healthy saves: NotApplicable when no campaign is
+loaded, Healthy when every template has 100 or fewer alive Heroes.
+Crash-log signature that confirms the diagnosis: `0xC0000005` plus
+`Missing shader from sack: pbr_terrain` spam in `rgl_log_*.txt`,
+typically right after a Speed x4–x8 fast-forward.
+
+---
+
+### Fixed: save cleanup in Ironman mode is now safe
+
+In Ironman mode Bannerlord has a single save slot, and the engine
+ignores the name passed to `SaveAs` — any save overwrites the one
+`Ironman<UniqueGameId>.sav` file. So the usual Save Cleaner contract
+("original .sav is never overwritten, output goes to a new
+`CrashDoctor_cleaned_*` file") does not actually hold under Ironman:
+the engine overwrites the original regardless.
+
+The cleaner now detects this: before cleaning starts, it copies the
+original `Ironman<UniqueGameId>.sav` next to itself with a `.bak`
+extension. If the cleanup goes wrong, the original is recoverable —
+delete the overwritten `.sav` and rename `.bak` back. After cleaning,
+the UI shows an honest "save was overwritten, backup is at …" message
+instead of the usual "new file created" message.
+
+---
+
 ### Fixed: "rebuild shaders" advice on terrain crashes no longer repeats uselessly
 
 When the game crashed while drawing a terrain tile (the typical log:
