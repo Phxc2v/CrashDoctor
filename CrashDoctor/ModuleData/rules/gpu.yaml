@@ -180,6 +180,93 @@
           - log_line:
               contains: "read_compressed_shader_cache_package"
 
+- id: gpu.amd_rdna4_driver_regression
+  category: gpu
+  severity: critical
+  confidence: high
+  evidence_source: "Real client crash 2026-05-20 — RX 9070 XT on AMD Adrenalin 26.5.2 (driver build 32.0.31007.5012, dated 2026-05-12). Game falls into 0xC0000005 inside D3D11 with 60+ 'Missing shader from sack: pbr_terrain' lines in a single frame after Bake Terrain. Reinstalling the game twice did not help; Build Shader Cache did not help. AMD's own 26.5.x release notes list multiple unresolved D3D rendering regressions on RX 9000 series (God of War corruption, RoadCraft crashes, Satisfactory corruption, multi-monitor FreeSync crashes). The same shader-compiler family is what builds Bannerlord's terrain shaders, and the failure mode lands as missing pbr_terrain entries in the sack."
+  requires_sources: [log_line, crash_tag]
+  title:
+    en: "AMD RX 9000-series driver regression (RDNA 4) — terrain shaders broken"
+    ru: "Регрессия драйвера AMD на RX 9000-серии (RDNA 4) — шейдеры ландшафта не собираются"
+  description:
+    en: |
+      The crash signature is the late-game terrain rendering failure
+      ("Missing shader from sack: pbr_terrain" × 30+ → 0xC0000005 in
+      D3D11), but the root cause here is the GPU driver, not the game.
+
+      The active GPU is a Radeon RX 9000-series card (RDNA 4) running a
+      driver dated 2026-03-01 or later. AMD's Adrenalin 26.5.x release
+      notes explicitly list multiple unresolved D3D rendering regressions
+      on RX 9000-series products: corruption in God of War, intermittent
+      application crashes / driver timeouts in RoadCraft, corruption in
+      Satisfactory, and intermittent system crashes with multi-monitor
+      AMD FreeSync. The same shader compiler path inside the driver is
+      what builds Bannerlord's terrain shaders into the sack at runtime,
+      and on RDNA 4 with these drivers a subset of TOR's pbr_terrain
+      permutations either fails to compile or stores broken results.
+
+      Symptoms that distinguish this from generic sack corruption:
+        - Reinstalling Bannerlord did not help (game files are fine).
+        - 'Build Shader Cache' did not help, even after multiple tries.
+        - 'Missing shader from sack: pbr_terrain' specifically — broken
+          driver path is most reliable on the terrain shader family.
+        - Other recent reports across unrelated games (Crimson Desert,
+          Warzone, VEIN, Bannerlord itself) show RX 9000-series users
+          getting driver timeouts / D3D access violations on the same
+          batch of drivers.
+    ru: |
+      По симптомам это поздний краш на отрисовке ландшафта (десятки
+      строк «Missing shader from sack: pbr_terrain» → 0xC0000005 в
+      D3D11), но корень проблемы здесь — драйвер видеокарты, не игра.
+
+      Активная видеокарта — Radeon из серии RX 9000 (архитектура
+      RDNA 4) с драйвером от 2026-03-01 или новее. В release notes
+      AMD к Adrenalin 26.5.x официально перечислены нерешённые
+      регрессии рендера на RX 9000: артефакты в God of War,
+      периодические креши и driver-таймауты в RoadCraft, артефакты
+      в Satisfactory, краши при нескольких high-res мониторах с
+      AMD FreeSync. Тот же шейдерный компилятор драйвера собирает
+      sack-шейдеры Bannerlord на лету, и на RDNA 4 с этими
+      драйверами часть TOR-перестановок pbr_terrain либо не
+      компилируется, либо ложится в кэш битой.
+
+      Что отличает этот случай от обычного «битый sack»:
+        - Переустановка Bannerlord не помогла (файлы игры целы).
+        - «Build Shader Cache» не помог, даже после нескольких
+          попыток подряд.
+        - «Missing shader from sack: pbr_terrain» именно по терреину —
+          у драйвера сбой стабильнее всего на этом семействе
+          шейдеров.
+        - Свежие репорты на не-Bannerlord-играх (Crimson Desert,
+          Warzone, VEIN) с RX 9000 показывают тот же класс падений
+          (driver timeout / D3D access violation) на этом же
+          батче драйверов.
+  fix:
+    en:
+      - "Roll back the GPU driver to AMD Adrenalin 26.3.1 WHQL via DDU. Download 26.3.1 from amd.com (Previous Drivers → RX 9070 XT → 26.3.1 WHQL). Download DDU (Display Driver Uninstaller). Boot Windows into Safe Mode. Run DDU → 'Clean and Restart'. Install 26.3.1. Reboot. Launch Bannerlord → Main Menu → Build Shader Cache once more — this time the sack rebuilds with a working compiler. This is the highest-success fix per community reports on multiple games."
+      - "If you cannot roll back right now: in AMD Adrenalin, turn OFF HYPR-RX, AMD Anti-Lag, AFMF / AFMF 2, Radeon Boost, Image Sharpening for Bannerlord's profile. Also turn OFF AMD FreeSync if you are on a 144 Hz / variable-refresh-rate monitor — that is one of the known 26.5.x regressions."
+      - "If you are on Adrenalin 26.5.1 specifically: update to 26.5.2 — AMD fixed several of the 26.5.1 regressions there. Note that the client whose crash this rule was modelled on was already on 26.5.2 and STILL crashed; 26.3.1 is the safer rollback target."
+      - "Wait for Adrenalin 26.5.3 / 26.6 — AMD ships 1-2 driver releases per month. Subscribe to the AMD release-notes RSS."
+      - "Long term: upgrade to Windows 11. Windows 10 22H2 was end-of-life on 2025-10-14 and AMD prioritises QA for the newest cards on Windows 11. Not the immediate cause of this crash, but the underlying reason driver regressions land harder on this hardware combination."
+    ru:
+      - "Откатить драйвер видеокарты на AMD Adrenalin 26.3.1 WHQL через DDU. Скачать 26.3.1 с amd.com (Previous Drivers → RX 9070 XT → 26.3.1 WHQL). Скачать DDU (Display Driver Uninstaller). Загрузить Windows в безопасном режиме. Запустить DDU → «Clean and Restart». Установить 26.3.1. Перезагрузка. Запустить Bannerlord → главное меню → «Build Shader Cache» ещё раз — на этот раз sack соберётся с рабочим компилятором. Это самый надёжный фикс по репортам сообщества по нескольким играм."
+      - "Если откатить прямо сейчас не получается: в AMD Adrenalin выключить HYPR-RX, AMD Anti-Lag, AFMF / AFMF 2, Radeon Boost, Image Sharpening в профиле Bannerlord. Также выключить AMD FreeSync, если монитор 144 Гц / с переменной частотой — это одна из known issues 26.5.x по официальным release notes."
+      - "Если стоит именно Adrenalin 26.5.1: обновись на 26.5.2 — AMD починила там часть регрессий 26.5.1. Учти, что у игрока, по чьему крашу это правило сделано, стоял уже 26.5.2 и краш всё равно был; 26.3.1 — более безопасная цель."
+      - "Подождать Adrenalin 26.5.3 / 26.6 — AMD выпускает 1-2 драйвера в месяц. Подписаться на RSS release notes AMD."
+      - "Долгосрочно — обновиться до Windows 11. Windows 10 22H2 вышла из поддержки 14 октября 2025, а AMD приоритизирует QA новых карт под Windows 11. Это не прямая причина краша, но именно поэтому регрессии драйверов на этом железе бьют сильнее."
+  match:
+    all:
+      - log_line:
+          contains: "Missing shader from sack: pbr_terrain"
+          count_at_least: "30"
+      - system:
+          field: active_gpu_name
+          regex: "Radeon\\s+RX\\s+9[0-9]{3}"
+      - system:
+          field: active_gpu_driver_newer_than
+          newer_than: "2026-03-01"
+
 - id: gpu.shader_sack_corrupted
   category: gpu
   severity: critical
