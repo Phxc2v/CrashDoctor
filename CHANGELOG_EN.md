@@ -10,13 +10,14 @@ subscribers.
 
 ---
 
-## Next publish — Hybrid-graphics laptop GPU pin, pagefile keeps a small entry on C:, hero template inflation card + Ironman save backup, smarter terrain-shader crash advice, dedicated card for AMD RX 9000 driver regressions
+## Next publish — Hybrid-graphics laptop GPU pin, pagefile respects manual split configs and keeps a small entry on C:, hero template inflation card + Ironman save backup, smarter terrain-shader crash advice, dedicated card for AMD RX 9000 driver regressions
 
 > Visible mod version stays `v1.4.0` forever.
 
 Several changes landing together:
 - a new Tune-Up card for hybrid-graphics laptops (Intel integrated + NVIDIA / AMD discrete) that pins Bannerlord onto the discrete GPU in one click;
-- the pagefile Tune-Up now keeps a small entry on C: instead of moving everything to another drive (so kernel memory dumps still work);
+- the pagefile card now sees manual split configs (small pagefile on C: + big one on D:) and stops nagging about a rebuild that is already done, plus the card's own Apply logic keeps a small entry on C: instead of moving everything to another drive (so kernel memory dumps still work);
+- the "Free up disk space" card drops the C: threshold from 50 GB to 20 GB when the pagefile already lives on a non-C: drive — there is no pagefile growth on C: to make room for;
 - a Save Health card for mod-spawned hero template inflation with a per-template cleaner, plus safe save cleanup in Ironman mode;
 - two refinements for terrain shader crashes (Missing shader from sack: pbr_terrain): a dedicated diagnosis for the AMD RX 9000 / RDNA 4 driver regression, and a split of the "rebuild shaders" advice into "cache never built" vs "sack file corrupted";
 - the "rebuild shader cache" card no longer pops on harmless graphics settings (resolution, FXAA, post-processing etc.).
@@ -57,6 +58,40 @@ previous registry value.
 The card does not show up on desktops with a single GPU or on laptops
 where the display is already routed through the discrete GPU — we do
 not push «helpful suggestions just in case».
+
+---
+
+### Fixed: Crash Doctor now sees a manually-configured pagefile on another drive
+
+The "Increase pagefile to 40 / 60 GB for TOR" card used to read
+only the **first** entry of the registry `PagingFiles` array. If
+the player had manually split the pagefile through Windows System
+Properties — a small entry on C: plus a large one on D: — the card
+saw the C: stub, reported "Pagefile is 4096 / 4096 MB" and kept
+demanding a rebuild even though D: already had the 60–80 GB it
+asked for.
+
+The "Free up disk space" card had the same shape of issue from a
+different angle: it hard-required **50 GB free on C:** for every
+scenario. That requirement only really applies when the pagefile
+grows on C:. Once the pagefile has been moved to another drive
+(≥ 30 GB max), C: just needs OS headroom and the shader compile
+temp writes — 20 GB is plenty.
+
+Now:
+- M11 (pagefile) walks **every** `PagingFiles` entry and picks the
+  one with the largest max. If any entry meets 40 000 / 60 000 MB,
+  the card flips to Healthy and stops nagging. The text now shows
+  the actual drive: "Pagefile already sized for TOR (60000/80000
+  MB on D:)".
+- M13 (disk space) checks whether a "big" pagefile entry
+  (≥ 30 GB max) lives on a non-C: drive. If so, the C: free-space
+  threshold drops from **50 GB to 20 GB**, and the evidence picks
+  up a "Pagefile is on D: — C: threshold lowered to 20 GB" line.
+
+Players who had already moved pagefile / shader cache off C: by
+hand will no longer get a permanent "do this thing you already
+did" alert.
 
 ---
 
