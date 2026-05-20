@@ -7,23 +7,35 @@
       TOR ships ~30 GB of assets and recompiles thousands of shader variants on the
       first run. With Windows-managed pagefile this often runs out of commit memory
       and crashes with «Application crashed because it could not get new memory».
-      Setting pagefile to 40000 / 60000 MB (initial / max) on C: fixes it.
+      Setting pagefile to 40000 / 60000 MB (initial / max) fixes it.
+
+      Drive placement is automatic. If C: has ≥ 65 GB free, the pagefile stays on C:
+      (Windows-native). If C: is too small but another fixed drive has ≥ 65 GB free,
+      Crash Doctor splits: a small 800 / 4096 MB entry stays on C: (so Windows can
+      still write kernel memory dumps on BSOD), and the big TOR-sized entry goes on
+      the alt drive. The C: pagefile is never silently removed.
     ru: |
       TOR — это ~30 ГБ ассетов и тысячи вариантов шейдеров, которые компилируются
       при первом запуске. При автоматическом pagefile Windows этого commit-памяти
       часто не хватает, и игра падает с «Application crashed because it could not get
-      new memory». Задание pagefile 40000 / 60000 МБ (начальный / максимум) на C:
-      это лечит.
+      new memory». Задание pagefile 40000 / 60000 МБ (начальный / максимум) это лечит.
+
+      Выбор диска — автоматический. Если на C: свободно ≥ 65 ГБ, pagefile остаётся
+      на C: (стандартный для Windows вариант). Если на C: места не хватает, но на
+      другом фиксированном диске свободно ≥ 65 ГБ — Crash Doctor разделяет: маленький
+      pagefile 800 / 4096 МБ остаётся на C: (чтобы Windows мог писать дампы памяти
+      на BSOD), а большой TOR-овский уходит на другой диск. C: pagefile никогда
+      молча не удаляется.
   details:
     en:
       - "Click Apply: Windows shows one UAC consent dialog — click Yes."
       - "Requires a reboot — Windows reads pagefile settings only at boot."
       - "The HKLM registry branch is exported to a .reg backup before rewriting."
       - "Reversible from the History tab."
-      - "Needs ≥ 65 GB free on any fixed drive — Crash Doctor picks the best one automatically."
+      - "Needs ≥ 65 GB free on any fixed drive. When that drive is not C:, a small 800 / 4096 MB pagefile is kept on C: for kernel memory dumps."
     ru:
       - "Нажми «Применить»: Windows покажет диалог UAC — нажми «Да»."
       - "Нужна перезагрузка — Windows читает настройки pagefile только при загрузке."
       - "Ветка реестра HKLM сохраняется в .reg-бэкап перед перезаписью."
       - "Откат возможен из вкладки Журнал."
-      - "Нужно ≥ 65 ГБ свободно на любом диске — Crash Doctor сам выберет подходящий."
+      - "Нужно ≥ 65 ГБ свободно на любом фиксированном диске. Если это не C:, на C: останется маленький pagefile 800 / 4096 МБ для дампов памяти ядра."

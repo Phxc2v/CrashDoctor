@@ -58,6 +58,38 @@ not push «helpful suggestions just in case».
 
 ---
 
+### Fixed: pagefile Tune-Up no longer removes the pagefile from C:
+
+The "Increase pagefile to 40 / 60 GB for TOR" Tune-Up card used to work
+like this: if C: had less than 65 GB free, it picked the fixed drive
+with the most free space (usually D: or E:) and **overwrote the entire
+`PagingFiles` registry array with a single entry on that drive**.
+Result: Windows ended up with no pagefile on the system drive at all.
+
+Why that's bad: without a pagefile on C: Windows cannot write a kernel
+memory dump on BSOD (memory.dmp stays empty), hybrid sleep refuses to
+work, and some system components lose their commit-memory reservation
+at boot.
+
+The logic is smarter now:
+
+- **C: has ≥ 65 GB free** → pagefile stays entirely on C: (the
+  Windows-native case, unchanged).
+- **C: has 8–65 GB free AND another drive has ≥ 65 GB** → **split**:
+  a small **800 / 4096 MB pagefile stays on C:** (enough for the
+  kernel memory dump on BSOD), and the big TOR-sized **40000 / 60000
+  MB entry goes on the alt drive**. The C: pagefile is no longer
+  silently removed.
+- **C: has less than 8 GB free** → falls back to alt-drive solo (as
+  before), with an explicit warning that crash dumps will be
+  unavailable in this state.
+
+If you already applied the old version and your C: pagefile is gone:
+hit "Rollback" in Crash Doctor's History tab → reboot → apply again,
+this time you'll get the split behaviour.
+
+---
+
 ### New: hero template inflation (Save Health card + cleaner)
 
 A new card shows up in **Save Health** when a single
