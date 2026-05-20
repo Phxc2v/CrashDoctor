@@ -58,6 +58,42 @@ not push «helpful suggestions just in case».
 
 ---
 
+### Fixed: "rebuild shaders" advice on terrain crashes no longer repeats uselessly
+
+When the game crashed while drawing a terrain tile (the typical log:
+dozens of "Missing shader from sack: pbr_terrain" lines in a row →
+D3D11 access violation), Crash Doctor used to give one and the same
+recommendation — press "Build Shader Cache" in the main menu. For most
+players that worked on the first try. But for players with a corrupt
+sack file (Steam download was interrupted, antivirus took a bite out
+of the file, a Workshop mod download stalled), rebuilding the cache
+did nothing: "Build Shader Cache" builds the user cache **from** those
+same sack files, so a corrupt source yields a corrupt cache no matter
+how many times you rebuild.
+
+Crash Doctor now tells two cases apart by log content:
+
+- **Cache was never built** (the log has no `read_compressed_shader_cache_package`
+  read line) — recommendation: "Build Shader Cache" in the main menu.
+  This is the case that gets fixed on the first try.
+- **Cache was built, but the sack file is corrupt** (the read line is
+  present, yet the shaders inside are missing) — the recommendation
+  order is inverted: first **Steam → Game Properties → Installed Files
+  → Verify Integrity**, then re-subscribe to TOR_Core / TOR_Environment
+  / TOR_Armory in the Workshop (Workshop content often downloads only
+  partially), and only after that a verification "Build Shader Cache".
+  For brand-new GPUs (RTX 50-series, RX 9000-series) we also flag a
+  driver rollback through DDU — the newest drivers occasionally fail
+  to compile specific TOR shader permutations and cache the failure
+  inside the sack.
+
+Why the split: a player with a corrupt sack would have been rebuilding
+shaders 4–5 times running into the exact same crash. The right step —
+Steam Verify — is now the **first** and most prominent item, not the
+third in a generic list.
+
+---
+
 ### Fixed: «rebuild shader cache» card no longer fires on harmless settings
 
 The «Graphics settings changed — clear shader cache before next launch»
