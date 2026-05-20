@@ -10,14 +10,16 @@ subscribers.
 
 ---
 
-## Next publish — Pin Bannerlord to the high-performance GPU on hybrid-graphics laptops
+## Next publish — Hybrid-graphics laptop GPU pin, pagefile keeps a small entry on C:, hero template inflation card + Ironman save backup, smarter terrain-shader crash advice, dedicated card for AMD RX 9000 driver regressions
 
 > Visible mod version stays `v1.4.0` forever.
 
-A targeted update: a new Tune-Up card for laptops with two graphics
-adapters (Intel integrated + NVIDIA / AMD discrete). Crash Doctor notices
-when Bannerlord rendered on the weak integrated GPU and, in one click,
-pins the game to the discrete one.
+Several changes landing together:
+- a new Tune-Up card for hybrid-graphics laptops (Intel integrated + NVIDIA / AMD discrete) that pins Bannerlord onto the discrete GPU in one click;
+- the pagefile Tune-Up now keeps a small entry on C: instead of moving everything to another drive (so kernel memory dumps still work);
+- a Save Health card for mod-spawned hero template inflation with a per-template cleaner, plus safe save cleanup in Ironman mode;
+- two refinements for terrain shader crashes (Missing shader from sack: pbr_terrain): a dedicated diagnosis for the AMD RX 9000 / RDNA 4 driver regression, and a split of the "rebuild shaders" advice into "cache never built" vs "sack file corrupted";
+- the "rebuild shader cache" card no longer pops on harmless graphics settings (resolution, FXAA, post-processing etc.).
 
 ---
 
@@ -142,6 +144,50 @@ extension. If the cleanup goes wrong, the original is recoverable —
 delete the overwritten `.sav` and rename `.bak` back. After cleaning,
 the UI shows an honest "save was overwritten, backup is at …" message
 instead of the usual "new file created" message.
+
+---
+
+### New: detect the AMD RX 9000-series (RDNA 4) driver regression
+
+After the Radeon RX 9000-series cards (RDNA 4 — RX 9060, RX 9070,
+RX 9070 XT) hit mass production, AMD shipped several drivers
+through spring 2026 with **unresolved D3D rendering regressions**
+listed in their own official release notes: corruption in God of
+War, intermittent crashes and driver timeouts in RoadCraft,
+corruption in Satisfactory, intermittent system crashes with
+multi-monitor + FreeSync. The same shader compiler path inside the
+driver builds Bannerlord's terrain shaders into the sack at
+runtime; on RDNA 4 with these drivers, a subset of TOR's
+`pbr_terrain` permutations either fails to compile or stores
+broken results.
+
+Symptoms in the player's data:
+- `Missing shader from sack: pbr_terrain` spam in rgl_log and a
+  `0xC0000005` D3D11 crash on terrain rendering (looks identical
+  to the generic corrupt-sack case).
+- **Reinstalling the game did not help** (game files are fine).
+- **"Build Shader Cache" did not help**, not even after several
+  attempts (same compiler, same result).
+- The active GPU is a Radeon RX 9000-series, with a driver dated
+  **2026-03-01 or later**.
+
+Crash Doctor now surfaces a dedicated card whose primary fix is:
+**roll back the GPU driver to AMD Adrenalin 26.3.1 WHQL via DDU
+in Safe Mode**. This is the highest-success fix per community
+reports across several games, not just Bannerlord. The card body
+spells out the intermediate steps (turn off HYPR-RX / Anti-Lag /
+AFMF / FreeSync), the in-version upgrade path (26.5.1 → 26.5.2),
+and why Windows 10 EOL aggravates the picture (AMD prioritises
+QA for new cards on Windows 11).
+
+The card does not show up on desktops with non-AMD GPUs, on older
+Radeons (RX 5000 / 6000 / 7000), on RX 9000-series cards running
+drivers **older than March 2026** (which sit outside this
+regression wave), or in crashes without the
+`Missing shader from sack: pbr_terrain` log pattern. The generic
+"sack file corrupted" card may also fire alongside it — that is
+not a contradiction, both recommendations are valid; the RDNA 4
+one is just more specific.
 
 ---
 
