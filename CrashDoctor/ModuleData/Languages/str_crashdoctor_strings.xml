@@ -124,6 +124,10 @@
     <string id="cd_hint_native_crash_log" text="Writes a one-line summary to crashdoctor.log when a native crash occurs (access violation, stack overflow, heap corruption). The crash itself is not affected — TaleWorlds' dump still happens." />
     <string id="cd_hint_ui_error_patching" text="Wraps a hand-picked list of UI refresh methods (Encyclopedia, Inventory, Party, Clan, Kingdom, Quests). Covers UI ONLY — battles, AI, daily tick, missions stay unprotected. To also wrap a specific mod's game logic, tick that mod in the section below." />
     <string id="cd_hint_per_mod_section" text="Tick a mod to wrap its mission callbacks (OnAgentHit, OnMissionTick, etc.) with the same swallow-on-error guard. Use when one specific mod is clearly broken but you want to keep playing while waiting on a fix." />
+    <string id="cd_toggle_nre_safety_patches" text="NRE safety nets (wage / food / AI tick)" />
+    <string id="cd_hint_nre_safety_patches" text="Catches null-reference crashes in TOR_Core's wage and food-consumption models, and in every AI hourly tick. These crashes happen when another mod leaves a 'dangling' troop in a party's roster (a unit that was removed but never scrubbed). With the safety net on, the offending party simply skips that tick and the game continues. Default ON." />
+    <string id="cd_toggle_dangling_roster_cleanup" text="Dangling troop cleanup on load" />
+    <string id="cd_hint_dangling_roster_cleanup" text="When you load a save, scans every party and settlement and removes broken troop entries (characters that no longer exist). Without this, the next AI tick crashes on those entries. Safe and silent when no broken entries are found. Default ON." />
 
   </strings>
 </base>

@@ -28,4 +28,19 @@
        instead of crashing the game. Conservative — only methods that can't corrupt save state.
        Default OFF — opt-in via Settings tab in Crash Doctor UI. -->
   <EnableUIErrorPatching>false</EnableUIErrorPatching>
+  <!-- NEW (2026-05-21) EnableNreSafetyPatches: install Harmony patches on TOR_Core's
+       TORPartyWageModel, TORMobilePartyFoodConsumptionModel and every AiHourlyTick in
+       TaleWorlds.CampaignSystem.CampaignBehaviors.AiBehaviors that swallow NREs caused
+       by dangling CharacterObject references (a character that was unregistered from
+       MBObjectManager but is still sitting in some party's roster). Default ON — pure
+       crash prevention, no game-state mutation. Turn OFF only if you suspect these
+       patches are interfering with another mod. -->
+  <EnableNreSafetyPatches>true</EnableNreSafetyPatches>
+  <!-- NEW (2026-05-21) EnableDanglingRosterCleanup: on session launch, scan every party
+       / settlement roster and remove troop elements whose Character/Culture is null
+       (dangling reference left by another mod that unregistered a CharacterObject
+       without scrubbing it from rosters). Without this, the downstream AI tick NREs
+       on the dangling element. Default ON — safe and silent when no dangling
+       elements are present. -->
+  <EnableDanglingRosterCleanup>true</EnableDanglingRosterCleanup>
 </Settings>

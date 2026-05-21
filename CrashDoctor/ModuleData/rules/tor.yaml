@@ -495,3 +495,78 @@
 # patches 8872 and 5512) and produced two near-identical cards on the same
 # crash. The IndexOutOfRange path is now covered as a separate `any` branch in
 # the merged rule above.
+
+- id: tor.character_creation_back_crash
+  category: tor
+  severity: warning
+  confidence: high
+  evidence_source: "Reproduced 2026-05-21 on full TOR + LoreHardcore stack. Press 'New Campaign' → pick culture in TOR character creation → press Back. The engine already created Hero objects (logs show 'creating hero from template with id: tor_wanderer_greenskins_*' before the screen opened). After Back, the engine fires 'Start Game Final Cleanup.' to roll the half-built campaign state back, while TOR's TORInitialScreen reactivates on top of the cleanup. The mismatched order — TOR scene activate, then ThumbnailCacheManager::ClearManager, then a 'Unregister tooltip for type: <T>' cascade — crashes inside the renderer with 0xC0000005 right after the last tooltip type is unregistered. The log line right before the crash is always 'Unregister tooltip for type: ExplainedNumber' or close to it. Workshop ID for TOR_Core: 3025574678."
+  requires_sources: [log_line, module_list]
+  title:
+    en: "TOR character-creation crash on Back button"
+    ru: "TOR — краш при нажатии «Назад» в создании персонажа"
+  description:
+    en: |
+      Bannerlord crashes (0xC0000005, access violation in native) when the
+      player opens 'New Campaign', lands on the TOR character creation
+      screen, and presses Back instead of continuing. The crash happens
+      a fraction of a second after the press, with no in-game error
+      message.
+
+      What is happening under the hood: by the time the player sees the
+      character creation screen, the engine has already instantiated a
+      pile of Hero objects (TOR's pre-generated wanderers — the log
+      contains many 'creating hero from template with id:
+      tor_wanderer_greenskins_*' lines). When the player presses Back,
+      Bannerlord invokes 'Start Game Final Cleanup.' to walk that
+      half-built campaign state back. TOR meanwhile re-activates its
+      own initial screen on top of the cleanup, so the cleanup is
+      tearing down hero / tooltip / scene state while TOR has freshly
+      reattached to it. The final 'Unregister tooltip for type:' cascade
+      hits a dangling pointer and the renderer crashes.
+
+      This is a TOR bug, not a Bannerlord bug — vanilla character
+      creation handles Back correctly. The exact line right before the
+      crash is consistently 'Unregister tooltip for type: ExplainedNumber'
+      (or one of the tooltip types around it).
+    ru: |
+      Bannerlord падает (0xC0000005, access violation в нативном коде)
+      когда игрок открывает «Новая кампания», попадает на экран
+      создания персонажа TOR и нажимает «Назад» вместо продолжения.
+      Краш происходит через долю секунды после нажатия, без никакого
+      внутриигрового сообщения об ошибке.
+
+      Что происходит под капотом: к моменту, когда игрок видит экран
+      создания персонажа, движок уже создал кучу Hero-объектов
+      (предзаготовленных wanderers из TOR — в логе много строк
+      «creating hero from template with id: tor_wanderer_greenskins_*»).
+      Когда игрок жмёт «Назад», Bannerlord вызывает «Start Game Final
+      Cleanup.» чтобы откатить это полуготовое состояние кампании. В
+      это же время TOR заново активирует свой initial screen поверх
+      этого cleanup'а, и движок разрушает state hero / tooltip / scene
+      пока TOR только что к нему прицепился. Финальный каскад
+      «Unregister tooltip for type:» упирается в висячий указатель, и
+      рендер падает.
+
+      Это баг TOR, а не Bannerlord — ванильное создание персонажа
+      обрабатывает «Назад» корректно. Последняя строка в логе перед
+      крашем — всегда «Unregister tooltip for type: ExplainedNumber»
+      (или один из соседних типов тултипов).
+  fix:
+    en:
+      - "Workaround: do NOT use the in-screen Back button from the TOR character creation screen. To get out of new-campaign setup, use Escape → 'Exit to Main Menu' (or the corner Quit button if visible). That path tears the half-built state down cleanly and does not crash."
+      - "If you only want to change the culture choice you already made, do not press Back to go up the screen stack — instead, click the culture you actually want directly. The screen lets you re-pick before confirming."
+      - "If you have already crashed once, just restart Bannerlord and start the new campaign without going Back. The crash does not corrupt anything on disk (no save was written), so a clean relaunch is enough."
+      - "The bug lives in TOR_Core, not in Bannerlord — report it on the TOR Discord / Steam Workshop comments so the mod author can fix the cleanup ordering."
+    ru:
+      - "Обходной путь: НЕ нажимай «Назад» внутри экрана создания персонажа TOR. Чтобы выйти из настройки новой кампании, используй Escape → «Выйти в главное меню» (или кнопку Quit в углу, если она доступна). Этот путь корректно сворачивает полу-готовое состояние и не крашит игру."
+      - "Если просто хочешь сменить выбранную культуру — не возвращайся назад по стеку экранов, а сразу кликни ту культуру, которая нужна. Экран позволяет переключиться до подтверждения."
+      - "Если уже упало — просто перезапусти Bannerlord и начни новую кампанию без «Назад». Краш не пишет ничего на диск (сейв не сохранялся), так что чистый запуск всё решает."
+      - "Баг сидит в TOR_Core, не в Bannerlord — стоит написать в Discord TOR / в комментариях к моду в Steam Workshop, чтобы автор мода починил порядок cleanup'а."
+  match:
+    all:
+      - module_list: { id: "TOR_Core", has: "true" }
+      - log_line:
+          contains: "PopScreen - SandBox.View.CharacterCreation.CharacterCreationScreen"
+      - log_line:
+          contains: "Start Game Final Cleanup."

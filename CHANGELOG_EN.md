@@ -10,17 +10,106 @@ subscribers.
 
 ---
 
-## Next publish — Hybrid-graphics laptop GPU pin, pagefile respects manual split configs and keeps a small entry on C:, hero template inflation card + Ironman save backup, smarter terrain-shader crash advice, dedicated card for AMD RX 9000 driver regressions
+## Next publish — Crash prevention for AI hourly tick and save load, hybrid-graphics laptop GPU pin, pagefile respects manual split configs and keeps a small entry on C:, hero template inflation card + Ironman save backup, smarter terrain-shader crash advice, dedicated card for AMD RX 9000 driver regressions, new rule for the character-creation Back-button crash
 
 > Visible mod version stays `v1.4.0` forever.
 
 Several changes landing together:
+- **a new crash-prevention layer for the AI hourly tick**: Crash Doctor catches three typical crashes (wage / food consumption / AI hourly tick) when another mod left a "dangling" unit in a party's roster, and surfaces an in-game banner telling the player the crash was prevented;
+- **new save cleanup on load**: when you enter a campaign, Crash Doctor walks every party and settlement and removes broken troop entries (units that no longer exist), before the next AI hourly tick would NRE on them;
+- two new toggles in the **Settings** tab (both **default ON**) — either protection can be disabled individually if it conflicts with another mod;
+- **the Settings tab now scrolls** — with all the new cards added, the lower ones used to slip below the viewport on smaller resolutions;
 - a new Tune-Up card for hybrid-graphics laptops (Intel integrated + NVIDIA / AMD discrete) that pins Bannerlord onto the discrete GPU in one click;
 - the pagefile card now sees manual split configs (small pagefile on C: + big one on D:) and stops nagging about a rebuild that is already done, plus the card's own Apply logic keeps a small entry on C: instead of moving everything to another drive (so kernel memory dumps still work);
 - the "Free up disk space" card drops the C: threshold from 50 GB to 20 GB when the pagefile already lives on a non-C: drive — there is no pagefile growth on C: to make room for;
 - a Save Health card for mod-spawned hero template inflation with a per-template cleaner, plus safe save cleanup in Ironman mode;
 - two refinements for terrain shader crashes (Missing shader from sack: pbr_terrain): a dedicated diagnosis for the AMD RX 9000 / RDNA 4 driver regression, and a split of the "rebuild shaders" advice into "cache never built" vs "sack file corrupted";
-- the "rebuild shader cache" card no longer pops on harmless graphics settings (resolution, FXAA, post-processing etc.).
+- the "rebuild shader cache" card no longer pops on harmless graphics settings (resolution, FXAA, post-processing etc.);
+- a new diagnosis rule for the crash on pressing **Back** from the TOR character-creation screen (typical conflict with another mod patching the same screen).
+
+---
+
+### New: crash prevention for the AI hourly tick
+
+Every campaign hour the AI tallies wages and food for every party on the map
+and decides where each one should move next. If **another mod** removed a
+character incompletely — leaving a "dangling" entry of that character in some
+party's roster — the next hourly tick tries to read a unit that no longer
+exists and **crashes to desktop**. The crash log usually shows
+`NullReferenceException` somewhere inside `TORPartyWageModel.CalculateCharacterWage`,
+`TORMobilePartyFoodConsumption`, or `AiPatrollingBehavior.AiHourlyTick`.
+
+Crash Doctor now wraps all three sites with a safety net. When it catches one:
+- The offending party **skips that single hour** on the campaign map (no wage
+  / no move decision for this tick) and the game keeps running.
+- A **yellow toast** appears in the bottom-right —
+  "Crash Doctor: prevented a crash while calculating party wages. The game
+  continues." — so the player sees the mod worked.
+- Diagnostic details (party name, leader, roster size, what exactly threw)
+  go to `crashdoctor.log` — enough to file a useful bug at the offending
+  mod's author.
+
+The protection is **generic** — it works in any mod, not just The Old Realms.
+Inside TOR it catches the most common scenario: another mod spawns a temporary
+hero, drops it into a foreign party (as a caravan escort lead, a recruitment
+candidate, etc.), then deletes the hero without scrubbing the roster.
+
+The **"NRE safety nets (wage / food / AI tick)"** toggle in Crash Doctor →
+**Settings** is **ON by default**; turn it off if it conflicts with another
+mod that patches the same methods.
+
+---
+
+### New: dangling-troop cleanup on save load
+
+Same root cause as the safety net above (a "dangling" unit left behind by
+another mod), but caught **before** the game has a chance to crash. When you
+load a campaign, Crash Doctor walks every party and settlement on the map
+and removes troop entries whose **underlying character no longer exists**
+(`Character == null` or the character lost its culture).
+
+If anything was found and cleaned, a **green toast** appears in the bottom-
+right: "Crash Doctor: cleaned N broken troop entries — your save is protected
+from a potential crash." If everything was clean, nothing is shown and
+nothing is written to the log.
+
+Why this needs to be separate from the AI safety net: some saves have so
+much accumulated junk that the crash hits **before** the first AI tick — for
+example when the game tries to compute total party strength right after
+load. Cleaning before the ticks start removes that wave.
+
+The **"Dangling troop cleanup on load"** toggle in **Settings** is **ON by
+default**. Changes take effect on the next save load, no game restart needed.
+
+---
+
+### Improved: the Settings tab now scrolls
+
+With two new toggles added in **Settings**, the total card count is up to six
+(plus the "Per-mod error swallowing" block with its scrollable mod list). On
+standard and lower resolutions the bottom cards used to slip below the visible
+area.
+
+The settings cards now **scroll vertically** — a scrollbar appears on the
+right, matching the System Tune-Up tab. The section header stays pinned at
+the top. Each card keeps its full size and hint text, nothing was trimmed.
+
+---
+
+### New: diagnosis rule for the character-creation Back-button crash
+
+The rule library gained `tor.character_creation_back_crash` — catches the
+crash when the player presses the **Back** button on the TOR character-
+creation screen at the start of a new campaign. The crash is a
+`NullReferenceException` somewhere inside `CharacterCreationContent`, with
+no obvious mod name on the stack.
+
+The new diagnosis card explains that the usual culprit is another mod patching
+the same character-creation screen (incompatible careers / cultures /
+archetypes edits) and advises temporarily disabling that mod's career patches
+to get past the screen. In most cases one launch without the offending mod is
+enough to identify it — the player then re-enables the mod and finishes
+character creation without hitting Back.
 
 ---
 
