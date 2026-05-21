@@ -784,104 +784,190 @@
                             Brush.FontSize="28" Brush.FontColor="#F4E1C4FF"
                             Brush.TextHorizontalAlignment="Center" Text="@LabelSettingsTitle" />
 
-                <!-- ===== CARD 1: Emergency Save ===== -->
-                <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="1100" SuggestedHeight="120"
-                        HorizontalAlignment="Center" VerticalAlignment="Top" MarginTop="62"
-                        Sprite="StdAssets\Popup\canvas">
+                <!-- ===== SCROLLABLE CARD LIST =====
+                     With 6 cards stacked the content overflows the viewport, so wrap
+                     everything in a ScrollablePanel + vertical ListPanel. Each card
+                     becomes a list item with MarginBottom="14" for spacing — no more
+                     absolute MarginTop positioning. Pattern matches the Tune-Up tab's
+                     ScrollablePanel structure (line ~175). -->
+                <Widget Id="SettingsScrollWrap" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
+                        MarginTop="62" MarginBottom="20" MarginLeft="12" MarginRight="32">
                   <Children>
-                    <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
-                            Sprite="frame_9" ExtendLeft="14" ExtendTop="14" ExtendRight="14" ExtendBottom="14"
-                            IsEnabled="false" />
-                    <!-- Title left, toggle button right -->
-                    <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="700" SuggestedHeight="30"
-                                HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="28" MarginTop="14"
-                                Brush.FontSize="20" Brush.FontColor="#F4E1C4FF"
-                                Brush.TextHorizontalAlignment="Left"
-                                Text="@LabelCardEmergencySave" />
-                    <ButtonWidget DoNotPassEventsToChildren="true" Command.Click="ExecuteToggleEmergencySave"
-                                  Brush="Popup.Done.Button"
-                                  WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="140" SuggestedHeight="62"
-                                  HorizontalAlignment="Right" VerticalAlignment="Top" MarginTop="6" MarginRight="24">
+                    <ScrollablePanel Id="SettingsScroll"
+                                     WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
+                                     AutoHideScrollBars="true"
+                                     ClipRect="SettingsClipRect"
+                                     InnerPanel="SettingsClipRect\SettingsCardList"
+                                     VerticalScrollbar="..\SettingsScrollbar">
                       <Children>
-                        <TextWidget DoNotAcceptEvents="true"
-                                    WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
-                                    Brush="Popup.Button.Text" Brush.FontSize="17" Brush.TextHorizontalAlignment="Center"
-                                    Text="@EmergencySaveToggleLabel" />
-                      </Children>
-                    </ButtonWidget>
-                    <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="820" SuggestedHeight="60"
-                                HorizontalAlignment="Left" VerticalAlignment="Bottom" MarginLeft="28" MarginBottom="12" MarginRight="220"
-                                Brush.FontSize="14" Brush.FontColor="#C8B898CC"
-                                Brush.TextHorizontalAlignment="Left" Text="@HintEmergencySave" />
-                  </Children>
-                </Widget>
+                        <Widget Id="SettingsClipRect"
+                                WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
+                                ClipContents="true">
+                          <Children>
+                            <ListPanel Id="SettingsCardList"
+                                       WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren"
+                                       StackLayout.LayoutMethod="VerticalTopToBottom">
+                              <Children>
 
-                <!-- ===== CARD 2: Native Crash Logging ===== -->
-                <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="1100" SuggestedHeight="120"
-                        HorizontalAlignment="Center" VerticalAlignment="Top" MarginTop="194"
-                        Sprite="StdAssets\Popup\canvas">
-                  <Children>
-                    <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
-                            Sprite="frame_9" ExtendLeft="14" ExtendTop="14" ExtendRight="14" ExtendBottom="14"
-                            IsEnabled="false" />
-                    <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="700" SuggestedHeight="30"
-                                HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="28" MarginTop="14"
-                                Brush.FontSize="20" Brush.FontColor="#F4E1C4FF"
-                                Brush.TextHorizontalAlignment="Left"
-                                Text="@LabelCardNativeCrashLog" />
-                    <ButtonWidget DoNotPassEventsToChildren="true" Command.Click="ExecuteToggleNativeCrashLog"
-                                  Brush="Popup.Done.Button"
-                                  WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="140" SuggestedHeight="62"
-                                  HorizontalAlignment="Right" VerticalAlignment="Top" MarginTop="6" MarginRight="24">
-                      <Children>
-                        <TextWidget DoNotAcceptEvents="true"
-                                    WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
-                                    Brush="Popup.Button.Text" Brush.FontSize="17" Brush.TextHorizontalAlignment="Center"
-                                    Text="@NativeCrashLogToggleLabel" />
-                      </Children>
-                    </ButtonWidget>
-                    <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="820" SuggestedHeight="60"
-                                HorizontalAlignment="Left" VerticalAlignment="Bottom" MarginLeft="28" MarginBottom="12" MarginRight="220"
-                                Brush.FontSize="14" Brush.FontColor="#C8B898CC"
-                                Brush.TextHorizontalAlignment="Left" Text="@HintNativeCrashLog" />
-                  </Children>
-                </Widget>
+                                <!-- ===== CARD 1: Emergency Save ===== -->
+                                <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="1100" SuggestedHeight="120"
+                                        HorizontalAlignment="Center" MarginBottom="14"
+                                        Sprite="StdAssets\Popup\canvas">
+                                  <Children>
+                                    <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
+                                            Sprite="frame_9" ExtendLeft="14" ExtendTop="14" ExtendRight="14" ExtendBottom="14"
+                                            IsEnabled="false" />
+                                    <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="700" SuggestedHeight="30"
+                                                HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="28" MarginTop="14"
+                                                Brush.FontSize="20" Brush.FontColor="#F4E1C4FF"
+                                                Brush.TextHorizontalAlignment="Left"
+                                                Text="@LabelCardEmergencySave" />
+                                    <ButtonWidget DoNotPassEventsToChildren="true" Command.Click="ExecuteToggleEmergencySave"
+                                                  Brush="Popup.Done.Button"
+                                                  WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="140" SuggestedHeight="62"
+                                                  HorizontalAlignment="Right" VerticalAlignment="Top" MarginTop="6" MarginRight="24">
+                                      <Children>
+                                        <TextWidget DoNotAcceptEvents="true"
+                                                    WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
+                                                    Brush="Popup.Button.Text" Brush.FontSize="17" Brush.TextHorizontalAlignment="Center"
+                                                    Text="@EmergencySaveToggleLabel" />
+                                      </Children>
+                                    </ButtonWidget>
+                                    <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="820" SuggestedHeight="60"
+                                                HorizontalAlignment="Left" VerticalAlignment="Bottom" MarginLeft="28" MarginBottom="12" MarginRight="220"
+                                                Brush.FontSize="14" Brush.FontColor="#C8B898CC"
+                                                Brush.TextHorizontalAlignment="Left" Text="@HintEmergencySave" />
+                                  </Children>
+                                </Widget>
 
-                <!-- ===== CARD 3: UI Error Patching ===== -->
-                <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="1100" SuggestedHeight="140"
-                        HorizontalAlignment="Center" VerticalAlignment="Top" MarginTop="326"
-                        Sprite="StdAssets\Popup\canvas">
-                  <Children>
-                    <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
-                            Sprite="frame_9" ExtendLeft="14" ExtendTop="14" ExtendRight="14" ExtendBottom="14"
-                            IsEnabled="false" />
-                    <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="700" SuggestedHeight="30"
-                                HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="28" MarginTop="14"
-                                Brush.FontSize="20" Brush.FontColor="#F4E1C4FF"
-                                Brush.TextHorizontalAlignment="Left"
-                                Text="@LabelCardUIErrorPatching" />
-                    <ButtonWidget DoNotPassEventsToChildren="true" Command.Click="ExecuteToggleUIErrorPatching"
-                                  Brush="Popup.Done.Button"
-                                  WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="140" SuggestedHeight="62"
-                                  HorizontalAlignment="Right" VerticalAlignment="Top" MarginTop="6" MarginRight="24">
-                      <Children>
-                        <TextWidget DoNotAcceptEvents="true"
-                                    WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
-                                    Brush="Popup.Button.Text" Brush.FontSize="17" Brush.TextHorizontalAlignment="Center"
-                                    Text="@UIErrorPatchingToggleLabel" />
-                      </Children>
-                    </ButtonWidget>
-                    <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="820" SuggestedHeight="80"
-                                HorizontalAlignment="Left" VerticalAlignment="Bottom" MarginLeft="28" MarginBottom="12" MarginRight="220"
-                                Brush.FontSize="14" Brush.FontColor="#C8B898CC"
-                                Brush.TextHorizontalAlignment="Left" Text="@HintUIErrorPatching" />
-                  </Children>
-                </Widget>
+                                <!-- ===== CARD 2: Native Crash Logging ===== -->
+                                <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="1100" SuggestedHeight="120"
+                                        HorizontalAlignment="Center" MarginBottom="14"
+                                        Sprite="StdAssets\Popup\canvas">
+                                  <Children>
+                                    <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
+                                            Sprite="frame_9" ExtendLeft="14" ExtendTop="14" ExtendRight="14" ExtendBottom="14"
+                                            IsEnabled="false" />
+                                    <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="700" SuggestedHeight="30"
+                                                HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="28" MarginTop="14"
+                                                Brush.FontSize="20" Brush.FontColor="#F4E1C4FF"
+                                                Brush.TextHorizontalAlignment="Left"
+                                                Text="@LabelCardNativeCrashLog" />
+                                    <ButtonWidget DoNotPassEventsToChildren="true" Command.Click="ExecuteToggleNativeCrashLog"
+                                                  Brush="Popup.Done.Button"
+                                                  WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="140" SuggestedHeight="62"
+                                                  HorizontalAlignment="Right" VerticalAlignment="Top" MarginTop="6" MarginRight="24">
+                                      <Children>
+                                        <TextWidget DoNotAcceptEvents="true"
+                                                    WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
+                                                    Brush="Popup.Button.Text" Brush.FontSize="17" Brush.TextHorizontalAlignment="Center"
+                                                    Text="@NativeCrashLogToggleLabel" />
+                                      </Children>
+                                    </ButtonWidget>
+                                    <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="820" SuggestedHeight="60"
+                                                HorizontalAlignment="Left" VerticalAlignment="Bottom" MarginLeft="28" MarginBottom="12" MarginRight="220"
+                                                Brush.FontSize="14" Brush.FontColor="#C8B898CC"
+                                                Brush.TextHorizontalAlignment="Left" Text="@HintNativeCrashLog" />
+                                  </Children>
+                                </Widget>
 
-                <!-- ===== CARD 4: Per-mod opt-in (contains scrollable mod list) ===== -->
-                <Widget WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="1100"
-                        HorizontalAlignment="Center" VerticalAlignment="Top" MarginTop="478" MarginBottom="12"
-                        Sprite="StdAssets\Popup\canvas">
+                                <!-- ===== CARD 3: UI Error Patching ===== -->
+                                <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="1100" SuggestedHeight="140"
+                                        HorizontalAlignment="Center" MarginBottom="14"
+                                        Sprite="StdAssets\Popup\canvas">
+                                  <Children>
+                                    <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
+                                            Sprite="frame_9" ExtendLeft="14" ExtendTop="14" ExtendRight="14" ExtendBottom="14"
+                                            IsEnabled="false" />
+                                    <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="700" SuggestedHeight="30"
+                                                HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="28" MarginTop="14"
+                                                Brush.FontSize="20" Brush.FontColor="#F4E1C4FF"
+                                                Brush.TextHorizontalAlignment="Left"
+                                                Text="@LabelCardUIErrorPatching" />
+                                    <ButtonWidget DoNotPassEventsToChildren="true" Command.Click="ExecuteToggleUIErrorPatching"
+                                                  Brush="Popup.Done.Button"
+                                                  WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="140" SuggestedHeight="62"
+                                                  HorizontalAlignment="Right" VerticalAlignment="Top" MarginTop="6" MarginRight="24">
+                                      <Children>
+                                        <TextWidget DoNotAcceptEvents="true"
+                                                    WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
+                                                    Brush="Popup.Button.Text" Brush.FontSize="17" Brush.TextHorizontalAlignment="Center"
+                                                    Text="@UIErrorPatchingToggleLabel" />
+                                      </Children>
+                                    </ButtonWidget>
+                                    <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="820" SuggestedHeight="80"
+                                                HorizontalAlignment="Left" VerticalAlignment="Bottom" MarginLeft="28" MarginBottom="12" MarginRight="220"
+                                                Brush.FontSize="14" Brush.FontColor="#C8B898CC"
+                                                Brush.TextHorizontalAlignment="Left" Text="@HintUIErrorPatching" />
+                                  </Children>
+                                </Widget>
+
+                                <!-- ===== CARD 4: NRE Safety Nets ===== -->
+                                <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="1100" SuggestedHeight="140"
+                                        HorizontalAlignment="Center" MarginBottom="14"
+                                        Sprite="StdAssets\Popup\canvas">
+                                  <Children>
+                                    <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
+                                            Sprite="frame_9" ExtendLeft="14" ExtendTop="14" ExtendRight="14" ExtendBottom="14"
+                                            IsEnabled="false" />
+                                    <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="700" SuggestedHeight="30"
+                                                HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="28" MarginTop="14"
+                                                Brush.FontSize="20" Brush.FontColor="#F4E1C4FF"
+                                                Brush.TextHorizontalAlignment="Left"
+                                                Text="@LabelCardNreSafetyPatches" />
+                                    <ButtonWidget DoNotPassEventsToChildren="true" Command.Click="ExecuteToggleNreSafetyPatches"
+                                                  Brush="Popup.Done.Button"
+                                                  WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="140" SuggestedHeight="62"
+                                                  HorizontalAlignment="Right" VerticalAlignment="Top" MarginTop="6" MarginRight="24">
+                                      <Children>
+                                        <TextWidget DoNotAcceptEvents="true"
+                                                    WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
+                                                    Brush="Popup.Button.Text" Brush.FontSize="17" Brush.TextHorizontalAlignment="Center"
+                                                    Text="@NreSafetyPatchesToggleLabel" />
+                                      </Children>
+                                    </ButtonWidget>
+                                    <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="820" SuggestedHeight="80"
+                                                HorizontalAlignment="Left" VerticalAlignment="Bottom" MarginLeft="28" MarginBottom="12" MarginRight="220"
+                                                Brush.FontSize="14" Brush.FontColor="#C8B898CC"
+                                                Brush.TextHorizontalAlignment="Left" Text="@HintNreSafetyPatches" />
+                                  </Children>
+                                </Widget>
+
+                                <!-- ===== CARD 5: Dangling Roster Cleanup ===== -->
+                                <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="1100" SuggestedHeight="140"
+                                        HorizontalAlignment="Center" MarginBottom="14"
+                                        Sprite="StdAssets\Popup\canvas">
+                                  <Children>
+                                    <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
+                                            Sprite="frame_9" ExtendLeft="14" ExtendTop="14" ExtendRight="14" ExtendBottom="14"
+                                            IsEnabled="false" />
+                                    <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="700" SuggestedHeight="30"
+                                                HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="28" MarginTop="14"
+                                                Brush.FontSize="20" Brush.FontColor="#F4E1C4FF"
+                                                Brush.TextHorizontalAlignment="Left"
+                                                Text="@LabelCardDanglingRosterCleanup" />
+                                    <ButtonWidget DoNotPassEventsToChildren="true" Command.Click="ExecuteToggleDanglingRosterCleanup"
+                                                  Brush="Popup.Done.Button"
+                                                  WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="140" SuggestedHeight="62"
+                                                  HorizontalAlignment="Right" VerticalAlignment="Top" MarginTop="6" MarginRight="24">
+                                      <Children>
+                                        <TextWidget DoNotAcceptEvents="true"
+                                                    WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
+                                                    Brush="Popup.Button.Text" Brush.FontSize="17" Brush.TextHorizontalAlignment="Center"
+                                                    Text="@DanglingRosterCleanupToggleLabel" />
+                                      </Children>
+                                    </ButtonWidget>
+                                    <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="820" SuggestedHeight="80"
+                                                HorizontalAlignment="Left" VerticalAlignment="Bottom" MarginLeft="28" MarginBottom="12" MarginRight="220"
+                                                Brush.FontSize="14" Brush.FontColor="#C8B898CC"
+                                                Brush.TextHorizontalAlignment="Left" Text="@HintDanglingRosterCleanup" />
+                                  </Children>
+                                </Widget>
+
+                                <!-- ===== CARD 6: Per-mod opt-in (contains its own scrollable mod list) ===== -->
+                                <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="1100" SuggestedHeight="420"
+                                        HorizontalAlignment="Center" MarginBottom="14"
+                                        Sprite="StdAssets\Popup\canvas">
                   <Children>
                     <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
                             Sprite="frame_9" ExtendLeft="14" ExtendTop="14" ExtendRight="14" ExtendBottom="14"
@@ -972,9 +1058,34 @@
                     </ScrollbarWidget>
                   </Children>
                 </Widget>
-                <!-- close Card 4 (per-mod section) — was missing, causing LoadMovie XML parse error -->
-                </Children>
-              </Widget>
+                                <!-- close per-mod (Card 6) Children + Widget -->
+                                </Children>
+                                </Widget>
+
+                              </Children>
+                            </ListPanel>
+                          </Children>
+                        </Widget>
+                      </Children>
+                    </ScrollablePanel>
+                    <ScrollbarWidget Id="SettingsScrollbar"
+                                     WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent"
+                                     SuggestedWidth="10" HorizontalAlignment="Right" VerticalAlignment="Top"
+                                     MarginTop="6" MarginBottom="6" MarginRight="-22"
+                                     AlignmentAxis="Vertical" Handle="SettingsScrollbarHandle"
+                                     MaxValue="100" MinValue="0">
+                      <Children>
+                        <Widget WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="4"
+                                HorizontalAlignment="Center"
+                                Sprite="BlankWhiteSquare_9" Color="#5a4033FF" AlphaFactor="0.4" />
+                        <ImageWidget Id="SettingsScrollbarHandle"
+                                     WidthSizePolicy="Fixed" HeightSizePolicy="Fixed"
+                                     SuggestedHeight="40" SuggestedWidth="10"
+                                     HorizontalAlignment="Center" Brush="FaceGen.Scrollbar.Handle" />
+                      </Children>
+                    </ScrollbarWidget>
+                  </Children>
+                </Widget>
 
               </Children>
             </Widget>

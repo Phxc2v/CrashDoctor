@@ -266,13 +266,20 @@
       - system:
           field: active_gpu_driver_newer_than
           newer_than: "2026-03-01"
+      # If many compile_shader entries are present, the driver compiler is
+      # healthy — this is not the driver-regression case; don't tell the
+      # player to roll back a driver they already rolled back.
+      - none:
+          - log_line:
+              contains: "compile_shader: $BASE/Shaders/Sources/pbr_terrain"
+              count_at_least: "100"
 
 - id: gpu.shader_sack_corrupted
   category: gpu
   severity: critical
   confidence: high
   evidence_source: "Real client crash 2026-05-20 — TOR + LoreHardcore + CrashDoctor on RX 9070 XT. Log shows rglShader_manager::read_compressed_shader_cache_package at startup (cache was read), but later Bake Terrain triggers Missing shader from sack: pbr_terrain × 60+ in a single frame and the game falls into access violation 0xC0000005. The user reported that 'Build Shader Cache' was run multiple times without effect. The shipped sack file is being read but does not contain the requested shader entries — i.e. the sack itself is corrupt or incomplete, not the user-built cache."
-  requires_sources: [log_line]
+  requires_sources: [log_line, watchdog_log]
   title:
     en: "Shader sack file is corrupt — rebuild does not help, files must be re-downloaded"
     ru: "Sack-файл шейдеров повреждён — пересборка не помогает, нужно скачать файлы заново"
@@ -330,11 +337,25 @@
       - "Последняя мера, если ничего не сработало: полностью удали Bannerlord через Steam, удали остаточную папку игры вручную, переустанови. Это заставит Steam перекачать каждый байт заново."
   match:
     all:
+      # Anchor on an actual access-violation crash. Without this, the rule
+      # fires on any session whose log happens to contain 30+ Missing-shader
+      # lines (a normal artifact of first TOR map load), even when the crash
+      # is unrelated (e.g. a managed bug elsewhere). 0xC0000005 keeps the
+      # rule scoped to the native AV pattern this is meant to diagnose.
+      - exception:
+          code_equals: "0xC0000005"
       - log_line:
           contains: "Missing shader from sack: pbr_terrain"
           count_at_least: "30"
       - log_line:
           contains: "read_compressed_shader_cache_package"
+      # Suppress when the driver compiler is busy (many compile_shader
+      # entries) — that signature means the sack is incomplete but NOT
+      # corrupt, and Steam Verify will not fix it.
+      - none:
+          - log_line:
+              contains: "compile_shader: $BASE/Shaders/Sources/pbr_terrain"
+              count_at_least: "100"
 
 - id: gpu.shader_cache_corrupt
   category: gpu

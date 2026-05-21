@@ -149,6 +149,26 @@ clipboard, open Save System Fix on Nexus (#1925), open Save Cleaner on Nexus
 — no Bannerlord runtime touched, so it works in the main menu *before* the
 crashing save is loaded.
 
+### 🛡 Runtime crash prevention
+
+A small layer of generic safety nets that intercept the most common late-game
+crashes caused by **other mods leaving "dangling" units in party rosters**
+(typical pattern: another mod creates a temporary hero, drops it into a foreign
+party, then deletes the hero without scrubbing the roster — the next AI hourly
+tick crashes on the null reference). All five protections show an in-game toast
+(bilingual EN / RU based on game locale, rate-limited per category) so the
+player can see Crash Doctor actively saved them from a crash.
+
+| Layer | What it does | Toggle |
+|---|---|---|
+| **`WageModelNRESafetyPatch`** | Three Harmony guards on `TOR_Core.Models.TORPartyWageModel` (`CalculateCharacterWageCache`, `GetCharacterWage`, `GetTotalWage`). Returns wage = 0 instead of crashing on a null-culture character; finalizer logs the offending roster contents. | **Settings → NRE safety nets** (default ON) |
+| **`FoodConsumptionNRESafetyPatch`** | Finalizer on `TORMobilePartyFoodConsumptionModel.CalculateDailyFoodConsumptionf`. Same dangling-character source as above, surfaces on food consumption tick. | same toggle |
+| **`AiHourlyTickNRESafetyPatch`** | Reflection-based finalizer applied to every `AiHourlyTick` method in `TaleWorlds.CampaignSystem.CampaignBehaviors.AiBehaviors` (catches `AiPatrolling`, `AiVisitSettlement`, `AiMilitia`, etc.). The offending party silently skips that tick; game continues. | same toggle |
+| **`DanglingTroopCleanerBehavior`** | `OnSessionLaunched` scan: walks every `MobileParty` and `Settlement` roster, removes troop elements where `Character == null` or `Character.Culture == null`. Runs before the first AI tick so the cleanup happens BEFORE the next hourly tick would crash. | **Settings → Dangling troop cleanup on load** (default ON) |
+| **`SafetyNetMessenger`** | Bilingual user-visible toast helper used by all four above. Detects `BannerlordConfig.Language`, picks RU/EN text, applies amber (catch) or green (cleanup) color, rate-limits to one toast per category per 60 s. | always on |
+
+All four are generic — they do not require TOR_Core to be loaded (`AccessTools.TypeByName` no-ops gracefully when TOR is absent) and they trigger regardless of which third-party mod actually caused the dangling reference. Both Settings toggles persist diff-only against the workshop defaults, so a future defaults update isn't shadowed by stale user state.
+
 ---
 
 ## Crash bundle export
