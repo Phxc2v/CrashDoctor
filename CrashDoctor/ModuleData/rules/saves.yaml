@@ -191,3 +191,61 @@
               contains: "GetRandomAnnexation"
       - log_line:
           contains: "NullReferenceException"
+
+- id: save.issue_alternative_solution_nre
+  category: saves
+  severity: critical
+  confidence: high
+  evidence_source: "Crash Doctor analysis 2026-05-22: vanilla IssueBase.AlternativeSolutionEndWithSuccess NRE on DailyTick. Lambda at IssueBase.cs:1028 dereferences x.Character.UpgradeTargets / x.Character.IsHero in FindAll over AlternativeSolutionSentTroops — crashes when a sent-troop element has Character == null (dangling roster entry left behind by a mod that unregistered a CharacterObject without scrubbing it out)."
+  requires_sources: [log_line]
+  title:
+    en: "Daily-tick crash on issue completion — broken troop in 'sent troops' roster"
+    ru: "Краш на ежедневном тике при завершении issue — повреждённая запись в отправленном отряде"
+  description:
+    en: |
+      NullReferenceException inside IssueBase.AlternativeSolutionEndWithSuccess,
+      called from IssueManager.DailyTick. You sent troops to solve an issue with
+      the alternative-solution option (Lord Needs Garrison, Caravan Ambush and
+      similar). When the day rolls over and the engine tries to complete the
+      issue, one of those sent troops has a null CharacterObject — a dangling
+      reference left behind by some mod that unregistered a character without
+      removing it from the roster. The FindAll lambda dereferences x.Character
+      and dies.
+
+      Crash Doctor's roster cleaner now scans active issues (not just parties
+      and settlements) on save load and removes elements with a null Character.
+      The IssueBase Harmony safety net catches anything that still slips
+      through and lets DailyTick continue. Both are on by default.
+    ru: |
+      NullReferenceException внутри IssueBase.AlternativeSolutionEndWithSuccess,
+      вызывается из IssueManager.DailyTick. Ты отправил отряд решать issue по
+      «альтернативному пути» (Лорду нужен гарнизон, засада на караван и
+      подобные). Когда день меняется и движок завершает issue, в отправленном
+      отряде один из юнитов имеет пустую ссылку на CharacterObject — следствие
+      того, что какой-то мод снял регистрацию персонажа, но не удалил его из
+      ростера. FindAll-лямбда дёргает x.Character и падает.
+
+      Очиститель отрядов Crash Doctor теперь сканирует активные issues (а не
+      только обычные отряды и поселения) при загрузке сейва и удаляет записи
+      с пустой ссылкой на персонажа. Harmony-перехватчик на IssueBase ловит
+      то, что всё-таки проскочило, и не даёт DailyTick упасть. Оба
+      работают по умолчанию.
+  fix:
+    en:
+      - "Update Crash Doctor to the latest version — the fix ships built-in (Settings → 'Roster cleanup' and 'NRE safety patches' must be ON, both default to ON)."
+      - "Reload the save once after updating: the cleaner runs at OnSessionLaunched and removes the broken entries silently."
+      - "If you keep seeing the message — note which issue type was active (the safety-net banner appears right when DailyTick survives the hit) and report it; the cleaner missed an edge case."
+      - "Optional: cancel the alternative-solution issue from the Quests menu before the day rolls over, then re-take it cleanly."
+    ru:
+      - "Обнови Crash Doctor до последней версии — фикс встроен (в Настройках «Очистка отрядов» и «Защита от NRE» должны быть включены, обе включены по умолчанию)."
+      - "Загрузи сейв ещё раз после обновления: очиститель отрабатывает при заходе в сейв и тихо убирает битые записи."
+      - "Если сообщение продолжает появляться — заметь, какой тип issue был активен (баннер перехвата появляется ровно в момент, когда DailyTick выживает) и пришли отчёт; очиститель не покрыл какой-то крайний случай."
+      - "По желанию: до смены дня отмени issue с альтернативным решением через меню квестов и возьми её заново — чисто."
+  match:
+    all:
+      - log_line:
+          contains: "IssueBase.AlternativeSolutionEndWithSuccess"
+      - log_line:
+          contains: "IssueManager.DailyTick"
+      - log_line:
+          contains: "NullReferenceException"
