@@ -10,13 +10,13 @@ subscribers.
 
 ---
 
-## Next publish — Crash prevention for AI hourly tick and save load, hybrid-graphics laptop GPU pin, pagefile respects manual split configs and keeps a small entry on C:, hero template inflation card + Ironman save backup, smarter terrain-shader crash advice, dedicated card for AMD RX 9000 driver regressions, new rule for the character-creation Back-button crash
+## Next publish — Crash prevention for AI hourly tick, issue completion and save load, hybrid-graphics laptop GPU pin, pagefile respects manual split configs and keeps a small entry on C:, hero template inflation card + Ironman save backup, smarter terrain-shader crash advice, dedicated card for AMD RX 9000 driver regressions, new rule for the character-creation Back-button crash
 
 > Visible mod version stays `v1.4.0` forever.
 
 Several changes landing together:
-- **a new crash-prevention layer for the AI hourly tick**: Crash Doctor catches three typical crashes (wage / food consumption / AI hourly tick) when another mod left a "dangling" unit in a party's roster, and surfaces an in-game banner telling the player the crash was prevented;
-- **new save cleanup on load**: when you enter a campaign, Crash Doctor walks every party and settlement and removes broken troop entries (units that no longer exist), before the next AI hourly tick would NRE on them;
+- **a new crash-prevention layer for the AI hourly tick and issue completion**: Crash Doctor catches four typical crashes (wage / food consumption / AI hourly tick / alternative-solution issue completion) when another mod left a "dangling" unit in a party's roster or in an issue's sent-troops list, and surfaces an in-game banner telling the player the crash was prevented;
+- **new save cleanup on load**: when you enter a campaign, Crash Doctor walks every party, settlement and active issue and removes broken troop entries (units that no longer exist), before the next AI hourly tick or day rollover would NRE on them;
 - two new toggles in the **Settings** tab (both **default ON**) — either protection can be disabled individually if it conflicts with another mod;
 - **the Settings tab now scrolls** — with all the new cards added, the lower ones used to slip below the viewport on smaller resolutions;
 - a new Tune-Up card for hybrid-graphics laptops (Intel integrated + NVIDIA / AMD discrete) that pins Bannerlord onto the discrete GPU in one click;
@@ -29,25 +29,36 @@ Several changes landing together:
 
 ---
 
-### New: crash prevention for the AI hourly tick
+### New: crash prevention for the AI hourly tick and issue completion
 
 Every campaign hour the AI tallies wages and food for every party on the map
-and decides where each one should move next. If **another mod** removed a
-character incompletely — leaving a "dangling" entry of that character in some
-party's roster — the next hourly tick tries to read a unit that no longer
-exists and **crashes to desktop**. The crash log usually shows
+and decides where each one should move next. Once per in-game day the engine
+completes active issues that the player sent troops to solve with the
+"alternative solution" option (Lord Needs Garrison, Caravan Ambush and the
+like). If **another mod** removed a character incompletely — leaving a
+"dangling" entry of that character in some party's roster or in an issue's
+sent-troops list — the next tick tries to read a unit that no longer exists
+and **crashes to desktop**. The crash log usually shows
 `NullReferenceException` somewhere inside `TORPartyWageModel.CalculateCharacterWage`,
-`TORMobilePartyFoodConsumption`, or `AiPatrollingBehavior.AiHourlyTick`.
+`TORMobilePartyFoodConsumption`, `AiPatrollingBehavior.AiHourlyTick`, or
+`IssueBase.AlternativeSolutionEndWithSuccess` under `IssueManager.DailyTick`.
 
-Crash Doctor now wraps all three sites with a safety net. When it catches one:
-- The offending party **skips that single hour** on the campaign map (no wage
-  / no move decision for this tick) and the game keeps running.
+Crash Doctor now wraps all four sites with a safety net. When it catches one:
+- For hourly AI ticks: the offending party **skips that single hour** on the
+  campaign map (no wage / no move decision for this tick) and the game keeps
+  running.
+- For issue completion: before the engine touches the broken list, Crash
+  Doctor **silently scrubs the "dangling" troops** from the sent-troops
+  roster — the issue completes normally. If anything still slips through,
+  the day tick survives and the issue will retry tomorrow on the now-clean
+  list.
 - A **yellow toast** appears in the bottom-right —
   "Crash Doctor: prevented a crash while calculating party wages. The game
-  continues." — so the player sees the mod worked.
-- Diagnostic details (party name, leader, roster size, what exactly threw)
-  go to `crashdoctor.log` — enough to file a useful bug at the offending
-  mod's author.
+  continues." (or the equivalent for issue completion) — so the player sees
+  the mod worked.
+- Diagnostic details (party name, leader, roster size, issue ID, what
+  exactly threw) go to `crashdoctor.log` — enough to file a useful bug at
+  the offending mod's author.
 
 The protection is **generic** — it works in any mod, not just The Old Realms.
 Inside TOR it catches the most common scenario: another mod spawns a temporary
@@ -64,9 +75,10 @@ mod that patches the same methods.
 
 Same root cause as the safety net above (a "dangling" unit left behind by
 another mod), but caught **before** the game has a chance to crash. When you
-load a campaign, Crash Doctor walks every party and settlement on the map
-and removes troop entries whose **underlying character no longer exists**
-(`Character == null` or the character lost its culture).
+load a campaign, Crash Doctor walks every party, settlement **and active
+issue** (troops you sent to solve an issue with the alternative-solution
+option) on the map and removes troop entries whose **underlying character
+no longer exists** (`Character == null` or the character lost its culture).
 
 If anything was found and cleaned, a **green toast** appears in the bottom-
 right: "Crash Doctor: cleaned N broken troop entries — your save is protected
