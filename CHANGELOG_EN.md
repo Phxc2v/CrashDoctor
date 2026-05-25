@@ -10,7 +10,20 @@ subscribers.
 
 ---
 
-## Next publish — Crash prevention for AI hourly tick, issue completion and save load, hybrid-graphics laptop GPU pin, pagefile respects manual split configs and keeps a small entry on C:, hero template inflation card + Ironman save backup, smarter terrain-shader crash advice, dedicated card for AMD RX 9000 driver regressions, new rule for the character-creation Back-button crash
+## Next publish — Fixes: GPU driver cache card no longer sticks, false save mismatch on translation version bumps, crash logs preserved during cleanup, clear message for log-less crashes, export now attaches ButterLib logs
+
+> Visible mod version stays `v1.4.0` forever.
+
+A round of fixes:
+- **the GPU driver cache card no longer sticks on screen.** On large NVIDIA caches (2+ GB) the "clear GPU driver cache" card used to stay up after you pressed Clear and ask you to press it again — even though the driver holds those files open and they can't be deleted while the game runs. The card now appears only when there are real driver-crash markers in the logs, not just because the cache is large;
+- **the Saves tab no longer raises a false mismatch.** A translation mod version bump (e.g. a localisation pack) or a minor mod update is no longer flagged as incompatible — only version changes that can actually break a save load count;
+- **crash cleanup no longer deletes the files needed for diagnosis.** Clearing old crashes (while keeping dumps) used to strip the engine logs out of the folders, and the crash could no longer be recognised afterwards. Crash logs are now always preserved through cleanup;
+- **a log-less crash is now explained in plain words.** If the game didn't manage to write logs (or they were already sent through the in-game reporter), Crash Doctor says "this crash folder has no engine data, nothing to analyse" instead of asking you to send an empty bundle;
+- **crash export is more useful.** The bundle now also includes ButterLib logs — they carry the detailed error record that shows which mod caused the crash. This makes crashes that used to look like an "opaque exit" much faster to diagnose.
+
+---
+
+## 2026-05-22 — Crash prevention for AI hourly tick, issue completion and save load, hybrid-graphics laptop GPU pin, pagefile respects manual split configs and keeps a small entry on C:, hero template inflation card + Ironman save backup, smarter terrain-shader crash advice, dedicated card for AMD RX 9000 driver regressions, new rule for the character-creation Back-button crash
 
 > Visible mod version stays `v1.4.0` forever.
 
