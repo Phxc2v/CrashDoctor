@@ -1,8 +1,8 @@
 - id: gpu.amd_integrated_default
   category: gpu
   severity: critical
-  confidence: high
-  evidence_source: "https://docs.bannerlordmodding.com/integrated-gpu-issues"
+  confidence: medium
+  evidence_source: "DxDiag Display Devices ordering is unreliable on its own; gated on positive iGPU markers (matching M28_IGpuActiveOnHybrid.IntegratedGpuMarkers), positive discrete-dGPU markers on DD1 with Current Mode=Unknown (idle), and a none-clause that bails out when DD0 itself carries a discrete prefix (5800X + RX 9070 + two monitors false-positive caught 2026-05-24)"
   requires_sources: [crash_tag, engine_config]
   title:
     en: "Game is rendering on the integrated AMD GPU"
@@ -32,16 +32,86 @@
       - engine_config:
           key: graphics_adapter
           equals: "0"
-      - crash_tag:
-          path: "Display Devices 0/Card name"
-          contains: "Radeon"
+      # DD0 must be an AMD iGPU. Positive markers only — bare "Radeon" matched
+      # discrete cards too (Radeon RX 9070 etc.) and produced a known false
+      # positive on Ryzen 5800X + RX 9070 driving two monitors (2026-05-24).
+      # Keep this list in sync with M28_IGpuActiveOnHybrid.IntegratedGpuMarkers.
+      - any:
+          - crash_tag:
+              path: "Display Devices 0/Card name"
+              contains: "Radeon Graphics"
+          - crash_tag:
+              path: "Display Devices 0/Card name"
+              contains: "Radeon(TM) Graphics"
+          - crash_tag:
+              path: "Display Devices 0/Card name"
+              contains: "Vega"
+          - crash_tag:
+              path: "Display Devices 0/Card name"
+              regex: "Radeon\\s+(680M|780M|880M|740M|8060S)"
+      # DD1 must be a discrete card. Keep in sync with
+      # M28_IGpuActiveOnHybrid.DiscreteGpuMarkers.
       - any:
           - crash_tag:
               path: "Display Devices 1/Card name"
               contains: "NVIDIA"
           - crash_tag:
               path: "Display Devices 1/Card name"
+              contains: "GeForce"
+          - crash_tag:
+              path: "Display Devices 1/Card name"
+              contains: "RTX"
+          - crash_tag:
+              path: "Display Devices 1/Card name"
+              contains: "GTX"
+          - crash_tag:
+              path: "Display Devices 1/Card name"
               contains: "Radeon RX"
+          - crash_tag:
+              path: "Display Devices 1/Card name"
+              contains: "Radeon Pro"
+          - crash_tag:
+              path: "Display Devices 1/Card name"
+              contains: "Arc A"
+          - crash_tag:
+              path: "Display Devices 1/Card name"
+              contains: "Arc B"
+      # Discrete card is idle — DxDiag writes "Unknown" for Current Mode when
+      # the adapter has no attached active display surface. This is the same
+      # tell-tale M28 uses in InspectCrashFolder.
+      - crash_tag:
+          path: "Display Devices 1/Current Mode"
+          contains: "Unknown"
+      # Sanity: DxDiag sometimes orders devices by primary-display port, not
+      # by which GPU renders, so DD0 may itself be a discrete card. Without
+      # this none-clause a discrete-only setup with two monitors on the dGPU
+      # (DD0 = Radeon RX, DD1 = same Radeon RX on the second monitor) passes
+      # the positive matchers above.
+      - none:
+          - crash_tag:
+              path: "Display Devices 0/Card name"
+              contains: "Radeon RX"
+          - crash_tag:
+              path: "Display Devices 0/Card name"
+              contains: "Radeon Pro"
+          - crash_tag:
+              path: "Display Devices 0/Card name"
+              contains: "Radeon VII"
+          - crash_tag:
+              path: "Display Devices 0/Card name"
+              contains: "GeForce"
+          - crash_tag:
+              path: "Display Devices 0/Card name"
+              contains: "RTX"
+          - crash_tag:
+              path: "Display Devices 0/Card name"
+              contains: "GTX"
+          - crash_tag:
+              path: "Display Devices 0/Card name"
+              contains: "Arc A"
+          - crash_tag:
+              path: "Display Devices 0/Card name"
+              contains: "Arc B"
 
 - id: gpu.shader_compile_x3004_tbn
   category: gpu
@@ -425,7 +495,7 @@
   category: gpu
   severity: critical
   confidence: high
-  evidence_source: "https://learn.microsoft.com/en-us/windows/win32/direct3ddxgi/dxgi-error"
+  evidence_source: "https://learn.microsoft.com/en-us/windows/win32/direct3ddxgi/dxgi-error — plus real client crash 2026-05-25 (RTX 4070, TOR+LoreHardcore): engine popup 'd3d_device_context_->Map at rglGPU_device::lock_texture Failed! GPU instance suspended, use GetDeviceRemovedReason' fired during Bake Terrain on a heavy scene. Same DEVICE_REMOVED family, just surfaced as a lock_texture/Map failure with no DXGI string in the log — the popup text is the only evidence, so we match its wording too."
   requires_sources: [log_line]
   title:
     en: "DXGI_ERROR_DEVICE_REMOVED — GPU lost"
@@ -456,6 +526,12 @@
           contains: "DEVICE_REMOVED"
       - log_line:
           regex: "0x887A0005|0x887A0020"
+      # Engine popup wording for the same device-removed condition. These strings
+      # never appear in a healthy session, so each is a safe standalone anchor.
+      - log_line:
+          contains: "GetDeviceRemovedReason"
+      - log_line:
+          contains: "lock_texture Failed"
 
 - id: gpu.device_hung_siege
   category: gpu
@@ -529,6 +605,18 @@
       RTX 50xx" in rgl_log), GPU Crash flag = 1 in crash_tags. Quitting to
       desktop and relaunching restores the descriptor pool — that is why
       "I haven't crashed since I restart every 2 hours" works on this hardware.
+
+      Fourth — and the most common one on mid-range / older hardware: a 4 GB-class
+      GPU (RTX 3050, GTX 1650) driving a 1440p desktop with the shader cache
+      never built. Tell-tale sign in rgl_log: only a handful of
+      read_compressed_shader_cache_package lines but THOUSANDS of live
+      `compile_shader: pbr_terrain` lines — the engine is recompiling terrain
+      shaders from scratch every launch instead of loading a prebuilt cache. On a
+      VRAM-starved card the live-compile storm stacked on top of TOR's texture
+      arrays tips CreateTexture2D past its limit a few minutes into the first
+      scene load, so it looks like "crashes at startup, every time". An
+      out-of-date GPU driver (a year or older) validates the descriptor more
+      strictly and makes it worse.
     ru: |
       Рендерер Bannerlord (rglGPU_device::create_texture_array) вызвал
       ID3D11Device::CreateTexture2D и получил E_INVALIDARG («Параметр задан
@@ -559,8 +647,22 @@
       GPU Crash flag = 1 в crash_tags. Выход на рабочий стол и перезапуск
       возвращают пул дескрипторов — поэтому «я не падаю, если рестартую
       каждые 2 часа» работает на этой железке.
+
+      Четвёртая — и самая частая на средних / старых картах: видеокарта с 4 ГБ
+      (RTX 3050, GTX 1650) на мониторе 1440p, когда кэш шейдеров так и не собран.
+      Признак в rgl_log: всего несколько строк read_compressed_shader_cache_package,
+      но ТЫСЯЧИ строк живой компиляции `compile_shader: pbr_terrain` — движок
+      каждый запуск пересобирает терреновые шейдеры с нуля вместо загрузки
+      готового кэша. На карте с дефицитом видеопамяти эта лавина компиляции
+      поверх texture-array'ев TOR пробивает лимит CreateTexture2D через пару минут
+      после начала прогрузки первой сцены — выглядит как «падает на старте, каждый
+      раз». Устаревший драйвер (старше года) проверяет дескриптор строже и
+      усугубляет.
   fix:
     en:
+      - "FIRST, if rgl_log shows thousands of `compile_shader` lines and only a few `read_compressed_shader_cache_package` — your shader cache is not built. Open Crash Doctor → System tune-up → 'Clear Bannerlord shader cache', REBOOT, launch the game, Main Menu → 'Build Shader Cache', wait 20–60 min. This removes the live-compile storm that triggers the crash on weak cards."
+      - "On a 4 GB card (RTX 3050 / GTX 1650) at 1440p: drop the in-game resolution to 1920×1080 and Texture Quality to Low/Medium. 4 GB at 1440p in TOR is on the edge."
+      - "Update the GPU driver to the latest (NVIDIA: GeForce Game Ready). A driver older than ~1 year validates D3D11 descriptors more strictly and is a frequent cause here."
       - "If you have a VR headset: fully close Oculus/Meta Quest Link AND SteamVR AND Windows Mixed Reality Portal before launching Bannerlord. Check Task Manager for OVRServer_x64.exe / vrcompositor.exe / vrserver.exe / MixedRealityPortal.exe — kill them. Disconnect the headset cable. They reserve 1.5–3 GB of VRAM each, even idle."
       - "Lower Battle Size first. If you use BattleSizeResized — try 200, then 128 (native cap). If a 200-vs-200 fight loads cleanly, you've confirmed the texture-array limit was the cause."
       - "If lowering Battle Size still crashes — temporarily disable troop/armor mods that add many unique materials (LoreHardcore, custom-troop overhauls). Re-enable one at a time."
@@ -573,6 +675,9 @@
       - "AFTER changing any graphics setting (Texture Quality / Shader Quality / etc.): REBOOT the PC, open Crash Doctor → System tune-up → 'Clear Bannerlord shader cache', launch the game, Main Menu → 'Build Shader Cache' and wait 20–60 minutes. Skip any of these and the next launch crashes on the imperial-soldier splash."
       - "If nothing helps — file a screenshot of the error popup plus rgl_log_<PID>.txt + watchdog_log_<PID>.txt to the mod author."
     ru:
+      - "СНАЧАЛА: если в логе тысячи строк `compile_shader` и лишь несколько `read_compressed_shader_cache_package` — кэш шейдеров не собран. Открой Crash Doctor → Настройка системы → «Очистить кэш шейдеров Bannerlord», ПЕРЕЗАГРУЗИ ПК, запусти игру, Главное меню → «Build Shader Cache», подожди 20–60 мин. Это убирает лавину живой компиляции, которая и роняет слабые карты."
+      - "На карте с 4 ГБ (RTX 3050 / GTX 1650) при мониторе 1440p — снизь разрешение в игре до 1920×1080 и Качество текстур до Low/Medium. 4 ГБ на 1440p в TOR — на пределе."
+      - "Обнови драйвер видеокарты до последнего (NVIDIA: GeForce Game Ready). Драйвер старше ~года строже проверяет дескрипторы D3D11 и часто виноват именно в этом."
       - "Если есть VR-шлем — полностью закрой Oculus/Meta Quest Link, SteamVR и Windows Mixed Reality Portal перед запуском Bannerlord. В Диспетчере задач прибей OVRServer_x64.exe / vrcompositor.exe / vrserver.exe / MixedRealityPortal.exe. Отключи кабель шлема. Каждый из них держит 1.5–3 ГБ VRAM даже когда шлем не активен."
       - "Снизь Battle Size в первую очередь. Если стоит BattleSizeResized — попробуй 200, потом 128 (нативный потолок). Если бой 200 на 200 грузится без вылета — корень найден, лимит texture-array."
       - "Если падает и на сниженном размере — временно отключи моды на отряды/броню с большим числом уникальных материалов (LoreHardcore, кастомные trooper-моды). Включай по одному."

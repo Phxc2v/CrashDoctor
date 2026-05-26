@@ -10,7 +10,7 @@ subscribers.
 
 ---
 
-## Next publish — Fixes: GPU driver cache card no longer sticks, false save mismatch on translation version bumps, crash logs preserved during cleanup, clear message for log-less crashes, export now attaches ButterLib logs
+## Next publish — Fixes: characters no longer lie on their side, GPU crashes recognised more precisely, no false mod-conflict warnings, GPU driver cache card no longer sticks, false save mismatch on translation version bumps, crash logs preserved during cleanup, clear message for log-less crashes, export now attaches ButterLib logs
 
 > Visible mod version stays `v1.4.0` forever.
 
@@ -19,7 +19,10 @@ A round of fixes:
 - **the Saves tab no longer raises a false mismatch.** A translation mod version bump (e.g. a localisation pack) or a minor mod update is no longer flagged as incompatible — only version changes that can actually break a save load count;
 - **crash cleanup no longer deletes the files needed for diagnosis.** Clearing old crashes (while keeping dumps) used to strip the engine logs out of the folders, and the crash could no longer be recognised afterwards. Crash logs are now always preserved through cleanup;
 - **a log-less crash is now explained in plain words.** If the game didn't manage to write logs (or they were already sent through the in-game reporter), Crash Doctor says "this crash folder has no engine data, nothing to analyse" instead of asking you to send an empty bundle;
-- **crash export is more useful.** The bundle now also includes ButterLib logs — they carry the detailed error record that shows which mod caused the crash. This makes crashes that used to look like an "opaque exit" much faster to diagnose.
+- **crash export is more useful.** The bundle now also includes ButterLib logs — they carry the detailed error record that shows which mod caused the crash. This makes crashes that used to look like an "opaque exit" much faster to diagnose;
+- **characters no longer "lie on their side".** If you accidentally enabled per-mod error protection for a base-game module (e.g. Sandbox), every character lost its animation and rendered in a broken sideways pose. Base-game/infrastructure modules are no longer offered in the protection list at all, and if such a box was already ticked the mod clears it automatically on launch;
+- **GPU crashes are recognised more precisely.** Added detection of the engine's device-lost popup (lock_texture / GetDeviceRemovedReason) and a dedicated diagnosis for the common 4 GB-card case where the shader cache was never built and the game recompiles shaders every launch — with step-by-step advice;
+- **no more false mod-conflict warnings.** Crash Doctor itself and infrastructure mods (Harmony, ButterLib, MCM and the like) are no longer tagged with a "patch conflict" badge — they used to scare players even though there was no real conflict.
 
 ---
 
