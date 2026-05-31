@@ -90,7 +90,7 @@
                       <Children>
                         <Widget Id="WipeClipRect"
                                 WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
-                                ClipContents="true">
+                                MarginRight="20" ClipContents="true">
                           <Children>
                             <ListPanel Id="WipeList" DataSource="{WipeMods}"
                                        WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren"
@@ -135,7 +135,7 @@
                     <ScrollbarWidget Id="WipeScrollbar"
                                      WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent"
                                      SuggestedWidth="10" HorizontalAlignment="Right" VerticalAlignment="Top"
-                                     MarginTop="6" MarginBottom="6" MarginRight="-22"
+                                     MarginTop="6" MarginBottom="6" MarginRight="2"
                                      AlignmentAxis="Vertical" Handle="WipeScrollbarHandle"
                                      MaxValue="100" MinValue="0">
                       <Children>

@@ -2,6 +2,8 @@
   title:
     en: "Fix mod load order in LauncherData.xml"
     ru: "Починить порядок модов в LauncherData.xml"
+    zh: "修复 LauncherData.xml 中的模组加载顺序"
+    tr: "LauncherData.xml içindeki mod yükleme sırasını düzelt"
   description:
     en: |
       Bannerlord crashes on startup or modules silently fail when the load order
@@ -12,6 +14,14 @@
       загрузки не совпадает с каноническим порядком TOR. Сначала Native-модули,
       потом Harmony / ButterLib / UIExtenderEx / MCM, затем коммьюнити-моды,
       затем TOR_*.
+    zh: |
+      当加载顺序与规范的 TOR 顺序不匹配时，Bannerlord 会在启动时崩溃，或者模块会
+      悄无声息地失效。先是原生游戏模块，然后是 Harmony / ButterLib / UIExtenderEx / MCM，
+      接着是社区模组，最后是 TOR_*。
+    tr: |
+      Yükleme sırası standart TOR sırasıyla eşleşmediğinde Bannerlord başlangıçta çöker
+      veya modüller sessizce çalışmaz. Önce yerel oyun modülleri, ardından
+      Harmony / ButterLib / UIExtenderEx / MCM, sonra topluluk modları, en son TOR_*.
   details:
     en:
       - "LauncherData.xml is backed up before rewriting."
@@ -27,3 +37,17 @@
       - "После применения: запусти игру кнопкой Play и НЕ двигай моды вручную вверх/вниз"
       - "в окне TaleWorlds launcher'а — иначе он перезапишет порядок обратно по своей логике."
       - "С установленным BLSE Launcher порядок сохраняется в любом случае."
+    zh:
+      - "重写前会备份 LauncherData.xml。"
+      - "只更改顺序——不会添加、移除或禁用任何模组。"
+      - "如果出现问题，可从「历史」选项卡撤销。"
+      - "应用后：直接通过 Play 启动游戏。不要在 TaleWorlds 启动器窗口中手动上下拖动模组"
+      - "——那会把顺序覆盖回启动器认为正确的状态。安装了 BLSE Launcher 后，"
+      - "顺序无论如何都会保持不变。"
+    tr:
+      - "LauncherData.xml yeniden yazılmadan önce yedeklenir."
+      - "Yalnızca sıra değişir — hiçbir mod eklenmez, kaldırılmaz veya devre dışı bırakılmaz."
+      - "Bir şey yanlış görünürse Geçmiş sekmesinden geri alınabilir."
+      - "Uyguladıktan sonra: oyunu doğrudan Play ile başlatın. Modları TaleWorlds başlatıcı"
+      - "penceresinde elle yukarı/aşağı SÜRÜKLEMEYİN — bu, sırayı başlatıcının doğru sandığı"
+      - "haline geri yazar. BLSE Launcher kuruluysa sıra ne olursa olsun korunur."

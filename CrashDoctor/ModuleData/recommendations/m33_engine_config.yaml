@@ -2,6 +2,8 @@
   title:
     en: "Fix TOR-incompatible values in engine_config.txt"
     ru: "Исправить TOR-несовместимые значения в engine_config.txt"
+    zh: "修复 engine_config.txt 中与 TOR 不兼容的值"
+    tr: "engine_config.txt içindeki TOR ile uyumsuz değerleri düzelt"
   description:
     en: |
       A few engine_config.txt values are known to cause d3d crashes, OOM in big battles,
@@ -39,6 +41,41 @@
         2. Запусти Bannerlord.
         3. Главное меню → нажми «Build Shader Cache» и жди 20–60 минут.
         4. НЕ закрывай игру в это время, НЕ открывай Chrome / Discord / браузеры.
+    zh: |
+      已知 engine_config.txt 中的一些值会专门在 TOR 上引发 d3d 崩溃、大型战斗中的内存溢出
+      或声音遮蔽冻结。Crash Doctor 只会修改有记录的不良影响的键；其他所有内容都按原样保留。
+
+      为什么这张卡片需要重启 + 重建着色器：更改图形键
+      （terrain_quality、tesselation、shader_quality 等）会使预编译的着色器缓存失效。
+      Bannerlord 下次启动时会加载针对旧值构建的缓存，遇到不匹配，
+      并在带有帝国士兵图像的启动画面上崩溃。为防止这种情况，「应用」还会将着色器缓存
+      发送到回收站——之后游戏在首次启动时会花费 10–60 分钟重建着色器。
+
+      「应用」后的必要步骤顺序（跳过任何一步 → 游戏将无法启动）：
+        1. 重启电脑。
+        2. 启动 Bannerlord。
+        3. 主菜单 → 按下「Build Shader Cache」并等待 20–60 分钟。
+        4. 编译期间不要关闭游戏，不要打开 Chrome / Discord / 浏览器。
+    tr: |
+      engine_config.txt içindeki birkaç değerin özellikle TOR'da d3d çökmelerine, büyük
+      savaşlarda bellek yetersizliğine veya ses oklüzyon donmalarına yol açtığı bilinir.
+      Crash Doctor yalnızca belgelenmiş kötü bir etkiye sahip anahtarlara dokunur; diğer
+      her şey olduğu gibi korunur.
+
+      Bu kartın neden yeniden başlatma + gölgelendirici yeniden derleme gerektirdiği:
+      grafik anahtarlarını değiştirmek (terrain_quality, tesselation, shader_quality vb.)
+      önceden derlenmiş gölgelendirici önbelleğini geçersiz kılar. Bannerlord'un bir
+      sonraki başlatması ESKİ değerlere göre oluşturulmuş bir önbelleği yükler, bir
+      uyumsuzlukla karşılaşır ve imparatorluk askeri görseliyle açılış ekranında çöker.
+      Bunu önlemek için Uygula, gölgelendirici önbelleğini de Geri Dönüşüm Kutusu'na
+      gönderir — ardından oyun ilk başlatmada gölgelendiricileri yeniden oluşturmak için
+      10–60 dakika harcar.
+
+      Uygula sonrası ZORUNLU sıra (herhangi bir adımı atlarsanız → oyun başlamaz):
+        1. Bilgisayarı YENİDEN BAŞLATIN.
+        2. Bannerlord'u başlatın.
+        3. Ana Menü → 'Build Shader Cache' düğmesine basın ve 20–60 dakika bekleyin.
+        4. Derleme sırasında oyunu kapatmayın, Chrome / Discord / tarayıcı açmayın.
   details:
     en:
       - "engine_config.txt is backed up before rewriting (Recovery Bin = Documents fallback if Rollback fails)."
@@ -52,3 +89,15 @@
       - "Кэш шейдеров (ProgramData/Shaders + game/Shaders/D3D11/compressed_shaders_cache.sack + per-module sacks) уезжает в Корзину."
       - "ВОССТАНОВЛЕНИЕ если игра вообще не запускается: см. описание мода в Workshop — раздел «Если игра не запускается» или docs/Recovery_If_Game_Wont_Start_RU.md."
       - "Откат из вкладки «Журнал» — восстанавливает engine_config.txt; кэш шейдеров НЕ восстанавливается, игра просто пересобирает его заново."
+    zh:
+      - "重写前会备份 engine_config.txt（如果回滚失败，恢复区 = Documents 备用位置）。"
+      - "注释和未知键保持原样不动。"
+      - "着色器缓存（ProgramData/Shaders + game/Shaders/D3D11/compressed_shaders_cache.sack + 每个模块的 sack）会被发送到回收站。"
+      - "如果游戏完全无法启动的恢复方法：参见 Workshop 描述中的「If the game won't launch」或 docs/Recovery_If_Game_Wont_Start_EN.md。"
+      - "可从「历史」选项卡撤销——会恢复 engine_config.txt；着色器缓存不会恢复，游戏只是再次重建它。"
+    tr:
+      - "engine_config.txt yeniden yazılmadan önce yedeklenir (Geri Alma başarısız olursa Kurtarma Kutusu = Documents yedeği)."
+      - "Yorumlar ve bilinmeyen anahtarlar dokunulmadan tutulur."
+      - "Gölgelendirici önbelleği (ProgramData/Shaders + game/Shaders/D3D11/compressed_shaders_cache.sack + modül başına sack'ler) Geri Dönüşüm Kutusu'na gönderilir."
+      - "Oyun hiç başlamıyorsa KURTARMA: Workshop açıklamasındaki 'If the game won't launch' bölümüne veya docs/Recovery_If_Game_Wont_Start_EN.md dosyasına bakın."
+      - "Geçmiş sekmesinden geri alınabilir — engine_config.txt'yi geri yükler; gölgelendirici önbelleği geri yüklenmez, oyun onu yeniden oluşturur."

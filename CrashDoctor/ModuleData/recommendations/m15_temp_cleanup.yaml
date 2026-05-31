@@ -2,6 +2,8 @@
   title:
     en: "Clean stale %TEMP% files"
     ru: "Очистить старые файлы из %TEMP%"
+    zh: "清理 %TEMP% 中的陈旧文件"
+    tr: "%TEMP% içindeki eski dosyaları temizle"
   description:
     en: |
       Bannerlord's shader compiler and TaleWorlds.Native FMOD layer write intermediate
@@ -23,6 +25,26 @@
       OneDrive) — пропускается. Удаляются только файлы старше 7 дней. Безопасно запускать
       с открытыми приложениями. Bannerlord должен быть закрыт (лаунчер держит хэндлы
       на /Temp/RGL_*.tmp файлы компилятора).
+    zh: |
+      Bannerlord 的着色器编译器和 TaleWorlds.Native FMOD 层会把中间临时文件写到
+      用户的 %TEMP% 文件夹。在长期运行的安装上 %TEMP% 会涨到 5–20 GB，于是 Windows
+      开始缺少临时空间 — 这时着色器编译内存不足崩溃就会在最随机的时刻出现。
+
+      仅逐个文件删除：跳过任何被其他进程（Steam、Edge、Office、OneDrive）锁定的文件。
+      只会动 7 天以上的文件。可以在其他应用打开时安全运行。Bannerlord 必须关闭
+      （启动器本身可能持有 /Temp/RGL_*.tmp 着色器临时文件的句柄）。
+    tr: |
+      Bannerlord'un gölgelendirici derleyicisi ve TaleWorlds.Native FMOD katmanı ara
+      geçici dosyaları kullanıcının %TEMP% klasörüne yazar. Uzun süredir kurulu bir
+      sistemde %TEMP% 5–20 GB'a ulaşır ve Windows geçici alandan yoksun kalmaya
+      başlar — işte o zaman gölgelendirici derleme bellek yetersizliği çökmeleri en
+      rastgele anlarda ortaya çıkar.
+
+      Yalnızca tek tek dosya silme: başka bir işlem (Steam, Edge, Office, OneDrive)
+      tarafından kilitli olan her şeyi atlar. Yalnızca 7 günden eski dosyalara
+      dokunulur. Diğer uygulamalar açıkken çalıştırmak güvenlidir. Bannerlord kapalı
+      olmalıdır (başlatıcının kendisi /Temp/RGL_*.tmp gölgelendirici geçici
+      dosyalarının tutamaçlarını tutabilir).
   details:
     en:
       - "Path: $env:TEMP (typically %LOCALAPPDATA%\\Temp)."
@@ -36,3 +58,15 @@
       - "Удаляются только файлы старше 7 дней; новее — это scratch активных приложений."
       - "По возможности файлы уезжают в Корзину (часть Shell-заблокированных удаляется напрямую)."
       - "Откат из Crash Doctor не предусмотрен."
+    zh:
+      - "路径：$env:TEMP（通常为 %LOCALAPPDATA%\\Temp）。"
+      - "出现「NeedsAction」卡片的阈值：%TEMP% 总计 > 1 GB。"
+      - "只删除 7 天以上的文件；较新的文件是活动应用的临时数据。"
+      - "尽可能把文件放入回收站（部分被 Shell 锁定的项会直接删除）。"
+      - "无法从 Crash Doctor 撤销。"
+    tr:
+      - "Yol: $env:TEMP (genellikle %LOCALAPPDATA%\\Temp)."
+      - "'NeedsAction' kartı eşiği: toplam %TEMP% > 1 GB."
+      - "Yalnızca 7 günden eski dosyalar silinir; daha yeni dosyalar etkin uygulamaların geçici verisidir."
+      - "Mümkün olduğunda dosyalar Geri Dönüşüm Kutusu'na gider (Shell tarafından kilitli bazı öğeler doğrudan silinir)."
+      - "Crash Doctor üzerinden geri alınamaz."

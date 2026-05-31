@@ -10,6 +10,8 @@
   title:
     en: "NullReferenceException in conversation Continue button"
     ru: "NullReferenceException в кнопке Continue диалога"
+    zh: "对话“继续”按钮中的 NullReferenceException"
+    tr: "Diyalog Devam düğmesinde NullReferenceException"
   description:
     en: |
       Bannerlord's conversation system crashed inside ExecuteContinue on the VM
@@ -43,6 +45,35 @@
         roster'а посреди сессии)
       - BannerCraft (замещает часть notable interaction VM)
       - BetterSmithingContinued (override smith dialog branch'ей)
+    zh: |
+      Bannerlord 的对话系统在 VM MissionConversationVM 的 ExecuteContinue 内部
+      崩溃，Inner message 为 "Object reference not set to an instance of an
+      object."。这是对话状态机半初始化的症状：某个战役行为在读取一个不再存活的
+      Hero/CharacterObject 引用（要人在对话途中被移除），或者缺失的语音资源把
+      对话分支引向了空代码路径。
+
+      常与 "Voice object for text id is not found: <id>" 这类行一同出现——缺失语音
+      可能是翻译层的问题（TOR_RU_Translation、社区翻译包），但很少是根源。根源
+      通常是某个修补 Conversation* 类的模组：
+      - CharacterReload（已知会在游戏途中加载已保存的名册时破坏对话流程）
+      - BannerCraft（替换了部分要人交互 VM）
+      - BetterSmithingContinued（覆盖了铁匠对话分支）
+    tr: |
+      Bannerlord'un diyalog sistemi, VM MissionConversationVM üzerindeki
+      ExecuteContinue içinde, Inner mesaj "Object reference not set to an instance
+      of an object." ile çöktü. Yarı başlatılmış bir diyalog durum makinesinin
+      belirtisi: bir sefer davranışı artık yaşamayan bir Hero/CharacterObject
+      referansını okuyor (önemli kişi diyalog ortasında kaldırıldı) ya da eksik
+      bir ses varlığı diyalog dalını boş bir kod yoluna sokuyor.
+
+      Sıklıkla "Voice object for text id is not found: <id>" satırlarıyla birlikte
+      görülür — eksik ses, çeviri katmanı sorunu olabilir (TOR_RU_Translation,
+      topluluk çeviri paketleri) ama nadiren kök nedendir. Kök neden genellikle
+      Conversation* sınıflarını yamalayan bir moddur:
+      - CharacterReload (oturum ortasında kaydedilmiş bir kadro yüklenirken
+        diyalog akışını bozduğu bilinir)
+      - BannerCraft (bazı önemli kişi etkileşim VM'lerini değiştirir)
+      - BetterSmithingContinued (demirci diyalog dallarını geçersiz kılar)
   fix:
     en:
       - "Reload an earlier save (before the conversation that crashed) and try a different action — if it works, the conversation context is poisoned, not the build."
@@ -56,6 +87,18 @@
       - "Обнови подозрительные моды до свежих версий — в конце 2025 много фиксов conversation-патчеров."
       - "Поставь BLSE + BetterExceptionWindow если их нет. Следующий NRE назовёт патчер в managed-стеке."
       - "Если Voice object ошибки повторяются на одном NPC — переподпишись на TOR_RU_Translation (или свой translation pack), voice index файл может быть обрезан."
+    zh:
+      - "读取更早的存档（在崩溃的那段对话之前），换一个动作试试——如果可行，那是这段具体对话的上下文被破坏了，不是整个构建的问题。"
+      - "逐个禁用 CharacterReload、BannerCraft、BetterSmithingContinued 并复测。少了哪个模组对话能正常结束，哪个就是元凶。"
+      - "把可疑模组更新到最新版本——2025 年底为多个对话补丁模组发布了修复。"
+      - "如果没装 BLSE + BetterExceptionWindow 就装上。下一次空引用会在托管堆栈里指出是哪个补丁。"
+      - "如果同一个 NPC 反复出现 Voice object 错误——重新订阅 TOR_RU_Translation（或你的翻译包），语音索引文件可能被截断了。"
+    tr:
+      - "Daha eski bir kaydı yükle (çöken diyalogdan önce) ve farklı bir eylem dene — işe yararsa belirli diyaloğun bağlamı bozulmuş, yapı değil."
+      - "CharacterReload, BannerCraft, BetterSmithingContinued'i teker teker devre dışı bırak ve tekrar oyna. Yokluğunda diyaloğun sonuna kadar gittiği mod suçludur."
+      - "Şüpheli modları en son sürüme güncelle — 2025'in sonunda birkaç diyalog yamalayıcısı için düzeltmeler geldi."
+      - "Yoksa BLSE + BetterExceptionWindow kur. Bir sonraki boş referans, yönetilen yığında yamayı adlandıracak."
+      - "Aynı NPC için Voice object hataları kalıcıysa — TOR_RU_Translation'a (veya çeviri paketine) yeniden abone ol, ses dizini dosyası kesik olabilir."
   match:
     all:
       - log_line:
@@ -75,6 +118,8 @@
   title:
     en: "Bannerlord is rendering on integrated GPU (rgl_log Selected adapter)"
     ru: "Bannerlord рендерится на встроенной видеокарте (Selected adapter в rgl_log)"
+    zh: "Bannerlord 正在用集成显卡渲染（rgl_log 的 Selected adapter）"
+    tr: "Bannerlord tümleşik GPU üzerinde render ediyor (rgl_log Selected adapter)"
   description:
     en: |
       Bannerlord's rgl_log records "Selected graphics adapter: [N] <name>" on
@@ -102,6 +147,32 @@
 
       Если у машины ЕСТЬ дискретная GPU — Windows / драйвер / провод монитора
       форсит iGPU. Несколько способов починить ниже.
+    zh: |
+      Bannerlord 的 rgl_log 每次启动都会写下 "Selected graphics adapter:
+      [N] <name>"——这是“哪块 GPU 在渲染”的权威答案，与 DxDiag 在 crash_tags.txt 里
+      如何排列 Display Devices 无关。
+
+      在这次崩溃中，被选中的适配器是一块集成芯片（Intel UHD/HD/Iris/Xe 核显、
+      AMD Radeon Graphics/Vega、Apple）。在 1080p 下搭配 TOR + 重型模组，预计会在
+      着色器编译、加载大型战斗、或第一次复杂特效（法术、火焰、血液）时崩溃。不带 TOR
+      的原版在 Low 画质下也许能跑。
+
+      如果你的机器有独立显卡，那是 Windows / 驱动 / 显示器接线把核显强制选上了。
+      下面有几个开关可以调。
+    tr: |
+      Bannerlord'un rgl_log'u her başlatmada "Selected graphics adapter:
+      [N] <name>" yazar — bu, "hangi GPU render ediyor" sorusunun kesin cevabıdır
+      ve DxDiag'in crash_tags.txt içinde Display Devices'ı nasıl sıraladığından
+      bağımsızdır.
+
+      Bu çökmede seçilen adaptör tümleşik bir yongadır (Intel UHD/HD/Iris/Xe
+      iGPU, AMD Radeon Graphics/Vega, Apple). 1080p'de TOR + ağır modlarla,
+      gölgelendirici derlemesinde, büyük görev yüklemesinde ya da ilk karmaşık
+      VFX'te (büyüler, ateş, kan) çökmeler bekle. TOR'suz orijinal oyun, Düşük
+      kalitede çalışabilir.
+
+      Makinende ayrı bir GPU VARSA, Windows / sürücü / monitör kablolaması iGPU'yu
+      zorluyor demektir. Aşağıda birkaç ayar var.
   fix:
     en:
       - "Check if your laptop has a dedicated GPU: Win+R → dxdiag → Display tab — there should be a 'Display Devices 1' with NVIDIA/AMD/Radeon RX/Arc (NOT 'Radeon Graphics' which is the iGPU)."
@@ -117,6 +188,20 @@
       - "Подключи внешний монитор в выход ДИСКРЕТКИ, не в iGPU-порт. У многих ноутбуков iGPU держит внутренний экран, а HDMI/DP идёт через дискретку."
       - "Отключи режим экономии заряда — ноутбук агрессивно паркует дискретку на батарее."
       - "Нет дискретки вообще: TOR на iGPU нежизнеспособен. Играй ванильный Bannerlord на Low или выбирай лёгкий мод-набор."
+    zh:
+      - "确认你的笔记本是否有独立显卡：Win+R → dxdiag → 显示选项卡——应该有一个带 NVIDIA/AMD/Radeon RX/Arc 的 'Display Devices 1'（不是 'Radeon Graphics'，那是核显）。"
+      - "强制 Bannerlord 用独显：设置 → 系统 → 显示 → 图形 → 添加 Bannerlord.exe → “高性能”。NVIDIA 控制面板 → 管理 3D 设置 → 程序设置 → Bannerlord → “高性能 NVIDIA 处理器”。"
+      - "游戏内：选项 → 图形 → 第一个选项卡 → 显示适配器 → 选独显。如果没有这个选项——编辑 Documents\\Mount and Blade II Bannerlord\\Configs\\engine_config.txt，把 graphics_adapter 从 0 改为 1，保存，重启。"
+      - "把外接显示器插到独显的输出口，而不是核显的接口。很多笔记本上核显接管内置屏幕，而 HDMI/DP 走独显。"
+      - "玩的时候关掉省电模式——笔记本在电池供电时会激进地停用独显。"
+      - "完全没有独显：TOR 在核显上不可行。在 Low 画质下玩原版 Bannerlord，或选一套更轻的模组。"
+    tr:
+      - "Dizüstünde özel bir GPU olup olmadığını kontrol et: Win+R → dxdiag → Display sekmesi — NVIDIA/AMD/Radeon RX/Arc içeren bir 'Display Devices 1' olmalı (iGPU olan 'Radeon Graphics' DEĞİL)."
+      - "Bannerlord'u dGPU'ya zorla: Ayarlar → Sistem → Ekran → Grafikler → Bannerlord.exe ekle → 'Yüksek performans'. NVIDIA Denetim Masası → 3B ayarlarını yönet → Program Ayarları → Bannerlord → 'Yüksek performanslı NVIDIA işlemci'."
+      - "Oyun içi: Seçenekler → Grafikler → ilk sekme → Grafik Adaptörü → dGPU'yu seç. Seçenek yoksa — Documents\\Mount and Blade II Bannerlord\\Configs\\engine_config.txt dosyasında graphics_adapter'ı 0'dan 1'e değiştir, kaydet, yeniden başlat."
+      - "Harici monitörünü iGPU portuna değil, dGPU çıkışına tak. Birçok dizüstüde iGPU dahili ekrana sahiptir, HDMI/DP ise dGPU üzerinden gider."
+      - "Oynarken pil tasarrufu modunu kapat — dizüstüler pilde dGPU'yu agresif şekilde park eder."
+      - "Hiç dGPU yoksa: TOR iGPU'da uygulanabilir değil. Orijinal Bannerlord'u Düşük kalitede çalıştır ya da daha hafif bir mod yığını seç."
   match:
     all:
       - log_line:
@@ -131,6 +216,8 @@
   title:
     en: "Engine team-index storm (combat-mod adds invalid team to mission)"
     ru: "Шторм SCRIPT ERROR по team-индексу (combat-мод добавляет невалидную команду)"
+    zh: "引擎队伍索引风暴（战斗模组向战斗添加了无效的 team）"
+    tr: "Motor takım-indeksi fırtınası (savaş modu savaşa geçersiz takım ekliyor)"
   description:
     en: |
       Bannerlord's mission engine spammed "Condition not satisfied:
@@ -162,6 +249,34 @@
       Сами ошибки в краш не уронят — это симптомы. Реальный краш приходит
       когда следующая система пытается действовать на эту битую команду
       (pathfinding, отрисовка знамени, formation order, spawn resolver).
+    zh: |
+      Bannerlord 的战斗引擎在崩溃前刷了几十次 "Condition not satisfied:
+      IMono_MBTeam::is_enemy: other_team_index_invalid!"。引擎被要求为一个索引
+      没有注册在战斗 team 表里的 Team 计算敌对关系。
+
+      这几乎总是某个模组的副作用：一个战斗 / 对战模组没有通过 Mission.Teams.Add
+      注册就向战斗里加了一个额外的 Team，或者在 AI/UI 逻辑仍持有一个过时引用时
+      移除了某个 team。历史上的头号嫌疑：战斗大改模组（RBM 及其分支）、自定义
+      势力模组、自己脚本化匪徒 / 敌对 team 的 AI 模组。TOR 本身是干净的。
+
+      这些错误本身不会导致崩溃——它们是症状。真正的崩溃通常发生在下一个系统
+      试图对这个坏掉的 team 进行操作时（寻路、旗帜绘制、编队命令、生成解析器）。
+    tr: |
+      Bannerlord'un görev motoru çökmeden önce "Condition not satisfied:
+      IMono_MBTeam::is_enemy: other_team_index_invalid!" mesajını onlarca kez
+      spamledi. Motordan, indeksi görevin takım tablosunda kayıtlı olmayan bir
+      Team için düşmanlık değerlendirmesi yapması isteniyor.
+
+      Neredeyse her zaman bir mod yan etkisidir: bir savaş/dövüş modu görevde
+      Mission.Teams.Add üzerinden kayıt yapmadan fazladan bir Team ekler ya da
+      AI/UI mantığı hâlâ eski bir referans tutarken bir takımı kaldırır. Tarihsel
+      başlıca suçlular: savaş elden geçirme modları (RBM ve türevleri), özel hizip
+      modları, kendi haydut/düşman takımlarını betikle oluşturan AI modları. TOR'un
+      kendisi temiz.
+
+      Hatalar tek başına çökmeye yol açmaz — bunlar belirtilerdir. Asıl çökme,
+      genellikle bir sonraki sistem bozuk takım üzerinde işlem yapmaya
+      çalıştığında gelir (yol bulma, sancak çizimi, düzen emri, doğuş çözücü).
   fix:
     en:
       - "Disable combat-overhaul mods one at a time and replay the same battle: RBM (Realistic Battle Mod), PartialParry, UnblockableThrust, BannerCraft, custom-faction mods. The mod whose removal silences the storm is the culprit."
@@ -173,6 +288,16 @@
       - "Обнови подозрительные моды до свежих версий — в 2025 много фиксов вокруг team registration."
       - "Если стабильно воспроизводится — поставь BLSE + BetterExceptionWindow до следующей попытки. Managed-стек назовёт патчер."
       - "Найдя битый мод — отдай автору bundle с крашем."
+    zh:
+      - "逐个禁用战斗大改模组并重打同一场战斗：RBM（Realistic Battle Mod）、PartialParry、UnblockableThrust、BannerCraft、自定义势力。移除后能平息这场风暴的那个模组就是元凶。"
+      - "把可疑模组更新到最新版本——2025 年围绕 team 注册有很多修复。"
+      - "如果能稳定复现：下次尝试前安装 BLSE + BetterExceptionWindow。托管堆栈会指出是哪个补丁。"
+      - "确认坏掉的模组后：连同崩溃数据包一起反馈给模组作者。"
+    tr:
+      - "Savaş elden geçirme modlarını teker teker devre dışı bırak ve aynı savaşı tekrar oyna: RBM (Realistic Battle Mod), PartialParry, UnblockableThrust, BannerCraft, özel hizipler. Kaldırılması fırtınayı susturan mod suçludur."
+      - "Şüpheli modları en son sürüme güncelle — 2025'te takım kaydı etrafında birçok düzeltme geldi."
+      - "Güvenilir şekilde tekrarlanabiliyorsa — bir sonraki denemeden önce BLSE + BetterExceptionWindow kur. Yönetilen yığın yamayı adlandıracak."
+      - "Bozuk modu belirledikten sonra: çökme paketiyle birlikte mod yazarına bildir."
   match:
     all:
       - log_line:
@@ -187,6 +312,8 @@
   title:
     en: "Bannerlord's own integrity check failed"
     ru: "Внутренняя проверка целостности Bannerlord провалилась"
+    zh: "Bannerlord 自带的完整性检查未通过"
+    tr: "Bannerlord'un kendi bütünlük denetimi başarısız oldu"
   description:
     en: |
       Bannerlord's crash dumper recorded `Game Integrity is Achieved = False`.
@@ -208,6 +335,24 @@
 
       В любом случае разбирается человек; авто-пайплайн TaleWorlds не
       возьмёт.
+    zh: |
+      Bannerlord 的崩溃转储器记录了 `Game Integrity is Achieved = False`。引擎的
+      自检发现当前的构建状态不是一个干净的原版安装。如果同一个 crash_tags 块里
+      还有非官方模块，那么这个标记是信息性的、也是预期之中的——TaleWorlds 会自动
+      拒绝带模组的崩溃报告。如果没有非官方模块，则意味着某个原版文件被替换了，
+      或者版本不匹配。
+
+      无论哪种情况，都得由支持人员自己来分诊；TaleWorlds 的自动流水线不会处理它。
+    tr: |
+      Bannerlord'un çökme döküntüsü `Game Integrity is Achieved = False` kaydetti.
+      Motorun öz denetimi, yapı durumunun temiz bir orijinal kurulum olmadığını
+      fark etti. Aynı crash_tags bloğunda resmi olmayan modüller varsa, bu bayrak
+      bilgilendiricidir ve beklenir — TaleWorlds modlu çökme raporlarını otomatik
+      olarak reddeder. Resmi olmayan modüller yoksa, orijinal bir dosyanın
+      değiştirildiği veya sürümün uyuşmadığı anlamına gelir.
+
+      Her durumda, bunu destek ekibinin kendisi incelemelidir; TaleWorlds'ün
+      otomatik hattı ona dokunmaz.
   fix:
     en:
       - "If you have mods (you do — check 'Used Modules' in evidence): the flag is normal, don't worry. Send the bundle to t.me/CodeRickTg, the support team handles modded crashes."
@@ -217,6 +362,14 @@
       - "Если есть моды (они в evidence в 'Used Modules' перечислены) — флаг нормальный, не волнуйся. Отправь bundle в t.me/CodeRickTg, поддержка занимается модовыми крэшами."
       - "Если модов НЕТ и всё равно видишь — Steam Verify integrity (ловит подменённые ванильные файлы), потом переустанови overlay-инструменты (NVIDIA Filters, Reshade, MSI Afterburner OSD)."
       - "Карточка «SHA-256 integrity check» в Crash Doctor → Tune-Up ловит порчу со стороны модов, которую Steam Verify пропускает."
+    zh:
+      - "如果你装了模组（你确实装了——查看 evidence 里的 'Used Modules'）：这个标记是正常的，别担心。把数据包发到 t.me/CodeRickTg，支持团队会处理带模组的崩溃。"
+      - "如果你没装模组却仍看到这个：用 Steam 验证文件完整性（能发现被替换的原版文件），然后重新安装任何有冲突的叠加层工具（NVIDIA Filters、Reshade、MSI Afterburner OSD）。"
+      - "Crash Doctor → Tune-Up 里的 'SHA-256 integrity check' 卡片能发现 Steam 验证漏掉的模组端损坏。"
+    tr:
+      - "Modların varsa (var — evidence'taki 'Used Modules'a bak): bayrak normaldir, endişelenme. Paketi t.me/CodeRickTg adresine gönder, destek ekibi modlu çökmelerle ilgilenir."
+      - "Modların YOKSA ve hâlâ görüyorsan: Steam bütünlük doğrulaması yap (değiştirilmiş orijinal dosyaları yakalar), sonra çakışan kaplama araçlarını yeniden kur (NVIDIA Filters, Reshade, MSI Afterburner OSD)."
+      - "Crash Doctor → Tune-Up'taki 'SHA-256 integrity check' kartı, Steam doğrulamasının kaçırdığı mod tarafı bozulmaları yakalar."
   match:
     all:
       - crash_tag:
@@ -232,6 +385,8 @@
   title:
     en: "Heavy mod stack on top of TOR (20+ mods loaded)"
     ru: "Тяжёлый мод-стек поверх TOR (загружено 20+ модов)"
+    zh: "在 TOR 之上的重型模组堆叠（加载了 20+ 个模组）"
+    tr: "TOR üzerinde ağır mod yığını (20+ mod yüklü)"
   description:
     en: |
       You have 20+ unofficial modules active alongside TOR. TOR alone overrides
@@ -255,6 +410,25 @@
       а «половинь модлист и перепроверь». Каталог паттернов Crash Doctor
       рассчитан на относительно чистую TOR-установку; на тяжёлом стеке
       false-negative'ов больше.
+    zh: |
+      你和 TOR 一起激活了 20+ 个非官方模块。仅 TOR 一个就通过 Harmony 覆盖了 18 个
+      游戏模型、修补了 40+ 个原版类；在它之上的战斗 / 升级 / 锻造模组会争夺同一片
+      补丁面，并经常在战斗途中的代码里输掉竞态。
+
+      这本身不是崩溃——只是信息提示。但是：当一个无法识别的崩溃出现在 20 个模组的
+      堆叠上时，排查的套路是“把模组列表减半再重跑”，而不是去追某个具体症状。Crash
+      Doctor 的模式目录假定的是一个相对干净的 TOR 安装；在重型堆叠之上，漏报会增多。
+    tr: |
+      TOR'un yanında 20+ resmi olmayan modül aktif. TOR tek başına Harmony
+      aracılığıyla 18 oyun modelini geçersiz kılar ve 40+ orijinal sınıfı yamalar;
+      bunun üzerindeki savaş / seviye / demircilik modları aynı yama yüzeyi için
+      yarışır ve görev ortası kodunda sık sık yarış durumlarını kaybeder.
+
+      Tek başına bir çökme değil — bilgilendiricidir. Ama: tanınmayan bir çökme
+      20 modluk bir yığında ortaya çıktığında, sorun giderme yöntemi belirli bir
+      belirtiyi kovalamak değil "mod listesini yarıya indir ve yeniden çalıştır"
+      olur. Crash Doctor'ın desen kataloğu nispeten temiz bir TOR kurulumunu
+      varsayar; ağır bir mod yığını üzerinde yanlış-negatifler artar.
   fix:
     en:
       - "Halve-the-mod-list debugging: disable half of your non-TOR mods (combat, leveling, smithing groups). Replay the crash scenario. If it doesn't crash — re-enable half of those, repeat. Binary search finds the culprit in log2(N) attempts."
@@ -264,6 +438,14 @@
       - "Половинь-мод-лист дебаг: отключи половину non-TOR модов (combat, leveling, smithing группы). Повтори сценарий краша. Если не падает — включи половину обратно, повтори. Binary search найдёт виновника за log2(N) попыток."
       - "Главные подозреваемые если краш в бою: combat-overhaul'ы (RBM, PartialParry, UnblockableThrust). Если краш в диалоге/инвентаре: CharacterReload, BannerCraft, BetterSmithingContinued."
       - "Если на binary search нет времени — отправь crash bundle в t.me/CodeRickTg с полным module list. Разберут на месте."
+    zh:
+      - "二分法排查：禁用一半非 TOR 的模组（战斗、升级、锻造这些组）。重现崩溃场景。如果不崩——把那一半重新启用，再重复。二分查找能在 log2(N) 次尝试内找到元凶。"
+      - "崩溃发生在战斗中时的头号嫌疑：战斗大改（RBM、PartialParry、UnblockableThrust）。崩溃发生在对话 / 物品栏时的头号嫌疑：CharacterReload、BannerCraft、BetterSmithingContinued。"
+      - "如果没时间做二分查找——把崩溃数据包连同完整的模块列表发到 t.me/CodeRickTg。那边会帮你分诊。"
+    tr:
+      - "İkili-arama hata ayıklaması: TOR olmayan modlarının yarısını devre dışı bırak (savaş, seviye, demircilik grupları). Çökme senaryosunu tekrarla. Çökmüyorsa — o yarının yarısını yeniden etkinleştir, tekrarla. İkili arama suçluyu log2(N) denemede bulur."
+      - "Çökme savaş ortasındaysa başlıca şüpheliler: savaş elden geçirmeleri (RBM, PartialParry, UnblockableThrust). Çökme diyalog/envanterdeyse: CharacterReload, BannerCraft, BetterSmithingContinued."
+      - "İkili arama için vaktin yoksa — çökme paketini tam modül listesiyle t.me/CodeRickTg adresine gönder. Orada incelenir."
   match:
     all:
       - module_list: { id: "TOR_Core", has: "true" }
@@ -284,6 +466,8 @@
   title:
     en: "Governor-change crash on daily tick (Bannerlord 1.2.7 era)"
     ru: "Краш на смене губернатора в daily tick (Bannerlord 1.2.7)"
+    zh: "每日 tick 时更换总督崩溃（Bannerlord 1.2.7 时期）"
+    tr: "Günlük tick'te vali değişimi çökmesi (Bannerlord 1.2.7 dönemi)"
   description:
     en: |
       KingdomGovernorChange / OnGovernorChanged throws on daily tick. This is a
@@ -297,6 +481,17 @@
       decision pipeline читает ссылку на губернатора до её привязки. Исправлено
       в 1.3.x. Если игрок уже на 1.3.x и всё равно ловит — корень в моде,
       патчащем kingdom-decision flow со старыми допущениями.
+    zh: |
+      KingdomGovernorChange / OnGovernorChanged 在每日 tick 时抛出异常。这是
+      Bannerlord 1.2.7（Naval DLC 构建）中一个已知的回归缺陷，王国决策流程在
+      总督引用尚未接好之前就读取了它。已在 1.3.x 中修复。如果用户已经在 1.3.x 上
+      还遇到，根源就是某个用过时假设修补王国决策流程的模组。
+    tr: |
+      KingdomGovernorChange / OnGovernorChanged günlük tick'te hata fırlatır. Bu,
+      Bannerlord 1.2.7'de (Naval DLC yapısı) krallık karar hattının bir vali
+      referansını bağlanmadan önce okuduğu bilinen bir regresyondur. 1.3.x'te
+      düzeltildi. Kullanıcı 1.3.x'te ve hâlâ görüyorsa, kök neden krallık karar
+      akışını eski varsayımlarla yamalayan bir moddur.
   fix:
     en:
       - "Update Bannerlord to 1.3.x (1.2.7 has known governor-flow bugs)."
@@ -306,6 +501,14 @@
       - "Обнови Bannerlord до 1.3.x (в 1.2.7 известные баги governor-flow)."
       - "Если уже на 1.3.x — отключай по одному моды, патчащие kingdom decisions (старая Diplomacy, BannerKings)."
       - "Workaround: загрузи сейв и проскочи 1 день на карте — крашащееся решение часто пропадает на следующем тике."
+    zh:
+      - "把 Bannerlord 更新到 1.3.x（1.2.7 有已知的总督流程缺陷）。"
+      - "如果已经在 1.3.x 上——逐个禁用修补王国决策的模组（旧版 Diplomacy、BannerKings）。"
+      - "临时办法：读取存档并在地图上跳过 1 天；导致崩溃的那个决策往往会在下一个 tick 消失。"
+    tr:
+      - "Bannerlord'u 1.3.x'e güncelle (1.2.7'de bilinen vali-akışı hataları var)."
+      - "Zaten 1.3.x'teysen — krallık kararlarını yamalayan modları teker teker devre dışı bırak (eski Diplomacy sürümleri, BannerKings)."
+      - "Geçici çözüm: kaydı yükle ve haritada 1 gün atla; çöken karar genellikle bir sonraki tick'te kaybolur."
   match:
     all:
       - any:

@@ -2,6 +2,8 @@
   title:
     en: "Move Windows TEMP to a bigger drive"
     ru: "Перенести Windows TEMP на свободный диск"
+    zh: "将 Windows TEMP 移到更大的磁盘"
+    tr: "Windows TEMP'i daha büyük bir sürücüye taşı"
   description:
     en: |
       Windows TEMP (C:\Users\<you>\AppData\Local\Temp) lives on the system
@@ -53,6 +55,56 @@
       закрытия одного Bannerlord недостаточно.
 
       Откатываемо: Rollback вернёт прежнее значение TMP/TEMP.
+    zh: |
+      Windows TEMP（C:\Users\<你>\AppData\Local\Temp）位于系统盘上。
+      Bannerlord 的着色器编译器在 'Build Shader Cache' 期间以及运行时
+      着色器重新编译期间会把中间文件写到那里。在容量紧张的系统盘上，
+      这会因磁盘空间不足而失败，表现为 'pdb append failed' /
+      'debug info append failed' / 着色器 OOM 崩溃 —— 看起来像着色器
+      bug，实际上意味着 TEMP 已满。
+
+      这张卡片在以下情况出现：
+        1. 存放 %TEMP% 的磁盘可用空间 < 40 GB。
+        2. 另一个固定磁盘可用空间 100+ GB（自动选取最大的）。
+
+      应用会：
+        1. 创建 <更大的磁盘>:\Temp\<你的用户名>。
+        2. 把 HKCU\Environment 中的 TMP 和 TEMP 更新为新路径。
+           仅针对当前用户的更改 —— 系统范围的 TEMP（HKLM）不会被触碰，
+           不需要管理员权限。
+        3. 旧的 %TEMP% 文件夹保持不动（由 Windows 管理）。
+
+      应用后必做：注销 Windows（或重启）。该更改只对新的登录会话生效。
+      在当前会话中启动的 Bannerlord 仍然使用旧的 TEMP —— 仅关闭
+      Bannerlord 是不够的。
+
+      可撤销：回退会还原之前的 TMP/TEMP 值。
+    tr: |
+      Windows TEMP (C:\Users\<sen>\AppData\Local\Temp) sistem sürücüsünde bulunur.
+      Bannerlord'un gölgelendirici derleyicisi 'Build Shader Cache' sırasında ve
+      çalışma zamanı gölgelendirici yeniden derlemeleri sırasında ara dosyaları oraya
+      yazar. Dar bir sistem sürücüsünde bu, 'pdb append failed' / 'debug info append
+      failed' / gölgelendirici OOM çökmeleri olarak ortaya çıkan disk-yetersiz hatalarıyla
+      başarısız olur — gölgelendirici hatası gibi görünürler ama aslında TEMP'in dolu
+      olduğu anlamına gelir.
+
+      Bu kart şu durumlarda ortaya çıkar:
+        1. %TEMP%'i barındıran sürücüde 40 GB'tan az boş alan var.
+        2. Başka bir sabit sürücüde 100+ GB boş alan var (en boş olanı otomatik seçer).
+
+      Uygula şunları yapar:
+        1. <DahaBüyükSürücü>:\Temp\<kullanıcı adınız> oluşturur.
+        2. HKCU\Environment içindeki TMP ve TEMP değerlerini yeni yola günceller.
+           Yalnızca KULLANICI başına değişiklik — sistem genelindeki TEMP (HKLM) dokunulmaz,
+           yönetici hakları gerekmez.
+        3. Eski %TEMP% klasörü olduğu gibi bırakılır (onu Windows yönetir).
+
+      Uygula'dan sonra ZORUNLU: Windows'tan OTURUMU KAPAT (ya da yeniden başlat). Değişiklik
+      yalnızca YENİ oturum açma oturumları için geçerli olur. Mevcut oturumda başlatılan
+      Bannerlord eski TEMP'i kullanmaya devam eder — yalnızca Bannerlord'u kapatmak yeterli
+      değildir.
+
+      Geri alınabilir: Geri Al, önceki TMP/TEMP değerini geri yükler.
   details:
     en:
       - "Source: HKCU\\Environment\\TEMP (or %USERPROFILE%\\AppData\\Local\\Temp if unset)"
@@ -68,3 +120,17 @@
       - "Откатываемо: Rollback запишет прежнее значение."
       - "После «Применить»: нужен выход из Windows (или перезагрузка) для применения нового TEMP."
       - "Карточка прячется, когда на диске с TEMP 40+ ГБ свободно или ни на одном другом диске нет 100+ ГБ."
+    zh:
+      - "来源：HKCU\\Environment\\TEMP（若未设置则为 %USERPROFILE%\\AppData\\Local\\Temp）"
+      - "目标：<大磁盘>:\\Temp\\<用户名>"
+      - "仅针对用户：HKLM（系统范围的 TEMP）不会被触碰。不需要管理员权限。"
+      - "可撤销：回退会写回之前的值。"
+      - "应用后：需要注销 Windows（或重启）才能使新的 TEMP 生效。"
+      - "当 TEMP 所在磁盘有 40+ GB 可用空间，或没有其他磁盘有 100+ GB 可用空间时，卡片会隐藏。"
+    tr:
+      - "Kaynak: HKCU\\Environment\\TEMP (ayarlı değilse %USERPROFILE%\\AppData\\Local\\Temp)"
+      - "Hedef: <BüyükSürücü>:\\Temp\\<kullanıcı adı>"
+      - "Yalnızca kullanıcı başına: HKLM (sistem genelindeki TEMP) dokunulmaz. Yönetici hakları gerekmez."
+      - "Geri alınabilir: Geri Al, önceki değeri geri yazar."
+      - "Uygula'dan sonra: yeni TEMP'in geçerli olması için Windows oturum kapatma (ya da yeniden başlatma) gerekir."
+      - "TEMP sürücüsünde 40+ GB boş alan olduğunda ya da başka hiçbir sürücüde 100+ GB boş alan olmadığında kart gizlenir."

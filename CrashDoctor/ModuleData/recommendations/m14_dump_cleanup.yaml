@@ -2,6 +2,8 @@
   title:
     en: "Clean up old crash dumps"
     ru: "Очистить старые крэш-дампы"
+    zh: "清理旧的崩溃转储"
+    tr: "Eski çökme dökümlerini temizle"
   description:
     en: |
       Each Bannerlord crash leaves a folder with a 0.5–1.5 GB minidump and log files
@@ -11,6 +13,14 @@
       Каждый краш Bannerlord оставляет папку с минидампом 0.5–1.5 ГБ и логами в
       ProgramData\Mount and Blade II Bannerlord\crashes\. Со временем они съедают
       десятки ГБ места и тормозят загрузку.
+    zh: |
+      Bannerlord 每次崩溃都会在 ProgramData\Mount and Blade II Bannerlord\crashes\
+      下留下一个文件夹，里面有 0.5–1.5 GB 的小型转储和日志文件。时间一长这些会占用
+      几十 GB 的磁盘空间并拖慢加载。
+    tr: |
+      Bannerlord her çökmesinde ProgramData\Mount and Blade II Bannerlord\crashes\
+      altında 0.5–1.5 GB'lık bir mini döküm ve günlük dosyaları içeren bir klasör
+      bırakır. Zamanla bunlar onlarca GB disk alanı yer ve yüklemeyi yavaşlatır.
   details:
     en:
       - "The 3 most recent crash folders are kept for diagnostic continuity."
@@ -20,3 +30,11 @@
       - "Последние 3 папки крашей сохраняются — на случай если понадобятся для диагностики."
       - "Остальные уезжают в корзину Windows и могут быть восстановлены оттуда."
       - "Перезагрузка не нужна."
+    zh:
+      - "保留最近的 3 个崩溃文件夹，以备诊断之需。"
+      - "较旧的文件夹会进入 Windows 回收站，可从那里恢复。"
+      - "无需重启。"
+    tr:
+      - "Tanılama sürekliliği için en yeni 3 çökme klasörü saklanır."
+      - "Daha eski klasörler Windows Geri Dönüşüm Kutusu'na gider ve oradan geri getirilebilir."
+      - "Yeniden başlatma gerekmez."

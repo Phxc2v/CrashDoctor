@@ -2,6 +2,8 @@
   title:
     en: "Free up disk space (system + install drive)"
     ru: "Освободить место на дисках (системный + диск с игрой)"
+    zh: "释放磁盘空间（系统盘 + 安装盘）"
+    tr: "Disk alanı boşalt (sistem + kurulum sürücüsü)"
   description:
     en: |
       Bannerlord with TOR needs serious headroom: 50+ GB on C: for shader compile + pagefile
@@ -13,6 +15,16 @@
       шейдеров + рост pagefile, плюс 20+ ГБ на диске где стоит игра для самого кэша
       шейдеров. Если место кончится во время «Build Shader Cache» — каскад
       «out of memory during compilation» и битые сейвы.
+    zh: |
+      装了 TOR 的 Bannerlord 需要充足的余量：C: 盘 50+ GB 用于着色器编译和页面文件增长，
+      再加上游戏安装盘 20+ GB 用于着色器缓存本身。在「Build Shader Cache」期间用尽空间
+      会导致「out of memory during compilation」连锁错误和损坏的存档。
+    tr: |
+      TOR'lu Bannerlord ciddi bir boşluk ister: gölgelendirici derlemesi ve sayfa
+      dosyası büyümesi için C: üzerinde 50+ GB, ayrıca gölgelendirici önbelleğinin
+      kendisi için oyunun kurulu olduğu sürücüde 20+ GB. «Build Shader Cache»
+      sırasında alan tükenirse «out of memory during compilation» zincirleri ve
+      bozuk kayıt dosyaları ortaya çıkar.
   details:
     en:
       - "Apply opens Windows Disk Cleanup — Crash Doctor doesn't touch user files itself."
@@ -24,3 +36,13 @@
       - "Почисти Временные файлы, старые обновления Windows, Корзину."
       - "Steam → Bannerlord → Свойства → Установленные файлы → Проверить целостность тоже может освободить осиротевший кэш шейдеров."
       - "Пересканируй Crash Doctor когда закончишь."
+    zh:
+      - "「应用」会打开 Windows 磁盘清理 — Crash Doctor 本身不碰用户文件。"
+      - "清理临时文件、旧的 Windows 更新、回收站。"
+      - "Steam → Bannerlord → 属性 → 已安装文件 → 验证完整性 也可能释放孤立的着色器缓存。"
+      - "完成后重新扫描 Crash Doctor。"
+    tr:
+      - "«Uygula» Windows Disk Temizleme'yi açar — Crash Doctor kullanıcı dosyalarına kendisi dokunmaz."
+      - "Geçici dosyaları, eski Windows güncellemelerini ve Geri Dönüşüm Kutusu'nu temizle."
+      - "Steam → Bannerlord → Özellikler → Kurulu Dosyalar → Bütünlüğü doğrula da artık kalmış gölgelendirici önbelleğini boşaltabilir."
+      - "Bitirdiğinde Crash Doctor'u yeniden tara."

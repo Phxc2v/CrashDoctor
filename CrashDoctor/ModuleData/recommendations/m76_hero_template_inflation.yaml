@@ -2,6 +2,8 @@
   title:
     en: "Hero template inflation (mod-spawned NPC bloat)"
     ru: "Перебор героев по шаблону (распухание от модных NPC)"
+    zh: "英雄模板膨胀（模组生成的 NPC 膨胀）"
+    tr: "Kahraman şablonu şişmesi (mod kaynaklı NPC şişmesi)"
   description:
     en: |
       Surfaces when a single CharacterObject template has more than 100
@@ -63,6 +65,59 @@
       После этого Save Cleaner обнулит все ссылки на этих героев и
       запишет отдельный «CrashDoctor_cleaned_*» сейв; твой исходный
       сейв на диске не трогается. Загрузишь чистый через Load Game.
+    zh: |
+      当某个 CharacterObject 模板在已加载的战役中拥有超过 100 个存活的
+      Hero 实例时，这张卡片会出现。这是由那些 HourlyTickParty 钩子无上限地
+      生成新 Hero 的模组所导致的后期模式——最明显的是 LoreHardcore 的绿皮
+      招募逻辑，但这种故障模式与具体模板无关。
+
+      为什么重要：每个 Hero 都会带上自己的 Equipment，从而加载（并固定）
+      一套独特的 GPU 纹理。一旦着色器缓存无法把它们全部驻留，游戏就会在
+      渲染器内部以 0xC0000005 开始崩溃——通常是在一次快进每日 tick 之后的
+      几秒钟内。存档本身能正常加载；损害在游戏过程中累积，只有当缓存溢出时
+      才会爆发。那些移除了肇事模组并在同一存档上继续游戏的玩家报告不再崩溃
+      ——这就证实了模组是源头。
+
+      扫描器做什么：按 CharacterObject.StringId 对 Hero.AllAliveHeroes 分组，
+      将玩家 / 玩家氏族 / 显要人物排除在计数之外，并报告任何超过阈值的模板。
+      如果没有模板出问题，卡片保持 Healthy。
+
+      清理器做什么（当你在 Save Health 面板中按下 Clean 时）：对每个超过阈值
+      的模板，保持前 20 个 Hero 不动（这样该兵种之后仍能生成），并把其余的
+      标记为可移除——仅当它们通过严格的安全检查时：不是氏族首领、不是显要
+      人物、不是队伍首领、没有家族关系、没有定居点 / 总督锚定。随后 Save
+      Cleaner 图遍历器会将所有指向这些 Hero 的引用置空，并写入一个单独的
+      「CrashDoctor_cleaned_*」存档；你磁盘上的原始存档不会被触碰。从
+      Load Game 加载清理后的存档。
+    tr: |
+      Yüklü kampanyada tek bir CharacterObject şablonunun 100'den fazla hayatta
+      Hero örneği olduğunda görünür. Bu, HourlyTickParty kancası sınır olmadan
+      yeni Hero'lar oluşturan modların yol açtığı geç oyun desenidir — en görünür
+      şekilde LoreHardcore'un Greenskin asker alma mantığı, ancak hata modu
+      şablondan bağımsızdır.
+
+      Neden önemli: her Hero kendi Equipment'ını getirir, bu da benzersiz bir GPU
+      doku kümesi yükler (ve sabitler). Gölgelendirici önbelleği hepsini bellekte
+      tutamaz hale geldiğinde, oyun işleyici içinde 0xC0000005 ile çökmeye başlar
+      — çoğunlukla bir hızlı-ileri günlük tick'inden birkaç saniye sonra. Kayıtın
+      kendisi sorunsuz yüklenir; hasar oyun sırasında birikir ve yalnızca önbellek
+      taştığında ortaya çıkar. Sorunlu modu kaldırıp aynı kayıtta oynamaya devam
+      eden oyuncular başka çökme bildirmez — bu da modun kaynak olduğunu doğrular.
+
+      Tarayıcı ne yapar: Hero.AllAliveHeroes'u CharacterObject.StringId'ye göre
+      gruplar, oyuncuyu / oyuncu klanını / önemli kişileri saymadan hariç tutar ve
+      eşiğin üzerindeki herhangi bir şablonu raporlar. Hiçbir şablon sorunlu
+      değilse kart Healthy kalır.
+
+      Temizleyici ne yapar (Save Health panelinde Clean'e bastığınızda): eşiğin
+      üzerindeki her şablon için, ilk 20 Hero'ya dokunmaz (böylece asker türü
+      ileriye dönük olarak hâlâ oluşur) ve geri kalanını YALNIZCA katı güvenlik
+      kontrollerini geçerlerse kaldırılabilir olarak işaretler — klan lideri değil,
+      önemli kişi değil, parti lideri değil, aile bağı yok, yerleşim / vali
+      bağlantısı yok. Ardından Save Cleaner grafik gezgini bu Hero'lara giden tüm
+      referansları null'lar ve ayrı bir "CrashDoctor_cleaned_*" kaydı yazar;
+      diskteki orijinal kaydınıza dokunulmaz. Temizlenmiş kaydı Load Game'den
+      yükleyin.
   details:
     en:
       - "Threshold: > 100 alive heroes sharing one CharacterObject template."
@@ -78,3 +133,17 @@
       - "Удаление идёт через graph walker Save Cleaner — настоящий null-инг ссылок, не high-level Action. Получаешь отдельный сейв-файл; исходный не трогается."
       - "На здоровых сейвах карточка скрыта (NotApplicable если кампания не загружена; Healthy если у всех шаблонов ≤100)."
       - "Симптом в краш-логе: 0xC0000005 плюс спам 'Missing shader from sack: pbr_terrain' в rgl_log_*.txt, как правило после перемотки x4-x8."
+    zh:
+      - "阈值：超过 100 个共享同一 CharacterObject 模板的存活英雄。"
+      - "保留下限：每个模板始终保留 20 个英雄。"
+      - "跳过：玩家、玩家氏族、显要人物、领主、派系首领、总督、锚定到定居点的英雄、队伍首领、俘虏、有家族关系的英雄（配偶 / 父母 / 子女）、同伴、流浪者。"
+      - "移除通过 Save Cleaner 图遍历器进行——真正的引用置空，而非高层 Action 调用。结果是一个单独的存档文件；你的原始存档不会被触碰。"
+      - "在健康的存档上卡片隐藏（未加载战役时为 NotApplicable；当每个模板都不超过 100 时为 Healthy）。"
+      - "崩溃日志中的症状：0xC0000005 加上 rgl_log_*.txt 中刷屏的 'Missing shader from sack: pbr_terrain'，通常出现在 Speed x4-x8 快进之后。"
+    tr:
+      - "Eşik: tek bir CharacterObject şablonunu paylaşan > 100 hayatta kahraman."
+      - "Koruma tabanı: şablon başına 20 kahraman her zaman korunur."
+      - "Atlanır: oyuncu, oyuncu klanı, önemli kişiler, lordlar, hizip liderleri, valiler, yerleşim-bağlantılı kahramanlar, parti liderleri, mahkumlar, aile-bağlantılı kahramanlar (eş / ebeveyn / çocuk), yoldaşlar, gezginler."
+      - "Kaldırma, Save Cleaner grafik gezgini üzerinden gider — üst düzey bir Action çağrısı değil, gerçek referans null'laması. Sonuç ayrı bir kayıt dosyasıdır; orijinaliniz dokunulmadan kalır."
+      - "Kart sağlıklı kayıtlarda gizlenir (kampanya yüklü değilken NotApplicable; her şablon 100 veya altındayken Healthy)."
+      - "Çökme günlüğündeki belirti: 0xC0000005 artı rgl_log_*.txt içinde 'Missing shader from sack: pbr_terrain' spam'i, tipik olarak Speed x4-x8 hızlı-ileri sonrası."

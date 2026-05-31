@@ -2,6 +2,8 @@
   title:
     en: "DirectX 11 runtime + feature level check"
     ru: "Проверка DirectX 11 runtime + feature level"
+    zh: "DirectX 11 运行库 + 功能级别检查"
+    tr: "DirectX 11 çalışma zamanı + özellik düzeyi kontrolü"
   description:
     en: |
       Bannerlord's renderer hard-requires D3D feature level 11_0 — TaleWorlds.Native
@@ -21,6 +23,24 @@
 
       Карточка появляется только если d3d11.dll отсутствует, D3D11CreateDevice
       провалился, или максимальный feature level ниже 11_0.
+    zh: |
+      Bannerlord 的渲染器硬性要求 D3D 功能级别 11_0——TaleWorlds.Native 直接链接
+      d3d11.dll，没有任何回退路径。在精简的 Win10/11 LTSC 版本上、在没有 DXVK 的
+      Wine/Proton 上，或在 GPU 适配器只暴露 FL10_x 的机器上，启动器会以
+      「TaleWorlds.MountAndBlade.dll could not be loaded」悄无声息地失败，玩家则责怪模组。
+
+      这张卡片只在 d3d11.dll 缺失、D3D11CreateDevice 失败，或可用的最高功能级别
+      低于 11_0 时才出现。
+    tr: |
+      Bannerlord'un işleyicisi D3D özellik düzeyi 11_0'ı zorunlu kılar —
+      TaleWorlds.Native doğrudan d3d11.dll'ye bağlanır ve geri dönüş yolu yoktur.
+      Kırpılmış Win10/11 LTSC sürümlerinde, DXVK olmadan Wine/Proton'da veya GPU
+      bağdaştırıcısının yalnızca FL10_x sunduğu makinelerde, başlatıcı
+      "TaleWorlds.MountAndBlade.dll could not be loaded" ile sessizce başarısız olur ve
+      oyuncular modları suçlar.
+
+      Kart yalnızca d3d11.dll eksik olduğunda, D3D11CreateDevice başarısız olduğunda veya
+      mevcut en yüksek özellik düzeyi 11_0'ın altında olduğunda görünür.
   details:
     en:
       - "Read-only probe via D3D11CreateDevice (hardware driver type)."
@@ -32,3 +52,13 @@
       - "«Применить» откроет https://www.microsoft.com/en-us/download/details.aspx?id=35 — DirectX End-User Runtime."
       - "Если проблема в feature level (карта FL10_x), установщик не поможет — сам GPU слишком старый."
       - "Откат не предусмотрен."
+    zh:
+      - "通过 D3D11CreateDevice 进行只读探测（硬件驱动类型）。"
+      - "「应用」会打开 https://www.microsoft.com/en-us/download/details.aspx?id=35 —— DirectX 最终用户运行库。"
+      - "如果问题在于功能级别（FL10_x 显卡），任何安装程序都修复不了——是 GPU 本身太旧了。"
+      - "不可撤销。"
+    tr:
+      - "D3D11CreateDevice aracılığıyla salt okunur sınama (donanım sürücüsü türü)."
+      - "«Uygula» https://www.microsoft.com/en-us/download/details.aspx?id=35 adresini açar — DirectX Son Kullanıcı Çalışma Zamanı."
+      - "Sorun özellik düzeyiyse (FL10_x kart), hiçbir yükleyici düzeltmez — GPU'nun kendisi çok eski."
+      - "Geri alınamaz."

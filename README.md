@@ -156,9 +156,10 @@ crashes caused by **other mods leaving "dangling" units in party rosters or
 issue sent-troops lists** (typical pattern: another mod creates a temporary
 hero, drops it into a foreign party, then deletes the hero without scrubbing
 the roster — the next AI hourly tick or daily issue-completion crashes on the
-null reference). All six protections show an in-game toast (bilingual EN / RU
-based on game locale, rate-limited per category) so the player can see Crash
-Doctor actively saved them from a crash.
+null reference) plus a save-load crash from an orphaned garrison party. These
+protections show an in-game toast (bilingual EN / RU based on game locale,
+rate-limited per category) so the player can see Crash Doctor actively saved
+them from a crash.
 
 | Layer | What it does | Toggle |
 |---|---|---|
@@ -166,10 +167,11 @@ Doctor actively saved them from a crash.
 | **`FoodConsumptionNRESafetyPatch`** | Finalizer on `TORMobilePartyFoodConsumptionModel.CalculateDailyFoodConsumptionf`. Same dangling-character source as above, surfaces on food consumption tick. | same toggle |
 | **`AiHourlyTickNRESafetyPatch`** | Reflection-based finalizer applied to every `AiHourlyTick` method in `TaleWorlds.CampaignSystem.CampaignBehaviors.AiBehaviors` (catches `AiPatrolling`, `AiVisitSettlement`, `AiMilitia`, etc.). The offending party silently skips that tick; game continues. | same toggle |
 | **`IssueBaseNRESafetyPatch`** | Prefix sanitizer + finalizer on `TaleWorlds.CampaignSystem.Issues.IssueBase.AlternativeSolutionEndWithSuccess`. Prefix scrubs `AlternativeSolutionSentTroops` via `RemoveIf` so the inner `FindAll` lambda (`x => x.Character.UpgradeTargets / x.Character.IsHero`) never sees a null `Character`; finalizer swallows any residual NRE so `IssueManager.DailyTick` continues — the issue retries next day on a clean roster. | same toggle |
-| **`DanglingTroopCleanerBehavior`** | `OnSessionLaunched` scan: walks every `MobileParty`, `Settlement` and active issue roster (`Campaign.Current.IssueManager.Issues[*].AlternativeSolutionSentTroops`), uses `TroopRoster.RemoveIf` to drop elements where `Character == null` or `Character.Culture == null`. Runs before the first AI tick so the cleanup happens BEFORE the next hourly tick or day rollover would crash. | **Settings → Dangling troop cleanup on load** (default ON) |
-| **`SafetyNetMessenger`** | Bilingual user-visible toast helper used by all five above. Detects `BannerlordConfig.Language`, picks RU/EN text, applies amber (catch) or green (cleanup) color, rate-limits to one toast per category per 60 s. | always on |
+| **`DanglingTroopCleanerBehavior`** | `OnSessionLaunched` scan: walks every `MobileParty`, `Settlement` and active issue roster (`Campaign.Current.IssueManager.Issues[*].AlternativeSolutionSentTroops`), uses `TroopRoster.RemoveIf` to drop elements where `Character == null` or `Character.Culture == null`. **Also removes orphaned garrison parties** (`IsGarrison && CurrentSettlement == null`) via `DestroyPartyAction` so a re-save heals the campaign. Runs before the first AI tick so the cleanup happens BEFORE the next hourly tick or day rollover would crash. | **Settings → Dangling troop cleanup on load** (default ON) |
+| **`GarrisonStarvingNullSafetyPatch`** | Prefix on `Helpers.SettlementHelper.IsGarrisonStarving`: returns `false` when the settlement is null (an orphaned garrison with no `CurrentSettlement`) instead of letting vanilla `DefaultPartyMoraleModel.GetEffectivePartyMorale` dereference it inside `Clan.AfterLoad` on save load. Installed in `OnGameStart` (before `OnGameLoaded`) so it guards the very first load; the cleaner above then removes the orphan. | **Settings → NRE safety nets** (default ON) |
+| **`SafetyNetMessenger`** | Bilingual user-visible toast helper used by the guards above. Detects `BannerlordConfig.Language`, picks RU/EN text, applies amber (catch) or green (cleanup) color, rate-limits to one toast per category per 60 s. | always on |
 
-All five are generic — they do not require TOR_Core to be loaded (`AccessTools.TypeByName` no-ops gracefully when TOR is absent) and they trigger regardless of which third-party mod actually caused the dangling reference. Both Settings toggles persist diff-only against the workshop defaults, so a future defaults update isn't shadowed by stale user state.
+These guards are generic — they do not require TOR_Core to be loaded (`AccessTools.TypeByName` no-ops gracefully when TOR is absent) and they trigger regardless of which third-party mod actually caused the dangling reference. Both Settings toggles persist diff-only against the workshop defaults, so a future defaults update isn't shadowed by stale user state.
 
 ---
 

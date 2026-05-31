@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" type="string">
+  <tags>
+    <tag language="Türkçe" />
+  </tags>
+  <strings>
+    <string id="cd_open" text="Crash Doctor" />
+    <string id="cd_window_title" text="Crash Doctor" />
+    <string id="cd_no_crashes" text="Çökme tespit edilmedi. İçin rahat olsun." />
+    <string id="cd_selftest_fail" text="Crash Doctor öz testi başarısız: {REASON}. Modules/CrashDoctor/crashdoctor.log dosyasına bakın." />
+    <string id="cd_internal_error" text="Crash Doctor bir iç hatayla karşılaştı. crashdoctor.log dosyasına bakın." />
+    <string id="cd_status_scanning" text="Taranıyor..." />
+    <string id="cd_status_count" text="{COUNT} çökme" />
+    <string id="cd_btn_refresh" text="Yenile" />
+    <string id="cd_btn_clear" text="Temizle..." />
+    <string id="cd_btn_open_folder" text="Klasörü aç" />
+    <string id="cd_btn_open_log_folder" text="Günlük klasörünü aç" />
+    <string id="cd_btn_copy" text="Kopyala" />
+    <string id="cd_btn_export" text="Dışa aktar" />
+    <string id="cd_btn_close" text="Kapat" />
+    <string id="cd_btn_force_crash" text="Çökmeyi zorla (test)" />
+    <string id="cd_section_crashes" text="Çökmeler" />
+    <string id="cd_section_fix" text="Düzeltme adımları:" />
+    <string id="cd_section_evidence" text="Eşleşen satırlar:" />
+    <string id="cd_section_diagnoses" text="Tanılar" />
+    <string id="cd_severity_critical" text="KRİTİK" />
+    <string id="cd_severity_warning" text="UYARI" />
+    <string id="cd_severity_info" text="BİLGİ" />
+    <string id="cd_severity_unknown" text="BİLİNMİYOR" />
+    <string id="cd_confidence_high" text="yüksek güven" />
+    <string id="cd_confidence_medium" text="orta güven" />
+    <string id="cd_confidence_low" text="düşük güven" />
+    <string id="cd_unrecognized_title" text="Tanınmayan çökme" />
+    <string id="cd_unrecognized_desc" text="Henüz hiçbir kural eşleşmedi. Lütfen 'Dışa aktar'a tıklayın ve .txt dosyasını Telegram kanalımıza gönderin: https://t.me/CodeRickTg — bu çökme için bir kural ekleyeceğiz." />
+    <string id="cd_clear_dialog_title" text="Çökme günlükleri silinsin mi?" />
+    <string id="cd_clear_dialog_keep" text="Son 3 çökmeyi sakla (önerilir)" />
+    <string id="cd_clear_dialog_delete_dump" text=".dmp bellek dökümlerini de sil" />
+    <string id="cd_clear_dialog_confirm" text="Sil" />
+    <string id="cd_clear_dialog_cancel" text="İptal" />
+    <string id="cd_clear_dialog_recycle_note" text="Dosyalar Windows Geri Dönüşüm Kutusu'na taşınır ve geri yüklenebilir." />
+    <string id="cd_clear_done" text="{COUNT} dosya kaldırıldı. Gerekirse Windows Geri Dönüşüm Kutusu'ndan geri yükleyin." />
+    <string id="cd_clear_preview" text="Silinecek: {TOTAL} çökme klasöründen {DEL} tanesi" />
+    <string id="cd_checkbox_on" text="[X]" />
+    <string id="cd_checkbox_off" text="[ ]" />
+
+    <!-- v1.1.0 — tabs / tune-up / history -->
+    <string id="cd_tab_crashes" text="Çökme tanısı" />
+    <string id="cd_tab_tuneup" text="Sistem ayarı" />
+    <string id="cd_tab_history" text="Geçmiş" />
+    <string id="cd_tab_saves" text="Kayıtlar" />
+    <string id="cd_tab_mods" text="Modlar" />
+    <string id="cd_saves_btn_rescan" text="Yeniden tara" />
+    <string id="cd_saves_btn_open_folder" text="Oyun Kayıtları klasörünü aç" />
+    <string id="cd_saves_no_saves" text="Oyun Kayıtları klasörünüzde kayıt bulunamadı." />
+    <string id="cd_saves_summary" text="Kayıtlar: {TOTAL}, mod uyumsuzluğu olan: {MISMATCH}." />
+
+    <string id="cd_tuneup_scanning" text="Sistem kontrol ediliyor..." />
+    <string id="cd_tuneup_summary" text="{ISSUES} sorun bulundu, {HEALTHY} kontrol geçti" />
+    <string id="cd_tuneup_summary_actionable" text="İlgilenilmesi gereken {COUNT} sorun bulundu." />
+    <string id="cd_tuneup_all_good" text="Sorun bulunamadı. Yine de çökme olursa «Çökme tanısı» sekmesini açın." />
+    <string id="cd_tuneup_scan_failed" text="Tarama başarısız. crashdoctor.log dosyasına bakın." />
+    <string id="cd_tuneup_evidence_header" text="Kanıt:" />
+    <string id="cd_tuneup_btn_rescan" text="Yeniden tara" />
+    <string id="cd_tuneup_btn_apply" text="Uygula" />
+    <string id="cd_tuneup_btn_ignore" text="Yoksay" />
+    <string id="cd_tuneup_btn_details_show" text="Ayrıntılar" />
+    <string id="cd_tuneup_btn_details_hide" text="Ayrıntıları gizle" />
+    <string id="cd_tuneup_btn_open_uac" text="UAC ayarlarını aç" />
+    <string id="cd_details_btn_close" text="Kapat" />
+    <string id="cd_details_header" text="Daha fazla ayrıntı:" />
+    <string id="cd_tuneup_badge_admin" text="yönetici gerekli" />
+    <string id="cd_tuneup_badge_reboot" text="yeniden başlatma gerekli" />
+    <string id="cd_tuneup_badge_reversible" text="geri alınabilir" />
+    <string id="cd_tuneup_badge_no_undo" text="geri alınamaz" />
+    <string id="cd_tuneup_reboot_pending" text="⟳ Ayarlar uygulandı — etkili olması için bilgisayarı YENİDEN BAŞLATIN." />
+    <string id="cd_apply_reboot_title" text="Yeniden başlatma gerekli" />
+    <string id="cd_apply_reboot_default" text="Ayarlar uygulandı. Etkili olması için bilgisayarı yeniden başlatın." />
+    <string id="cd_apply_done_title" text="Uygulandı" />
+    <string id="cd_apply_done_default" text="Ayarlar uygulandı." />
+    <string id="cd_apply_failed_title" text="Uygulama başarısız" />
+    <string id="cd_apply_failed_default" text="Uygulama başarısız. crashdoctor.log dosyasına bakın." />
+    <string id="cd_btn_ok" text="Tamam" />
+    <string id="cd_tuneup_btn_show_all" text="Tümünü göster" />
+    <string id="cd_tuneup_btn_force_shader_cleanup" text="Gölgelendirici önbelleğini temizle" />
+    <string id="cd_tuneup_btn_show_actionable" text="Yalnızca işlem gerekenleri göster" />
+    <string id="cd_tuneup_summary_show_all" text="{TOTAL} modülün tümü gösteriliyor ({ACTIONABLE} işlem gerekli, {HEALTHY} sağlıklı, {SKIPPED} uygulanamaz)." />
+
+    <string id="cd_history_count" text="{COUNT} kayıt" />
+    <string id="cd_history_empty" text="Henüz düzeltme geçmişi yok." />
+    <string id="cd_history_load_failed" text="Geçmiş yüklenemedi. crashdoctor.log dosyasına bakın." />
+    <string id="cd_history_btn_refresh" text="Yenile" />
+    <string id="cd_history_btn_clear_all" text="Geçmişi temizle" />
+    <string id="cd_history_result_ok" text="uygulandı" />
+    <string id="cd_history_result_fail" text="başarısız" />
+    <string id="cd_history_items_count" text="{COUNT} öğe etkilendi" />
+    <string id="cd_history_reboot_pending" text="yeniden başlatma bekleniyor" />
+    <string id="cd_history_rolled_back_at" text="{WHEN} tarihinde geri alındı" />
+    <string id="cd_history_btn_rollback" text="Geri al" />
+
+    <!-- NEW (2026-05-14) Emergency Save service strings. -->
+    <string id="cd_new_badge" text="YENİ" />
+    <string id="cd_emergency_save_title" text="Çökmeden önce acil kayıt" />
+    <string id="cd_emergency_save_hint" text="Oyun çökmek üzereyse, Crash Doctor saatlerce kaydedilmemiş ilerlemenizi kaybetmemeniz için son bir 'Farklı Kaydet' dener. Varsayılan: AÇIK. Yalnızca kayıtla ilgili başka bir modla çakışırsa kapatın." />
+    <string id="cd_emergency_save_made" text="Acil kayıt yapıldı: {NAME}" />
+    <string id="cd_emergency_save_failed" text="Acil kayıt çalışmadı: {REASON}" />
+    <string id="cd_emergency_save_disabled" text="Acil kayıt ayarlarda kapalı." />
+    <string id="cd_new_banner_emergency_save_on" text="Çökmeden önce acil kayıt etkin — ilerlemeniz korunuyor." />
+    <string id="cd_new_banner_emergency_save_off" text="Yeni özellik mevcut: çökmeden önce acil kayıt (şu anda CrashDoctorSettings.xml içinde KAPALI)." />
+    <string id="cd_status_on" text="AÇIK" />
+    <string id="cd_status_off" text="KAPALI" />
+    <string id="cd_toggle_on_prefix" text="● AÇIK" />
+    <string id="cd_toggle_off_prefix" text="○ KAPALI" />
+    <string id="cd_toggle_emergency_save" text="Çökmeden önce acil kayıt" />
+    <string id="cd_toggle_native_crash_log" text="Yerel çökme günlüğü" />
+    <string id="cd_native_crash_log_title" text="Yerel çökme günlüğü" />
+    <string id="cd_native_crash_log_hint" text="Açıkken, yerel bir çökme (erişim ihlali, yığın taşması, öbek bozulması) olduğunda crashdoctor.log dosyasına tek satırlık bir özet yazar. Yalnızca gözlem — çökmeyi değiştirmez, her zamanki TaleWorlds dökümü yine oluşur. Varsayılan KAPALI — ek günlük satırı isterseniz açın." />
+    <string id="cd_patch_conflicts_badge" text="{COUNT} yöntem birden fazla mod tarafından yamalandı — crashdoctor.log için tıklayın" />
+    <string id="cd_tab_settings" text="Ayarlar  ★" />
+    <string id="cd_toggle_ui_error_patching" text="Arayüz hatası yutma" />
+    <string id="cd_settings_title" text="Crash Doctor ayarları" />
+    <string id="cd_settings_per_mod_title" text="Mod bazında hata yutma" />
+    <string id="cd_hint_emergency_save" text="Oyun bir .NET hatasıyla çökmek üzereyken, Crash Doctor saatlerce ilerlemenizi kaybetmemeniz için son bir 'Farklı Kaydet' dener. 'CrashDoctor_Emergency_&lt;timestamp&gt;' adıyla kaydeder." />
+    <string id="cd_hint_native_crash_log" text="Yerel bir çökme (erişim ihlali, yığın taşması, öbek bozulması) olduğunda crashdoctor.log dosyasına tek satırlık özet yazar. Çökmenin kendisi etkilenmez — TaleWorlds dökümü yine oluşur." />
+    <string id="cd_hint_ui_error_patching" text="Seçilmiş bir arayüz yenileme yöntemleri listesini sarar (Ansiklopedi, Envanter, Birlik, Hanedan, Krallık, Görevler). YALNIZCA arayüzü kapsar — savaşlar, AI, günlük döngü, görev sahneleri korunmaz. Belirli bir modun oyun mantığını da sarmak için aşağıdaki bölümden o modu işaretleyin." />
+    <string id="cd_hint_per_mod_section" text="Bir modun görev geri çağrılarını (OnAgentHit, OnMissionTick vb.) aynı hata-yutma korumasıyla sarmak için onu işaretleyin. Belirli bir mod açıkça bozukken, düzeltme beklerken oynamaya devam etmek istediğinizde kullanın." />
+    <string id="cd_toggle_nre_safety_patches" text="NRE güvenlik ağları (maaş / yiyecek / AI döngüsü)" />
+    <string id="cd_hint_nre_safety_patches" text="TOR_Core'un maaş ve yiyecek tüketimi modellerindeki ve her saatlik AI döngüsündeki boş referans çökmelerini yakalar. Bu çökmeler başka bir mod bir birlik kadrosunda 'sarkan' bir asker bıraktığında olur (kaldırılmış ama temizlenmemiş bir birim). Güvenlik ağı açıkken, sorunlu birlik o döngüyü atlar ve oyun devam eder. Varsayılan AÇIK." />
+    <string id="cd_toggle_dangling_roster_cleanup" text="Yüklemede sarkan asker temizliği" />
+    <string id="cd_hint_dangling_roster_cleanup" text="Bir kayıt yüklediğinizde, her birliği ve yerleşimi tarar ve bozuk asker girişlerini (artık var olmayan karakterler) kaldırır. Bu olmadan, sonraki AI döngüsü bu girişlerde çöker. Bozuk giriş bulunmadığında güvenli ve sessizdir. Varsayılan AÇIK." />
+
+  </strings>
+</base>

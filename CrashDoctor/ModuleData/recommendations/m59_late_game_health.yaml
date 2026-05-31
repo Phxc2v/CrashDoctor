@@ -2,6 +2,8 @@
   title:
     en: "Late-game campaign health check"
     ru: "Проверка здоровья поздней кампании"
+    zh: "后期战役健康检查"
+    tr: "Geç oyun kampanya sağlık kontrolü"
   description:
     en: |
       Reads live Campaign.Current to estimate whether the save is heading toward known
@@ -44,6 +46,46 @@
 
       Срабатывает только когда Campaign.Current не null. Если сейв ещё не загружен
       после старта игры — карточка не показывается.
+    zh: |
+      读取实时的 Campaign.Current，以估计存档是否正走向已知的后期崩溃区域。这些问题
+      没有一个会在崩溃日志中留下指纹——它们在数小时内逐渐拖垮战役，然后在下一次加载
+      存档时爆发。这是 Crash Doctor 中唯一的「前瞻性」诊断。
+
+      阈值（来自收集的后期 CTD 目录）：
+
+      * 英雄膨胀——800+ 个存活英雄。存档膨胀、每日 tick 卡顿以及加载时的 NRE
+        级联几乎必然发生。Heroes Must Die（Nexus 1164）会动态削减。
+      * 滚雪球——在第 200 天之前，40%+ 的初始王国被消灭。会引发派系合并的 NRE
+        和 KingdomDestructionAction 崩溃。Diplomacy（Nexus 832）提供互不侵犯条约和
+        基于政治成本的和平，减缓滚雪球。
+      * 战争级联——玩家王国同时处于 3+ 场战争。会给 AI 带来压力并加速经济崩溃。
+        Diplomacy + AutoBlocker 可以应对。
+      * 长期战役——第 500 天+ 且有 600+ 个英雄。有内存泄漏风险；每 60–90 分钟
+        重启一次会话；考虑开一局新战役。
+
+      仅在 Campaign.Current 非 null 时触发。游戏全新启动且未加载存档后，卡片保持隐藏。
+    tr: |
+      Kayıtın bilinen geç oyun çökme bölgesine doğru gidip gitmediğini tahmin etmek için
+      canlı Campaign.Current'ı okur. Bu sorunların hiçbirinin çökme günlüğünde bir parmak
+      izi yoktur — kampanyayı saatler boyunca bozarlar ve sonra bir sonraki kayıt
+      yüklemesinde ortaya çıkarlar. Bu, Crash Doctor'daki tek "ileriye dönük" tanıdır.
+
+      Eşikler (toplanan geç oyun CTD kataloğundan):
+
+      * Kahraman şişmesi — 800+ hayatta kahraman. Kayıt şişmesi, günlük tick gecikmesi ve
+        yükleme sırasındaki NRE kademeleri neredeyse kesin hale gelir. Heroes Must Die
+        (Nexus 1164) dinamik olarak ayıklar.
+      * Kartopu — 200. günden önce başlangıç krallıklarının %40+'ı yok edilmiş. Hizip
+        birleşmesi NRE'lerine ve KingdomDestructionAction çökmelerine neden olur.
+        Diplomacy (Nexus 832) saldırmazlık paktları ve siyasi maliyet odaklı barış verir,
+        kartopunu yavaşlatır.
+      * Savaş kademesi — oyuncu krallığında aynı anda 3+ savaş. AI'yi zorlar ve ekonomik
+        çöküşü hızlandırır. Diplomacy + AutoBlocker bununla başa çıkar.
+      * Uzun kampanya — 600+ kahramanla 500. gün+. Bellek sızıntısı riski; her 60–90
+        dakikada bir oturumu yeniden başlatın; yeni bir kampanya düşünün.
+
+      Yalnızca Campaign.Current null olmadığında tetiklenir. Kayıt yüklenmeden yeni bir
+      oyun başlangıcından sonra kart gizli kalır.
   details:
     en:
       - "Apply opens the most relevant fix-mod page on NexusMods (Heroes Must Die / Diplomacy / Death Reduced)."
@@ -55,3 +97,13 @@
       - "Карточка информативная — auto-apply нет. Поставь мод, перезапусти игру, пересканируй для подтверждения."
       - "Если всё в норме — карточка не показывается (Healthy / NotApplicable)."
       - "Имеет смысл только ПОСЛЕ загрузки сейва в этой сессии — Campaign.Current null в свежем главном меню."
+    zh:
+      - "「应用」会打开 NexusMods 上最相关的修复模组页面（Heroes Must Die / Diplomacy / Death Reduced）。"
+      - "卡片为信息性——不会自动应用。安装模组、重启游戏、重新扫描以验证。"
+      - "如果一切正常：卡片保持隐藏（Healthy / NotApplicable）。"
+      - "只有在你本次会话中加载了存档之后才有意义——在全新主菜单中 Campaign.Current 为 null。"
+    tr:
+      - "«Uygula» NexusMods'taki en alakalı düzeltme-mod sayfasını açar (Heroes Must Die / Diplomacy / Death Reduced)."
+      - "Kart bilgilendirme amaçlıdır — otomatik uygulama yok. Modu kurun, oyunu yeniden başlatın, doğrulamak için yeniden tarayın."
+      - "Her şey yolundaysa: kart gizli kalır (Healthy / NotApplicable)."
+      - "Yalnızca bu oturumda bir kayıt yükledikten SONRA anlamlıdır — Campaign.Current yeni ana menüde null'dur."

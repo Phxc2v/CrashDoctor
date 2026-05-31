@@ -7,6 +7,8 @@
   title:
     en: "Crash during pre-battle deployment phase (formation troop transfer)"
     ru: "Краш в фазе расстановки перед боем (перенос юнитов между формациями)"
+    zh: "战前部署阶段崩溃（在编队间转移部队）"
+    tr: "Savaş öncesi yerleştirme aşamasında çökme (düzen arası birlik aktarımı)"
   description:
     en: |
       Real-world signature from a client crash: log ends right after a troop-transfer
@@ -28,6 +30,25 @@
 
       Без managed-стека (BetterExceptionWindow / BLSE) патчер не назовём.
       Поставь BLSE на следующую сессию — см. модуль m41.
+    zh: |
+      来自真实客户崩溃的特征：日志在编队间转移部队 + 'Selected formations being
+      cleared' 这行之后立即结束，正处于部署界面的战斗中途。下一行始终没有写出来——
+      游戏在 Mission 的编队 / 部队名册操作内部崩溃。与修补部署 / 部队池逻辑的模组高度
+      相关（RestoreLordTroops、RBM、覆盖 DeploymentMissionController 的自定义势力模组）。
+
+      没有托管堆栈（BetterExceptionWindow / BLSE）就无法指认是哪个补丁所致。如果反复
+      出现就安装 BLSE——见 m41 模块。
+    tr: |
+      Gerçek bir müşteri çökmesinden alınan imza: günlük, düzenler arası bir birlik
+      aktarımı + 'Selected formations being cleared' satırından hemen sonra,
+      yerleştirme ekranında savaş ortasında biter. Sonraki satır hiç yazılmaz —
+      oyun, Mission'ın düzen/birlik-kadro işleme kodu içinde ölür. Yerleştirme /
+      birlik-havuzu mantığını yamalayan modlarla güçlü şekilde ilişkilidir
+      (RestoreLordTroops, RBM, DeploymentMissionController'ı geçersiz kılan özel
+      hizip modları).
+
+      Yönetilen bir yığın izi (BetterExceptionWindow / BLSE) olmadan yamayı
+      adlandıramayız. Tekrarlarsa BLSE kur — bkz. m41 modülü.
   fix:
     en:
       - "Try a battle WITHOUT moving troops between formations in deployment — if it still crashes, the cause is elsewhere; if it doesn't, the trigger is confirmed."
@@ -41,6 +62,18 @@
       - "Steam → Проверить целостность (ловит частичный install если отсутствует deployment-ассет)."
       - "Поставь BLSE + BetterExceptionWindow к следующей сессии — поймает managed-стек с именем патчера."
       - "Если повторяется — пришли crash_report.html (после установки BLSE) в t.me/CodeRickTg."
+    zh:
+      - "试一场战斗，在部署时不在编队间移动部队——如果仍然崩溃，原因在别处；如果不崩，触发条件就确认了。"
+      - "逐个禁用修补部队池 / 部署的模组：RestoreLordTroops、RBM、自定义势力。再按组重新启用以找出元凶。"
+      - "Steam → 验证文件完整性（如果缺少某个部署资源，可发现 Bannerlord 安装不完整）。"
+      - "下次游戏前安装 BLSE + BetterExceptionWindow——能捕获带补丁名称的托管堆栈。"
+      - "如果整个战役都这样：（装好 BLSE 后）把 crash_report.html 发到 t.me/CodeRickTg。"
+    tr:
+      - "Yerleştirmede düzenler arası birlik taşımadan bir savaş dene — yine çöküyorsa neden başka yerde; çökmüyorsa tetikleyici doğrulanmıştır."
+      - "Birlik havuzunu / yerleştirmeyi yamalayan modları teker teker devre dışı bırak: RestoreLordTroops, RBM, özel hizipler. Suçluyu bulmak için gruplar hâlinde yeniden etkinleştir."
+      - "Steam → Bütünlüğü doğrula (bir yerleştirme varlığı eksikse kısmi Bannerlord kurulumunu yakalar)."
+      - "Bir sonraki oturumdan önce BLSE + BetterExceptionWindow kur — yama adıyla birlikte yönetilen yığını yakalar."
+      - "Sefer genelindeyse: (BLSE kurulduktan sonra) crash_report.html dosyasını t.me/CodeRickTg adresine gönder."
   match:
     # Drop the redundant `contains "transfers"` filter — the regex already
     # narrows on "transfers N unit(s) to", so adding a substring check on
@@ -60,6 +93,8 @@
   title:
     en: "Crash on inventory screen open (equipment-mod conflict)"
     ru: "Краш при открытии инвентаря (конфликт equipment-мода)"
+    zh: "打开物品栏界面时崩溃（装备模组冲突）"
+    tr: "Envanter ekranı açılırken çökme (ekipman-mod çakışması)"
   description:
     en: |
       Click on the inventory tab → game dies. Signature in rgl_log: last entries
@@ -79,6 +114,23 @@
 
       Ванилла тоже может упасть если мод добавил герою вещь, которой теперь
       нет (мод удалили посреди сейва).
+    zh: |
+      点击物品栏标签页 → 游戏崩溃。rgl_log 中的特征：最后几条记录是
+      GauntletInventoryScreen.HandleActivate / HandleResume，之后再无内容（游戏在填充
+      物品栏时崩溃）。在 TOR 安装环境中，典型原因是某个装备模组（OpenSourceArmory、
+      ExpandedArmoury、Distinguished Service）破坏了 TOR 的装备 ID。
+
+      如果某个模组给英雄的装备里加了一件如今已不存在的物品（模组在存档中途被卸载），
+      原版也可能遇到这个问题。
+    tr: |
+      Envanter sekmesine tıkla → oyun ölür. rgl_log'daki imza: son girişler
+      GauntletInventoryScreen.HandleActivate / HandleResume gösterir, ardından
+      başka içerik gelmez (oyun envanter doldurulurken çöktü). TOR kurulumlarında
+      tipik neden, TOR'un ekipman kimliklerini bozan bir ekipman modudur
+      (OpenSourceArmory, ExpandedArmoury, Distinguished Service).
+
+      Bir mod, bir kahramanın ekipmanına artık var olmayan bir eşya eklediyse
+      (mod kayıt ortasında kaldırıldıysa) orijinal oyun da bununla karşılaşabilir.
   fix:
     en:
       - "Disable equipment mods (OpenSourceArmory, ExpandedArmoury, Distinguished Service) and try again."
@@ -90,6 +142,16 @@
       - "Если стоит TOR + Distinguished Service — поставь TOR DS Compat Patch с Nexus."
       - "Если проблема осталась на чистой ванилле: загрузи более ранний сейв ДО добавления/удаления equipment-мода."
       - "Steam → Проверить целостность — убедиться что XML с экипировкой не пропали."
+    zh:
+      - "禁用装备模组（OpenSourceArmory、ExpandedArmoury、Distinguished Service）后再试。"
+      - "如果在用 TOR + Distinguished Service——在 Nexus 上安装 TOR DS Compat Patch。"
+      - "如果在纯原版下问题仍在：读取添加 / 移除该装备模组之前的更早存档。"
+      - "Steam → 验证文件完整性，以确认没有缺失的装备 XML。"
+    tr:
+      - "Ekipman modlarını devre dışı bırak (OpenSourceArmory, ExpandedArmoury, Distinguished Service) ve tekrar dene."
+      - "TOR + Distinguished Service kullanıyorsan — Nexus'tan TOR DS Compat Patch'i kur."
+      - "Sorun orijinal oyunda da sürüyorsa: ekipman modu eklenmeden/kaldırılmadan önceki daha eski bir kaydı yükle."
+      - "Steam → Bütünlüğü doğrula, eksik ekipman XML'i olmadığını teyit et."
   match:
     all:
       - log_line:
@@ -111,6 +173,8 @@
   title:
     en: "Crash on loot screen after battle"
     ru: "Краш на экране лута после боя"
+    zh: "战斗后战利品界面崩溃"
+    tr: "Savaştan sonra ganimet ekranında çökme"
   description:
     en: |
       Battle ends → loot screen → crash. Often a NullReference inside
@@ -128,6 +192,21 @@
 
       Confidence низкий — сигнатура в rgl_log только 'battle won' и тишина.
       Без crash_report.html от BLSE точно не диагностируем.
+    zh: |
+      战斗结束 → 战利品界面 → 崩溃。常见于 MissionAfterMath / LootCampaignBehavior
+      内部的空引用，由某个第三方修改战利品的模组（Loot Anywhere、Loot Filter）触发——
+      它在底层类签名改变之后仍然修补了原有逻辑。
+
+      置信度低——rgl_log 中的特征只是 'battle won' 然后一片沉默。没有 BLSE 提供的
+      crash_report.html，我们无法确定原因。
+    tr: |
+      Savaş biter → ganimet ekranı → çökme. Genellikle MissionAfterMath /
+      LootCampaignBehavior içinde bir boş referans; altta yatan sınıf imzası
+      değiştikten sonra mantığı yamalayan üçüncü taraf bir ganimet-değiştiren mod
+      (Loot Anywhere, Loot Filter) tarafından tetiklenir.
+
+      Güven düşük — rgl_log imzası sadece 'battle won' ve ardından sessizlik.
+      BLSE'den bir crash_report.html olmadan kesin olarak belirleyemeyiz.
   fix:
     en:
       - "Disable loot-modifying mods (Loot Anywhere, Loot Filter, custom drop-rate mods)."
@@ -137,6 +216,14 @@
       - "Отключи loot-моды (Loot Anywhere, Loot Filter, кастомные drop-rate моды)."
       - "Загрузи сейв ДО боя и попробуй тот же бой ещё раз — если воспроизводится, конфликт мода; если нет — race-condition (стабильно не повторится)."
       - "Поставь BLSE + BetterExceptionWindow — на следующем краше будет managed-стек."
+    zh:
+      - "禁用修改战利品的模组（Loot Anywhere、Loot Filter、自定义掉率模组）。"
+      - "读取战斗前的存档，再打同一场战斗——如果能复现，就是模组冲突；如果不能，就是竞态问题（不会稳定重现）。"
+      - "安装 BLSE + BetterExceptionWindow，以便下次发生时获得托管堆栈。"
+    tr:
+      - "Ganimet-değiştiren modları devre dışı bırak (Loot Anywhere, Loot Filter, özel düşme oranı modları)."
+      - "Savaş öncesi kaydı yükle ve aynı savaşı tekrar dene — tekrarlanabiliyorsa mod çakışması; değilse yarış durumu (güvenilir şekilde tekrarlamaz)."
+      - "Bir sonraki olayda yönetilen yığın için BLSE + BetterExceptionWindow kur."
   match:
     all:
       - log_line:
@@ -156,6 +243,8 @@
   title:
     en: "Steam session init failed — multiplayer / Workshop sync broken"
     ru: "Не удалось инициировать сессию Steam — multiplayer / Workshop sync сломаны"
+    zh: "Steam 会话初始化失败——多人 / 创意工坊同步损坏"
+    tr: "Steam oturumu başlatılamadı — çok oyunculu / Workshop senkronizasyonu bozuk"
   description:
     en: |
       Bannerlord couldn't establish a Steam session. Means: SteamAPI handshake
@@ -175,6 +264,23 @@
       Самая частая причина — Steam в offline-режиме (или login token истёк).
       Реже: процесс Steam не запущен, антивирус блокирует SteamAPI64.dll,
       или временный отказ Steam (проверь steamstat.us).
+    zh: |
+      Bannerlord 无法建立 Steam 会话。意味着：SteamAPI 握手失败、创意工坊 API 没有
+      响应，或者用户的 Steam 客户端处于离线状态。多人游戏完全不可用；创意工坊模组的
+      自动更新不会运行；云存档不会同步。
+
+      最常见的原因是 Steam 处于离线模式（或其登录令牌过期）。较少见的：Steam 进程
+      没在运行、杀毒软件拦截了 SteamAPI64.dll，或者 Steam 临时故障（查看 steamstat.us）。
+    tr: |
+      Bannerlord bir Steam oturumu kuramadı. Şu anlama gelir: SteamAPI el sıkışması
+      başarısız oldu, Workshop API yanıt vermedi ya da kullanıcının Steam istemcisi
+      çevrimdışı. Çok oyunculu tamamen kullanılamaz; Workshop-mod otomatik
+      güncellemesi çalışmaz; bulut kayıtları senkronize olmaz.
+
+      En yaygın neden, Steam'in çevrimdışı modda olması (veya oturum açma
+      belirtecinin süresinin dolması). Daha az yaygın: Steam süreci çalışmıyor,
+      antivirüs SteamAPI64.dll'i engelliyor ya da geçici bir Steam kesintisi
+      (steamstat.us'a bak).
   fix:
     en:
       - "Restart Steam: full quit from system tray (right-click → Exit), wait 10 seconds, relaunch."
@@ -186,6 +292,16 @@
       - "Steam → клик по имени → 'В сеть' если показывает offline."
       - "Исключение антивируса: добавь путь к SteamAPI64.dll (обычно <Steam>\\steamapps\\common\\Mount & Blade II Bannerlord\\bin\\Win64_Shipping_Client\\)."
       - "Проверь статус Steam на https://steamstat.us — если 'Steam API' красный, ждать."
+    zh:
+      - "重启 Steam：从系统托盘完全退出（右键 → 退出），等 10 秒，再重新启动。"
+      - "Steam → 点击你的用户名 → 如果显示离线就点“切换到在线”。"
+      - "杀毒软件排除：添加 SteamAPI64.dll 的路径（通常是 <Steam>\\steamapps\\common\\Mount & Blade II Bannerlord\\bin\\Win64_Shipping_Client\\）。"
+      - "在 https://steamstat.us 查看 Steam 状态——如果 'Steam API' 显示红色，等它恢复。"
+    tr:
+      - "Steam'i yeniden başlat: sistem tepsisinden tamamen çık (sağ tık → Çık), 10 saniye bekle, yeniden başlat."
+      - "Steam → kullanıcı adına tıkla → çevrimdışı görünüyorsa 'Çevrimiçi ol'."
+      - "Antivirüs istisnası: SteamAPI64.dll yolunu ekle (genellikle <Steam>\\steamapps\\common\\Mount & Blade II Bannerlord\\bin\\Win64_Shipping_Client\\)."
+      - "Steam durumunu https://steamstat.us adresinde kontrol et — 'Steam API' kırmızıysa geçmesini bekle."
   match:
     any:
       - log_line:

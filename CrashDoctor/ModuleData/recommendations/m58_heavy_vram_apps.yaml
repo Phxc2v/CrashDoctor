@@ -2,6 +2,8 @@
   title:
     en: "Close heavy VRAM-eating background apps"
     ru: "Закрыть жрущие VRAM фоновые приложения"
+    zh: "关闭占用大量显存的后台应用程序"
+    tr: "Çok fazla VRAM tüketen arka plan uygulamalarını kapat"
   description:
     en: |
       A separate scan from M5.7 — focused not on D3D-hooking troublemakers but on apps that
@@ -26,6 +28,29 @@
       Второй эшелон (0.5–2 ГБ): Chrome / Edge / Firefox с большим количеством вкладок и
       hardware acceleration, OBS Studio в режиме Game Capture, NVIDIA Broadcast, Epic Games
       Launcher, Wallpaper Engine.
+    zh: |
+      与 M5.7 不同的另一项扫描——这里关注的不是挂钩 D3D 的捣乱程序，而是运行时单纯占用
+      大量独立显存的应用。TOR + Bannerlord 在 1080p+ 下已经占用 5–8 GB 显存，
+      此时后台只要有任何一个这类应用，就足以在中端显卡上把下一次 CreateTexture2D 推过临界点。
+
+      最严重的（即使空闲也占 1.5 GB+）：VR 运行时（Oculus / Meta Quest Link、SteamVR
+      合成器、Windows Mixed Reality），AI / LLM 工具（Ollama、LM Studio、Stable Diffusion、
+      ComfyUI），视频编辑器（DaVinci Resolve、Adobe Premiere / After Effects、Topaz Video AI）。
+      第二梯队（0.5–2 GB）：开了硬件加速且有许多标签页的 Chrome / Edge / Firefox、
+      处于 Game Capture 模式的 OBS Studio、NVIDIA Broadcast、Epic Games Launcher、Wallpaper Engine。
+    tr: |
+      M5.7'den ayrı bir tarama — burada D3D'ye kanca takan baş belaları değil, sadece
+      çalışırken büyük bir özel GPU bellek dilimini tutan uygulamalar hedeflenir. TOR +
+      Bannerlord 1080p+'da zaten 5–8 GB VRAM'de otururken, bunlardan herhangi birinin
+      arka planda olması, orta seviye bir kartta bir sonraki CreateTexture2D'yi sınırın
+      ötesine itmeye yeter.
+
+      En kötüleri (boştayken bile 1,5 GB+): VR çalışma zamanları (Oculus / Meta Quest
+      Link, SteamVR birleştiricisi, Windows Mixed Reality), AI / LLM araçları (Ollama, LM
+      Studio, Stable Diffusion, ComfyUI), video düzenleyiciler (DaVinci Resolve, Adobe
+      Premiere / After Effects, Topaz Video AI). İkinci kademe (0,5–2 GB): donanım
+      hızlandırması açık ve çok sayıda sekmesi olan Chrome / Edge / Firefox, Game Capture
+      modunda OBS Studio, NVIDIA Broadcast, Epic Games Launcher, Wallpaper Engine.
   details:
     en:
       - "Apply opens Task Manager — close apps via their own UI when possible. Killing VR runtimes cold can lock the headset until reboot."
@@ -45,3 +70,21 @@
       - "Браузеры (с HW accel + много вкладок): Chrome, Edge, Firefox, Brave, Opera GX."
       - "Остальное: Epic Games Launcher (фоновые видео), Discord (HW accel + оверлей), Wallpaper Engine."
       - "После закрытия — пересканируй, чтобы убедиться что карта освободилась."
+    zh:
+      - "「应用」会打开任务管理器——尽可能通过应用自己的界面关闭它们。强行结束 VR 运行时可能会让头显卡死，直到重启。"
+      - "VR 运行时：Oculus / Meta Quest Link、SteamVR（vrcompositor / vrserver）、Mixed Reality Portal、Virtual Desktop Streamer。"
+      - "AI / LLM：Ollama、LM Studio、Stable Diffusion（A1111 / ComfyUI）。"
+      - "视频 / 3D：DaVinci Resolve、Adobe Premiere Pro、Adobe After Effects、Topaz Video AI、Blender、Photoshop、Lightroom。"
+      - "流媒体 / 录制：OBS Studio、NVIDIA Broadcast、NVIDIA ShadowPlay、XSplit。"
+      - "浏览器（开了硬件加速 + 许多标签页）：Chrome、Edge、Firefox、Brave、Opera GX。"
+      - "其他：Epic Games Launcher（后台视频）、Discord（硬件加速 + 叠加层）、Wallpaper Engine。"
+      - "关闭应用后重新扫描，确认卡片已消除。"
+    tr:
+      - "«Uygula» Görev Yöneticisi'ni açar — mümkünse uygulamaları kendi arayüzleri üzerinden kapatın. VR çalışma zamanlarını sertçe sonlandırmak, yeniden başlatana kadar başlığı kilitleyebilir."
+      - "VR çalışma zamanları: Oculus / Meta Quest Link, SteamVR (vrcompositor / vrserver), Mixed Reality Portal, Virtual Desktop Streamer."
+      - "AI / LLM: Ollama, LM Studio, Stable Diffusion (A1111 / ComfyUI)."
+      - "Video / 3D: DaVinci Resolve, Adobe Premiere Pro, Adobe After Effects, Topaz Video AI, Blender, Photoshop, Lightroom."
+      - "Akış / yakalama: OBS Studio, NVIDIA Broadcast, NVIDIA ShadowPlay, XSplit."
+      - "Tarayıcılar (HW hızlandırma + çok sayıda sekme): Chrome, Edge, Firefox, Brave, Opera GX."
+      - "Diğer: Epic Games Launcher (arka plan videoları), Discord (HW hızlandırma + kaplama), Wallpaper Engine."
+      - "Uygulamaları kapattıktan sonra kartın temizlendiğini doğrulamak için yeniden tarayın."

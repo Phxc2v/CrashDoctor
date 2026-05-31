@@ -2,6 +2,8 @@
   title:
     en: "GPU info — model, accurate VRAM, driver version"
     ru: "Информация о GPU — модель, точный VRAM, версия драйвера"
+    zh: "显卡信息 — 型号、准确显存、驱动程序版本"
+    tr: "Ekran kartı bilgisi — model, doğru VRAM, sürücü sürümü"
   description:
     en: |
       Read-only display. Pulls live data from `Win32_VideoController` (name, driver
@@ -25,6 +27,30 @@
 
       Используй карточку чтобы взять «какая у меня GPU + драйвер + VRAM» для
       баг-репорта. Crash Doctor железо не апгрейдит.
+    zh: |
+      只读显示。从 `Win32_VideoController` 拉取实时数据（名称、驱动程序
+      版本、驱动程序日期），并从设备类注册表项读取准确的显存。
+
+      WMI 的 `AdapterRAM` 字段是 uint32 —— 在任何现代显卡上都会在 4 GB 处饱和，
+      所以我们直接读取注册表中的 `HardwareInformation.qwMemorySize`
+      （REG_QWORD，64 位）。这与 NVIDIA / AMD / Intel 控制面板
+      报告的数值一致。无需 DXGI / Vortice 依赖。
+
+      在报告 bug 时，用它来获取「你实际拥有的显卡 + 驱动程序 + 显存」。
+      Crash Doctor 无法升级硬件。
+    tr: |
+      Salt okunur görüntü. Canlı verileri `Win32_VideoController`'dan (ad, sürücü
+      sürümü, sürücü tarihi) ve doğru VRAM için cihaz sınıfı kayıt defteri
+      anahtarından çeker.
+
+      WMI'nin `AdapterRAM` alanı uint32'dir — herhangi bir modern kartta 4 GB'ta
+      doygunluğa ulaşır, bu yüzden doğrudan kayıt defterindeki
+      `HardwareInformation.qwMemorySize` değerine (REG_QWORD, 64 bit) gideriz.
+      Bu, NVIDIA / AMD / Intel denetim panellerinin bildirdiği değerle uyuşur.
+      DXGI / Vortice bağımlılığı yok.
+
+      Bir hata bildirirken "gerçekte hangi ekran kartı + sürücü + VRAM'a sahip
+      olduğunu" almak için bunu kullan. Crash Doctor donanım yükseltmez.
   details:
     en:
       - "Source 1: Win32_VideoController WMI."
@@ -36,3 +62,13 @@
       - "Источник 2: HKLM\\SYSTEM\\CurrentControlSet\\Control\\Class\\{4d36e968-...}\\NNNN\\HardwareInformation.qwMemorySize."
       - "Только просмотр — «Применить» не делает ничего деструктивного."
       - "Откат не предусмотрен (read-only)."
+    zh:
+      - "来源 1：Win32_VideoController WMI。"
+      - "来源 2：HKLM\\SYSTEM\\CurrentControlSet\\Control\\Class\\{4d36e968-...}\\NNNN\\HardwareInformation.qwMemorySize。"
+      - "只读 —— 应用按钮不会做任何破坏性操作。"
+      - "不可撤销（只读）。"
+    tr:
+      - "Kaynak 1: Win32_VideoController WMI."
+      - "Kaynak 2: HKLM\\SYSTEM\\CurrentControlSet\\Control\\Class\\{4d36e968-...}\\NNNN\\HardwareInformation.qwMemorySize."
+      - "Salt okunur — Uygula düğmesi yıkıcı bir şey yapmaz."
+      - "Geri alınamaz (salt okunur)."

@@ -7,6 +7,8 @@
   title:
     en: "Late-game crash at x8 speed (native access violation)"
     ru: "Краш в поздней игре на ускорении x8 (нативная ошибка)"
+    zh: "后期 x8 速度下崩溃（原生访问冲突）"
+    tr: "Geç oyunda x8 hızında çökme (yerel erişim ihlali)"
   description:
     en: |
       The campaign has grown to a size where TaleWorlds' native HourlyTick races
@@ -25,6 +27,22 @@
       ошибкой доступа к памяти в нативном коде. Очистка осиротевших объектов
       этого не лечит — корень проблемы в количестве отрядов, а не в мусоре.
       Crash Doctor сам режет скорость до x4 в такой кампании.
+    zh: |
+      战役已经膨胀到这样一个规模：TaleWorlds 的原生 HourlyTick 在
+      UnstoppableFastForward（x8）下与自己产生竞争。世界状态各阶段之间有一个短暂的
+      窗口，其中存在一个瞬时空指针——在 x1..x4 时，下一个 tick 几乎从不落在那个窗口里；
+      而在 x8、有 800+ 个队伍时，它会稳定地落进去，于是进程在非托管代码中以 0xC0000005
+      崩溃。清理孤立对象解决不了这个问题——根源是队伍数量，不是孤立对象。当战役达到
+      这种规模时，Crash Doctor 会自动限制速度。
+    tr: |
+      Sefer, TaleWorlds'ün yerel HourlyTick'inin UnstoppableFastForward (x8)
+      altında kendisiyle yarıştığı bir boyuta ulaştı. Dünya-durumu aşamaları
+      arasındaki kısa bir pencere geçici bir boş işaretçi içerir — x1..x4'te bir
+      sonraki tick neredeyse hiç o pencereye denk gelmez, 800+ grupla x8'de ise
+      düzenli olarak denk gelir ve süreç yönetilmeyen kodda 0xC0000005 ile ölür.
+      Sahipsiz nesneleri temizlemek bunu düzeltmez — kök sebep grup sayısıdır,
+      sahipsiz nesneler değil. Bir sefer bu ölçeğe ulaştığında Crash Doctor hızı
+      otomatik olarak sınırlar.
   fix:
     en:
       - "Stay at x4 maximum on the campaign map (don't press the x8 hotkey)."
@@ -36,6 +54,16 @@
       - "Crash Doctor уже сам режет скорость в такой кампании — patch на Campaign.TimeControlMode понижает x8 до x4, когда отрядов ≥800 или после первой нативной ошибки в этой сессии."
       - "По желанию: проредить отряды через консольные читы (Ctrl+Alt+~ → campaign.kill_random_clan), потом можно вернуться к x8."
       - "Уменьши скорость спавна отрядов в настройках мода-виновника (лимиты орков/троллей/гоблинов в модах класса LoreHardcore)."
+    zh:
+      - "在战役地图上最多保持 x4（不要按 x8 快捷键）。"
+      - "Crash Doctor 的后期速度限制已经生效——当队伍数量 ≥ 800 或本次会话首次发生原生访问冲突后，Campaign.TimeControlMode 的 setter 被修补为把 x8 降为 x4。"
+      - "可选：在重新启用 x8 之前，用游戏内作弊指令削减队伍（Ctrl+Alt+~ → campaign.kill_random_clan）。"
+      - "在那个肇事模组的设置里降低队伍生成速率（LoreHardcore 这类模组里的兽人 / 巨魔 / 哥布林生成上限）。"
+    tr:
+      - "Sefer haritasında en fazla x4'te kal (x8 kısayoluna basma)."
+      - "Crash Doctor'ın geç oyun hız sınırı zaten etkin — grup sayısı ≥ 800 olduğunda veya bu oturumda ilk yerel erişim ihlalinden sonra Campaign.TimeControlMode setter'ı x8'i x4'e düşürecek şekilde yamalanır."
+      - "İsteğe bağlı: x8'i yeniden açmadan önce oyun içi hilelerle grupları azalt (Ctrl+Alt+~ → campaign.kill_random_clan)."
+      - "Grupların oluşma hızını sorunlu modun ayarlarından düşür (LoreHardcore türü modlarda ork/trol/goblin oluşma sınırları)."
   match:
     all:
       - any:

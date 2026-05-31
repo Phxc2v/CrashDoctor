@@ -2,6 +2,8 @@
   title:
     en: "Increase pagefile to 40 / 60 GB for TOR"
     ru: "Увеличить pagefile до 40 / 60 ГБ для TOR"
+    zh: "为 TOR 将页面文件增大到 40 / 60 GB"
+    tr: "TOR için sayfa dosyasını 40 / 60 GB'a çıkar"
   description:
     en: |
       TOR ships ~30 GB of assets and recompiles thousands of shader variants on the
@@ -26,6 +28,30 @@
       pagefile 800 / 4096 МБ остаётся на C: (чтобы Windows мог писать дампы памяти
       на BSOD), а большой TOR-овский уходит на другой диск. C: pagefile никогда
       молча не удаляется.
+    zh: |
+      TOR 包含约 30 GB 的素材，并在首次运行时重新编译数千个着色器变体。在 Windows
+      自动管理页面文件的情况下，提交内存经常不够用，于是游戏崩溃并报
+      «Application crashed because it could not get new memory»。把页面文件设为
+      40000 / 60000 MB（初始 / 最大）即可解决。
+
+      盘符的选择是自动的。如果 C: 盘有 ≥ 65 GB 空闲空间，页面文件就保留在 C: 上
+      （Windows 的默认方式）。如果 C: 盘空间不足，但另一个固定磁盘有 ≥ 65 GB 空闲，
+      Crash Doctor 会拆分：在 C: 上保留一个小的 800 / 4096 MB 项（这样在蓝屏时
+      Windows 仍能写入内核内存转储），而 TOR 所需的大项放到另一个磁盘上。C: 上的
+      页面文件永远不会被悄悄删除。
+    tr: |
+      TOR yaklaşık 30 GB içerik içerir ve ilk çalıştırmada binlerce gölgelendirici
+      (shader) çeşidini yeniden derler. Windows'un yönettiği sayfa dosyasıyla taahhüt
+      belleği çoğu zaman yetmez ve oyun «Application crashed because it could not get
+      new memory» hatasıyla çöker. Sayfa dosyasını 40000 / 60000 MB (başlangıç / azami)
+      olarak ayarlamak bunu düzeltir.
+
+      Disk seçimi otomatiktir. C: sürücüsünde ≥ 65 GB boş alan varsa sayfa dosyası
+      C: üzerinde kalır (Windows'un standart yöntemi). C: çok küçükse ama başka bir
+      sabit sürücüde ≥ 65 GB boş varsa, Crash Doctor bölme yapar: C: üzerinde küçük
+      bir 800 / 4096 MB girdi kalır (böylece mavi ekranda Windows yine de çekirdek
+      bellek dökümü yazabilir), TOR boyutundaki büyük girdi ise diğer sürücüye gider.
+      C: sayfa dosyası asla sessizce kaldırılmaz.
   details:
     en:
       - "Click Apply: Windows shows one UAC consent dialog — click Yes."
@@ -39,3 +65,15 @@
       - "Ветка реестра HKLM сохраняется в .reg-бэкап перед перезаписью."
       - "Откат возможен из вкладки Журнал."
       - "Нужно ≥ 65 ГБ свободно на любом фиксированном диске. Если это не C:, на C: останется маленький pagefile 800 / 4096 МБ для дампов памяти ядра."
+    zh:
+      - "点击「应用」：Windows 会弹出一个 UAC 同意对话框 — 点击「是」。"
+      - "需要重启 — Windows 只在开机时读取页面文件设置。"
+      - "在重写之前，HKLM 注册表分支会导出为 .reg 备份。"
+      - "可从「历史」标签页撤销。"
+      - "需要任意固定磁盘上有 ≥ 65 GB 空闲空间。如果该磁盘不是 C:，C: 上会保留一个小的 800 / 4096 MB 页面文件用于内核内存转储。"
+    tr:
+      - "«Uygula»'ya tıkla: Windows tek bir UAC onay penceresi gösterir — «Evet»'e tıkla."
+      - "Yeniden başlatma gerekir — Windows sayfa dosyası ayarlarını yalnızca açılışta okur."
+      - "Yeniden yazmadan önce HKLM kayıt defteri dalı bir .reg yedeğine aktarılır."
+      - "Geçmiş sekmesinden geri alınabilir."
+      - "Herhangi bir sabit sürücüde ≥ 65 GB boş alan gerekir. Bu sürücü C: değilse, çekirdek bellek dökümleri için C: üzerinde küçük bir 800 / 4096 MB sayfa dosyası tutulur."

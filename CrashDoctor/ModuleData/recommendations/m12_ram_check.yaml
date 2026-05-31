@@ -2,6 +2,8 @@
   title:
     en: "RAM check — TOR needs 16 GB+"
     ru: "Проверка RAM — TOR'у нужно 16+ ГБ"
+    zh: "内存检查 — TOR 需要 16 GB 以上"
+    tr: "RAM kontrolü — TOR 16 GB+ ister"
   description:
     en: |
       Read-only check. Bannerlord docs say 6 GB minimum / 8 GB recommended for vanilla,
@@ -20,6 +22,22 @@
 
       Crash Doctor не может апгрейдить железо. Карточка просто говорит — твой
       ПК соответствует требованиям или нет.
+    zh: |
+      只读检查。Bannerlord 文档说原版最低 6 GB / 推荐 8 GB，但 TOR (The Old Realms)
+      实际上需要 16 GB 或更多 — 攻城战的工作集峰值达到 14 GB，大地图区域为 10–12 GB。
+      低于这个数就会遇到页面文件抖动和着色器编译内存不足的崩溃，任何 Tune-Up 都修不好。
+
+      Crash Doctor 无法升级硬件。这张卡片只是告诉你你的机器是否达标。
+    tr: |
+      Salt okunur bir kontrol. Bannerlord belgeleri orijinal oyun için en az 6 GB /
+      önerilen 8 GB der, ama TOR (The Old Realms) güvenilir biçimde 16 GB veya daha
+      fazlasını ister — kuşatma savaşları 14 GB çalışma kümesinde tepe yapar, büyük
+      harita bölgeleri 10–12 GB'dir. Bunun altında sayfa dosyası tıkanması ve
+      gölgelendirici derleme bellek yetersizliği çökmeleri yaşarsın; hiçbir Tune-Up
+      bunu düzeltemez.
+
+      Crash Doctor donanımı yükseltemez. Bu kart yalnızca makinenin eşiği geçip
+      geçmediğini söyler.
   details:
     en:
       - "Source: Win32_PhysicalMemory + GlobalMemoryStatusEx."
@@ -31,3 +49,13 @@
       - "Порог: 8 ГБ (ваниль) / 16 ГБ (обнаружен TOR)."
       - "«Применить» открывает страницу Microsoft про апгрейд RAM — Crash Doctor железо не ставит."
       - "Откат не предусмотрен (read-only)."
+    zh:
+      - "来源：Win32_PhysicalMemory + GlobalMemoryStatusEx。"
+      - "阈值：8 GB（原版）/ 16 GB（检测到 TOR）。"
+      - "「应用」会打开微软的内存升级文档 — Crash Doctor 从不安装硬件。"
+      - "不可撤销（只读）。"
+    tr:
+      - "Kaynak: Win32_PhysicalMemory + GlobalMemoryStatusEx."
+      - "Eşik: 8 GB (orijinal) / 16 GB (TOR algılandı)."
+      - "«Uygula» Microsoft'un RAM yükseltme belgelerini açar — Crash Doctor asla donanım kurmaz."
+      - "Geri alınamaz (salt okunur)."
