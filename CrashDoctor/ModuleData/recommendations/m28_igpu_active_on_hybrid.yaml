@@ -2,6 +2,8 @@
   title:
     en: "Pin Bannerlord to the high-performance GPU (hybrid laptop)"
     ru: "Привязать Bannerlord к мощной видеокарте (гибридный лэптоп)"
+    zh: "将 Bannerlord 绑定到高性能显卡（混合显卡笔记本）"
+    tr: "Bannerlord'u yüksek performanslı ekran kartına sabitle (hibrit dizüstü)"
   description:
     en: |
       Hybrid-graphics laptops ship with two GPUs: a low-power integrated
@@ -73,6 +75,72 @@
 
       Откатываемо: Rollback вернёт прежнее значение реестра (или удалит
       запись, если её раньше не было).
+    zh: |
+      混合显卡笔记本配有两块显卡：一块低功耗的核显
+      （Intel UHD / Iris、AMD Vega / Radeon Graphics）和一块独立显卡
+      （NVIDIA GeForce / RTX / GTX、AMD Radeon RX / Pro、Intel Arc）。
+      显示器输出常常接在核显上，在没有明确的逐应用偏好时，Windows
+      会在核显上运行 Bannerlord —— 即便旁边就有一块强大的独立显卡
+      闲置着。核显无法处理 The Old Realms 的地形着色器；在第一场大型
+      战斗或攻城战中，你会在 Bake Terrain 时崩溃（0xC0000005），而且
+      崩溃发生在游戏写存档的中途，导致存档也被损坏。
+
+      这张卡片在以下条件全部满足时出现：
+        1. 这台电脑同时拥有核显和独立显卡。
+        2. 高性能偏好尚未在
+           HKCU\Software\Microsoft\DirectX\UserGpuPreferences 中绑定。
+        3. 近期崩溃日志证明游戏运行在核显上：
+           要么 crash_tags 显示核显有活跃的 Current Mode 而独显
+           Current Mode=Unknown，要么 rgl_log 大量出现
+           "Missing shader from sack: pbr_terrain" 超过阈值。
+
+      应用会写入一个逐用户的注册表值：
+        HKCU\Software\Microsoft\DirectX\UserGpuPreferences\<Bannerlord.exe>
+          = "GpuPreference=2;"
+      等同于 设置 → 系统 → 显示 → 图形 → Bannerlord →
+      高性能，只是你不必自己去找那个 exe。
+      不需要管理员权限，不需要重启 Windows。重启 Bannerlord 后新显卡
+      才会生效。
+
+      如果应用后独立显卡仍然没有启用，笔记本 BIOS 可能有一个硬件 MUX
+      开关或「仅独显」模式覆盖了 Windows 的偏好 —— 检查 BIOS 的
+      Graphics 页面。
+
+      可撤销：回退会还原之前的注册表值（如果之前没有该项则删除它）。
+    tr: |
+      Hibrit grafikli dizüstü bilgisayarlar iki ekran kartıyla gelir: düşük güçlü bir
+      tümleşik ekran kartı (Intel UHD / Iris, AMD Vega / Radeon Graphics) ve bir ayrık
+      ekran kartı (NVIDIA GeForce / RTX / GTX, AMD Radeon RX / Pro, Intel Arc).
+      Monitör çıkışı genellikle tümleşik ekran kartı üzerinden bağlanır ve uygulamaya
+      özel açık bir tercih olmadan Windows, hemen yanında güçlü bir ayrık ekran kartı
+      boşta dururken bile Bannerlord'u onun üzerinde çalıştırır. Tümleşik ekran kartı
+      The Old Realms arazi gölgelendiricilerini kaldıramaz; ilk büyük savaşta ya da
+      kuşatmada Bake Terrain'de bir çökme (0xC0000005) alırsınız ve çökme oyunu kayıt
+      yazımının ortasında yakaladığı için kayıt da bozulur.
+
+      Bu kart, ŞU koşulların TÜMÜ doğru olduğunda ortaya çıkar:
+        1. Bilgisayarda hem tümleşik hem de ayrık bir ekran kartı var.
+        2. Yüksek performans tercihi HKCU\Software\Microsoft\DirectX\UserGpuPreferences
+           içinde henüz sabitlenmemiş.
+        3. Son çökme günlükleri oyunun tümleşik ekran kartında çalıştığını kanıtlıyor:
+           ya crash_tags tümleşik kartı etkin bir Current Mode ile ve ayrık kartı
+           Current Mode=Unknown ile gösteriyor, YA DA rgl_log eşiğin üzerinde
+           "Missing shader from sack: pbr_terrain" mesajıyla doluyor.
+
+      Uygula, kullanıcı başına tek bir kayıt defteri değeri yazar:
+        HKCU\Software\Microsoft\DirectX\UserGpuPreferences\<Bannerlord.exe>
+          = "GpuPreference=2;"
+      Ayarlar → Sistem → Ekran → Grafikler → Bannerlord → Yüksek performans ile aynı,
+      yalnızca exe'yi kendiniz aramak zorunda kalmazsınız.
+      Yönetici hakları yok, Windows yeniden başlatması yok. Yeni ekran kartının geçerli
+      olması için Bannerlord'u yeniden başlatın.
+
+      Uygula'dan sonra ayrık ekran kartı yine de devreye girmezse, dizüstü BIOS'unda
+      Windows tercihini geçersiz kılan donanımsal bir MUX anahtarı ya da "yalnızca ayrık"
+      modu olabilir — BIOS Graphics sayfasını kontrol edin.
+
+      Geri alınabilir: Geri Al, önceki kayıt defteri değerini geri yükler (ya da önceden
+      yoksa girişi kaldırır).
   details:
     en:
       - "Source: HKCU\\Software\\Microsoft\\DirectX\\UserGpuPreferences\\<Bannerlord.exe path>"
@@ -90,3 +158,19 @@
       - "Откатываемо: Rollback запишет прежнее значение (или удалит запись, если её не было)."
       - "Карточка прячется на стационарных ПК с одной видеокартой, на лэптопах где дискретная уже активна, и когда привязка уже выставлена."
       - "Если в BIOS лэптопа есть MUX-переключатель или режим «только дискретная» — он перекрывает настройку Windows."
+    zh:
+      - "来源：HKCU\\Software\\Microsoft\\DirectX\\UserGpuPreferences\\<Bannerlord.exe 路径>"
+      - "目标：\"GpuPreference=2;\"（高性能显卡）"
+      - "仅针对用户：不需要管理员权限，没有 UAC 提示，不做系统范围的更改。"
+      - "无需重启：重启 Bannerlord，下次启动即使用新显卡。"
+      - "可撤销：回退会写回之前的值（或删除该项）。"
+      - "在单显卡台式机上、在独显已经活跃的笔记本上、以及当高性能偏好已绑定时，卡片会隐藏。"
+      - "如果 BIOS 有 MUX 开关或「仅独显」模式，它会覆盖 Windows 的偏好。"
+    tr:
+      - "Kaynak: HKCU\\Software\\Microsoft\\DirectX\\UserGpuPreferences\\<Bannerlord.exe yolu>"
+      - "Hedef: \"GpuPreference=2;\" (yüksek performanslı ekran kartı)"
+      - "Yalnızca kullanıcı başına: yönetici hakları yok, UAC istemi yok, sistem genelinde değişiklik yok."
+      - "Yeniden başlatma yok: Bannerlord'u yeniden başlatın, bir sonraki açılışta yeni ekran kartı kullanılır."
+      - "Geri alınabilir: Geri Al, önceki değeri geri yazar (ya da girişi kaldırır)."
+      - "Tek ekran kartlı masaüstlerinde, ayrık kartın zaten etkin olduğu dizüstülerde ve yüksek performans tercihi zaten sabitlenmişse kart gizlenir."
+      - "BIOS'ta bir MUX anahtarı ya da 'yalnızca ayrık' modu varsa, bu Windows tercihini geçersiz kılar."

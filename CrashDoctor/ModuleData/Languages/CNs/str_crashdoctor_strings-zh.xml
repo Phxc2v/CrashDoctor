@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" type="string">
+  <tags>
+    <tag language="简体中文" />
+  </tags>
+  <strings>
+    <string id="cd_open" text="Crash Doctor" />
+    <string id="cd_window_title" text="Crash Doctor" />
+    <string id="cd_no_crashes" text="未检测到崩溃。安心游戏吧。" />
+    <string id="cd_selftest_fail" text="Crash Doctor 自检失败：{REASON}。请查看 Modules/CrashDoctor/crashdoctor.log。" />
+    <string id="cd_internal_error" text="Crash Doctor 遇到内部错误。请查看 crashdoctor.log。" />
+    <string id="cd_status_scanning" text="正在扫描……" />
+    <string id="cd_status_count" text="{COUNT} 个崩溃" />
+    <string id="cd_btn_refresh" text="刷新" />
+    <string id="cd_btn_clear" text="清除……" />
+    <string id="cd_btn_open_folder" text="打开文件夹" />
+    <string id="cd_btn_open_log_folder" text="打开日志文件夹" />
+    <string id="cd_btn_copy" text="复制" />
+    <string id="cd_btn_export" text="导出" />
+    <string id="cd_btn_close" text="关闭" />
+    <string id="cd_btn_force_crash" text="强制崩溃（测试）" />
+    <string id="cd_section_crashes" text="崩溃" />
+    <string id="cd_section_fix" text="修复步骤：" />
+    <string id="cd_section_evidence" text="匹配的日志行：" />
+    <string id="cd_section_diagnoses" text="诊断" />
+    <string id="cd_severity_critical" text="严重" />
+    <string id="cd_severity_warning" text="警告" />
+    <string id="cd_severity_info" text="信息" />
+    <string id="cd_severity_unknown" text="未知" />
+    <string id="cd_confidence_high" text="高可信度" />
+    <string id="cd_confidence_medium" text="中等可信度" />
+    <string id="cd_confidence_low" text="低可信度" />
+    <string id="cd_unrecognized_title" text="无法识别的崩溃" />
+    <string id="cd_unrecognized_desc" text="暂时没有规则匹配。请点击“导出”，并将 .txt 文件发送到我们的 Telegram 频道：https://t.me/CodeRickTg —— 我们会为此崩溃添加规则。" />
+    <string id="cd_clear_dialog_title" text="删除崩溃日志？" />
+    <string id="cd_clear_dialog_keep" text="保留最近 3 个崩溃（推荐）" />
+    <string id="cd_clear_dialog_delete_dump" text="同时删除 .dmp 内存转储文件" />
+    <string id="cd_clear_dialog_confirm" text="删除" />
+    <string id="cd_clear_dialog_cancel" text="取消" />
+    <string id="cd_clear_dialog_recycle_note" text="文件将移至 Windows 回收站，可以恢复。" />
+    <string id="cd_clear_done" text="已删除 {COUNT} 个文件。如有需要，可从 Windows 回收站恢复。" />
+    <string id="cd_clear_preview" text="将删除：{TOTAL} 个崩溃文件夹中的 {DEL} 个" />
+    <string id="cd_checkbox_on" text="[X]" />
+    <string id="cd_checkbox_off" text="[ ]" />
+
+    <!-- v1.1.0 — tabs / tune-up / history -->
+    <string id="cd_tab_crashes" text="崩溃诊断" />
+    <string id="cd_tab_tuneup" text="系统优化" />
+    <string id="cd_tab_history" text="历史记录" />
+    <string id="cd_tab_saves" text="存档" />
+    <string id="cd_tab_mods" text="模组" />
+    <string id="cd_saves_btn_rescan" text="重新扫描" />
+    <string id="cd_saves_btn_open_folder" text="打开存档文件夹" />
+    <string id="cd_saves_no_saves" text="在存档文件夹中未找到存档。" />
+    <string id="cd_saves_summary" text="存档：{TOTAL}，模组不匹配：{MISMATCH}。" />
+
+    <string id="cd_tuneup_scanning" text="正在检查系统……" />
+    <string id="cd_tuneup_summary" text="发现 {ISSUES} 个问题，{HEALTHY} 项检查通过" />
+    <string id="cd_tuneup_summary_actionable" text="发现 {COUNT} 个需要处理的问题。" />
+    <string id="cd_tuneup_all_good" text="未发现问题。如果仍然崩溃，请打开“崩溃诊断”标签页。" />
+    <string id="cd_tuneup_scan_failed" text="扫描失败。请查看 crashdoctor.log。" />
+    <string id="cd_tuneup_evidence_header" text="证据：" />
+    <string id="cd_tuneup_btn_rescan" text="重新扫描" />
+    <string id="cd_tuneup_btn_apply" text="应用" />
+    <string id="cd_tuneup_btn_ignore" text="忽略" />
+    <string id="cd_tuneup_btn_details_show" text="详情" />
+    <string id="cd_tuneup_btn_details_hide" text="隐藏详情" />
+    <string id="cd_tuneup_btn_open_uac" text="打开 UAC 设置" />
+    <string id="cd_details_btn_close" text="关闭" />
+    <string id="cd_details_header" text="更多详情：" />
+    <string id="cd_tuneup_badge_admin" text="需要管理员权限" />
+    <string id="cd_tuneup_badge_reboot" text="需要重启" />
+    <string id="cd_tuneup_badge_reversible" text="可撤销" />
+    <string id="cd_tuneup_badge_no_undo" text="不可回滚" />
+    <string id="cd_tuneup_reboot_pending" text="⟳ 设置已应用 —— 请重启电脑以生效。" />
+    <string id="cd_apply_reboot_title" text="需要重启" />
+    <string id="cd_apply_reboot_default" text="设置已应用。请重启电脑以生效。" />
+    <string id="cd_apply_done_title" text="已应用" />
+    <string id="cd_apply_done_default" text="设置已应用。" />
+    <string id="cd_apply_failed_title" text="应用失败" />
+    <string id="cd_apply_failed_default" text="应用失败。请查看 crashdoctor.log。" />
+    <string id="cd_btn_ok" text="确定" />
+    <string id="cd_tuneup_btn_show_all" text="显示全部" />
+    <string id="cd_tuneup_btn_force_shader_cleanup" text="清理着色器缓存" />
+    <string id="cd_tuneup_btn_show_actionable" text="仅显示需处理项" />
+    <string id="cd_tuneup_summary_show_all" text="显示全部 {TOTAL} 个模块（{ACTIONABLE} 个需处理，{HEALTHY} 个正常，{SKIPPED} 个不适用）。" />
+
+    <string id="cd_history_count" text="{COUNT} 条记录" />
+    <string id="cd_history_empty" text="暂无修复历史记录。" />
+    <string id="cd_history_load_failed" text="加载历史记录失败。请查看 crashdoctor.log。" />
+    <string id="cd_history_btn_refresh" text="刷新" />
+    <string id="cd_history_btn_clear_all" text="清除历史记录" />
+    <string id="cd_history_result_ok" text="已应用" />
+    <string id="cd_history_result_fail" text="失败" />
+    <string id="cd_history_items_count" text="影响 {COUNT} 项" />
+    <string id="cd_history_reboot_pending" text="待重启" />
+    <string id="cd_history_rolled_back_at" text="已于 {WHEN} 回滚" />
+    <string id="cd_history_btn_rollback" text="回滚" />
+
+    <!-- NEW (2026-05-14) Emergency Save service strings. -->
+    <string id="cd_new_badge" text="新" />
+    <string id="cd_emergency_save_title" text="崩溃前紧急存档" />
+    <string id="cd_emergency_save_hint" text="如果游戏即将崩溃，Crash Doctor 会尝试最后进行一次另存为，以免你丢失数小时未保存的进度。默认：开启。仅当它与其他存档相关模组冲突时才关闭。" />
+    <string id="cd_emergency_save_made" text="已创建紧急存档：{NAME}" />
+    <string id="cd_emergency_save_failed" text="紧急存档未运行：{REASON}" />
+    <string id="cd_emergency_save_disabled" text="紧急存档已在设置中关闭。" />
+    <string id="cd_new_banner_emergency_save_on" text="崩溃前紧急存档已启用 —— 你的进度受到保护。" />
+    <string id="cd_new_banner_emergency_save_off" text="新功能可用：崩溃前紧急存档（当前在 CrashDoctorSettings.xml 中为关闭）。" />
+    <string id="cd_status_on" text="开" />
+    <string id="cd_status_off" text="关" />
+    <string id="cd_toggle_on_prefix" text="● 开" />
+    <string id="cd_toggle_off_prefix" text="○ 关" />
+    <string id="cd_toggle_emergency_save" text="崩溃前紧急存档" />
+    <string id="cd_toggle_native_crash_log" text="原生崩溃日志记录" />
+    <string id="cd_native_crash_log_title" text="原生崩溃日志记录" />
+    <string id="cd_native_crash_log_hint" text="开启后，当发生原生崩溃（访问冲突、堆栈溢出、堆损坏）时，会向 crashdoctor.log 写入一行摘要。仅观察 —— 不会改变崩溃本身，TaleWorlds 通常的转储仍会发生。默认关闭 —— 如需额外日志行可自行开启。" />
+    <string id="cd_patch_conflicts_badge" text="{COUNT} 个方法被多个模组修补 —— 点击查看 crashdoctor.log" />
+    <string id="cd_tab_settings" text="设置  ★" />
+    <string id="cd_toggle_ui_error_patching" text="界面错误吞噬" />
+    <string id="cd_settings_title" text="Crash Doctor 设置" />
+    <string id="cd_settings_per_mod_title" text="按模组吞噬错误" />
+    <string id="cd_hint_emergency_save" text="当游戏即将因 .NET 错误崩溃时，Crash Doctor 会尝试最后进行一次另存为，以免你丢失数小时进度。保存为 “CrashDoctor_Emergency_&lt;timestamp&gt;”。" />
+    <string id="cd_hint_native_crash_log" text="当发生原生崩溃（访问冲突、堆栈溢出、堆损坏）时，向 crashdoctor.log 写入一行摘要。崩溃本身不受影响 —— TaleWorlds 的转储仍会发生。" />
+    <string id="cd_hint_ui_error_patching" text="包裹一组精选的界面刷新方法（百科、物品栏、队伍、家族、王国、任务）。仅覆盖界面 —— 战斗、AI、每日刷新、任务场景不受保护。若还要包裹某个模组的游戏逻辑，请在下方勾选该模组。" />
+    <string id="cd_hint_per_mod_section" text="勾选某个模组，用同样的出错吞噬保护包裹其任务回调（OnAgentHit、OnMissionTick 等）。当某个模组明显损坏但你想边等修复边继续游戏时使用。" />
+    <string id="cd_toggle_nre_safety_patches" text="空引用安全网（工资 / 食物 / AI 刷新）" />
+    <string id="cd_hint_nre_safety_patches" text="捕获 TOR_Core 工资与食物消耗模型，以及每次 AI 每小时刷新中的空引用崩溃。这类崩溃发生在其他模组在队伍名册中留下“悬空”士兵时（已被移除却未清理的单位）。开启安全网后，出问题的队伍只会跳过该次刷新，游戏继续。默认开启。" />
+    <string id="cd_toggle_dangling_roster_cleanup" text="加载时清理悬空士兵" />
+    <string id="cd_hint_dangling_roster_cleanup" text="当你加载存档时，扫描每个队伍和定居点并移除损坏的士兵条目（不再存在的角色）。否则下一次 AI 刷新会因这些条目崩溃。未发现损坏条目时安全且静默。默认开启。" />
+
+  </strings>
+</base>

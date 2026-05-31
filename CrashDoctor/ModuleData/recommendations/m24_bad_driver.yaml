@@ -2,6 +2,8 @@
   title:
     en: "Known-bad GPU driver detection"
     ru: "Детект GPU-драйвера из known-bad списка"
+    zh: "已知问题显卡驱动程序检测"
+    tr: "Bilinen sorunlu ekran kartı sürücüsü tespiti"
   description:
     en: |
       Looks up your live driver version against a shipped JSON manifest of
@@ -27,6 +29,30 @@
 
       Манифест — в ModuleData/bad_drivers.json, редактируется данными. Нашёл
       новый плохой драйвер? Напиши в t.me/CodeRickTg, добавим запись.
+    zh: |
+      将你的实时驱动程序版本与随附的 JSON 清单进行比对，该清单记录了
+      社区在 Telegram 频道上报告的已知问题版本。
+      给出确切原因（例如 "TDR cascade in TOR shader compile"）以及
+      推荐的操作（升级到 N+ / 回退到 N-）。
+
+      Crash Doctor 从不安装或回退驱动程序 —— 风险太高且因厂商而异。
+      应用会打开相应厂商的驱动程序页面。安装由你自己完成。
+
+      清单位于 ModuleData/bad_drivers.json，以数据方式编辑。
+      发现了新的问题驱动程序？在 t.me/CodeRickTg 留言，我们会加一条记录。
+    tr: |
+      Canlı sürücü sürümünüzü, topluluğun Telegram kanalında bildirdiği bilinen
+      sorunlu sürümlerin paketlenmiş bir JSON bildirimine karşı arar.
+      Tam nedeni (örneğin "TDR cascade in TOR shader compile") ve önerilen
+      eylemi (N+ sürümüne yükselt / N- sürümüne geri dön) gösterir.
+
+      Crash Doctor asla sürücü kurmaz veya geri almaz — fazla riskli ve üreticiye
+      özgü. Uygula ilgili üreticinin sürücü sayfasını açar. Kurulumu kendiniz
+      yaparsınız.
+
+      Bildirim ModuleData/bad_drivers.json içinde yer alır ve veri olarak düzenlenir.
+      Yeni bir sorunlu sürücü mü buldunuz? t.me/CodeRickTg adresine not bırakın, bir
+      satır ekleyelim.
   details:
     en:
       - "Source: ModuleData/bad_drivers.json (manifest)."
@@ -38,3 +64,13 @@
       - "Сравнение: vendor-подстрока в имени GPU + точная строка версии драйвера."
       - "«Применить» откроет страницу драйверов vendor'а (NVIDIA / AMD / Intel)."
       - "Откат не предусмотрен — кнопка только открывает URL."
+    zh:
+      - "来源：ModuleData/bad_drivers.json（清单）。"
+      - "匹配：显卡名称中的厂商子串 + 精确的驱动程序版本字符串。"
+      - "应用会打开厂商驱动程序页面（NVIDIA / AMD / Intel）。"
+      - "不可撤销 —— 应用只会打开 URL。"
+    tr:
+      - "Kaynak: ModuleData/bad_drivers.json (bildirim)."
+      - "Eşleşme: ekran kartı adındaki üretici alt dizesi + tam sürücü sürümü dizesi."
+      - "Uygula üreticinin sürücü sayfasını açar (NVIDIA / AMD / Intel)."
+      - "Geri alınamaz — düğme yalnızca URL açar."

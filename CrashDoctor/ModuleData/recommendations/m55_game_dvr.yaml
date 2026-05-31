@@ -2,6 +2,8 @@
   title:
     en: "Disable Game DVR / Xbox Game Bar"
     ru: "Отключить Game DVR / Xbox Game Bar"
+    zh: "禁用 Game DVR / Xbox Game Bar"
+    tr: "Game DVR / Xbox Game Bar'ı devre dışı bırak"
   description:
     en: |
       Windows' background recording (Game DVR / Xbox Game Bar) hooks DXGI to record gameplay
@@ -13,6 +15,16 @@
       геймплея и съедает 5–15 % FPS в Bannerlord. Также документированный триггер крашей
       «GPU device removed» в долгих битвах TOR. Сама Microsoft рекомендует выключать его
       для тяжёлых игр.
+    zh: |
+      Windows 的后台录制（Game DVR / Xbox Game Bar）会挂钩 DXGI 来录制游戏画面，
+      在 Bannerlord 中偷走 5–15% 的 FPS。它也是 TOR 长时间战斗中「GPU device removed」
+      崩溃的一个有记录的诱因。Microsoft 自己的性能指南也建议为任何高负载游戏关闭它。
+    tr: |
+      Windows'un arka plan kaydı (Game DVR / Xbox Game Bar), oyunu kaydetmek için
+      DXGI'ye kanca takar ve Bannerlord'da %5-15 FPS çalar. Ayrıca uzun TOR savaşları
+      sırasında "GPU device removed" çökmeleri için belgelenmiş bir tetikleyicidir.
+      Microsoft'un kendi performans kılavuzları, herhangi bir zorlu oyun için bunu
+      kapatmayı önerir.
   details:
     en:
       - "Click Apply: Windows shows one UAC consent dialog — click Yes."
@@ -24,3 +36,13 @@
       - "Действует сразу — перезагрузка не нужна."
       - "Ставит HKLM Policies AllowGameDVR=0, HKCU GameDVR_Enabled=0, AppCaptureEnabled=0."
       - "Откат — из вкладки Журнал."
+    zh:
+      - "点击「应用」：Windows 会弹出一个 UAC 同意对话框——点击「是」。"
+      - "立即生效——无需重启。"
+      - "设置 HKLM Policies AllowGameDVR=0、HKCU GameDVR_Enabled=0、AppCaptureEnabled=0。"
+      - "可从「历史」选项卡撤销。"
+    tr:
+      - "Uygula'ya tıklayın: Windows tek bir UAC onay iletişim kutusu gösterir — Evet'e tıklayın."
+      - "Anında etkili olur — yeniden başlatma gerekmez."
+      - "HKLM Policies AllowGameDVR=0, HKCU GameDVR_Enabled=0, AppCaptureEnabled=0 olarak ayarlar."
+      - "Geçmiş sekmesinden geri alınabilir."

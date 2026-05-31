@@ -7,6 +7,8 @@
   title:
     en: "NullReferenceException while loading save"
     ru: "NullReferenceException при загрузке сейва"
+    zh: "加载存档时出现 NullReferenceException"
+    tr: "Kayıt yüklenirken NullReferenceException"
   description:
     en: |
       An object referenced by the save no longer exists in the current data set.
@@ -14,6 +16,12 @@
     ru: |
       Объект, на который ссылается сейв, больше не существует в текущих данных.
       Часто бывает после отключения/удаления мода, от которого зависел сейв.
+    zh: |
+      存档引用的某个对象在当前数据集中已不存在。常见于你禁用 / 卸载了该存档
+      所依赖的某个模组之后。
+    tr: |
+      Kaydın başvurduğu bir nesne artık mevcut veri kümesinde yok. Kaydın
+      bağımlı olduğu bir modu devre dışı bıraktığında / kaldırdığında sık görülür.
   fix:
     en:
       - "Re-enable any mods you disabled since this save was made."
@@ -23,6 +31,14 @@
       - "Включи обратно моды, которые отключал после создания сейва."
       - "Если мод удалён навсегда — этот сейв не вытащить, начинай новую."
       - "Через Save Editor for Bannerlord можно вычистить мёртвую ссылку (продвинуто)."
+    zh:
+      - "重新启用你在制作此存档之后禁用的所有模组。"
+      - "如果该模组已被彻底删除——这个存档没救了，开新游戏吧。"
+      - "用 Save Editor for Bannerlord 清除失效引用（进阶操作）。"
+    tr:
+      - "Bu kayıt yapıldıktan sonra devre dışı bıraktığın modları yeniden etkinleştir."
+      - "Mod kalıcı olarak silindiyse — yeni bir oyun başlat (bu kayıt gitti)."
+      - "Ölü referansı kaldırmak için Save Editor for Bannerlord kullan (ileri düzey)."
   match:
     all:
       - log_line:
@@ -42,6 +58,8 @@
   title:
     en: "Save file is corrupt or unreadable"
     ru: "Файл сохранения повреждён или нечитаем"
+    zh: "存档文件损坏或无法读取"
+    tr: "Kayıt dosyası bozuk veya okunamıyor"
   description:
     en: |
       The save file structure can't be parsed. Disk error during write or game
@@ -49,6 +67,11 @@
     ru: |
       Структура файла сейва не парсится. Ошибка диска при записи или игра
       крашнулась посреди сохранения.
+    zh: |
+      存档文件的结构无法解析。写入时发生磁盘错误，或者游戏在保存过程中崩溃了。
+    tr: |
+      Kayıt dosyasının yapısı ayrıştırılamıyor. Yazma sırasında disk hatası ya
+      da oyun kaydetme ortasında çöktü.
   fix:
     en:
       - "Try an earlier autosave (Continue → manage saves)."
@@ -58,6 +81,14 @@
       - "Загрузи более ранний автосейв (Continue → управление сейвами)."
       - "Проверь диск через chkdsk там, где лежит Documents/Mount and Blade II Bannerlord/Game Saves/."
       - "Сделай автосейвы чаще: Опции → Игра → Интервал автосохранения."
+    zh:
+      - "尝试更早的自动存档（Continue → 管理存档）。"
+      - "对 Documents/Mount and Blade II Bannerlord/Game Saves/ 所在的 SSD/HDD 运行 chkdsk。"
+      - "让自动存档更频繁：选项 → 游戏 → 自动存档间隔。"
+    tr:
+      - "Daha eski bir otomatik kaydı dene (Continue → kayıtları yönet)."
+      - "Documents/Mount and Blade II Bannerlord/Game Saves/ klasörünün bulunduğu SSD/HDD üzerinde chkdsk çalıştır."
+      - "Otomatik kayıtları sıklaştır: Seçenekler → Oyun → Otomatik Kayıt Aralığı."
   match:
     any:
       - log_line:
@@ -74,6 +105,8 @@
   title:
     en: "Late-game save load NRE — stale war party / clan reference"
     ru: "NRE при загрузке поздней кампании — мёртвая ссылка на клан/отряд"
+    zh: "后期存档读取空引用——失效的战队 / 氏族引用"
+    tr: "Geç oyun kayıt yükleme boş referansı — eskimiş savaş grubu / klan referansı"
   description:
     en: |
       WarPartyComponent.get_Clan or WarPartyComponent.OnFinalize hits null inside
@@ -87,6 +120,17 @@
       сейве осталась ссылка на уничтоженный клан или героя, а логика очистки
       её не удалила. Каскадирует с дня 100+, когда начинают умирать первые
       королевства.
+    zh: |
+      读取存档时，WarPartyComponent.get_Clan 或 WarPartyComponent.OnFinalize 在
+      MobileParty.OnRemoveParty / PreAfterLoad 内部遇到空值。存档里仍保留着对一个
+      已被消灭的氏族或英雄的引用，而清理逻辑没有移除这个反向引用。通常在第 100 天
+      之后、第一批王国开始覆灭时连锁发生。
+    tr: |
+      Kayıt yüklenirken WarPartyComponent.get_Clan veya WarPartyComponent.OnFinalize,
+      MobileParty.OnRemoveParty / PreAfterLoad içinde boş değere takılır. Kayıt,
+      yok edilmiş bir klana veya kahramana ait bir referansı tutuyor ama temizleme
+      mantığı geri-referansı kaldırmadı. İlk krallıklar ölmeye başladığında, 100.
+      gün civarında zincirleme olur.
   fix:
     en:
       - "Install Null Hero Fix from NexusMods (mod 4728) — patches the validator to skip dead refs."
@@ -96,6 +140,14 @@
       - "Поставь Null Hero Fix с NexusMods (мод 4728) — патчит валидатор, чтобы он пропускал мёртвые ссылки."
       - "Если падает на каждой загрузке — откатись на более ранний сейв."
       - "Если стоит мод Diplomacy — обнови; старые версии — самый частый источник."
+    zh:
+      - "从 NexusMods 安装 Null Hero Fix（mod 4728）——修补校验器，让它跳过失效引用。"
+      - "如果每次读取都崩溃——回退到更早的存档。"
+      - "如果在用 Diplomacy 模组——更新它；旧版本是最常见的根源。"
+    tr:
+      - "NexusMods'tan Null Hero Fix'i kur (mod 4728) — doğrulayıcıyı ölü referansları atlayacak şekilde yamalar."
+      - "Çökme her yükleme denemesinde oluyorsa daha eski bir kaydı yükle."
+      - "Diplomacy modu kullanıyorsan — güncelle; eski sürümler en yaygın kaynaktır."
   match:
     all:
       - any:
@@ -111,6 +163,88 @@
           - log_line:
               contains: "OnFinalize"
 
+- id: save.orphan_garrison_morale_load_nre
+  category: saves
+  severity: critical
+  confidence: high
+  evidence_source: "Field report 2026-05-31 (BEW) — IsGarrisonStarving NRE in Clan.AfterLoad; root cause confirmed against 1.3.15 decompiled DefaultPartyMoraleModel/SettlementHelper"
+  requires_sources: [log_line]
+  title:
+    en: "Save load NRE — garrison with no settlement (morale calc)"
+    ru: "NRE при загрузке сейва — гарнизон без поселения (расчёт морали)"
+    zh: "存档读取空引用——没有据点的驻军（士气计算）"
+    tr: "Kayıt yükleme boş referansı — yerleşimi olmayan garnizon (moral hesabı)"
+  description:
+    en: |
+      NullReferenceException in SettlementHelper.IsGarrisonStarving, reached from
+      DefaultPartyMoraleModel.GetEffectivePartyMorale (TOR's morale model just
+      delegates to it) while the engine recomputes every clan's strength inside
+      Clan.AfterLoad on save load. The save holds an orphaned garrison party whose
+      settlement reference is null — a healthy garrison always sits in its
+      settlement, so the settlement was lost (destroyed / owner-changed in the
+      campaign, or the module set changed between sessions). The garrison-morale
+      branch dereferences that missing settlement and the load crashes. It happens
+      on every load attempt of this save, not randomly. It is not caused by TOR or
+      Crash Doctor — the crash is in vanilla code tripping over corrupted save data.
+    ru: |
+      NullReferenceException в SettlementHelper.IsGarrisonStarving, куда попадает
+      из DefaultPartyMoraleModel.GetEffectivePartyMorale (модель морали TOR просто
+      вызывает его), когда при загрузке игра пересчитывает силу всех кланов внутри
+      Clan.AfterLoad. В сейве остался гарнизон без поселения: у нормального
+      гарнизона поселение есть всегда, значит оно пропало (уничтожено или сменило
+      владельца в кампании, либо менялся состав модов между сессиями). Ветка
+      морали гарнизона обращается к отсутствующему поселению и загрузка падает.
+      Падает при каждой попытке загрузить именно этот сейв, не случайно. Виноват
+      не TOR и не Crash Doctor — падает родной код игры на испорченных данных сейва.
+    zh: |
+      SettlementHelper.IsGarrisonStarving 中的空引用异常，由
+      DefaultPartyMoraleModel.GetEffectivePartyMorale 进入（TOR 的士气模型只是
+      调用它），发生在读取存档时引擎在 Clan.AfterLoad 内重新计算每个氏族实力的
+      过程中。存档里有一支据点引用为空的孤立驻军——健康的驻军总是驻扎在自己的
+      据点里，所以该据点已丢失（在战役中被摧毁 / 易主，或两次游戏之间模组组合
+      变了）。驻军士气分支引用了这个缺失的据点，于是读取崩溃。每次尝试读取该
+      存档都会崩溃，并非随机。这不是 TOR 或 Crash Doctor 造成的——崩溃发生在
+      原版代码上，是被损坏的存档数据绊倒的。
+    tr: |
+      SettlementHelper.IsGarrisonStarving içinde NullReferenceException; buraya
+      DefaultPartyMoraleModel.GetEffectivePartyMorale üzerinden gelinir (TOR'un
+      moral modeli yalnızca onu çağırır). Kayıt yüklenirken motor, Clan.AfterLoad
+      içinde her klanın gücünü yeniden hesaplarken olur. Kayıt, yerleşim referansı
+      boş olan öksüz bir garnizon tutuyor — sağlıklı bir garnizon her zaman kendi
+      yerleşiminde durur, yani yerleşim kaybolmuş (seferde yok edilmiş / sahip
+      değiştirmiş ya da oturumlar arasında mod kümesi değişmiş). Garnizon moral
+      dalı bu eksik yerleşime erişir ve yükleme çöker. Bu kaydın her yükleme
+      denemesinde olur, rastgele değil. Suçlu TOR ya da Crash Doctor değil — çökme,
+      bozuk kayıt verisine takılan orijinal oyun kodunda gerçekleşir.
+  fix:
+    en:
+      - "Keep Crash Doctor enabled and load the save again: it now blocks this crash automatically and removes the broken garrison. Then SAVE the game to make the fix permanent."
+      - "If you prefer a clean save — load an earlier save from before the problem appeared."
+      - "Make sure the mod set matches what the save was created with (re-enable anything you turned off between sessions)."
+    ru:
+      - "Оставь Crash Doctor включённым и загрузи сейв снова: теперь он сам не даёт этому вылету случиться и убирает повреждённый гарнизон. После этого СОХРАНИ игру, чтобы исправление осталось навсегда."
+      - "Если хочешь чистый сейв — загрузи более раннее сохранение, до появления проблемы."
+      - "Проверь, что набор модов тот же, с которым создавался сейв (включи обратно то, что отключал между сессиями)."
+    zh:
+      - "保持启用 Crash Doctor 并再次读取存档：它现在会自动阻止这次崩溃并移除损坏的驻军。然后保存游戏以使修复永久生效。"
+      - "如果你想要一个干净的存档——读取问题出现之前的较早存档。"
+      - "确认模组组合与创建存档时一致（重新启用你在两次游戏之间关闭的内容）。"
+    tr:
+      - "Crash Doctor'ı etkin tut ve kaydı tekrar yükle: artık bu çökmeyi otomatik engeller ve bozuk garnizonu kaldırır. Ardından düzeltmenin kalıcı olması için oyunu KAYDET."
+      - "Temiz bir kayıt istiyorsan — sorun ortaya çıkmadan önceki daha eski bir kaydı yükle."
+      - "Mod kümesinin kaydın oluşturulduğu kümeyle aynı olduğundan emin ol (oturumlar arasında kapattığın her şeyi yeniden etkinleştir)."
+  match:
+    all:
+      - log_line:
+          contains: "IsGarrisonStarving"
+      - any:
+          - log_line:
+              contains: "GetEffectivePartyMorale"
+          - log_line:
+              contains: "UpdateCurrentStrength"
+          - log_line:
+              contains: "Clan.AfterLoad"
+
 - id: save.pregnancy_baby_npe
   category: saves
   severity: critical
@@ -120,6 +254,8 @@
   title:
     en: "Pregnancy / birth NRE — companion of rare culture"
     ru: "NRE на беременности / рождении — компаньон редкой культуры"
+    zh: "怀孕 / 分娩空引用——稀有文化的同伴"
+    tr: "Hamilelik / doğum boş referansı — nadir kültürlü yoldaş"
   description:
     en: |
       HeroCreator.DeliverOffSpring → PregnancyCampaignBehavior.CheckOffspringsToDeliver
@@ -130,6 +266,14 @@
       падает на рождении ребёнка от компаньона с культурой, у которой нет
       body-property шаблона (типичный кейс для редких / не-нативных культур из
       модов вроде TOR).
+    zh: |
+      当孩子由一个其文化没有 body-property 模板的同伴所生时，
+      HeroCreator.DeliverOffSpring → PregnancyCampaignBehavior.CheckOffspringsToDeliver
+      会崩溃（对于 TOR 这类模组引入的稀有 / 非原生文化很典型）。
+    tr: |
+      Kültürünün body-property şablonu olmayan bir yoldaştan çocuk doğduğunda
+      HeroCreator.DeliverOffSpring → PregnancyCampaignBehavior.CheckOffspringsToDeliver
+      çöker (TOR gibi modların eklediği nadir / yerel olmayan kültürler için tipik).
   fix:
     en:
       - "Install Baby Of Rare Culture Crash Fix from NexusMods (mod 9487)."
@@ -139,6 +283,14 @@
       - "Поставь Baby Of Rare Culture Crash Fix с NexusMods (мод 9487)."
       - "Workaround до установки: через консоль убей беременного компаньона (campaign.kill_hero) до родов — сначала сделай сейв."
       - "Не бери в жёны/мужья wanderer-компаньонов с необычной культурой, если нет фикса."
+    zh:
+      - "从 NexusMods 安装 Baby Of Rare Culture Crash Fix（mod 9487）。"
+      - "安装前的临时办法：在预产期之前用控制台杀掉怀孕的同伴（campaign.kill_hero）——先存档。"
+      - "如果装不了这个修复，就别娶 / 嫁文化不寻常的流浪者同伴。"
+    tr:
+      - "NexusMods'tan Baby Of Rare Culture Crash Fix'i kur (mod 9487)."
+      - "Kurana kadar geçici çözüm: doğum tarihinden önce hamile yoldaşı konsoldan öldür (campaign.kill_hero) — önce kaydet."
+      - "Düzeltmeyi kuramıyorsan, evlilik için sıra dışı kültürlü gezgin yoldaşları alma."
   match:
     all:
       - any:
@@ -158,6 +310,8 @@
   title:
     en: "Late-game daily-tick crash — KingdomDecisionProposal on dead clan"
     ru: "Поздняя кампания: краш daily tick на KingdomDecisionProposal с мёртвым кланом"
+    zh: "后期每日 tick 崩溃——KingdomDecisionProposal 涉及已消亡的氏族"
+    tr: "Geç oyun günlük tick çökmesi — ölü klan üzerinde KingdomDecisionProposal"
   description:
     en: |
       KingdomDecisionProposalBehavior.GetRandomAnnexationDecision (or sibling
@@ -171,6 +325,15 @@
       В сейве осталась ссылка на уничтоженный клан, ванильная очистка не
       убрала back-pointer из decision queue. Часто с дня 700+ в долгих
       кампаниях.
+    zh: |
+      在 AI 决策 tick 期间，KingdomDecisionProposalBehavior.GetRandomAnnexationDecision
+      （或同类的 Decision* 方法）抛出 NullReferenceException。存档里仍引用着一个已被
+      消灭的氏族；原版清理漏掉了决策队列中的反向指针。在长期战役中常见于第 700 天之后。
+    tr: |
+      AI karar tick'i sırasında KingdomDecisionProposalBehavior.GetRandomAnnexationDecision
+      (veya kardeş Decision* yöntemleri) NullReferenceException fırlatır. Kayıt hâlâ
+      yok edilmiş bir klana başvuruyor; orijinal temizleme, karar kuyruğundaki
+      geri-işaretçiyi atladı. Uzun süren seferlerde 700. günden sonra yaygındır.
   fix:
     en:
       - "Install Save Cleaner mod (NexusMods #7763) — prunes orphan clan/party references from the save."
@@ -180,6 +343,14 @@
       - "Поставь Save Cleaner (NexusMods #7763) — чистит сейв от мёртвых ссылок на кланы/отряды."
       - "Workaround: загрузи сейв за 1-2 дня раньше и проматывай дни медленно — decision queue часто разруливается."
       - "Если падает на каждой загрузке — сейв отравлен, Save Cleaner единственный шанс, иначе новая кампания."
+    zh:
+      - "安装 Save Cleaner 模组（NexusMods #7763）——从存档中清除孤立的氏族 / 队伍引用。"
+      - "临时办法：读取早 1-2 天的存档，然后慢慢跳过天数；决策队列往往会自行理顺。"
+      - "如果每次读取都能复现：这个存档已被污染。Save Cleaner 是唯一的退路，否则只能重开。"
+    tr:
+      - "Save Cleaner modunu kur (NexusMods #7763) — kayıttan sahipsiz klan/grup referanslarını temizler."
+      - "Geçici çözüm: 1-2 gün önceki bir kaydı yükle ve günleri yavaşça geç; karar kuyruğu genellikle kendini düzeltir."
+      - "Her yüklemede tekrarlanabiliyorsa: bu kayıt bozulmuş. Save Cleaner tek geri dönüş yolu, yoksa sıfırdan başla."
   match:
     all:
       - any:
@@ -201,6 +372,8 @@
   title:
     en: "Daily-tick crash on issue completion — broken troop in 'sent troops' roster"
     ru: "Краш на ежедневном тике при завершении issue — повреждённая запись в отправленном отряде"
+    zh: "完成委托时每日 tick 崩溃——“派出部队”名册里有损坏的单位"
+    tr: "Görev tamamlanırken günlük tick çökmesi — 'gönderilen birlikler' kadrosunda bozuk birim"
   description:
     en: |
       NullReferenceException inside IssueBase.AlternativeSolutionEndWithSuccess,
@@ -230,6 +403,29 @@
       с пустой ссылкой на персонажа. Harmony-перехватчик на IssueBase ловит
       то, что всё-таки проскочило, и не даёт DailyTick упасть. Оба
       работают по умолчанию.
+    zh: |
+      IssueBase.AlternativeSolutionEndWithSuccess 内部出现 NullReferenceException，
+      由 IssueManager.DailyTick 调用。你用“替代解决方案”选项派部队去解决某个委托
+      （领主需要驻军、伏击商队等等）。当一天结束、引擎试图完成该委托时，那些被派出
+      的部队中有一个的 CharacterObject 为空——这是某个模组注销了某个角色却没有把它
+      从名册里移除而留下的失效引用。FindAll 的 lambda 解引用 x.Character 时就崩溃了。
+
+      Crash Doctor 的名册清理器现在会在读取存档时扫描活跃的委托（不只是普通队伍和
+      定居点），并移除 Character 为空的条目。IssueBase 上的 Harmony 安全网会接住仍然
+      漏过去的情况，让 DailyTick 继续。两者默认开启。
+    tr: |
+      IssueBase.AlternativeSolutionEndWithSuccess içinde NullReferenceException;
+      IssueManager.DailyTick'ten çağrılır. Bir görevi alternatif-çözüm seçeneğiyle
+      çözmek için birlik gönderdin (Lordun Garnizona İhtiyacı Var, Kervan Pususu ve
+      benzerleri). Gün değiştiğinde ve motor görevi tamamlamaya çalıştığında, o
+      gönderilen birliklerden birinin CharacterObject'i boştur — bir karakterin
+      kaydını silen ama onu kadrodan çıkarmayan bir modun bıraktığı sarkan bir
+      referans. FindAll lambda'sı x.Character'a erişir ve çöker.
+
+      Crash Doctor'ın kadro temizleyicisi artık kayıt yüklenirken aktif görevleri
+      (yalnızca gruplar ve yerleşimler değil) tarar ve Character'ı boş olan
+      öğeleri kaldırır. IssueBase üzerindeki Harmony güvenlik ağı yine de kaçanı
+      yakalar ve DailyTick'in devam etmesini sağlar. İkisi de varsayılan olarak açıktır.
   fix:
     en:
       - "Update Crash Doctor to the latest version — the fix ships built-in (Settings → 'Roster cleanup' and 'NRE safety patches' must be ON, both default to ON)."
@@ -241,6 +437,16 @@
       - "Загрузи сейв ещё раз после обновления: очиститель отрабатывает при заходе в сейв и тихо убирает битые записи."
       - "Если сообщение продолжает появляться — заметь, какой тип issue был активен (баннер перехвата появляется ровно в момент, когда DailyTick выживает) и пришли отчёт; очиститель не покрыл какой-то крайний случай."
       - "По желанию: до смены дня отмени issue с альтернативным решением через меню квестов и возьми её заново — чисто."
+    zh:
+      - "把 Crash Doctor 更新到最新版本——修复已内置（设置 → “名册清理”和“NRE 安全补丁”必须开启，两者默认都开启）。"
+      - "更新后重新读取一次存档：清理器会在 OnSessionLaunched 时运行，静默移除损坏的条目。"
+      - "如果仍然看到该提示——记下当时活跃的是哪种委托类型（DailyTick 顶住时安全网横幅会恰好出现），并反馈给我们；说明清理器漏了某个边角情况。"
+      - "可选：在一天结束之前，从任务菜单取消这个替代解决方案的委托，然后干净地重新接取。"
+    tr:
+      - "Crash Doctor'ı en son sürüme güncelle — düzeltme yerleşik gelir (Ayarlar → 'Kadro temizliği' ve 'NRE güvenlik yamaları' açık olmalı, ikisi de varsayılan olarak açıktır)."
+      - "Güncelledikten sonra kaydı bir kez yeniden yükle: temizleyici OnSessionLaunched'da çalışır ve bozuk girişleri sessizce kaldırır."
+      - "Mesajı görmeye devam ediyorsan — hangi görev türünün aktif olduğunu not et (güvenlik ağı afişi tam DailyTick darbeden kurtulduğunda belirir) ve bildir; temizleyici bir uç durumu kaçırdı."
+      - "İsteğe bağlı: gün değişmeden önce alternatif-çözüm görevini Görevler menüsünden iptal et, sonra temiz bir şekilde yeniden al."
   match:
     all:
       - log_line:

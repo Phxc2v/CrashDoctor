@@ -2,6 +2,8 @@
   title:
     en: "Add Bannerlord folders to Windows Defender exclusions"
     ru: "Добавить папки Bannerlord в исключения Windows Defender"
+    zh: "将 Bannerlord 文件夹添加到 Windows Defender 排除项"
+    tr: "Bannerlord klasörlerini Windows Defender hariç tutmalarına ekle"
   description:
     en: |
       Windows Defender's real-time scan stays on top of every file write. During TOR
@@ -25,6 +27,27 @@
       отключения Defender'а на всю систему. Если стоит сторонний AV (Kaspersky, ESET,
       Avast) — добавь те же пути там вручную, исключения Defender'а на сторонние
       продукты не распространяются.
+    zh: |
+      Windows Defender 的实时扫描会盯着每一次文件写入。在 TOR 着色器编译期间，
+      Bannerlord 会在几秒内写入 30+ GB 的中间文件，而 Defender 的 I/O 挂钩会造成争用，
+      引擎将其记录为「Trying to make partial read on compressed asset data」——
+      这是异步 I/O 故障崩溃的已知前兆（参见 assets.tpac_async_read_burst 规则）。
+
+      将安装目录 + 创意工坊文件夹添加到 Defender 的排除列表，可以在不在系统范围内
+      禁用 Defender 的情况下消除争用。如果你使用第三方杀毒软件（Kaspersky、ESET、Avast），
+      请在那里手动添加相同的路径——Defender 的排除项不会传播到其他安全套件。
+    tr: |
+      Windows Defender'ın gerçek zamanlı taraması her dosya yazımının üzerinde durur. TOR
+      gölgelendirici derlemesi sırasında Bannerlord saniyeler içinde 30+ GB ara dosya
+      yazar ve Defender'ın G/Ç kancası, motorun «Trying to make partial read on
+      compressed asset data» olarak günlüğe kaydettiği bir çekişme yaratır — eşzamansız
+      G/Ç hatası çökmelerinin bilinen bir öncülüdür (assets.tpac_async_read_burst
+      kuralına bakın).
+
+      Kurulum + Atölye klasörlerini Defender'ın hariç tutma listesine eklemek,
+      Defender'ı sistem genelinde devre dışı bırakmadan çekişmeyi ortadan kaldırır.
+      Üçüncü taraf bir AV'niz varsa (Kaspersky, ESET, Avast), aynı yolları orada manuel
+      olarak ekleyin — Defender hariç tutmaları diğer güvenlik paketlerine yayılmaz.
   details:
     en:
       - "Action: `Add-MpPreference -ExclusionPath` for game install + Workshop content folder (261550)."
@@ -36,3 +59,13 @@
       - "Один UAC-диалог. Откат из вкладки Журнал (`Remove-MpPreference`)."
       - "Defender НЕ отключается — только исключаются эти две папки."
       - "Сторонний AV не затрагивается — добавь те же пути в его UI вручную."
+    zh:
+      - "操作：对游戏安装目录 + 创意工坊内容文件夹（261550）执行 `Add-MpPreference -ExclusionPath`。"
+      - "单个 UAC 对话框。可从「历史」选项卡撤销（`Remove-MpPreference`）。"
+      - "不会禁用 Windows Defender——只排除这两个文件夹。"
+      - "第三方杀毒软件不受影响——请在其界面中手动添加相同的路径。"
+    tr:
+      - "Eylem: oyun kurulumu + Atölye içerik klasörü (261550) için `Add-MpPreference -ExclusionPath`."
+      - "Tek bir UAC iletişim kutusu. Geçmiş sekmesinden geri alınabilir (`Remove-MpPreference`)."
+      - "Windows Defender'ı DEVRE DIŞI BIRAKMAZ — yalnızca bu iki klasörü hariç tutar."
+      - "Üçüncü taraf antivirüs etkilenmez — aynı yolları kendi arayüzünde manuel olarak ekleyin."

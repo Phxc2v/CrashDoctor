@@ -2,6 +2,8 @@
   title:
     en: "Raise GPU timeout (TdrDelay) for TOR shader compile"
     ru: "Поднять GPU-таймаут (TdrDelay) для компиляции шейдеров TOR"
+    zh: "为 TOR 着色器编译提高显卡超时（TdrDelay）"
+    tr: "TOR gölgelendirici derlemesi için ekran kartı zaman aşımını (TdrDelay) yükselt"
   description:
     en: |
       Windows kills any GPU command that doesn't return within 2 seconds (TDR — Timeout
@@ -23,6 +25,26 @@
       Модуль поднимает TdrDelay и TdrDdiDelay до 60 секунд — у компилятора будет время
       доделать каждую перестановку. Безопасный обходной путь, рекомендованный Microsoft;
       обратимый.
+    zh: |
+      Windows 会终止任何在 2 秒内没有返回的 GPU 命令（TDR —— Timeout
+      Detection and Recovery）。TOR 的 pbr_metallic.rs / faceshader_high.rs 在单个着色器
+      变体上经常每次调度需要 5–15 秒，于是系统以为显卡卡死并将其终止 —— 导致
+      "out of memory during compilation" 级联错误，以及在 "Build Shader Cache" 期间
+      出现 DXGI device-removed 崩溃。
+
+      本模块把 TdrDelay 和 TdrDdiDelay 提高到 60 秒，给编译器足够的时间完成每个
+      变体。这是微软推荐的安全变通方法；可撤销。
+    tr: |
+      Windows, 2 saniye içinde geri dönmeyen herhangi bir GPU komutunu sonlandırır (TDR —
+      Timeout Detection and Recovery). TOR'un pbr_metallic.rs / faceshader_high.rs dosyaları
+      tek bir gölgelendirici permütasyonu için sevk başına düzenli olarak 5–15 saniye alır,
+      bu yüzden işletim sistemi ekran kartının takıldığını düşünüp onu sonlandırır — bu da
+      "out of memory during compilation" zincirlerine ve "Build Shader Cache" sırasında DXGI
+      device-removed çökmelerine yol açar.
+
+      Bu modül TdrDelay ve TdrDdiDelay değerlerini 60 saniyeye yükselterek derleyiciye her
+      permütasyonu bitirmesi için yeterli zaman verir. Microsoft'un önerdiği güvenli bir
+      geçici çözüm; geri alınabilir.
   details:
     en:
       - "Click Apply: Windows shows one UAC consent dialog — click Yes."
@@ -34,3 +56,13 @@
       - "Нужна перезагрузка — Windows читает настройки TDR только при загрузке."
       - "Откат — из вкладки Журнал."
       - "Ставит TdrDelay = TdrDdiDelay = 60 (секунд). По умолчанию 2 / 5."
+    zh:
+      - "点击应用：Windows 会显示一个 UAC 同意对话框 —— 点击「是」。"
+      - "需要重启 —— Windows 只在开机时读取 TDR 设置。"
+      - "可在历史标签页中撤销。"
+      - "设置 TdrDelay = TdrDdiDelay = 60（秒）。默认值为 2 / 5。"
+    tr:
+      - "Uygula'ya tıklayın: Windows tek bir UAC onay penceresi gösterir — Evet'e tıklayın."
+      - "Yeniden başlatma gerektirir — Windows TDR ayarlarını yalnızca açılışta okur."
+      - "Geçmiş sekmesinden geri alınabilir."
+      - "TdrDelay = TdrDdiDelay = 60 (saniye) olarak ayarlar. Varsayılan 2 / 5'tir."

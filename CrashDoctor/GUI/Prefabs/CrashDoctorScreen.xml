@@ -180,7 +180,7 @@
                                      ClipRect="ClipRect" InnerPanel="ClipRect\TuneUpRecsList"
                                      VerticalScrollbar="..\TuneUpScrollbar">
                       <Children>
-                        <Widget Id="ClipRect" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" ClipContents="true">
+                        <Widget Id="ClipRect" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginRight="20" ClipContents="true">
                           <Children>
                             <ListPanel Id="TuneUpRecsList" DataSource="{TuneUpRecommendations}"
                                        WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren"
@@ -270,7 +270,7 @@
                     <ScrollbarWidget Id="TuneUpScrollbar"
                                      WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent"
                                      SuggestedWidth="10" HorizontalAlignment="Right" VerticalAlignment="Top"
-                                     MarginTop="6" MarginBottom="6" MarginRight="-22"
+                                     MarginTop="6" MarginBottom="6" MarginRight="2"
                                      AlignmentAxis="Vertical" Handle="TuneUpScrollbarHandle"
                                      MaxValue="100" MinValue="0">
                       <Children>
@@ -345,7 +345,7 @@
                                      ClipRect="HistoryClipRect" InnerPanel="HistoryClipRect\HistoryEntriesList"
                                      VerticalScrollbar="..\HistoryScrollbar">
                       <Children>
-                        <Widget Id="HistoryClipRect" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" ClipContents="true">
+                        <Widget Id="HistoryClipRect" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginRight="20" ClipContents="true">
                           <Children>
                             <ListPanel Id="HistoryEntriesList" DataSource="{HistoryEntries}"
                                        WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren"
@@ -396,7 +396,7 @@
                     <ScrollbarWidget Id="HistoryScrollbar"
                                      WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent"
                                      SuggestedWidth="10" HorizontalAlignment="Right" VerticalAlignment="Top"
-                                     MarginTop="6" MarginBottom="6" MarginRight="-22"
+                                     MarginTop="6" MarginBottom="6" MarginRight="2"
                                      AlignmentAxis="Vertical" Handle="HistoryScrollbarHandle"
                                      MaxValue="100" MinValue="0">
                       <Children>
@@ -469,7 +469,7 @@
                                      ClipRect="SavesClipRect" InnerPanel="SavesClipRect\SavesEntriesList"
                                      VerticalScrollbar="..\SavesScrollbar">
                       <Children>
-                        <Widget Id="SavesClipRect" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" ClipContents="true">
+                        <Widget Id="SavesClipRect" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginRight="20" ClipContents="true">
                           <Children>
                             <ListPanel Id="SavesEntriesList" DataSource="{SavesEntries}"
                                        WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren"
@@ -599,7 +599,7 @@
                     <ScrollbarWidget Id="SavesScrollbar"
                                      WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent"
                                      SuggestedWidth="10" HorizontalAlignment="Right" VerticalAlignment="Top"
-                                     MarginTop="6" MarginBottom="6" MarginRight="-22"
+                                     MarginTop="6" MarginBottom="6" MarginRight="2"
                                      AlignmentAxis="Vertical" Handle="SavesScrollbarHandle"
                                      MaxValue="100" MinValue="0">
                       <Children>
@@ -683,7 +683,7 @@
                   <Children>
                     <Widget Id="ModsClipRect"
                             WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
-                            ClipContents="true">
+                            MarginRight="20" ClipContents="true">
                       <Children>
                         <ListPanel Id="ModsList" DataSource="{ModsList}"
                                    WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren"
@@ -735,7 +735,7 @@
                 <ScrollbarWidget Id="ModsScrollbar"
                                  WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent"
                                  SuggestedWidth="10" HorizontalAlignment="Right" VerticalAlignment="Top"
-                                 MarginTop="6" MarginBottom="6" MarginRight="-22"
+                                 MarginTop="6" MarginBottom="6" MarginRight="2"
                                  AlignmentAxis="Vertical" Handle="ModsScrollbarHandle"
                                  MaxValue="100" MinValue="0">
                   <Children>
@@ -802,7 +802,7 @@
                       <Children>
                         <Widget Id="SettingsClipRect"
                                 WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
-                                ClipContents="true">
+                                MarginRight="20" ClipContents="true">
                           <Children>
                             <ListPanel Id="SettingsCardList"
                                        WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren"
@@ -999,7 +999,7 @@
                       <Children>
                         <Widget Id="PerModClipRect"
                                 WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
-                                ClipContents="true">
+                                MarginRight="20" ClipContents="true">
                           <Children>
                             <ListPanel Id="PerModList" DataSource="{InstalledMods}"
                                        WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren"
@@ -1043,7 +1043,7 @@
                     <ScrollbarWidget Id="PerModScrollbar"
                                      WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent"
                                      SuggestedWidth="10" HorizontalAlignment="Right" VerticalAlignment="Top"
-                                     MarginTop="6" MarginBottom="6" MarginRight="-22"
+                                     MarginTop="6" MarginBottom="6" MarginRight="2"
                                      AlignmentAxis="Vertical" Handle="PerModScrollbarHandle"
                                      MaxValue="100" MinValue="0">
                       <Children>
@@ -1071,7 +1071,7 @@
                     <ScrollbarWidget Id="SettingsScrollbar"
                                      WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent"
                                      SuggestedWidth="10" HorizontalAlignment="Right" VerticalAlignment="Top"
-                                     MarginTop="6" MarginBottom="6" MarginRight="-22"
+                                     MarginTop="6" MarginBottom="6" MarginRight="2"
                                      AlignmentAxis="Vertical" Handle="SettingsScrollbarHandle"
                                      MaxValue="100" MinValue="0">
                       <Children>

@@ -2,6 +2,8 @@
   title:
     en: "Clear Bannerlord shader cache"
     ru: "Очистить кэш шейдеров Bannerlord"
+    zh: "清理 Bannerlord 着色器缓存"
+    tr: "Bannerlord gölgelendirici önbelleğini temizle"
   description:
     en: |
       The shader cache holds compiled GPU shaders. After a Bannerlord or TOR update, or after
@@ -11,6 +13,15 @@
       Кэш шейдеров содержит скомпилированные GPU-шейдеры. После обновления Bannerlord/TOR
       или смены драйвера GPU кэш может стать несовместимым, вызывая d3d-ошибки, чёрный
       экран и краши при компиляции шейдеров («Error compiling shader file: ...particle_shading.rs»).
+    zh: |
+      着色器缓存保存着已编译的 GPU 着色器。在 Bannerlord 或 TOR 更新之后，或在
+      更换显卡驱动程序之后，缓存可能会过时并触发 d3d 错误、黑屏，或着色器编译崩溃
+      （"Error compiling shader file: ...particle_shading.rs"）。
+    tr: |
+      Gölgelendirici önbelleği derlenmiş GPU gölgelendiricilerini tutar. Bir Bannerlord veya TOR
+      güncellemesinden sonra ya da bir ekran kartı sürücüsü değişikliğinden sonra önbellek
+      eskiyebilir ve d3d hatalarına, siyah ekranlara ya da gölgelendirici derleme çökmelerine
+      ("Error compiling shader file: ...particle_shading.rs") yol açabilir.
   details:
     en:
       - "Files are moved to the Windows Recycle Bin and can be restored if needed."
@@ -22,3 +33,13 @@
       - "Первый запуск Bannerlord после очистки будет долго (10–60 минут) перекомпилировать шейдеры."
       - "Сразу после очистки нажмите «Build Shader Cache» в главном меню,"
       - "иначе первое сражение будет очень сильно фризить."
+    zh:
+      - "文件会被移到 Windows 回收站，需要时可以还原。"
+      - "清理后首次启动 Bannerlord 会花费 10–60 分钟重新编译着色器。"
+      - "重启游戏后请立即在主菜单点击 'Build Shader Cache' 按钮，"
+      - "否则第一场战斗会严重卡顿。"
+    tr:
+      - "Dosyalar Windows Geri Dönüşüm Kutusu'na taşınır ve gerekirse geri yüklenebilir."
+      - "Bundan sonra Bannerlord'un ilk açılışı gölgelendiricileri yeniden derlemek için 10–60 dakika harcar."
+      - "Oyunu yeniden başlattıktan hemen sonra ana menüdeki 'Build Shader Cache' düğmesini kullanın,"
+      - "aksi halde ilk savaş ciddi şekilde takılır."

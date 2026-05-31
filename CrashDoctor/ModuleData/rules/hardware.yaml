@@ -7,6 +7,8 @@
   title:
     en: "RAM below Bannerlord minimum"
     ru: "Меньше RAM, чем требует Bannerlord"
+    zh: "内存低于 Bannerlord 最低要求"
+    tr: "RAM, Bannerlord'un alt sınırının altında"
   description:
     en: |
       Bannerlord's minimum is 6 GB RAM, recommended 8 GB. With heavy mods like TOR,
@@ -14,6 +16,12 @@
     ru: |
       Минимум Bannerlord — 6 ГБ RAM, рекомендовано 8 ГБ. С тяжёлыми модами вроде TOR
       ниже 16 ГБ — регулярные крашы.
+    zh: |
+      Bannerlord 最低需要 6 GB 内存，建议 8 GB。使用 TOR 这类重型模组时，
+      低于 16 GB 会频繁崩溃。
+    tr: |
+      Bannerlord en az 6 GB RAM ister, önerilen 8 GB. TOR gibi ağır modlarla
+      16 GB altındaki her şey düzenli olarak çökecektir.
   fix:
     en:
       - "Close Chrome, Discord, browsers, and other background apps before launching."
@@ -23,6 +31,14 @@
       - "Закрой Chrome, Discord, браузеры и фоновые приложения перед запуском."
       - "В игре: Опции → Графика → Texture Quality и Shadow Quality на Low."
       - "По возможности — добавь планку RAM."
+    zh:
+      - "启动前关闭 Chrome、Discord、浏览器和其他后台程序。"
+      - "游戏内：Options → Graphics → 把 Texture Quality 和 Shadow Quality 设为 Low。"
+      - "如果主板允许，加装一条内存条。"
+    tr:
+      - "Başlatmadan önce Chrome, Discord, tarayıcıları ve diğer arka plan uygulamalarını kapatın."
+      - "Oyun içinde: Options → Graphics → Texture Quality ve Shadow Quality değerlerini Low yapın."
+      - "Sisteminiz izin veriyorsa ek bir RAM çubuğu takın."
   match:
     all:
       - system:
@@ -38,6 +54,8 @@
   title:
     en: "RAM is tight for TOR"
     ru: "Маловато RAM для TOR"
+    zh: "运行 TOR 内存偏紧"
+    tr: "TOR için RAM yetersiz"
   description:
     en: |
       The Old Realms is heavy. With less than 16 GB RAM and TOR_Core enabled,
@@ -45,6 +63,12 @@
     ru: |
       The Old Realms — тяжёлый мод. Меньше 16 ГБ RAM с TOR_Core активным — будут
       крашы в долгих сессиях и осадах.
+    zh: |
+      The Old Realms 很吃资源。内存不足 16 GB 且启用了 TOR_Core 时，
+      长时间游戏或攻城战中很可能崩溃。
+    tr: |
+      The Old Realms ağır bir moddur. 16 GB'den az RAM ile TOR_Core etkinken,
+      uzun oturumlarda veya kuşatmalarda çökmeler olasıdır.
   fix:
     en:
       - "In-game: lower Texture Quality and Shadow Quality."
@@ -54,6 +78,14 @@
       - "В игре: понизь Texture Quality и Shadow Quality."
       - "Закрой всё в фоне перед запуском."
       - "Каждые 1–2 часа выходи в главное меню и нажимай Continue — чтобы сбрасывать память."
+    zh:
+      - "游戏内：降低 Texture Quality 和 Shadow Quality。"
+      - "启动前关闭所有后台程序。"
+      - "每 1–2 小时退回主菜单，再点 Continue 继续，以释放内存。"
+    tr:
+      - "Oyun içinde: Texture Quality ve Shadow Quality değerlerini düşürün."
+      - "Başlatmadan önce arka plandaki her şeyi kapatın."
+      - "Her 1–2 saatte bir ana menüye çıkıp oradan Continue ile devam ederek belleği boşaltın."
   match:
     all:
       - system:
@@ -72,6 +104,8 @@
   title:
     en: "GPU has less than 2 GB VRAM"
     ru: "У видеокарты меньше 2 ГБ VRAM"
+    zh: "显卡显存少于 2 GB"
+    tr: "Ekran kartında 2 GB'den az VRAM var"
   description:
     en: |
       Active GPU has under 2 GB dedicated VRAM. Bannerlord minimum is 2 GB,
@@ -79,6 +113,12 @@
     ru: |
       У активной видеокарты меньше 2 ГБ VRAM. Минимум Bannerlord — 2 ГБ,
       рекомендовано 4+ ГБ. С TOR — 6+ ГБ.
+    zh: |
+      当前显卡的专用显存不足 2 GB。Bannerlord 最低需要 2 GB，
+      建议 4 GB 以上。使用 TOR 时需要 6 GB 以上。
+    tr: |
+      Etkin ekran kartında 2 GB'den az ayrılmış VRAM var. Bannerlord en az 2 GB,
+      önerilen 4 GB ve üzeri ister. TOR ile 6 GB ve üzeri.
   fix:
     en:
       - "In-game: lower Texture Quality and Texture Budget."
@@ -86,6 +126,12 @@
     ru:
       - "В игре: понизь Texture Quality и Texture Budget."
       - "Отключи тяжёлые текстурные моды, если есть."
+    zh:
+      - "游戏内：降低 Texture Quality 和 Texture Budget。"
+      - "禁用任何重型贴图模组。"
+    tr:
+      - "Oyun içinde: Texture Quality ve Texture Budget değerlerini düşürün."
+      - "Ağır doku modlarını devre dışı bırakın."
   match:
     all:
       - system:
@@ -101,6 +147,8 @@
   title:
     en: "GPU likely under-VRAMed for TOR (under 6 GB reported)"
     ru: "У видеокарты, похоже, мало VRAM для TOR (меньше 6 ГБ)"
+    zh: "显卡显存可能不足以运行 TOR（报告低于 6 GB）"
+    tr: "Ekran kartının VRAM'i TOR için yetersiz olabilir (6 GB altında bildirildi)"
   description:
     en: |
       DXDIAG reports under 6 GB dedicated VRAM on the active GPU. TOR + Bannerlord
@@ -112,6 +160,26 @@
       some configurations) get capped at 3072–4095 MB in the report even though
       the card has 12-24 GB physically. If your card is one of those and the
       game otherwise runs fine — ignore this card. Otherwise the warning is real.
+    zh: |
+      DXDIAG 报告当前显卡的专用显存不足 6 GB。TOR + Bannerlord 在 1080p 以上
+      需要 6 GB 以上；低于此值，重型战斗或加载护甲模组时会出现
+      "out of video memory" 或 CreateTexture2D 失败。
+
+      重要提示：DXDIAG 在新显卡上常常误报显存。AMD RX 7000/9000 系列和
+      部分高端 NVIDIA 显卡（某些配置下的 RTX 4080/4090）在报告中会被
+      限制为 3072–4095 MB，尽管显卡实际有 12-24 GB。如果你的显卡属于这种
+      情况且游戏本来运行正常——忽略此卡片。否则该警告是真实的。
+    tr: |
+      DXDIAG, etkin ekran kartında 6 GB'den az ayrılmış VRAM bildiriyor. TOR +
+      Bannerlord 1080p ve üzerinde 6 GB ve üzeri ister; bunun altında ağır
+      savaşlarda veya zırh modu yüklerken "out of video memory" ya da
+      CreateTexture2D hataları beklenir.
+
+      Önemli uyarı: DXDIAG'in modern kartlarda VRAM'i yanlış bildirdiği bilinir.
+      AMD RX 7000/9000 serisi ve bazı üst seviye NVIDIA kartları (kimi
+      yapılandırmalarda RTX 4080/4090) kart fiziksel olarak 12-24 GB'a sahip olsa
+      bile raporda 3072–4095 MB ile sınırlanır. Kartınız bunlardan biriyse ve oyun
+      aksi halde sorunsuz çalışıyorsa bu kartı yok sayın. Aksi takdirde uyarı gerçektir.
     ru: |
       DXDIAG показал меньше 6 ГБ выделенной VRAM на активной видеокарте. TOR на
       Bannerlord в 1080p+ хочет 6+ ГБ; ниже — будут «out of video memory» или
@@ -131,6 +199,22 @@
       - "Open Crash Doctor → System tune-up → 'Heavy VRAM apps' card if it appeared — it lists what's actually running on your machine right now."
       - "If your GPU has under 4 GB physical VRAM: heavy mods (TOR + armor packs) are not realistic. Run Native Bannerlord or pick lighter mods."
       - "AFTER changing any graphics setting: REBOOT the PC, then Crash Doctor → System tune-up → 'Clear Bannerlord shader cache', then Main Menu → 'Build Shader Cache' (20–60 min). Skip any of these → game crashes on splash next launch."
+    zh:
+      - "如果你实际拥有 RX 7700 XT / 7800 XT / 7900 / 9070 / RTX 4070 Super+ / 4080 / 4090 / 5080 / 5090——忽略此卡片，DXDIAG 误报了你的显存。继续即可。"
+      - "如果你用的是同时带核显和独显的游戏本（NVIDIA Optimus / AMD SmartShift——联想拯救者、华硕 ROG、微星、雷蛇等）：DXDIAG 总是通过核显视角低报独显的显存。你的真实显存是厂商标注的值（RTX 4060 Laptop 通常 8 GB，4070 Laptop 通常 12 GB 等）。忽略此卡片。"
+      - "否则：游戏内 Options → Graphics → Texture Quality = Medium、Texture Budget = Medium、Shadow Quality = Medium。"
+      - "启动前关闭所有占用显存的后台程序：VR 运行时（Oculus、SteamVR、Mixed Reality Portal）、AI 工具（Ollama、LM Studio、Stable Diffusion）、视频剪辑（DaVinci Resolve、Premiere、After Effects）、开了很多标签页的浏览器（Chrome / Edge / Firefox / Brave）、处于 Game Capture 模式的 OBS。"
+      - "打开 Crash Doctor → 系统调优 → 如果出现 '占用显存的程序' 卡片——它会列出你机器上当前真正在运行的程序。"
+      - "如果显卡物理显存不足 4 GB：重型模组（TOR + 护甲包）不现实。请运行原版 Bannerlord 或选择更轻的模组。"
+      - "更改任何图形设置之后：重启电脑，然后 Crash Doctor → 系统调优 → '清理着色器缓存'，再到主菜单 → 'Build Shader Cache'（20–60 分钟）。跳过任一步 → 下次启动会在启动画面崩溃。"
+    tr:
+      - "Gerçekten RX 7700 XT / 7800 XT / 7900 / 9070 / RTX 4070 Super+ / 4080 / 4090 / 5080 / 5090 kartınız varsa bu kartı yok sayın, DXDIAG VRAM'inizi düşük bildiriyor. Devam edin."
+      - "Hem tümleşik hem ayrık ekran kartlı bir oyun dizüstüsündeyseniz (NVIDIA Optimus / AMD SmartShift — Lenovo Legion, ASUS ROG, MSI, Razer vb.): DXDIAG, tümleşik kart üzerinden ayrık kartın VRAM'ini her zaman düşük bildirir. Gerçek VRAM'iniz üreticinin belirttiği değerdir (genelde RTX 4060 Laptop'ta 8 GB, 4070 Laptop'ta 12 GB vb.). Bu kartı yok sayın."
+      - "Aksi halde: oyun içinde Options → Graphics → Texture Quality = Medium, Texture Budget = Medium, Shadow Quality = Medium."
+      - "Başlatmadan önce VRAM tüketen tüm arka plan uygulamalarını kapatın: VR çalışma zamanları (Oculus, SteamVR, Mixed Reality Portal), yapay zeka araçları (Ollama, LM Studio, Stable Diffusion), video düzenleyiciler (DaVinci Resolve, Premiere, After Effects), çok sekmeli tarayıcılar (Chrome / Edge / Firefox / Brave), Game Capture modundaki OBS."
+      - "Crash Doctor → Sistem ayarı → 'Ağır VRAM uygulamaları' kartı çıktıysa açın — makinenizde şu anda gerçekten neyin çalıştığını listeler."
+      - "Ekran kartınızın fiziksel VRAM'i 4 GB'den azsa: ağır modlar (TOR + zırh paketleri) gerçekçi değil. Native Bannerlord çalıştırın ya da daha hafif modlar seçin."
+      - "Herhangi bir grafik ayarını değiştirdikten SONRA: bilgisayarı yeniden başlatın, ardından Crash Doctor → Sistem ayarı → 'gölgelendirici önbelleğini temizle', sonra Ana Menü → 'Build Shader Cache' (20–60 dk). Bunlardan herhangi birini atlarsanız oyun bir sonraki açılışta açılış ekranında çöker."
     ru:
       - "Если у тебя на самом деле RX 7700 XT / 7800 XT / 7900 / 9070 / RTX 4070 Super+ / 4080 / 4090 / 5080 / 5090 — игнорируй эту карточку, DXDIAG занижает твой VRAM. Иди дальше."
       - "Если ты на игровом ноутбуке с встроенной + дискретной картой (NVIDIA Optimus / AMD SmartShift — Lenovo Legion, ASUS ROG, MSI, Razer и т.д.): DXDIAG всегда занижает VRAM дискретки через iGPU view. Реальный VRAM = тот, что указал производитель (типично 8 ГБ на RTX 4060 Laptop, 12 ГБ на 4070 Laptop и т.д.). Игнорируй эту карточку."
@@ -154,6 +238,8 @@
   title:
     en: "GPU driver is over 18 months old"
     ru: "Драйвер видеокарты старше 18 месяцев"
+    zh: "显卡驱动程序超过 18 个月未更新"
+    tr: "Ekran kartı sürücüsü 18 aydan eski"
   description:
     en: |
       The display driver is from a different release year. Many TaleWorlds and
@@ -161,6 +247,12 @@
     ru: |
       Драйвер видеокарты от старого года выпуска. Многие баги шейдеров и рендера
       в Bannerlord и модах исправляют в свежих драйверах.
+    zh: |
+      显示驱动程序是较早年份发布的。许多与 TaleWorlds 和模组相关的着色器/渲染
+      问题在较新的驱动程序版本中已修复。
+    tr: |
+      Ekran sürücüsü farklı bir yıla ait. TaleWorlds ve modlarla ilgili birçok
+      gölgelendirici/render hatası daha yeni sürücü sürümlerinde düzeltildi.
   fix:
     en:
       - "AMD: open AMD Software → Auto-detect → install the latest driver."
@@ -170,6 +262,14 @@
       - "AMD: запусти AMD Software → Auto-detect → поставь свежий драйвер."
       - "NVIDIA: GeForce Experience или вручную с nvidia.com → поставь свежий Game Ready."
       - "Перезагрузить ПК после установки."
+    zh:
+      - "AMD：打开 AMD Software → Auto-detect → 安装最新驱动程序。"
+      - "NVIDIA：打开 GeForce Experience 或从 nvidia.com 下载 → 安装最新 Game Ready。"
+      - "安装后重启电脑。"
+    tr:
+      - "AMD: AMD Software → Auto-detect → en son sürücüyü yükleyin."
+      - "NVIDIA: GeForce Experience'ı açın veya nvidia.com'dan indirin → en son Game Ready'i yükleyin."
+      - "Kurulumdan sonra yeniden başlatın."
   match:
     all:
       - system:
@@ -185,6 +285,8 @@
   title:
     en: "Windows 7 or 8 is no longer supported by Bannerlord"
     ru: "Bannerlord не поддерживает Windows 7 / 8"
+    zh: "Bannerlord 不再支持 Windows 7 或 8"
+    tr: "Windows 7 veya 8 artık Bannerlord tarafından desteklenmiyor"
   description:
     en: |
       Bannerlord 1.2+ requires Windows 10 or 11. On Windows 7/8 the game can launch
@@ -192,11 +294,21 @@
     ru: |
       Bannerlord 1.2+ требует Windows 10 или 11. На 7/8 игра может запуститься,
       но крашей не избежать.
+    zh: |
+      Bannerlord 1.2 及以上版本需要 Windows 10 或 11。在 Windows 7/8 上游戏可以启动，
+      但崩溃无法避免。
+    tr: |
+      Bannerlord 1.2+ Windows 10 veya 11 gerektirir. Windows 7/8 üzerinde oyun
+      açılabilir ama çökmeler kaçınılmazdır.
   fix:
     en:
       - "Upgrade to Windows 10 or 11."
     ru:
       - "Обновись до Windows 10 или 11."
+    zh:
+      - "升级到 Windows 10 或 11。"
+    tr:
+      - "Windows 10 veya 11'e yükseltin."
   match:
     any:
       - system:
@@ -215,6 +327,8 @@
   title:
     en: "Page file is exhausted or disabled"
     ru: "Файл подкачки исчерпан или выключен"
+    zh: "页面文件已耗尽或被禁用"
+    tr: "Sayfa dosyası tükendi veya devre dışı"
   description:
     en: |
       Less than 1 GB free in the Windows page file. With heavy mods this leads
@@ -222,6 +336,12 @@
     ru: |
       Меньше 1 ГБ свободного в файле подкачки Windows. На тяжёлых модах это
       приводит к access violation.
+    zh: |
+      Windows 页面文件可用空间不足 1 GB。使用重型模组时，这会导致
+      access violation 崩溃。
+    tr: |
+      Windows sayfa dosyasında 1 GB'den az boş alan var. Ağır modlarla bu,
+      access violation çökmelerine yol açar.
   fix:
     en:
       - "System Properties → Advanced → Performance → Settings → Advanced → Virtual Memory → Custom 32–64 GB on an SSD."
@@ -229,6 +349,12 @@
     ru:
       - "Система → Дополнительные параметры → Производительность → Параметры → Дополнительно → Виртуальная память → Особый размер 32–64 ГБ на SSD."
       - "Перезагрузить ПК после изменения."
+    zh:
+      - "系统属性 → 高级 → 性能 → 设置 → 高级 → 虚拟内存 → 在 SSD 上自定义 32–64 GB。"
+      - "应用后重启电脑。"
+    tr:
+      - "Sistem Özellikleri → Gelişmiş → Performans → Ayarlar → Gelişmiş → Sanal Bellek → SSD üzerinde özel 32–64 GB."
+      - "Uyguladıktan sonra yeniden başlatın."
   match:
     all:
       - system:

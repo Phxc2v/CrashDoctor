@@ -2,6 +2,8 @@
   title:
     en: "Windows has a pending reboot"
     ru: "Windows ждёт отложенный перезапуск"
+    zh: "Windows 有一个待处理的重启"
+    tr: "Windows'ta bekleyen bir yeniden başlatma var"
   description:
     en: |
       Modded Bannerlord (especially TOR) is hyper-sensitive to half-applied driver
@@ -23,6 +25,25 @@
 
       Карточка появляется только если есть хотя бы один из трёх Microsoft-
       документированных признаков отложенного перезапуска.
+    zh: |
+      装了模组的 Bannerlord（尤其是 TOR）对半应用的驱动更新和页面文件更改极其敏感。
+      如果 Windows 正挂着一个排队的重启——来自 Windows 更新、驱动安装，或在引导时
+      重命名文件的操作——受影响的组件就处于半应用状态。玩家会说「Crash Doctor 说
+      TdrDelay 被设为 60s」，但其实它还没真正生效，于是他们在下一次启动时就撞上
+      着色器内存溢出崩溃。
+
+      只有当存在三个 Microsoft 记录的重启信号中至少一个时，这张卡片才会出现。
+    tr: |
+      Modlu Bannerlord (özellikle TOR), yarı uygulanmış sürücü güncellemelerine ve sayfa
+      dosyası değişikliklerine aşırı duyarlıdır. Windows bir Windows Update'ten, bir
+      sürücü kurulumundan veya başlangıçta yeniden adlandırma dosya işleminden gelen
+      sıraya alınmış bir yeniden başlatma üzerinde bekliyorsa, etkilenen bileşen yarı
+      durumdadır. Oyuncular "Crash Doctor TdrDelay'in 60s olarak ayarlandığını söyledi"
+      der ama aslında henüz aktif değildir ve bir sonraki başlatmada gölgelendirici
+      bellek yetersizliği çökmelerine çarparlar.
+
+      Kart yalnızca Microsoft'un belgelediği üç yeniden başlatma sinyalinden en az biri
+      mevcut olduğunda görünür.
   details:
     en:
       - "Sources: HKLM Component Based Servicing\\RebootPending, WindowsUpdate\\Auto Update\\RebootRequired, Session Manager\\PendingFileRenameOperations."
@@ -32,3 +53,11 @@
       - "Источники: HKLM Component Based Servicing\\RebootPending, WindowsUpdate\\Auto Update\\RebootRequired, Session Manager\\PendingFileRenameOperations."
       - "«Применить» назначает перезапуск через 60 секунд (shutdown.exe /r /t 60). Отмена — shutdown /a."
       - "Только детект. Сам перезапуск не откатывается (нельзя un-reboot)."
+    zh:
+      - "来源：HKLM Component Based Servicing\\RebootPending、WindowsUpdate\\Auto Update\\RebootRequired、Session Manager\\PendingFileRenameOperations。"
+      - "「应用」会通过 shutdown.exe /r /t 60 安排一个 60 秒后的重启。用 shutdown /a 取消。"
+      - "只读检测。重启本身不可撤销（无法取消已发生的重启）。"
+    tr:
+      - "Kaynaklar: HKLM Component Based Servicing\\RebootPending, WindowsUpdate\\Auto Update\\RebootRequired, Session Manager\\PendingFileRenameOperations."
+      - "«Uygula» shutdown.exe /r /t 60 ile 60 saniyelik bir yeniden başlatma zamanlar. shutdown /a ile iptal edin."
+      - "Salt okunur algılama. Yeniden başlatmanın kendisi geri alınamaz (yeniden başlatmayı geri alamazsınız)."

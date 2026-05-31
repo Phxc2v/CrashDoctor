@@ -2,6 +2,8 @@
   title:
     en: ".NET Framework 4.7.2+ check"
     ru: "Проверка .NET Framework 4.7.2+"
+    zh: ".NET Framework 4.7.2+ 检查"
+    tr: ".NET Framework 4.7.2+ kontrolü"
   description:
     en: |
       Bannerlord 1.3.x and the BUTR family of mods (BLSE, ButterLib, MCM) target
@@ -19,6 +21,22 @@
 
       Мы НЕ используем `dotnet --list-runtimes` — он для .NET Core / .NET 5+ и
       классический Framework не показывает. Реестр — авторитетный источник.
+    zh: |
+      Bannerlord 1.3.x 和 BUTR 系列模组（BLSE、ButterLib、MCM）都以 net472 为目标。
+      经典 .NET Framework 注册表键（HKLM\SOFTWARE\Microsoft\NET Framework Setup\NDP\v4\Full）
+      会告诉我们机器上实际安装的版本。低于 4.7.2 时，模块加载阶段就会出现
+      BadImageFormatException。
+
+      我们不使用 `dotnet --list-runtimes`——那是针对 .NET Core / .NET 5+ 的，
+      不会列出经典 Framework。注册表才是权威来源。
+    tr: |
+      Bannerlord 1.3.x ve BUTR ailesi modları (BLSE, ButterLib, MCM) net472'yi hedefler.
+      Klasik .NET Framework kayıt defteri anahtarı (HKLM\SOFTWARE\Microsoft\NET Framework
+      Setup\NDP\v4\Full) makinede gerçekte ne olduğunu söyler. 4.7.2'nin altında, modül
+      yükleme sırasında BadImageFormatException alırsınız.
+
+      `dotnet --list-runtimes` kullanmıyoruz — o, .NET Core / .NET 5+ içindir ve klasik
+      Framework'ü listelemez. Kayıt defteri yetkili kaynaktır.
   details:
     en:
       - "Apply opens Microsoft's .NET 4.8 download page (latest supported on Win10, fully back-compatible)."
@@ -30,3 +48,13 @@
       - "Источник: HKLM Release DWORD, маппится в человекочитаемое имя."
       - "Порог: 461808 (.NET 4.7.2)."
       - "Откат не предусмотрен."
+    zh:
+      - "「应用」会打开 Microsoft 的 .NET 4.8 下载页面（Win10 上支持的最新版本，完全向后兼容）。"
+      - "来源：HKLM 的 Release DWORD 值，映射为易读的版本名称。"
+      - "阈值：461808（.NET 4.7.2）。"
+      - "不可撤销。"
+    tr:
+      - "«Uygula» Microsoft'un .NET 4.8 indirme sayfasını açar (Win10'da desteklenen en son sürüm, tamamen geriye dönük uyumlu)."
+      - "Kaynak: HKLM Release DWORD değeri, okunabilir sürüm adına eşlenir."
+      - "Eşik: 461808 (.NET 4.7.2)."
+      - "Geri alınamaz."

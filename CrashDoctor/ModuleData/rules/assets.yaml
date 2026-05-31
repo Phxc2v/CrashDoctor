@@ -7,6 +7,8 @@
   title:
     en: "Scene file not found"
     ru: "Файл сцены не найден"
+    zh: "找不到场景文件"
+    tr: "Sahne dosyası bulunamadı"
   description:
     en: |
       A mod tried to load a scene that doesn't exist on disk. Either the mod
@@ -14,6 +16,12 @@
     ru: |
       Мод пытается загрузить сцену, которой нет на диске. Либо мод установлен
       не полностью, либо сцену переименовали в новой версии мода.
+    zh: |
+      某个模组试图加载磁盘上不存在的场景。要么是模组没装完整，要么是该场景在
+      较新的模组版本里被改了名字。
+    tr: |
+      Bir mod, diskte var olmayan bir sahneyi yüklemeye çalıştı. Ya mod kurulumu
+      eksik ya da sahne daha yeni bir mod sürümünde yeniden adlandırıldı.
   fix:
     en:
       - "Reinstall the mod completely — fully delete its folder before re-adding."
@@ -21,6 +29,12 @@
     ru:
       - "Переустанови мод полностью — удали папку и накати свежую версию."
       - "Проверь Required Files на странице мода в NexusMods (часто отдельно лежит 'Scenes')."
+    zh:
+      - "彻底重新安装该模组——重新添加之前先完全删除它的文件夹。"
+      - "查看该模组在 NexusMods 上的 Required Files（往往有一个单独的 'Scenes' 下载）。"
+    tr:
+      - "Modu tamamen yeniden kur — yeniden eklemeden önce klasörünü tümüyle sil."
+      - "Modun NexusMods'taki Required Files bölümüne bak (genellikle ayrı bir 'Scenes' indirmesi olur)."
   match:
     any:
       - log_line:
@@ -37,6 +51,8 @@
   title:
     en: "Mesh asset not found"
     ru: "Меш не найден"
+    zh: "找不到网格资源"
+    tr: "Mesh varlığı bulunamadı"
   description:
     en: |
       A model referenced by item/scene XML doesn't exist as a .obj/.mesh on disk.
@@ -44,6 +60,12 @@
     ru: |
       Модель, на которую ссылается XML предмета/сцены, не существует как
       .obj/.mesh файл. Обычно — мод установлен частично.
+    zh: |
+      物品 / 场景 XML 引用的某个模型在磁盘上没有对应的 .obj/.mesh 文件。通常是
+      模组缺失或没装完整。
+    tr: |
+      Eşya/sahne XML'inin başvurduğu bir model, diskte .obj/.mesh olarak yok.
+      Genellikle eksik veya yarım bir mod kurulumu.
   fix:
     en:
       - "Reinstall the offending mod (mesh path in the log usually contains the mod ID)."
@@ -51,6 +73,12 @@
     ru:
       - "Переустанови мод (путь в логе обычно содержит ID мода)."
       - "Проверь Required Files на NexusMods."
+    zh:
+      - "重新安装肇事的模组（日志里的网格路径通常包含模组 ID）。"
+      - "查看 NexusMods 上的 Required Files。"
+    tr:
+      - "Sorunlu modu yeniden kur (günlükteki mesh yolu genellikle mod kimliğini içerir)."
+      - "NexusMods'taki Required Files bölümüne bak."
   match:
     all:
       - log_line:
@@ -65,6 +93,8 @@
   title:
     en: "FMOD audio bank failed to load"
     ru: "FMOD не загрузил аудиобанк"
+    zh: "FMOD 音频库加载失败"
+    tr: "FMOD ses bankası yüklenemedi"
   description:
     en: |
       An audio bank file (.bank) is missing or corrupt. Bannerlord usually keeps
@@ -74,6 +104,13 @@
       Аудиобанк (.bank) отсутствует или повреждён. Bannerlord обычно работает
       без звука, но жёсткая FMOD-ошибка может уронить игру при первой боевой
       музыке.
+    zh: |
+      某个音频库文件（.bank）缺失或损坏。Bannerlord 通常会在声音损坏的情况下继续
+      运行，但严重的 FMOD 错误也可能在第一段战斗音乐时导致崩溃。
+    tr: |
+      Bir ses bankası dosyası (.bank) eksik veya bozuk. Bannerlord genellikle
+      bozuk seslerle çalışmaya devam eder, ama ağır bir FMOD hatası ilk savaş
+      müziğinde çökmeye de yol açabilir.
   fix:
     en:
       - "Steam → Bannerlord → Properties → Installed Files → Verify integrity."
@@ -81,6 +118,12 @@
     ru:
       - "Steam → Bannerlord → Свойства → Установленные файлы → Проверить целостность."
       - "Переустанови аудио-моды по одному, чтобы найти конфликт."
+    zh:
+      - "Steam → Bannerlord → 属性 → 已安装文件 → 验证完整性。"
+      - "逐个重新安装音频模组以找出冲突。"
+    tr:
+      - "Steam → Bannerlord → Özellikler → Yüklü Dosyalar → Bütünlüğü doğrula."
+      - "Çakışmayı bulmak için ses modlarını teker teker yeniden kur."
   match:
     all:
       - log_line:
@@ -100,6 +143,8 @@
   title:
     en: "Async I/O fault on compressed asset (.tpac) — engine couldn't read pack"
     ru: "Ошибка асинхронного чтения сжатого ассета (.tpac) — движок не смог прочитать пак"
+    zh: "压缩资源（.tpac）的异步 I/O 故障——引擎无法读取该资源包"
+    tr: "Sıkıştırılmış varlıkta (.tpac) eşzamansız G/Ç hatası — motor paketi okuyamadı"
   description:
     en: |
       The log shows a heavy burst of "Trying to make partial read on compressed
@@ -133,6 +178,40 @@
       4. Модовый ассет ссылается на файл, который автор мода забыл положить в архив.
 
       Без установленных BLSE + ButterLib Bannerlord не пишет managed-стек в rgl_log, поэтому точное имя битого .tpac определить невозможно — только класс проблемы. Если краш повторится — поставь BLSE перед следующей сессией, тогда мы получим точный стек.
+    zh: |
+      日志里出现一连串 "Trying to make partial read on compressed asset data"
+      警告（往往连续几十到几百次），这是 Bannerlord 的 .tpac 资源包（存放网格、
+      纹理和图标的压缩档案）发生异步 I/O 故障的已知特征。当这种模式出现在一个
+      托管 CLR 异常（0xE0434352）之前时，引擎通常抛出了一个没人接住的
+      System.IO.FileNotFoundException 或异步读取失败，于是游戏倒下了。
+
+      论坛已证实的、这一确切模式的根本原因：
+      1. 基础游戏里损坏或没下载完整的 .tpac（通常是 Modules/Native/AssetPackages/pack0.tpac），或者某个创意工坊模组里的。
+      2. 杀毒软件 / Defender 实时扫描在引擎对大块 .tpac 进行读取时阻止了它打开的异步文件句柄。
+      3. 磁盘 I/O 错误（坏扇区、USB 外接存储超时、游戏在串流资源时 HDD 负载过高）。
+      4. 模组资源引用了一个模组作者忘记一并发布的文件。
+
+      没有安装 BLSE + ButterLib，Bannerlord 不会把托管堆栈写进 rgl_log，所以我们
+      无法指出究竟是哪个 .tpac 出了问题——只能指出问题的类别。如果再次出现，请在
+      下次游戏前装上 BLSE。
+    tr: |
+      Günlükte yoğun bir "Trying to make partial read on compressed asset data"
+      uyarısı dizisi var (genellikle peş peşe onlarca ila yüzlerce kez); bu,
+      Bannerlord'un .tpac paketlerinde (mesh, doku ve simgeleri tutan sıkıştırılmış
+      arşivler) eşzamansız bir G/Ç hatasının bilinen imzasıdır. Bu desen yönetilen
+      bir CLR istisnasından (0xE0434352) önce geldiğinde, motor genellikle kimsenin
+      yakalamadığı bir System.IO.FileNotFoundException ya da eşzamansız okuma hatası
+      fırlatmıştır ve oyun çökmüştür.
+
+      Bu tam desen için forumda doğrulanmış kök nedenler:
+      1. Temel oyunda bozuk veya eksik indirilmiş bir .tpac (genellikle Modules/Native/AssetPackages/pack0.tpac) ya da bir Workshop modunda.
+      2. Antivirüs / Defender gerçek zamanlı taraması, motorun büyük .tpac okumalarında açtığı eşzamansız dosya tanıtıcılarını engelliyor.
+      3. Disk G/Ç hataları (bozuk sektör, zaman aşımına uğrayan USB depolama, oyun bir varlığı akıtırken yoğun yük altındaki HDD).
+      4. Mod yazarının göndermeyi unuttuğu bir dosyaya başvuran modlu bir varlık.
+
+      BLSE + ButterLib kurulu olmadan Bannerlord rgl_log'a yönetilen bir yığın izi
+      yazmaz, bu yüzden başarısız olan tam .tpac'i adlandıramayız — yalnızca sorun
+      sınıfını. Bu tekrarlanırsa, bir sonraki oturumdan önce BLSE kur.
   fix:
     en:
       - "Steam → Bannerlord → Properties → Installed Files → Verify integrity (rebuilds Native pack0.tpac if it's broken)."
@@ -146,6 +225,18 @@
       - "Добавь папку игры и steamapps\\workshop\\content\\261550 в исключения антивируса / Windows Defender, затем перезагрузи ПК."
       - "Прогони 'chkdsk C: /f' в админ-консоли (потребуется перезагрузка) — подтвердит, что на диске с игрой нет I/O-ошибок."
       - "Поставь BLSE + ButterLib к следующей сессии — они заставят Bannerlord писать managed-стек, и в следующий раз мы укажем конкретный битый .tpac."
+    zh:
+      - "Steam → Bannerlord → 属性 → 已安装文件 → 验证完整性（如果 Native pack0.tpac 坏了，会重建它）。"
+      - "通过 Steam 创意工坊重新下载你的大型内容模组：取消订阅 → 关闭 Steam → 删除 steamapps\\workshop\\content\\261550\\<id>\\ 下的模组文件夹 → 重新打开 Steam → 重新订阅（强制干净地重新下载——创意工坊没有内置的“验证”功能）。"
+      - "把 Bannerlord 安装文件夹和 steamapps\\workshop\\content\\261550 加入杀毒软件 / Windows Defender 的排除列表，然后重启电脑。"
+      - "从管理员控制台运行 'chkdsk C: /f'（需要重启）——确认装游戏的磁盘没有 I/O 错误。"
+      - "下次游戏前安装 BLSE + ButterLib——它们会让 Bannerlord 写出托管堆栈，这样下次我们就能指出究竟是哪个 .tpac 出错了。"
+    tr:
+      - "Steam → Bannerlord → Özellikler → Yüklü Dosyalar → Bütünlüğü doğrula (Native pack0.tpac bozuksa yeniden oluşturur)."
+      - "Büyük içerik modlarını Steam Workshop üzerinden yeniden indir: abonelikten çık → Steam'i kapat → steamapps\\workshop\\content\\261550\\<id>\\ altındaki mod klasörünü sil → Steam'i yeniden aç → yeniden abone ol (temiz bir yeniden indirme zorlar — Workshop'un yerleşik bir 'doğrula' özelliği yoktur)."
+      - "Bannerlord kurulum klasörünü ve steamapps\\workshop\\content\\261550 klasörünü antivirüs / Windows Defender istisna listesine ekle, sonra bilgisayarı yeniden başlat."
+      - "Yönetici konsolundan 'chkdsk C: /f' çalıştır (yeniden başlatma gerektirir) — oyunun bulunduğu diskte G/Ç hatası olmadığını teyit eder."
+      - "Bir sonraki oturum için BLSE + ButterLib kur — Bannerlord'un yönetilen bir yığın izi yazmasını sağlarlar, böylece bir dahaki sefere başarısız olan tam .tpac'i adlandırabiliriz."
   match:
     all:
       - log_line:

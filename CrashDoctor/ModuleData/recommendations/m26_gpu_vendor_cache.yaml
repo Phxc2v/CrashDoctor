@@ -2,6 +2,8 @@
   title:
     en: "Clear GPU vendor shader cache (NVIDIA / AMD / Intel)"
     ru: "Очистить vendor-кэш шейдеров (NVIDIA / AMD / Intel)"
+    zh: "清理显卡厂商着色器缓存（NVIDIA / AMD / Intel）"
+    tr: "Ekran kartı üretici gölgelendirici önbelleğini temizle (NVIDIA / AMD / Intel)"
   description:
     en: |
       Complements M2.1 (which cleans Bannerlord's own shader cache). This module clears
@@ -25,6 +27,27 @@
       как проблема с кэшем Bannerlord, но очисткой только Bannerlord-кэша НЕ лечатся.
       Если M2.1 не помог и продолжают приходить device-removed крэши — попробуй
       и этот тоже.
+    zh: |
+      补充 M2.1（它清理 Bannerlord 自己的着色器缓存）。本模块清理显卡驱动程序
+      自身的着色器缓存，它位于 `%LOCALAPPDATA%\NVIDIA\DXCache`
+      （NVIDIA）、`%LOCALAPPDATA%\AMD\DxCache` 和 `\AMD\DXC`（AMD），或
+      `%LOCALAPPDATA%\Intel\ShaderCache`（Intel）。
+
+      在驱动程序更新或大幅更换显卡之后，这些缓存会过时并导致
+      CreateShaderResourceView 失败和 DXGI_ERROR_DEVICE_REMOVED —— 这些症状
+      看起来与 Bannerlord 缓存问题完全相同，但仅清理 Bannerlord 一侧并不能解决。
+      如果 M2.1 没有帮助而你仍然看到 device-removed 崩溃，也试试这个。
+    tr: |
+      M2.1'i tamamlar (o, Bannerlord'un kendi gölgelendirici önbelleğini temizler). Bu modül
+      ekran kartı sürücüsünün KENDİ gölgelendirici önbelleğini temizler; bu önbellek
+      `%LOCALAPPDATA%\NVIDIA\DXCache` (NVIDIA), `%LOCALAPPDATA%\AMD\DxCache` ve
+      `\AMD\DXC` (AMD) ya da `%LOCALAPPDATA%\Intel\ShaderCache` (Intel) içinde bulunur.
+
+      Bir sürücü güncellemesinden veya büyük bir ekran kartı değişikliğinden sonra bu
+      önbellekler eskiyerek CreateShaderResourceView hatalarına ve
+      DXGI_ERROR_DEVICE_REMOVED durumuna yol açar — bir Bannerlord önbellek sorunuyla
+      birebir aynı görünen ancak Bannerlord tarafını temizlemekle DÜZELMEYEN belirtiler.
+      M2.1 işe yaramadıysa ve hâlâ device-removed çökmeleri görüyorsanız, bunu da deneyin.
   details:
     en:
       - "Threshold for 'NeedsAction': vendor-cache symptom strings in recent crash logs OR cache > 2 GB."
@@ -36,3 +59,13 @@
       - "Файлы уезжают в Корзину, можно восстановить."
       - "Затрагивает ВСЕ DirectX-игры (не только Bannerlord) — на следующем запуске они потратят несколько лишних секунд на rebuild vendor-кэшей. Допустимый компромисс."
       - "Откат из Crash Doctor не предусмотрен."
+    zh:
+      - "'NeedsAction' 阈值：近期崩溃日志中出现厂商缓存症状字符串，或缓存 > 2 GB。"
+      - "文件会移到回收站，可以还原。"
+      - "影响系统上所有的 DirectX 游戏（不只是 Bannerlord）—— 它们在下次启动时会多花几秒重建各自的厂商缓存。可接受的取舍。"
+      - "无法从 Crash Doctor 撤销。"
+    tr:
+      - "'NeedsAction' eşiği: son çökme günlüklerinde üretici önbelleği belirti dizeleri VEYA önbellek > 2 GB."
+      - "Dosyalar Geri Dönüşüm Kutusu'na gider ve geri yüklenebilir."
+      - "Sistemdeki TÜM DirectX oyunlarını etkiler (yalnızca Bannerlord'u değil) — bir sonraki açılışta üretici önbelleklerini yeniden oluşturmak için birkaç saniye fazladan harcarlar. Kabul edilebilir bir ödünleşim."
+      - "Crash Doctor'dan geri alınamaz."

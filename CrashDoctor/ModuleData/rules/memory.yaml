@@ -7,6 +7,8 @@
   title:
     en: "Windows page file is almost exhausted"
     ru: "Файл подкачки Windows почти исчерпан"
+    zh: "Windows 页面文件几乎耗尽"
+    tr: "Windows sayfa dosyası neredeyse tükendi"
   description:
     en: |
       Less than 1 GB of virtual memory is left for the game. Long sessions with
@@ -18,6 +20,15 @@
       (особенно TOR на загрузке /continuegame) накапливают потребление памяти,
       пока Windows не перестаёт выдавать страницы — после чего процесс падает
       с access violation.
+    zh: |
+      游戏可用的虚拟内存已不足 1 GB。带着重型模组的长时间游戏（尤其是用
+      /continuegame 读取的 TOR 存档）会不断累积内存占用，直到 Windows 再也无法
+      分配页面——随后进程因访问冲突而崩溃。
+    tr: |
+      Oyun için 1 GB'den az sanal bellek kaldı. Ağır modlarla yapılan uzun
+      oturumlar (özellikle /continuegame ile yüklenen TOR kaydı) Windows artık
+      sayfa veremeyene kadar bellek biriktirir — sonra süreç bir erişim ihlaliyle
+      ölür.
   fix:
     en:
       - "Reboot the PC — the page file is reset on cold boot."
@@ -29,6 +40,16 @@
       - "Не загружай сейв через /continuegame после долгой сессии — выйди в главное меню и нажми Continue."
       - "Увеличить файл подкачки: Система → Дополнительные параметры → Производительность → Параметры → Дополнительно → Виртуальная память → Особый размер 32–64 ГБ на SSD."
       - "Закрой фоновые приложения (Chrome, Discord, браузеры) перед запуском."
+    zh:
+      - "重启电脑——冷启动时页面文件会被重置。"
+      - "长时间游戏后不要用 /continuegame 读档——退回主菜单，再从那里点 Continue。"
+      - "增大页面文件：系统 → 高级系统设置 → 性能 → 设置 → 高级 → 虚拟内存 → 在 SSD 上设自定义大小 32–64 GB。"
+      - "启动前关闭后台应用（Chrome、Discord、浏览器）。"
+    tr:
+      - "Bilgisayarı yeniden başlat — sayfa dosyası soğuk açılışta sıfırlanır."
+      - "Uzun bir oturumdan sonra kayıtları /continuegame ile yükleme — ana menüye çık ve oradan Continue'ya bas."
+      - "Sayfa dosyasını büyüt: Sistem → Gelişmiş sistem ayarları → Performans → Ayarlar → Gelişmiş → Sanal Bellek → SSD'de 32–64 GB özel boyut."
+      - "Başlatmadan önce arka plan uygulamalarını kapat (Chrome, Discord, tarayıcılar)."
   match:
     all:
       - system:
@@ -44,6 +65,8 @@
   title:
     en: "Out of memory (bad_alloc)"
     ru: "Закончилась память (bad_alloc)"
+    zh: "内存不足（bad_alloc）"
+    tr: "Bellek yetersiz (bad_alloc)"
   description:
     en: |
       The native allocator failed to grab a chunk of memory. Either the page file
@@ -51,6 +74,12 @@
     ru: |
       Нативному аллокатору не удалось получить кусок памяти. Либо мал файл
       подкачки, либо RAM фрагментирована после долгой сессии, либо в моде утечка.
+    zh: |
+      原生分配器无法获取一块内存。要么页面文件太小，要么长时间游戏后内存碎片化，
+      要么某个模组存在内存泄漏。
+    tr: |
+      Yerel ayırıcı bir bellek parçası alamadı. Ya sayfa dosyası çok küçük, ya
+      uzun bir oturumdan sonra RAM parçalanmış ya da bir modda sızıntı var.
   fix:
     en:
       - "Reboot the PC."
@@ -62,6 +91,16 @@
       - "Понизь Texture Quality и Texture Budget на ступень в Опции → Графика."
       - "Увеличить файл подкачки Windows (см. mem.pagefile_low)."
       - "Закрой фоновые приложения перед запуском."
+    zh:
+      - "重启电脑。"
+      - "在选项 → 图形中，把 Texture Quality 和 Texture Budget 各降低一档。"
+      - "增大 Windows 页面文件（见 mem.pagefile_low 的处理办法）。"
+      - "启动前退出所有后台应用。"
+    tr:
+      - "Bilgisayarı yeniden başlat."
+      - "Seçenekler → Grafikler'de Texture Quality ve Texture Budget'ı birer kademe düşür."
+      - "Windows sayfa dosyasını büyüt (bkz. mem.pagefile_low çözümü)."
+      - "Başlatmadan önce tüm arka plan uygulamalarını kapat."
   match:
     all:
       - log_line:
@@ -76,6 +115,8 @@
   title:
     en: "Access violation in TaleWorlds.MountAndBlade native code"
     ru: "Access violation в нативе TaleWorlds.MountAndBlade"
+    zh: "TaleWorlds.MountAndBlade 原生代码中的访问冲突"
+    tr: "TaleWorlds.MountAndBlade yerel kodunda erişim ihlali"
   description:
     en: |
       System.AccessViolationException with Source=TaleWorlds.MountAndBlade — native
@@ -85,6 +126,14 @@
       System.AccessViolationException с Source=TaleWorlds.MountAndBlade — порча
       нативного движка в Bannerlord 1.2.10 / 1.2.11. Задокументированная
       регрессия TaleWorlds. Краш случайный и не из-за модов.
+    zh: |
+      System.AccessViolationException，Source=TaleWorlds.MountAndBlade——Bannerlord
+      1.2.10 / 1.2.11 中的原生引擎损坏。这是有记录的 TaleWorlds 回归缺陷。崩溃是
+      随机的，与模组无关。
+    tr: |
+      Source=TaleWorlds.MountAndBlade ile System.AccessViolationException —
+      Bannerlord 1.2.10 / 1.2.11'deki yerel motor bozulması. Belgelenmiş bir
+      TaleWorlds regresyonu. Çökme rastgeledir ve modlardan kaynaklanmaz.
   fix:
     en:
       - "Update Bannerlord to 1.2.12+ or downgrade to 1.2.9 via Steam beta branch."
@@ -94,6 +143,14 @@
       - "Обнови Bannerlord до 1.2.12+ или откатись на 1.2.9 через Steam beta."
       - "Сбрось разгон GPU на default (никакого OC / UV)."
       - "Steam → Проверить целостность файлов игры."
+    zh:
+      - "把 Bannerlord 更新到 1.2.12+，或通过 Steam beta 分支降级到 1.2.9。"
+      - "把显卡频率重置为默认（不超频 / 不降压）。"
+      - "在 Steam 中验证游戏文件完整性。"
+    tr:
+      - "Bannerlord'u 1.2.12+ sürümüne güncelle veya Steam beta dalı üzerinden 1.2.9'a düşür."
+      - "GPU saat hızlarını varsayılana sıfırla (overclock / undervolt yok)."
+      - "Steam'de oyun dosyalarının bütünlüğünü doğrula."
   match:
     all:
       - log_line:
@@ -110,6 +167,8 @@
   title:
     en: "Stack overflow (0xC00000FD) — recursive AI loop"
     ru: "Stack overflow (0xC00000FD) — рекурсивный AI loop"
+    zh: "栈溢出（0xC00000FD）——递归 AI 循环"
+    tr: "Yığın taşması (0xC00000FD) — özyinelemeli AI döngüsü"
   description:
     en: |
       Process exited with STATUS_STACK_OVERFLOW (exit code 0xC00000FD). Vanilla
@@ -121,6 +180,16 @@
       в ванильном Bannerlord — рекурсивный AI loop (поиск BannerBearer, цикл
       апгрейда юнитов). Известно и фикшено в 1.1.0 — почти всегда означает, что
       кампания начата на старой багованной версии.
+    zh: |
+      进程以 STATUS_STACK_OVERFLOW 退出（退出码 0xC00000FD）。原版 Bannerlord 的
+      根源：一个递归 AI 循环（旗手搜索、部队升级循环）。已知并在 1.1.0 中修复——
+      几乎总是意味着这个战役存档是在更旧的有缺陷版本上开始的。
+    tr: |
+      Süreç STATUS_STACK_OVERFLOW ile çıktı (çıkış kodu 0xC00000FD). Orijinal
+      Bannerlord nedeni: özyinelemeli bir AI döngüsü (BannerBearer araması, birlik
+      yükseltme döngüsü). Bilinen ve 1.1.0'da düzeltilmiş bir sorun — neredeyse
+      her zaman sefer kaydının daha eski, hatalı bir sürümde başlatıldığı anlamına
+      gelir.
   fix:
     en:
       - "Update Bannerlord to the latest patch."
@@ -130,6 +199,14 @@
       - "Обнови Bannerlord до последнего патча."
       - "Если сейв начат на 1.0.x — стартани новую кампанию."
       - "Если краш воспроизводится на конкретной битве — отключай AI-моды по одному (RBM, AI-оверхолы)."
+    zh:
+      - "把 Bannerlord 更新到最新补丁。"
+      - "如果存档是在 1.0.x 上开始的——开一局新战役。"
+      - "如果在某场特定战斗中能复现——逐个禁用 AI 模组（RBM、AI 大改）。"
+    tr:
+      - "Bannerlord'u en son yamaya güncelle."
+      - "Kayıt 1.0.x'te başlatıldıysa — yeni bir sefer başlat."
+      - "Belirli bir savaşta tekrarlanabiliyorsa — AI modlarını teker teker devre dışı bırak (RBM, AI elden geçirmeleri)."
   match:
     any:
       - log_line:
@@ -146,6 +223,8 @@
   title:
     en: "Lord's Hall fight DivideByZeroException"
     ru: "DivideByZeroException на бое в Lord's Hall"
+    zh: "领主大厅战斗的 DivideByZeroException"
+    tr: "Lord's Hall savaşında DivideByZeroException"
   description:
     en: |
       LordsHallFightMissionController+MissionSide.SpawnTroops divides by zero
@@ -155,6 +234,13 @@
       LordsHallFightMissionController+MissionSide.SpawnTroops делится на ноль —
       в сцене ноль точек спавна. Специфичный баг Lord's Hall на определённых
       городах.
+    zh: |
+      LordsHallFightMissionController+MissionSide.SpawnTroops 发生除以零，因为该
+      场景的出生点数量为零。这是某些封地上特定的领主大厅攻城阶段才有的问题。
+    tr: |
+      LordsHallFightMissionController+MissionSide.SpawnTroops sıfıra bölünüyor,
+      çünkü sahnenin doğuş noktası sayısı sıfır. Belirli tımarlardaki özel bir
+      Lord's Hall kuşatma aşaması.
   fix:
     en:
       - "Avoid the Lord's Hall stage of this specific siege — sally out / surrender / pick another fief."
@@ -164,6 +250,14 @@
       - "Избегай этапа Lord's Hall в этой конкретной осаде — вылазка / сдаться / другой город."
       - "Загрузи сейв до осады и атакуй другой город."
       - "Если краш повторяется на конкретном городе — отпиши на TaleWorlds-форум с названием сцены."
+    zh:
+      - "避开这场特定攻城战的领主大厅阶段——出击 / 投降 / 换一个封地。"
+      - "读取攻城前的存档，试试另一个定居点。"
+      - "如果该缺陷在某个特定封地上能复现——把场景名称发到 TaleWorlds 论坛反馈。"
+    tr:
+      - "Bu belirli kuşatmanın Lord's Hall aşamasından kaçın — çıkış yap / teslim ol / başka bir tımar seç."
+      - "Kuşatma öncesi kayda dön ve farklı bir yerleşim dene."
+      - "Hata belirli bir tımarda tekrarlanabiliyorsa — sahne adıyla birlikte TaleWorlds forumlarında bildir."
   match:
     all:
       - log_line:

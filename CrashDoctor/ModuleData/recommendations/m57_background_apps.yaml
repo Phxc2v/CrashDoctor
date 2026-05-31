@@ -2,6 +2,8 @@
   title:
     en: "Close known-problematic background apps"
     ru: "Закрыть проблемные фоновые приложения"
+    zh: "关闭已知有问题的后台应用程序"
+    tr: "Bilinen sorunlu arka plan uygulamalarını kapat"
   description:
     en: |
       Some popular utilities hook into D3D11 / DXGI to draw overlays, capture frames, or sync
@@ -14,6 +16,17 @@
       ломатели состояния шейдеров Bannerlord и триггеры DXGI device-removed. Crash Doctor
       перечисляет всех запущенных нарушителей из проверенного списка — убей их в
       Диспетчере задач перед запуском.
+    zh: |
+      一些流行的工具会挂钩到 D3D11 / DXGI 上去绘制叠加层、捕获帧，或将 RGB 灯光与游戏
+      状态同步。它们有记录会破坏 Bannerlord 的着色器状态或触发 DXGI device-removed 崩溃。
+      Crash Doctor 会从一份精选列表中列出所有正在运行的违规程序——在启动前用任务管理器
+      关闭它们。
+    tr: |
+      Bazı popüler yardımcı programlar, kaplama çizmek, kare yakalamak veya RGB
+      aydınlatmayı oyun durumuyla eşitlemek için D3D11 / DXGI'ye kanca takar. Bunların
+      Bannerlord'un gölgelendirici durumunu bozduğu veya DXGI device-removed çökmelerini
+      tetiklediği belgelenmiştir. Crash Doctor, özenle seçilmiş bir listeden çalışan her
+      ihlalciyi listeler — başlatmadan önce bunları Görev Yöneticisi'nde kapatın.
   details:
     en:
       - "Apply opens Task Manager. Crash Doctor doesn't kill processes automatically — some are part of audio/RGB drivers."
@@ -25,3 +38,13 @@
       - "Убитые процессы можно перезапустить из меню «Пуск» после выхода из Bannerlord."
       - "Список: RTSS, MSI Afterburner OSD, оверлей Discord, Nahimic, SignalRGB, iCUE, OBS Game Capture, XSplit."
       - "После убийства — пересканируй Crash Doctor."
+    zh:
+      - "「应用」会打开任务管理器。Crash Doctor 不会自动结束进程——有些是音频/RGB 驱动的一部分。"
+      - "被结束的进程可在 Bannerlord 退出后从开始菜单重新启动。"
+      - "列表包括 RTSS、MSI Afterburner OSD、Discord 叠加层、Nahimic、SignalRGB、iCUE、OBS Game Capture、XSplit。"
+      - "结束后——重新扫描 Crash Doctor。"
+    tr:
+      - "«Uygula» Görev Yöneticisi'ni açar. Crash Doctor işlemleri otomatik olarak sonlandırmaz — bazıları ses/RGB sürücülerinin bir parçasıdır."
+      - "Sonlandırılan işlemler, Bannerlord çıktıktan sonra Başlat Menüsü'nden yeniden başlatılabilir."
+      - "Liste şunları içerir: RTSS, MSI Afterburner OSD, Discord kaplaması, Nahimic, SignalRGB, iCUE, OBS Game Capture, XSplit."
+      - "Sonlandırdıktan sonra — Crash Doctor'u yeniden tarayın."

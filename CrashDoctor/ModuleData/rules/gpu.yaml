@@ -7,6 +7,8 @@
   title:
     en: "Game is rendering on the integrated AMD GPU"
     ru: "Игра рендерится на встроенной AMD-видеокарте"
+    zh: "游戏正在使用 AMD 集成显卡渲染"
+    tr: "Oyun tümleşik AMD ekran kartında render ediliyor"
   description:
     en: |
       Bannerlord launched on the integrated AMD Radeon GPU instead of the
@@ -16,6 +18,13 @@
       Bannerlord запустился на встроенной видеокарте AMD Radeon вместо
       дискретной, которая есть в этой машине. У встроенной мало видеопамяти —
       почти наверняка из-за этого и был краш.
+    zh: |
+      Bannerlord 使用的是 AMD Radeon 集成显卡，而不是这台机器上检测到的独立显卡。
+      集成显卡的专用显存很少，极有可能就是这次崩溃的原因。
+    tr: |
+      Bannerlord, bu makinede algılanan ayrık kart yerine tümleşik AMD Radeon
+      ekran kartında başlatıldı. Tümleşik ekran kartının ayrılmış VRAM'i çok az
+      ve çökmenin en olası nedeni bu.
   fix:
     en:
       - "In-game: Options → Graphics → first tab → Graphics Adapter → choose the discrete GPU."
@@ -27,6 +36,16 @@
       - "Если такой опции нет: в Documents/Mount and Blade II Bannerlord/engine_config.txt поменять graphics_adapter с 0 на 1."
       - "Через Windows: Параметры → Система → Дисплей → Графика → добавить Bannerlord.exe → Высокая производительность."
       - "Обновить драйвер AMD и драйвер дискретной видеокарты."
+    zh:
+      - "游戏内：Options → Graphics → 第一个标签页 → Graphics Adapter → 选择独立显卡。"
+      - "如果没有该选项：打开 Documents/Mount and Blade II Bannerlord/engine_config.txt，把 graphics_adapter 从 0 改为 1。"
+      - "通过 Windows：设置 → 系统 → 显示 → 显卡 → 添加 Bannerlord.exe → 高性能。"
+      - "同时更新 AMD 和独立显卡的驱动程序。"
+    tr:
+      - "Oyun içinde: Options → Graphics → ilk sekme → Graphics Adapter → ayrık ekran kartını seçin."
+      - "Seçenek yoksa: Documents/Mount and Blade II Bannerlord/engine_config.txt dosyasını açın ve graphics_adapter değerini 0'dan 1'e değiştirin."
+      - "Windows üzerinden: Ayarlar → Sistem → Ekran → Grafik → Bannerlord.exe ekleyin → Yüksek performans."
+      - "Hem AMD hem de ayrık ekran kartı sürücülerini güncelleyin."
   match:
     all:
       - engine_config:
@@ -122,6 +141,8 @@
   title:
     en: "Shader compile error X3004 — undeclared identifier '_TBN'"
     ru: "Ошибка компиляции шейдера X3004 — неопределённый '_TBN'"
+    zh: "着色器编译错误 X3004 — 未声明的标识符 '_TBN'"
+    tr: "Gölgelendirici derleme hatası X3004 — tanımlanmamış tanımlayıcı '_TBN'"
   description:
     en: |
       The HLSL compiler rejected particle_shading.rsh (or similar .rs/.rsh) with
@@ -135,6 +156,18 @@
       шейдеров после апдейта Bannerlord: скомпилированный кэш собран против
       другой версии исходников. Часто после BL 1.4–1.5, 1.7–1.8 или любого
       крупного патча где TaleWorlds переименовали varying.
+    zh: |
+      HLSL 编译器拒绝了 particle_shading.rsh（或类似的 .rs/.rsh），报错
+      X3004 'undeclared identifier _TBN'。原因是 Bannerlord 更新后留下了
+      陈旧/损坏的着色器缓存——已编译的缓存是针对另一个着色器源构建的。常见于
+      BL 1.4–1.5、1.7–1.8，或任何 TaleWorlds 重命名了某个 varying 的大型补丁之后。
+    tr: |
+      HLSL derleyicisi particle_shading.rsh dosyasını (veya benzer .rs/.rsh)
+      X3004 'undeclared identifier _TBN' hatasıyla reddetti. Bannerlord
+      güncellemesinden sonra eski/bozuk bir gölgelendirici önbelleği bunu
+      tetikler — derlenmiş önbellek farklı bir gölgelendirici kaynağına göre
+      oluşturulmuş. BL 1.4–1.5, 1.7–1.8 veya TaleWorlds'ün bir varying'i yeniden
+      adlandırdığı her büyük yamadan sonra sık görülür.
   fix:
     en:
       - "Open Crash Doctor → System tune-up → 'Clear Bannerlord shader cache'."
@@ -148,6 +181,18 @@
       - "Запусти игру и нажми «Build Shader Cache» в главном меню — дождись завершения."
       - "На AMD: настройки NVIDIA Shader Cache не применимы, но в игре понизь Shader Quality до Medium."
       - "На NVIDIA: NVIDIA Control Panel → Manage 3D settings → Shader Cache Size = Unlimited."
+    zh:
+      - "打开 Crash Doctor → 系统调优 → '清理着色器缓存'。"
+      - "Steam → Bannerlord → 属性 → 已安装文件 → 验证完整性。"
+      - "启动游戏，在主菜单选择 'Build Shader Cache'——耐心等待完成。"
+      - "如果用 AMD：NVIDIA Shader Cache 设置不适用，但可在游戏内把 Shader Quality 降到 Medium。"
+      - "如果用 NVIDIA：NVIDIA Control Panel → Manage 3D settings → Shader Cache Size = Unlimited。"
+    tr:
+      - "Crash Doctor → Sistem ayarı → 'gölgelendirici önbelleğini temizle' açın."
+      - "Steam → Bannerlord → Özellikler → Yüklü Dosyalar → Bütünlüğü doğrula."
+      - "Oyunu başlatın ve ana menüden 'Build Shader Cache' seçin — bitmesini bekleyin."
+      - "AMD kullanıyorsanız: NVIDIA Shader Cache ayarları geçerli değildir, ama oyun içinde Shader Quality değerini Medium yapın."
+      - "NVIDIA kullanıyorsanız: NVIDIA Control Panel → Manage 3D settings → Shader Cache Size = Unlimited."
   match:
     any:
       - log_line:
@@ -166,6 +211,8 @@
   title:
     en: "D3D11 CreateShaderResourceView failed — tessellation overflow on TOR"
     ru: "D3D11 CreateShaderResourceView упал — переполнение тесселяции в TOR"
+    zh: "D3D11 CreateShaderResourceView 失败 — TOR 上的曲面细分溢出"
+    tr: "D3D11 CreateShaderResourceView başarısız — TOR'da tessellation taşması"
   description:
     en: |
       rglGPU_device::create_gpu_buffer hit CreateShaderResourceView fail, GPU
@@ -177,6 +224,16 @@
       GPU device suspended, часто следом DXGI_ERROR_DEVICE_REMOVED. Известный
       TOR-паттерн: переполнение буфера сцены при тесселяции на тяжёлых локациях
       (бретонские деревни, таверна Мусийона). Драйвер убивает device.
+    zh: |
+      rglGPU_device::create_gpu_buffer 遇到 CreateShaderResourceView 失败，GPU
+      device suspended，之后通常紧跟 DXGI_ERROR_DEVICE_REMOVED。已知的 TOR
+      模式：在重型场景（布列塔尼亚村庄、穆西永酒馆）上曲面细分 + 场景缓冲区
+      溢出。驱动程序会杀掉设备。
+    tr: |
+      rglGPU_device::create_gpu_buffer, CreateShaderResourceView hatasına çarptı,
+      GPU device suspended ve hemen ardından genelde DXGI_ERROR_DEVICE_REMOVED.
+      Bilinen TOR örüntüsü: ağır konumlarda (Bretonya köyleri, Mousillon tavernası)
+      tessellation + sahne arabelleği taşması. Sürücü cihazı kapatır.
   fix:
     en:
       - "Documents/Mount and Blade II Bannerlord/engine_config.txt → set tesselation = 0."
@@ -188,6 +245,16 @@
       - "В игре: Опции → Графика → Terrain Quality на Medium, Static Shadows ВКЛ."
       - "Открой Crash Doctor → Настройка системы → «Очистить кэш шейдеров Bannerlord»."
       - "Обнови драйвер GPU до последней WHQL."
+    zh:
+      - "Documents/Mount and Blade II Bannerlord/engine_config.txt → 设置 tesselation = 0。"
+      - "游戏内：Options → Graphics → Terrain Quality = Medium、Static Shadows 开启。"
+      - "打开 Crash Doctor → 系统调优 → '清理着色器缓存'。"
+      - "把显卡驱动更新到最新的 WHQL。"
+    tr:
+      - "Documents/Mount and Blade II Bannerlord/engine_config.txt → tesselation = 0 yapın."
+      - "Oyun içinde: Options → Graphics → Terrain Quality = Medium, Static Shadows AÇIK."
+      - "Crash Doctor → Sistem ayarı → 'gölgelendirici önbelleğini temizle' açın."
+      - "Ekran kartı sürücüsünü en son WHQL sürümüne güncelleyin."
   match:
     any:
       - log_line:
@@ -204,6 +271,8 @@
   title:
     en: "Shader cache was never built — game crashes when entering a location"
     ru: "Кэш шейдеров не собирался — падает при входе в локацию"
+    zh: "着色器缓存从未构建 — 进入场景时游戏崩溃"
+    tr: "Gölgelendirici önbelleği hiç oluşturulmadı — bir konuma girerken oyun çöküyor"
   description:
     en: |
       The save loads, the campaign map opens, but the moment a terrain tile
@@ -218,6 +287,29 @@
       been run on this machine (or was run on a different GPU, e.g. integrated
       Intel UHD on a laptop), or the build was interrupted by an Alt+Tab
       during compilation.
+    zh: |
+      存档能加载，战役地图能打开，但一旦需要绘制地形图块，引擎就会请求
+      `pbr_terrain` 系列着色器，却什么都拿不到。一帧之内出现几十行
+      "Missing shader from sack: pbr_terrain"，游戏随即在 D3D11 中陷入
+      原生 access violation。
+
+      日志中任何地方都没有出现 `read_compressed_shader_cache_package`，
+      这说明随游戏附带的着色器缓存包在启动时没有被打开。最常见的原因是这台
+      机器上从未运行过 'Build Shader Cache'（或是在另一块显卡上运行的，例如
+      笔记本上的 Intel UHD 集成显卡），或者构建过程中按了 Alt+Tab 被打断。
+    tr: |
+      Kayıt yükleniyor, sefer haritası açılıyor ama bir arazi karosu çizilmesi
+      gerektiği anda motor `pbr_terrain` gölgelendirici ailesini istiyor ve
+      hiçbir şey alamıyor. Tek bir karede onlarca "Missing shader from sack:
+      pbr_terrain" satırı oluşuyor ve oyun D3D11'de yerel bir access violation'a
+      düşüyor.
+
+      Günlüğün hiçbir yerinde `read_compressed_shader_cache_package` görülmedi;
+      bu, oyunla gelen gölgelendirici önbellek paketinin başlangıçta açılmadığı
+      anlamına gelir. En sık görülen neden, bu makinede 'Build Shader Cache'in
+      hiç çalıştırılmamış olmasıdır (ya da farklı bir ekran kartında çalıştırılmış,
+      örneğin bir dizüstüde tümleşik Intel UHD), ya da derleme sırasında Alt+Tab
+      ile yarıda kesilmiş olmasıdır.
     ru: |
       Сейв грузится, карта кампании открывается, но как только нужно
       нарисовать тайл ландшафта — движок просит семейство шейдеров
@@ -236,6 +328,16 @@
       - "Laptop with two GPUs: NVIDIA Control Panel → Manage 3D Settings → Program Settings → Bannerlord.exe → Preferred GPU = 'High-performance NVIDIA processor'. AMD: Radeon Settings → Bannerlord.exe → Graphics → 'High Performance'. Then rebuild the cache once on the correct adapter."
       - "If the page file is disabled: turn it back on (Custom 40000–60000 MB on C:) before rebuilding — TOR shader compilation peaks at ~30 GB committed memory and a tiny page file kills the build."
       - "If 'Build Shader Cache' still does not help: delete C:\\ProgramData\\Mount and Blade II Bannerlord\\Shaders\\ entirely, plus every Modules\\<mod>\\Shaders\\D3D11\\compressed_shaders_cache.sack file you can find. Then 'Build Shader Cache' again."
+    zh:
+      - "Bannerlord 主菜单 → 'Build Shader Cache'。等待 10–50 分钟，期间不要按 Alt+Tab——编译过程中切到浏览器会损坏缓存，得从头再来。"
+      - "双显卡笔记本：NVIDIA Control Panel → Manage 3D Settings → Program Settings → Bannerlord.exe → 首选显卡 = 'High-performance NVIDIA processor'。AMD：Radeon Settings → Bannerlord.exe → Graphics → 'High Performance'。然后在正确的适配器上重新构建一次缓存。"
+      - "如果页面文件被禁用：在重新构建前先把它打开（在 C: 盘自定义 40000–60000 MB）——TOR 着色器编译峰值约需 30 GB 已提交内存，页面文件太小会让构建失败。"
+      - "如果 'Build Shader Cache' 仍然没用：彻底删除 C:\\ProgramData\\Mount and Blade II Bannerlord\\Shaders\\，以及你能找到的每一个 Modules\\<mod>\\Shaders\\D3D11\\compressed_shaders_cache.sack 文件。然后再次 'Build Shader Cache'。"
+    tr:
+      - "Bannerlord ana menüsü → 'Build Shader Cache'. Alt+Tab YAPMADAN 10–50 dakika bekleyin — derleme sırasında tarayıcıya geçmek önbelleği bozar ve baştan başlamanız gerekir."
+      - "Çift ekran kartlı dizüstü: NVIDIA Control Panel → Manage 3D Settings → Program Settings → Bannerlord.exe → Tercih edilen ekran kartı = 'High-performance NVIDIA processor'. AMD: Radeon Settings → Bannerlord.exe → Graphics → 'High Performance'. Sonra doğru bağdaştırıcıda önbelleği bir kez yeniden oluşturun."
+      - "Sayfa dosyası devre dışıysa: yeniden oluşturmadan önce geri açın (C: üzerinde Özel 40000–60000 MB) — TOR gölgelendirici derlemesi ~30 GB taahhüt edilen belleğe çıkar ve küçük bir sayfa dosyası derlemeyi öldürür."
+      - "'Build Shader Cache' yine de yardımcı olmazsa: C:\\ProgramData\\Mount and Blade II Bannerlord\\Shaders\\ klasörünü tamamen silin, ayrıca bulabildiğiniz her Modules\\<mod>\\Shaders\\D3D11\\compressed_shaders_cache.sack dosyasını da. Sonra tekrar 'Build Shader Cache'."
     ru:
       - "Главное меню Bannerlord → «Build Shader Cache». Подожди 10–50 минут БЕЗ Alt+Tab — сворачивание в браузер во время компиляции ломает кэш, придётся начинать заново."
       - "Ноутбук с двумя видеокартами: NVIDIA Control Panel → Управление параметрами 3D → Программные настройки → Bannerlord.exe → Предпочитаемая видеокарта = «Высокопроизводительный процессор NVIDIA». На AMD: Radeon Settings → Bannerlord.exe → Графика → «Высокая производительность». После этого собери кэш заново на правильном адаптере."
@@ -259,6 +361,8 @@
   title:
     en: "AMD RX 9000-series driver regression (RDNA 4) — terrain shaders broken"
     ru: "Регрессия драйвера AMD на RX 9000-серии (RDNA 4) — шейдеры ландшафта не собираются"
+    zh: "AMD RX 9000 系列驱动回归问题（RDNA 4）— 地形着色器损坏"
+    tr: "AMD RX 9000 serisi sürücü gerilemesi (RDNA 4) — arazi gölgelendiricileri bozuk"
   description:
     en: |
       The crash signature is the late-game terrain rendering failure
@@ -285,6 +389,52 @@
           Warzone, VEIN, Bannerlord itself) show RX 9000-series users
           getting driver timeouts / D3D access violations on the same
           batch of drivers.
+    zh: |
+      从症状看，这是后期地形渲染失败（一帧内几十行
+      "Missing shader from sack: pbr_terrain" → D3D11 中的 0xC0000005），
+      但这里的根本原因是显卡驱动，而不是游戏本身。
+
+      当前显卡是 Radeon RX 9000 系列（RDNA 4 架构），驱动日期为
+      2026-03-01 或更晚。AMD 的 Adrenalin 26.5.x 发行说明明确列出了
+      RX 9000 系列上多个尚未解决的 D3D 渲染回归问题：God of War 画面错乱、
+      RoadCraft 间歇性程序崩溃/驱动超时、Satisfactory 画面错乱，以及
+      多显示器 AMD FreeSync 下的间歇性系统崩溃。驱动内部那条同样的着色器
+      编译路径，正是运行时把 Bannerlord 地形着色器构建进 sack 的路径；
+      在配这些驱动的 RDNA 4 上，TOR 的部分 pbr_terrain 排列要么编译失败，
+      要么把损坏的结果存了进去。
+
+      区别于普通 sack 损坏的特征：
+        - 重新安装 Bannerlord 没用（游戏文件没问题）。
+        - 'Build Shader Cache' 没用，即便多次尝试。
+        - 偏偏是 'Missing shader from sack: pbr_terrain'——损坏的驱动
+          路径在地形着色器这一系列上最稳定地出问题。
+        - 其他不相关游戏（Crimson Desert、Warzone、VEIN、Bannerlord
+          自身）的近期报告显示，RX 9000 系列用户在同一批驱动上同样
+          遇到驱动超时 / D3D access violation。
+    tr: |
+      Belirtiler geç oyun arazi render hatasıdır (tek bir karede onlarca
+      "Missing shader from sack: pbr_terrain" satırı → D3D11'de 0xC0000005),
+      ama buradaki kök neden oyun değil, ekran kartı sürücüsüdür.
+
+      Etkin ekran kartı, 2026-03-01 veya sonrası tarihli bir sürücü çalıştıran
+      bir Radeon RX 9000 serisi karttır (RDNA 4). AMD'nin Adrenalin 26.5.x
+      sürüm notları, RX 9000 serisi ürünlerde çözülmemiş birden çok D3D render
+      gerilemesini açıkça listeler: God of War'da bozulma, RoadCraft'ta aralıklı
+      uygulama çökmeleri / sürücü zaman aşımları, Satisfactory'de bozulma ve
+      çok monitörlü AMD FreeSync ile aralıklı sistem çökmeleri. Sürücünün
+      içindeki aynı gölgelendirici derleyici yolu, çalışma zamanında
+      Bannerlord'un arazi gölgelendiricilerini sack'e derleyen yoldur ve bu
+      sürücülerle RDNA 4'te TOR'un pbr_terrain permütasyonlarının bir kısmı ya
+      derlenemez ya da bozuk sonuç saklar.
+
+      Bunu genel sack bozulmasından ayıran belirtiler:
+        - Bannerlord'u yeniden yüklemek yardımcı olmadı (oyun dosyaları sağlam).
+        - 'Build Shader Cache' birkaç denemeden sonra bile yardımcı olmadı.
+        - Özellikle 'Missing shader from sack: pbr_terrain' — bozuk sürücü
+          yolu en güvenilir şekilde arazi gölgelendirici ailesinde başarısız olur.
+        - İlgisiz oyunlardaki (Crimson Desert, Warzone, VEIN, Bannerlord'un
+          kendisi) son raporlar, RX 9000 serisi kullanıcılarının aynı sürücü
+          partisinde sürücü zaman aşımları / D3D access violation aldığını gösteriyor.
     ru: |
       По симптомам это поздний краш на отрисовке ландшафта (десятки
       строк «Missing shader from sack: pbr_terrain» → 0xC0000005 в
@@ -319,6 +469,18 @@
       - "If you are on Adrenalin 26.5.1 specifically: update to 26.5.2 — AMD fixed several of the 26.5.1 regressions there. Note that the client whose crash this rule was modelled on was already on 26.5.2 and STILL crashed; 26.3.1 is the safer rollback target."
       - "Wait for Adrenalin 26.5.3 / 26.6 — AMD ships 1-2 driver releases per month. Subscribe to the AMD release-notes RSS."
       - "Long term: upgrade to Windows 11. Windows 10 22H2 was end-of-life on 2025-10-14 and AMD prioritises QA for the newest cards on Windows 11. Not the immediate cause of this crash, but the underlying reason driver regressions land harder on this hardware combination."
+    zh:
+      - "通过 DDU 把显卡驱动回滚到 AMD Adrenalin 26.3.1 WHQL。从 amd.com 下载 26.3.1（Previous Drivers → RX 9070 XT → 26.3.1 WHQL）。下载 DDU（Display Driver Uninstaller）。把 Windows 启动进安全模式。运行 DDU → 'Clean and Restart'。安装 26.3.1。重启。启动 Bannerlord → 主菜单 → 再次 'Build Shader Cache'——这次 sack 会用一个能正常工作的编译器重建。按多款游戏的社区反馈，这是成功率最高的修复方法。"
+      - "如果现在无法回滚：在 AMD Adrenalin 中，为 Bannerlord 的配置关闭 HYPR-RX、AMD Anti-Lag、AFMF / AFMF 2、Radeon Boost、Image Sharpening。如果你用的是 144 Hz / 可变刷新率显示器，也关闭 AMD FreeSync——这是已知的 26.5.x 回归问题之一。"
+      - "如果你正好用的是 Adrenalin 26.5.1：更新到 26.5.2——AMD 在那里修复了部分 26.5.1 的回归问题。注意：本规则所依据的那位玩家当时已经是 26.5.2，仍然崩溃；26.3.1 是更安全的回滚目标。"
+      - "等待 Adrenalin 26.5.3 / 26.6——AMD 每月发布 1-2 个驱动版本。订阅 AMD 发行说明的 RSS。"
+      - "长期来看：升级到 Windows 11。Windows 10 22H2 已于 2025-10-14 终止支持，而 AMD 优先在 Windows 11 上为最新显卡做质量测试。这不是本次崩溃的直接原因，但正因如此，驱动回归问题在这套硬件组合上影响更大。"
+    tr:
+      - "Ekran kartı sürücüsünü DDU ile AMD Adrenalin 26.3.1 WHQL'ye geri alın. 26.3.1'i amd.com'dan indirin (Previous Drivers → RX 9070 XT → 26.3.1 WHQL). DDU (Display Driver Uninstaller) indirin. Windows'u Güvenli Mod'a alın. DDU → 'Clean and Restart' çalıştırın. 26.3.1 kurun. Yeniden başlatın. Bannerlord → ana menü → bir kez daha 'Build Shader Cache' — bu sefer sack çalışan bir derleyiciyle yeniden oluşur. Birçok oyundaki topluluk raporlarına göre en yüksek başarılı düzeltme budur."
+      - "Şu an geri alamıyorsanız: AMD Adrenalin'de Bannerlord profili için HYPR-RX, AMD Anti-Lag, AFMF / AFMF 2, Radeon Boost, Image Sharpening'i KAPATIN. 144 Hz / değişken yenileme hızlı bir monitördeyseniz AMD FreeSync'i de KAPATIN — bu, bilinen 26.5.x gerilemelerinden biridir."
+      - "Tam olarak Adrenalin 26.5.1 kullanıyorsanız: 26.5.2'ye güncelleyin — AMD orada 26.5.1 gerilemelerinin birkaçını düzeltti. Not: bu kuralın modellendiği oyuncu zaten 26.5.2'deydi ve YİNE çöktü; 26.3.1 daha güvenli bir geri alma hedefidir."
+      - "Adrenalin 26.5.3 / 26.6'yı bekleyin — AMD ayda 1-2 sürücü yayınlar. AMD sürüm notları RSS'ine abone olun."
+      - "Uzun vadede: Windows 11'e yükseltin. Windows 10 22H2, 2025-10-14'te destek sonuna geldi ve AMD en yeni kartlar için kalite testlerine Windows 11'de öncelik veriyor. Bu çökmenin doğrudan nedeni değil ama sürücü gerilemelerinin bu donanım kombinasyonunda daha sert vurmasının altta yatan nedeni."
     ru:
       - "Откатить драйвер видеокарты на AMD Adrenalin 26.3.1 WHQL через DDU. Скачать 26.3.1 с amd.com (Previous Drivers → RX 9070 XT → 26.3.1 WHQL). Скачать DDU (Display Driver Uninstaller). Загрузить Windows в безопасном режиме. Запустить DDU → «Clean and Restart». Установить 26.3.1. Перезагрузка. Запустить Bannerlord → главное меню → «Build Shader Cache» ещё раз — на этот раз sack соберётся с рабочим компилятором. Это самый надёжный фикс по репортам сообщества по нескольким играм."
       - "Если откатить прямо сейчас не получается: в AMD Adrenalin выключить HYPR-RX, AMD Anti-Lag, AFMF / AFMF 2, Radeon Boost, Image Sharpening в профиле Bannerlord. Также выключить AMD FreeSync, если монитор 144 Гц / с переменной частотой — это одна из known issues 26.5.x по официальным release notes."
@@ -353,6 +515,8 @@
   title:
     en: "Shader sack file is corrupt — rebuild does not help, files must be re-downloaded"
     ru: "Sack-файл шейдеров повреждён — пересборка не помогает, нужно скачать файлы заново"
+    zh: "着色器 sack 文件已损坏 — 重建无效，必须重新下载文件"
+    tr: "Gölgelendirici sack dosyası bozuk — yeniden oluşturma yardımcı olmaz, dosyalar yeniden indirilmeli"
   description:
     en: |
       The save loads, the campaign map opens, but the moment a terrain tile
@@ -373,6 +537,40 @@
       antivirus, a Workshop mod that ships its own shader pack got corrupted,
       or a brand-new GPU driver fails to compile a specific TOR terrain
       shader permutation and stores the failure in the sack.
+    zh: |
+      存档能加载，战役地图能打开，但一旦需要绘制地形图块，引擎就会请求
+      `pbr_terrain` 系列着色器，却什么都拿不到。一帧之内出现几十行
+      "Missing shader from sack: pbr_terrain"，游戏随即在 D3D11 中陷入
+      原生 access violation。
+
+      关键在于：日志在启动时显示了 `read_compressed_shader_cache_package`——
+      这说明着色器缓存包确实被成功打开了。包存在，引擎能读取它，但里面缺少
+      相应的着色器条目。这不是缓存构建问题。再次运行 'Build Shader Cache' 只是
+      从随游戏附带的 sack 文件重新生成用户缓存——如果这些源 sack 文件本身就
+      损坏或不完整，再怎么重建缓存也修不好。
+
+      常见原因：Steam 下载被中断或被杀毒软件删掉了一部分、某个自带着色器包的
+      Workshop 模组在下载时损坏，或一个全新的显卡驱动无法编译某个特定的 TOR
+      地形着色器排列，并把这次失败存进了 sack。
+    tr: |
+      Kayıt yükleniyor, sefer haritası açılıyor ama bir arazi karosu çizilmesi
+      gerektiği anda motor `pbr_terrain` gölgelendirici ailesini istiyor ve
+      hiçbir şey alamıyor. Tek bir karede onlarca "Missing shader from sack:
+      pbr_terrain" satırı oluşuyor ve oyun D3D11'de yerel bir access violation'a
+      düşüyor.
+
+      Önemlisi, günlük başlangıçta `read_compressed_shader_cache_package`
+      gösteriyor — yani gölgelendirici önbellek paketi başarıyla AÇILDI. Paket
+      mevcut, motor onu okuyabiliyor ama içindeki gölgelendirici girdileri eksik.
+      Bu bir önbellek oluşturma sorunu DEĞİL. 'Build Shader Cache'i tekrar
+      çalıştırmak, kullanıcı önbelleğini oyunla gelen sack dosyalarından yeniden
+      üretir — bu kaynak sack dosyalarının kendisi bozuk ya da eksikse, hiçbir
+      önbellek yeniden oluşturma bunu düzeltmez.
+
+      Tipik nedenler: Steam indirmesi yarıda kesilmiş ya da antivirüs tarafından
+      kısmen silinmiş, kendi gölgelendirici paketini getiren bir Workshop modu
+      bozulmuş, ya da yepyeni bir ekran kartı sürücüsü belirli bir TOR arazi
+      gölgelendirici permütasyonunu derleyemeyip bu hatayı sack'e kaydetmiş.
     ru: |
       Сейв грузится, карта кампании открывается, но как только нужно
       нарисовать тайл ландшафта — движок просит семейство шейдеров
@@ -399,6 +597,18 @@
       - "Only AFTER Steam Verify + Workshop re-subscribe: Main menu → 'Build Shader Cache' once more. Wait 10–50 minutes WITHOUT Alt+Tab. This is verification, not the actual fix."
       - "Brand-new GPU (RTX 50-series, RX 9000-series): consider rolling back to the previous WHQL driver via DDU in Safe Mode. The newest drivers occasionally fail to compile specific TOR shader permutations and the failure gets cached in the sack."
       - "Last resort if nothing else helps: completely uninstall Bannerlord through Steam, manually delete the leftover game folder, reinstall. This forces every byte to be re-downloaded fresh."
+    zh:
+      - "Steam → Bannerlord → 属性 → 已安装文件 → 验证游戏文件完整性。这是首要修复方法——Steam 会重新下载校验和不匹配的 sack 文件。完成后启动游戏，看崩溃是否消失。若仍存在，进行第 2 步。"
+      - "在 Steam Workshop 中逐个对 TOR_Core、TOR_Environment、TOR_Armory 取消订阅再重新订阅。重新订阅下一个之前，先等当前这个完全下载完成。Workshop 内容有时只下载了一部分，而 Steam 会悄悄把这些半成品文件留在原处。"
+      - "只有在完成 Steam 验证 + Workshop 重新订阅之后：主菜单 → 再次 'Build Shader Cache'。等待 10–50 分钟，期间不要按 Alt+Tab。这是验证步骤，不是真正的修复。"
+      - "全新显卡（RTX 50 系列、RX 9000 系列）：考虑在安全模式下用 DDU 回滚到上一版 WHQL 驱动。最新驱动偶尔会无法编译某些特定的 TOR 着色器排列，而这次失败被缓存进了 sack。"
+      - "如果一切都没用的最后手段：通过 Steam 彻底卸载 Bannerlord，手动删除残留的游戏文件夹，再重新安装。这会强制重新下载每一个字节。"
+    tr:
+      - "Steam → Bannerlord → Özellikler → Yüklü Dosyalar → Oyun Dosyalarının Bütünlüğünü Doğrula. Birincil düzeltme budur — Steam, sağlama toplamı uyuşmayan sack dosyalarını yeniden indirir. Bitince oyunu başlatın ve çökmenin geçip geçmediğine bakın. Geçmediyse 2. adıma geçin."
+      - "Steam Workshop'ta TOR_Core, TOR_Environment ve TOR_Armory aboneliğinizi tek tek kaldırıp yeniden abone olun. Bir sonrakine yeniden abone olmadan önce her indirmenin tamamen bitmesini bekleyin. Workshop içeriği bazen kısmen iner ve Steam yarım inmiş dosyaları sessizce yerinde bırakır."
+      - "Yalnızca Steam Doğrulama + Workshop yeniden abonelik SONRASINDA: ana menü → bir kez daha 'Build Shader Cache'. Alt+Tab YAPMADAN 10–50 dakika bekleyin. Bu bir doğrulamadır, asıl düzeltme değil."
+      - "Yepyeni ekran kartı (RTX 50 serisi, RX 9000 serisi): Güvenli Mod'da DDU ile bir önceki WHQL sürücüye geri dönmeyi düşünün. En yeni sürücüler bazen belirli TOR gölgelendirici permütasyonlarını derleyemez ve hata sack'e önbelleklenir."
+      - "Hiçbir şey işe yaramazsa son çare: Bannerlord'u Steam üzerinden tamamen kaldırın, kalan oyun klasörünü elle silin, yeniden yükleyin. Bu, her baytın yeniden indirilmesini zorlar."
     ru:
       - "Steam → Bannerlord → Свойства → Установленные файлы → Проверить целостность. Это главный фикс — Steam перекачает sack-файлы, у которых не сходится контрольная сумма. После завершения запусти игру и проверь, ушёл ли краш. Если нет — переходи к шагу 2."
       - "В Steam Workshop отпишись и подпишись заново на TOR_Core, TOR_Environment и TOR_Armory по одному. Дождись, пока каждый мод полностью докачается, прежде чем подписываться на следующий. Workshop иногда докачивает контент частично и Steam молча оставляет обрезки лежать."
@@ -436,6 +646,8 @@
   title:
     en: "Shader cache appears to be corrupt or unavailable"
     ru: "Кэш шейдеров повреждён или недоступен"
+    zh: "着色器缓存似乎已损坏或不可用"
+    tr: "Gölgelendirici önbelleği bozuk ya da kullanılamıyor görünüyor"
   description:
     en: |
       What the shader cache is: a precompiled archive of every visual effect Bannerlord
@@ -452,6 +664,34 @@
       30+ GB of committed memory; with a disabled or tiny page file Windows runs out of
       commit and crashes the game on the very next battle load. The fix is the opposite —
       raise the page file, not turn it off.
+    zh: |
+      着色器缓存是什么：它是 Bannerlord 用到的所有视觉效果（光照、粒子、地形、
+      角色皮肤、天气……）的预编译归档。游戏会在首次运行时针对你这套具体的
+      显卡 + 驱动组合编译一次，之后反复复用。没有有效的缓存，引擎就得在加载战斗时
+      临时编译着色器——这正是导致长时间卡顿随后崩溃的原因。
+
+      这里的日志显示了数百条 "Missing shader from sack" 消息，这意味着缓存要么
+      损坏了，要么显卡驱动不支持该着色器管线，要么在安装时磁盘出现了写入错误。
+
+      重要：不要禁用 Windows 页面文件。编译 TOR 着色器的已提交内存峰值超过 30 GB；
+      若页面文件被禁用或太小，Windows 会耗尽提交内存，并在下一次加载战斗时让游戏
+      崩溃。正确的做法恰恰相反——增大页面文件，而不是关闭它。
+    tr: |
+      Gölgelendirici önbelleği nedir: Bannerlord'un kullandığı her görsel efektin
+      (ışıklandırma, parçacıklar, arazi, karakter teni, hava durumu...) önceden
+      derlenmiş arşividir. Oyun bunu ilk çalıştırmada sizin belirli ekran kartı +
+      sürücü kombinasyonunuz için bir kez derler ve sonra yeniden kullanır. Geçerli
+      bir önbellek olmadan motor, bir savaşı yüklerken gölgelendiricileri anında
+      derlemek zorunda kalır — uzun donma ve ardından çökmeye yol açan budur.
+
+      Buradaki günlük yüzlerce "Missing shader from sack" mesajı gösteriyor; bu,
+      önbelleğin bozuk olduğu, ekran kartı sürücüsünün gölgelendirici hattını
+      desteklemediği ya da kurulum sırasında diskte yazma hataları olduğu anlamına gelir.
+
+      Önemli: Windows sayfa dosyasını DEVRE DIŞI BIRAKMAYIN. TOR gölgelendiricilerini
+      derlemek 30+ GB taahhüt edilen belleğe çıkar; devre dışı ya da küçük bir sayfa
+      dosyasıyla Windows taahhütü tükenir ve bir sonraki savaş yüklemesinde oyunu
+      çökertir. Çözüm tam tersi — sayfa dosyasını kapatmak değil, büyütmektir.
     ru: |
       Что такое кэш шейдеров: предкомпилированный архив всех визуальных эффектов
       Bannerlord (свет, частицы, ландшафт, кожа персонажа, погода…). Игра компилирует
@@ -477,6 +717,22 @@
       - "Update the GPU driver."
       - "If you already disabled the page file, turn it back on (Custom 40000–60000 MB on C:) before doing anything else."
       - "Last resort: in-game Options → Graphics → Shader Quality = Low, then save and restart."
+    zh:
+      - "打开 Crash Doctor → 系统调优 → '增大页面文件'（设为 40 / 60 GB）——TOR 必需。"
+      - "打开 Crash Doctor → 系统调优 → '清理着色器缓存'（把旧缓存放进回收站）。"
+      - "启动游戏，在主菜单选择 'Build Shader Cache'——需要 10–60 分钟，不要中断。"
+      - "Steam → Bannerlord → 属性 → 已安装文件 → 验证游戏文件完整性。"
+      - "更新显卡驱动程序。"
+      - "如果你已经禁用了页面文件，在做其他任何操作之前先把它打开（在 C: 盘自定义 40000–60000 MB）。"
+      - "最后手段：游戏内 Options → Graphics → Shader Quality = Low，然后保存并重启。"
+    tr:
+      - "Crash Doctor → Sistem ayarı → 'Sayfa dosyasını büyüt' açın (40 / 60 GB ayarlar) — TOR için gerekli."
+      - "Crash Doctor → Sistem ayarı → 'gölgelendirici önbelleğini temizle' açın (eski önbelleği Geri Dönüşüm Kutusu'na gönderir)."
+      - "Oyunu başlatın ve ana menüden 'Build Shader Cache' seçin — 10–60 dakika sürer; kesmeyin."
+      - "Steam → Bannerlord → Özellikler → Yüklü Dosyalar → Oyun dosyalarının bütünlüğünü doğrula."
+      - "Ekran kartı sürücüsünü güncelleyin."
+      - "Sayfa dosyasını zaten devre dışı bıraktıysanız, başka bir şey yapmadan önce geri açın (C: üzerinde Özel 40000–60000 MB)."
+      - "Son çare: oyun içinde Options → Graphics → Shader Quality = Low, sonra kaydedip yeniden başlatın."
     ru:
       - "Открой Crash Doctor → Настройка системы → «Увеличить файл подкачки» (ставит 40 / 60 ГБ) — обязательно для TOR."
       - "Открой Crash Doctor → Настройка системы → «Очистить кэш шейдеров Bannerlord» (старый кэш уезжает в Корзину)."
@@ -500,6 +756,8 @@
   title:
     en: "DXGI_ERROR_DEVICE_REMOVED — GPU lost"
     ru: "DXGI_ERROR_DEVICE_REMOVED — GPU отвалился"
+    zh: "DXGI_ERROR_DEVICE_REMOVED — 显卡丢失"
+    tr: "DXGI_ERROR_DEVICE_REMOVED — ekran kartı kayboldu"
   description:
     en: |
       The graphics card stopped responding to Windows. Usually caused by
@@ -507,6 +765,11 @@
     ru: |
       Видеокарта перестала отвечать Windows. Обычно — краш драйвера, перегрев
       GPU или нестабильный разгон.
+    zh: |
+      显卡停止响应 Windows。通常由驱动程序崩溃、显卡过热或不稳定的超频引起。
+    tr: |
+      Ekran kartı Windows'a yanıt vermeyi bıraktı. Genellikle sürücü çökmesi,
+      ekran kartının aşırı ısınması ya da kararsız hız aşırtma nedeniyledir.
   fix:
     en:
       - "In-game: lower Texture/Shadow Quality to Medium."
@@ -518,6 +781,16 @@
       - "Отключи разгон GPU (MSI Afterburner, AMD Wattman) если есть."
       - "Чистая переустановка драйвера через DDU + свежий драйвер с сайта."
       - "Проверь температуру GPU через HWInfo64 — >85°C значит надо чистить/менять термопасту."
+    zh:
+      - "游戏内：把 Texture/Shadow Quality 降到 Medium。"
+      - "关闭任何显卡超频（MSI Afterburner、AMD Wattman）。"
+      - "用 DDU 干净卸载显卡驱动 + 重新下载的驱动程序进行重装。"
+      - "用 HWInfo64 检查显卡温度——超过 85°C 说明需要清灰/更换硅脂。"
+    tr:
+      - "Oyun içinde: Texture/Shadow Quality değerini Medium yapın."
+      - "Tüm ekran kartı hız aşırtmalarını kapatın (MSI Afterburner, AMD Wattman)."
+      - "DDU ile temiz sürücü kaldırma + yeni indirilmiş sürücüyle yeniden kurulum."
+      - "HWInfo64 ile ekran kartı sıcaklıklarını kontrol edin — 85°C üzeri temizlik/macun değişimi gerektiğini gösterir."
   match:
     any:
       - log_line:
@@ -542,6 +815,8 @@
   title:
     en: "GPU hang on big siege battle"
     ru: "GPU подвис на крупной осаде"
+    zh: "大型攻城战中显卡卡死"
+    tr: "Büyük kuşatma savaşında ekran kartı takıldı"
   description:
     en: |
       Device hung 0x887A0006 fires on busy scenes (sieges, large field battles).
@@ -550,6 +825,13 @@
       Device hung 0x887A0006 возникает на нагруженных сценах (осады, большие
       полевые битвы). GPU не уложился в TDR (timeout detection) из-за лавины
       draw call'ов.
+    zh: |
+      Device hung 0x887A0006 在繁忙场景（攻城战、大型野战）中触发。由于绘制调用
+      过多，显卡超过了超时检测上限。
+    tr: |
+      Device hung 0x887A0006, yoğun sahnelerde (kuşatmalar, büyük meydan savaşları)
+      tetiklenir. Çok fazla çizim çağrısı nedeniyle ekran kartı zaman aşımı algılama
+      sınırını aştı.
   fix:
     en:
       - "In-game: lower Battle Size in Options → Game (try 200, then 100)."
@@ -561,6 +843,16 @@
       - "Понизь Texture/Shadow/PostFX на ступень."
       - "Если монитор 60 Гц — ограничь FPS до 60 (Опции → Графика)."
       - "Обнови драйвер GPU."
+    zh:
+      - "游戏内：在 Options → Game 中降低 Battle Size（先试 200，再试 100）。"
+      - "把 Texture/Shadow/PostFX 各降一档。"
+      - "如果你用的是 60Hz 显示器，把帧率限制到 60（Options → Graphics）。"
+      - "更新显卡驱动程序。"
+    tr:
+      - "Oyun içinde: Options → Game altında Battle Size değerini düşürün (önce 200, sonra 100 deneyin)."
+      - "Texture/Shadow/PostFX değerlerini birer kademe düşürün."
+      - "60Hz monitörünüz varsa kare hızını 60'a sabitleyin (Options → Graphics)."
+      - "Ekran kartı sürücüsünü güncelleyin."
   match:
     all:
       - log_line:
@@ -575,6 +867,8 @@
   title:
     en: "D3D11 CreateTexture2D failed (E_INVALIDARG) — texture-array limit hit"
     ru: "D3D11 CreateTexture2D не сработал (E_INVALIDARG) — превышен лимит texture-array"
+    zh: "D3D11 CreateTexture2D 失败（E_INVALIDARG）— 触及 texture-array 上限"
+    tr: "D3D11 CreateTexture2D başarısız (E_INVALIDARG) — texture-array sınırına ulaşıldı"
   description:
     en: |
       The Bannerlord renderer (rglGPU_device::create_texture_array) called
@@ -617,6 +911,80 @@
       scene load, so it looks like "crashes at startup, every time". An
       out-of-date GPU driver (a year or older) validates the descriptor more
       strictly and makes it worse.
+    zh: |
+      Bannerlord 渲染器（rglGPU_device::create_texture_array）调用了
+      ID3D11Device::CreateTexture2D 并收到了 E_INVALIDARG（"参数不正确"）。
+      这不是显存不足，也不是 TDR——而是 D3D11 拒绝了 texture-array 描述符本身。
+
+      TOR 上最常见的触发原因：过大的 Battle Size（BattleSizeResized 模组）配合
+      TOR_Armory + 自定义兵种模组，生成的单位材质数组超出了 D3D11 的硬性限制——
+      ArraySize > 2048，或某个驱动拒绝的 格式 / MipLevels 组合。新的 AMD RDNA 4
+      显卡（RX 9070、9070 XT）对这些描述符的检查比旧的 NVIDIA 驱动更严格，所以
+      在 30 系显卡上"能用"的同一套配置，在 9070 XT 上会崩溃。
+
+      第二个常见触发原因：后台运行着 VR 运行时。Oculus / Meta Quest Link
+      (OVRServer_x64)、SteamVR (vrcompositor / vrserver) 和 Windows Mixed Reality
+      会为头显合成器预留 1.5–3 GB VRAM，即使头显处于闲置 / 没戴在脸上。在 TOR +
+      1440p 以上桌面已经占用了显卡大部分显存的情况下，这点预留就足以让 texture-array
+      分配饿死，使 CreateTexture2D 失败。
+
+      第三个常见触发原因：NVIDIA Blackwell 显卡（RTX 50 系列——5070 / 5070 Ti /
+      5080 / 5090）在长时间不间断游戏（3 小时以上）之后。Blackwell 的 DX11 驱动
+      路径会缓慢泄漏描述符句柄；一旦句柄池耗尽，之后每一次 texture-array 分配都会
+      返回 E_INVALIDARG。症状完全吻合：应用运行时长 9 小时以上、无 VR、选中的是
+      独立 NVIDIA 显卡（rgl_log 中 "Selected graphics adapter: [1] NVIDIA GeForce
+      RTX 50xx"）、crash_tags 中 GPU Crash flag = 1。退出到桌面再重启即可恢复
+      句柄池——这就是"我每 2 小时重启一次就不崩"在这套硬件上有效的原因。
+
+      第四个——也是中端 / 老旧硬件上最常见的：一块 4 GB 级别的显卡
+      (RTX 3050、GTX 1650) 驱动 1440p 桌面，而着色器缓存从未构建。rgl_log 中的
+      明显特征：只有寥寥几行 read_compressed_shader_cache_package，却有
+      成千上万行实时 `compile_shader: pbr_terrain`——引擎每次启动都在从头重新
+      编译地形着色器，而不是加载预先构建好的缓存。在显存吃紧的显卡上，这场实时
+      编译风暴叠加 TOR 的 texture-array，会在第一个场景加载开始几分钟后把
+      CreateTexture2D 顶过上限，于是看起来像"每次都在启动时崩溃"。过时的显卡驱动
+      （一年或更老）对描述符检查更严格，会让情况更糟。
+    tr: |
+      Bannerlord render motoru (rglGPU_device::create_texture_array),
+      ID3D11Device::CreateTexture2D'i çağırdı ve E_INVALIDARG ("Parametre hatalı")
+      döndü. Bu bellek yetersizliği DEĞİL ve TDR DEĞİL — D3D11, texture-array
+      tanımlayıcısının kendisini reddetti.
+
+      TOR'da en sık tetikleyici: aşırı büyük bir Battle Size (BattleSizeResized
+      modu) ile TOR_Armory + özel birlik modları, D3D11'in sabit sınırlarını aşan
+      bir birim malzeme dizisi üretir — ArraySize > 2048 ya da sürücünün reddettiği
+      bir format / MipLevels kombinasyonu. Yeni AMD RDNA 4 kartları (RX 9070,
+      9070 XT) bu tanımlayıcıları eski NVIDIA sürücülerinden daha katı denetler,
+      bu yüzden 30 serisi kartta "çalışan" aynı kurulum 9070 XT'de çöker.
+
+      İkinci sık tetikleyici: arka planda bir VR çalışma zamanı çalışıyor. Oculus /
+      Meta Quest Link (OVRServer_x64), SteamVR (vrcompositor / vrserver) ve Windows
+      Mixed Reality, başlık boştayken / yüzünüzde değilken bile başlık kompozitörü
+      için 1.5–3 GB VRAM ayırır. TOR + 1440p ve üzeri bir masaüstü kartın çoğunu
+      zaten yerken bu ayırma, texture-array ayırmasını aç bırakıp CreateTexture2D'i
+      başarısız kılmaya yeter.
+
+      Üçüncü sık tetikleyici: uzun ve kesintisiz bir oturumdan (3+ saat) sonra bir
+      NVIDIA Blackwell kartı (RTX 50 serisi — 5070 / 5070 Ti / 5080 / 5090).
+      Blackwell DX11 sürücü yolu, tanımlayıcı tutamaçlarını yavaşça sızdırır; havuz
+      tükendiğinde sonraki her texture-array ayırması E_INVALIDARG döndürür.
+      Belirtiler tam olarak buna uyar: uygulama çalışma süresi 9+ saat, VR yok,
+      ayrık NVIDIA seçili (rgl_log'da "Selected graphics adapter: [1] NVIDIA GeForce
+      RTX 50xx"), crash_tags'te GPU Crash flag = 1. Masaüstüne çıkıp yeniden
+      başlatmak tanımlayıcı havuzunu geri yükler — "her 2 saatte bir yeniden
+      başlatınca çökmüyorum" bu donanımda bu yüzden işe yarar.
+
+      Dördüncü — ve orta seviye / eski donanımda en sık görüleni: 4 GB sınıfı bir
+      kart (RTX 3050, GTX 1650) 1440p masaüstü çalıştırırken gölgelendirici
+      önbelleği hiç oluşturulmamış. rgl_log'daki belirgin işaret: yalnızca birkaç
+      read_compressed_shader_cache_package satırı ama BİNLERCE canlı
+      `compile_shader: pbr_terrain` satırı — motor, önceden oluşturulmuş bir önbellek
+      yüklemek yerine her açılışta arazi gölgelendiricilerini sıfırdan yeniden
+      derliyor. VRAM'i kısıtlı bir kartta, TOR'un texture-array'lerinin üstüne binen
+      bu canlı derleme fırtınası, ilk sahne yüklemesinin birkaç dakika içinde
+      CreateTexture2D'i sınırın ötesine iter; bu yüzden "her seferinde açılışta
+      çöküyor" gibi görünür. Eski bir ekran kartı sürücüsü (bir yıl ya da daha eski)
+      tanımlayıcıyı daha katı denetler ve durumu kötüleştirir.
     ru: |
       Рендерер Bannerlord (rglGPU_device::create_texture_array) вызвал
       ID3D11Device::CreateTexture2D и получил E_INVALIDARG («Параметр задан
@@ -674,6 +1042,36 @@
       - "Toggle the renderer: Bannerlord launcher → Options → Use DirectX 12 (or back to DX11). RDNA 4 is often more stable on DX12 path."
       - "AFTER changing any graphics setting (Texture Quality / Shader Quality / etc.): REBOOT the PC, open Crash Doctor → System tune-up → 'Clear Bannerlord shader cache', launch the game, Main Menu → 'Build Shader Cache' and wait 20–60 minutes. Skip any of these and the next launch crashes on the imperial-soldier splash."
       - "If nothing helps — file a screenshot of the error popup plus rgl_log_<PID>.txt + watchdog_log_<PID>.txt to the mod author."
+    zh:
+      - "首先，如果 rgl_log 显示有成千上万行 `compile_shader` 而只有寥寥几行 `read_compressed_shader_cache_package`——说明你的着色器缓存没有构建。打开 Crash Doctor → 系统调优 → '清理着色器缓存'，重启电脑，启动游戏，主菜单 → 'Build Shader Cache'，等待 20–60 分钟。这会消除导致弱显卡崩溃的实时编译风暴。"
+      - "在 4 GB 显卡（RTX 3050 / GTX 1650）上跑 1440p：把游戏内分辨率降到 1920×1080，把 Texture Quality 降到 Low/Medium。4 GB 在 TOR 1440p 下已经到极限了。"
+      - "把显卡驱动更新到最新版（NVIDIA：GeForce Game Ready）。超过约 1 年的驱动对 D3D11 描述符检查更严格，是这里常见的原因。"
+      - "如果你有 VR 头显：启动 Bannerlord 之前，彻底关闭 Oculus/Meta Quest Link、SteamVR 以及 Windows Mixed Reality Portal。在任务管理器中查找 OVRServer_x64.exe / vrcompositor.exe / vrserver.exe / MixedRealityPortal.exe——把它们结束掉。拔掉头显的连接线。它们每个都会预留 1.5–3 GB VRAM，即使闲置也是如此。"
+      - "首先降低 Battle Size。如果你用 BattleSizeResized——试试 200，再试 128（原生上限）。如果 200 对 200 的战斗能正常加载，就确认了 texture-array 上限正是原因。"
+      - "如果降低 Battle Size 后仍然崩溃——临时禁用那些会添加大量独特材质的兵种/护甲模组（LoreHardcore、自定义兵种翻新）。逐个重新启用。"
+      - "游戏内：Options → Graphics → Texture Quality = Medium。更小的贴图会缩小数组占用。"
+      - "AMD Adrenalin：打开 Bannerlord.exe 的配置，关闭 AFMF、Anti-Lag/Anti-Lag+、HYPR-RX、Image Sharpening、Radeon Boost。驱动覆盖层也会破坏纹理描述符——把它关掉（Alt+R）。"
+      - "如果用的是全新的 RDNA 4 显卡（RX 9070 / 9070 XT）：试试上一版 WHQL Adrenalin，而不是最新版。Beta/Preview 驱动经常会破坏老的 DX11 游戏。"
+      - "如果用的是全新的 NVIDIA Blackwell 显卡（RTX 5070 / 5070 Ti / 5080 / 5090）：把长时间游戏拆开——每 2–3 小时退出到桌面再重启。DX11 描述符池泄漏只有在进程完全退出时才会重置。NVIDIA Control Panel → Manage 3D settings → Bannerlord.exe → 'Shader Cache Size = 100 GB 或 Unlimited'、'Power management mode = Prefer maximum performance'，关闭 Image Sharpening / DLSS Frame Generation / Reflex（它们会添加各自的描述符）。"
+      - "如果是 RTX 50 系列：试试最新的 GeForce Game Ready（或 Studio）驱动——早期的 Blackwell 驱动（566.x / 570.x）已知存在泄漏；580.x+ 的更新表现更好。"
+      - "切换渲染器：Bannerlord 启动器 → Options → Use DirectX 12（或切回 DX11）。RDNA 4 在 DX12 路径上往往更稳定。"
+      - "更改任何图形设置之后（Texture Quality / Shader Quality 等）：重启电脑，打开 Crash Doctor → 系统调优 → '清理着色器缓存'，启动游戏，主菜单 → 'Build Shader Cache'，等待 20–60 分钟。漏掉任一步，下次启动就会在帝国士兵的启动画面崩溃。"
+      - "如果都没用——把错误弹窗的截图连同 rgl_log_<PID>.txt + watchdog_log_<PID>.txt 提交给模组作者。"
+    tr:
+      - "ÖNCE, rgl_log binlerce `compile_shader` satırı ve yalnızca birkaç `read_compressed_shader_cache_package` gösteriyorsa — gölgelendirici önbelleğiniz oluşturulmamış. Crash Doctor → Sistem ayarı → 'gölgelendirici önbelleğini temizle' açın, bilgisayarı YENİDEN BAŞLATIN, oyunu açın, Ana Menü → 'Build Shader Cache', 20–60 dk bekleyin. Bu, zayıf kartlarda çökmeye yol açan canlı derleme fırtınasını ortadan kaldırır."
+      - "1440p'de 4 GB kartta (RTX 3050 / GTX 1650): oyun içi çözünürlüğü 1920×1080'e, Texture Quality değerini Low/Medium'a düşürün. TOR'da 1440p'de 4 GB sınırdadır."
+      - "Ekran kartı sürücüsünü en sona güncelleyin (NVIDIA: GeForce Game Ready). ~1 yıldan eski bir sürücü D3D11 tanımlayıcılarını daha katı denetler ve burada sık görülen bir nedendir."
+      - "Bir VR başlığınız varsa: Bannerlord'u başlatmadan önce Oculus/Meta Quest Link, SteamVR VE Windows Mixed Reality Portal'ı tamamen kapatın. Görev Yöneticisi'nde OVRServer_x64.exe / vrcompositor.exe / vrserver.exe / MixedRealityPortal.exe arayın — sonlandırın. Başlık kablosunu çıkarın. Her biri boştayken bile 1.5–3 GB VRAM ayırır."
+      - "Önce Battle Size'ı düşürün. BattleSizeResized kullanıyorsanız — 200, sonra 128 (yerel üst sınır) deneyin. 200'e 200 bir savaş sorunsuz yükleniyorsa, nedenin texture-array sınırı olduğunu doğrulamış olursunuz."
+      - "Battle Size'ı düşürmek yine çökerse — çok sayıda benzersiz malzeme ekleyen birlik/zırh modlarını (LoreHardcore, özel birlik elden geçirmeleri) geçici olarak devre dışı bırakın. Birer birer yeniden etkinleştirin."
+      - "Oyun içinde: Options → Graphics → Texture Quality = Medium. Daha küçük dokular dizi ayak izini küçültür."
+      - "AMD Adrenalin: Bannerlord.exe profilini açın ve AFMF, Anti-Lag/Anti-Lag+, HYPR-RX, Image Sharpening, Radeon Boost'u KAPATIN. Sürücü yer paylaşımı da doku tanımlayıcılarını bozabilir — kapatın (Alt+R)."
+      - "Yepyeni bir RDNA 4 kartındaysanız (RX 9070 / 9070 XT): en sonu yerine bir önceki WHQL Adrenalin'i deneyin. Beta/Preview sürücüler eski DX11 oyunlarını düzenli olarak bozar."
+      - "Yepyeni bir NVIDIA Blackwell kartındaysanız (RTX 5070 / 5070 Ti / 5080 / 5090): uzun oturumları bölün — her 2–3 saatte bir masaüstüne çıkıp yeniden başlatın. DX11 tanımlayıcı havuzu sızıntısı yalnızca tam işlem çıkışında sıfırlanır. NVIDIA Control Panel → Manage 3D settings → Bannerlord.exe → 'Shader Cache Size = 100 GB veya Unlimited', 'Power management mode = Prefer maximum performance', Image Sharpening / DLSS Frame Generation / Reflex'i KAPATIN (kendi tanımlayıcılarını eklerler)."
+      - "RTX 50 serisindeyseniz: en son GeForce Game Ready (veya Studio) sürücüsünü deneyin — erken Blackwell sürücülerinin (566.x / 570.x) sızdırdığı bilinir; 580.x+ güncellemeleri daha iyi davranır."
+      - "Render motorunu değiştirin: Bannerlord başlatıcısı → Options → Use DirectX 12 (ya da DX11'e geri). RDNA 4 genelde DX12 yolunda daha kararlıdır."
+      - "Herhangi bir grafik ayarını değiştirdikten SONRA (Texture Quality / Shader Quality vb.): bilgisayarı YENİDEN BAŞLATIN, Crash Doctor → Sistem ayarı → 'gölgelendirici önbelleğini temizle' açın, oyunu başlatın, Ana Menü → 'Build Shader Cache' ve 20–60 dakika bekleyin. Bunlardan herhangi birini atlarsanız bir sonraki açılış imparatorluk askeri açılış ekranında çöker."
+      - "Hiçbir şey işe yaramazsa — hata penceresinin ekran görüntüsünü artı rgl_log_<PID>.txt + watchdog_log_<PID>.txt dosyalarını mod yazarına gönderin."
     ru:
       - "СНАЧАЛА: если в логе тысячи строк `compile_shader` и лишь несколько `read_compressed_shader_cache_package` — кэш шейдеров не собран. Открой Crash Doctor → Настройка системы → «Очистить кэш шейдеров Bannerlord», ПЕРЕЗАГРУЗИ ПК, запусти игру, Главное меню → «Build Shader Cache», подожди 20–60 мин. Это убирает лавину живой компиляции, которая и роняет слабые карты."
       - "На карте с 4 ГБ (RTX 3050 / GTX 1650) при мониторе 1440p — снизь разрешение в игре до 1920×1080 и Качество текстур до Low/Medium. 4 ГБ на 1440p в TOR — на пределе."
@@ -705,6 +1103,8 @@
   title:
     en: "Shader compilation runs out of memory (TOR pbr_metallic / horse / faceshader)"
     ru: "Не хватает памяти при компиляции шейдеров TOR (pbr_metallic / horse / faceshader)"
+    zh: "着色器编译内存耗尽（TOR pbr_metallic / horse / faceshader）"
+    tr: "Gölgelendirici derlemesi bellek tükeniyor (TOR pbr_metallic / horse / faceshader)"
   description:
     en: |
       The Direct3D shader compiler ran out of memory while building TOR's heaviest
@@ -718,6 +1118,31 @@
       when the page file is huge. The proven workaround is to delete BOTH shader caches
       (game + ProgramData), make sure terrain_quality is 2 or higher, free 50+ GB on
       the system drive, and update the GPU driver.
+    zh: |
+      Direct3D 着色器编译器在构建 TOR 最重的几个着色器（pbr_metallic.rs、horse.rs、
+      faceshader_high.rs）时内存耗尽。症状：连串的 Windows 错误对话框
+      "Error compiling shader file ... out of memory during compilation" 或
+      "internal error: pdb append failed / debug info append failed, byte count
+      too large"。游戏在 "Build Shader Cache" 约 15 分钟后崩溃。
+
+      这与"系统页面文件太小"不是一回事。D3DCompiler 有它自己的每进程地址空间
+      限制，即便页面文件很大，它也会在 TOR 的复杂着色器上卡住。经过验证的解决办法是：
+      删除两个着色器缓存（游戏 + ProgramData），确保 terrain_quality 为 2 或更高，
+      在系统盘上腾出 50 GB 以上空间，并更新显卡驱动。
+    tr: |
+      Direct3D gölgelendirici derleyicisi, TOR'un en ağır gölgelendiricilerini
+      (pbr_metallic.rs, horse.rs, faceshader_high.rs) oluştururken bellek tüketti.
+      Belirtiler: ardışık Windows hata pencereleri "Error compiling shader file ...
+      out of memory during compilation" ya da "internal error: pdb append failed /
+      debug info append failed, byte count too large". Oyun, "Build Shader Cache"in
+      ~15 dakikasından sonra çöker.
+
+      Bu, "sistem sayfa dosyası çok küçük" ile AYNI ŞEY DEĞİL. D3DCompiler'in
+      işlem başına kendi adres alanı sınırları vardır ve sayfa dosyası çok büyük olsa
+      bile TOR'un karmaşık gölgelendiricilerinde tıkanır. Kanıtlanmış geçici çözüm:
+      HER İKİ gölgelendirici önbelleğini de (oyun + ProgramData) silmek,
+      terrain_quality'nin 2 veya üzeri olduğundan emin olmak, sistem diskinde 50+ GB
+      boşaltmak ve ekran kartı sürücüsünü güncellemek.
     ru: |
       Компилятор Direct3D исчерпал память при сборке самых тяжёлых шейдеров TOR
       (pbr_metallic.rs, horse.rs, faceshader_high.rs). Симптомы: каскад окошек
@@ -740,6 +1165,24 @@
       - "Lower in-game Texture Quality to Medium before launching 'Build Shader Cache' the next time — TOR documents 32+ GB RAM peaks for High textures."
       - "Reboot once before relaunching so the page file is reset."
       - "Patience: 'Build Shader Cache' on TOR takes 10–50 minutes. Don't close the game, don't open Chrome / Discord during compilation."
+    zh:
+      - "Crash Doctor → 系统调优 → '清理着色器缓存'（删除两者：game/Shaders/D3D11/compressed_shaders_cache.sack 以及 C:/ProgramData/Mount and Blade II Bannerlord/Shaders）。"
+      - "Crash Doctor → 系统调优 → 如果出现关于 engine_config 的卡片，就应用它（把 terrain_quality 设为 2——必需，更低的值会在 TOR 上引发正是这个崩溃）。"
+      - "在 C: 盘腾出至少 50 GB（磁盘清理 → 临时文件；Steam → 属性 → 已安装文件 → 验证完整性）。"
+      - "把显卡驱动更新到最新 WHQL（从 NVIDIA / AMD 官网，不要用 Windows Update）。"
+      - "在 Steam Workshop 取消订阅任何旧版本的 TOR（例如 Core、RoR、Music），并删除 Modules/ 中残留的文件夹。只重新订阅当前版本。"
+      - "下次启动 'Build Shader Cache' 之前，先在游戏内把 Texture Quality 降到 Medium——TOR 在 High 贴图下记录到 32 GB 以上的内存峰值。"
+      - "重启一次再重新启动，让页面文件复位。"
+      - "耐心：TOR 上的 'Build Shader Cache' 需要 10–50 分钟。编译期间不要关闭游戏，不要打开 Chrome / Discord。"
+    tr:
+      - "Crash Doctor → Sistem ayarı → 'gölgelendirici önbelleğini temizle' (HER İKİSİNİ siler: game/Shaders/D3D11/compressed_shaders_cache.sack VE C:/ProgramData/Mount and Blade II Bannerlord/Shaders)."
+      - "Crash Doctor → Sistem ayarı → engine_config kartı çıkarsa uygulayın (terrain_quality'yi 2 yapar — zorunlu, daha düşük değerler TOR'da tam olarak bu çökmeye neden olur)."
+      - "C: üzerinde en az 50 GB boşaltın (Disk Temizleme → Geçici dosyalar; Steam → Özellikler → Yüklü Dosyalar → Bütünlüğü doğrula)."
+      - "Ekran kartı sürücüsünü en son WHQL'ye güncelleyin (Windows Update değil, NVIDIA / AMD web sitesinden)."
+      - "Steam Workshop'ta TOR'un ESKİ sürümlerinin (ör. Core, RoR, Music) aboneliğini kaldırın ve Modules/ içinde kalan klasörleri silin. Yalnızca güncel olanlara yeniden abone olun."
+      - "Bir sonraki 'Build Shader Cache'ten önce oyun içi Texture Quality değerini Medium'a düşürün — TOR, High dokular için 32+ GB RAM tepe değerleri belgeler."
+      - "Sayfa dosyasının sıfırlanması için yeniden başlatmadan önce bilgisayarı bir kez yeniden başlatın."
+      - "Sabır: TOR'da 'Build Shader Cache' 10–50 dakika sürer. Derleme sırasında oyunu kapatmayın, Chrome / Discord açmayın."
     ru:
       - "Crash Doctor → Настройка системы → «Очистить кэш шейдеров Bannerlord» (удаляет ОБА: game/Shaders/D3D11/compressed_shaders_cache.sack И C:/ProgramData/Mount and Blade II Bannerlord/Shaders)."
       - "Crash Doctor → Настройка системы → если появилась карточка про engine_config — применить (поднимает terrain_quality до 2 — обязательно, ниже даёт ровно этот краш на TOR)."
@@ -767,6 +1210,8 @@
   title:
     en: "GPU crashed after a long session (3+ hours) — driver descriptor leak"
     ru: "GPU упал после длинной сессии (3+ часов) — утечка дескрипторов драйвера"
+    zh: "长时间游戏（3 小时以上）后显卡崩溃 — 驱动描述符泄漏"
+    tr: "Uzun bir oturumdan (3+ saat) sonra ekran kartı çöktü — sürücü tanımlayıcı sızıntısı"
   description:
     en: |
       The crash_tags Runtime/GPU Crash flag is set AND App Run Time is over
@@ -783,6 +1228,31 @@
       quality settings. The proven mitigation is to break long sessions:
       quit to desktop (not just to main menu) every 2–3 hours, then relaunch.
       The descriptor pool resets on full process exit.
+    zh: |
+      crash_tags 中的 Runtime/GPU Crash 标志被置位，并且 App Run Time 超过 3 小时。
+      这种组合是驱动描述符池泄漏的标志：Bannerlord 的 DX11 渲染器不断分配
+      texture-array、shader-resource 和 constant-buffer 句柄；在某些驱动版本上
+      （尤其是早期的 NVIDIA Blackwell 566.x–570.x 和 AMD RDNA 4 Adrenalin 预览版），
+      这些句柄从未归还到池中。3–10 小时后池被耗尽，下一次 CreateTexture2D /
+      CreateShaderResourceView 返回 E_INVALIDARG，导致游戏崩溃。
+
+      这不是 TOR 特有的 bug，不是硬件故障，单靠降低画质也修不好——泄漏速度与画质
+      设置无关。经过验证的缓解办法是拆分长时间游戏：每 2–3 小时退出到桌面
+      （而不仅仅是回主菜单），然后重新启动。描述符池只有在进程完全退出时才会重置。
+    tr: |
+      crash_tags'teki Runtime/GPU Crash bayrağı ayarlı VE App Run Time 3 saatin
+      üzerinde. Bu eşleşme, bir sürücü tanımlayıcı havuzu sızıntısının imzasıdır:
+      Bannerlord'un DX11 render motoru sürekli texture-array, shader-resource ve
+      constant-buffer tutamaçları ayırır; belirli sürücü sürümlerinde (özellikle
+      erken NVIDIA Blackwell 566.x–570.x ve AMD RDNA 4 Adrenalin önizlemeleri) bu
+      tutamaçlar havuza hiç geri verilmez. 3–10 saat sonra havuz tükenir ve sonraki
+      CreateTexture2D / CreateShaderResourceView E_INVALIDARG döndürerek oyunu öldürür.
+
+      Bu TOR'a özgü bir hata DEĞİL, donanım arızası DEĞİL ve grafiği düşürmenin tek
+      başına düzelteceği bir şey DEĞİL — sızıntı hızı kalite ayarlarından bağımsızdır.
+      Kanıtlanmış önlem, uzun oturumları bölmektir: her 2–3 saatte bir masaüstüne
+      çıkın (sadece ana menüye değil), sonra yeniden başlatın. Tanımlayıcı havuzu
+      yalnızca tam işlem çıkışında sıfırlanır.
     ru: |
       В crash_tags стоит флаг Runtime/GPU Crash И App Run Time больше 3 часов.
       Эта связка — подпись утечки пула дескрипторов в драйвере: DX11-рендерер
@@ -806,6 +1276,20 @@
       - "If you're already on the latest driver and still leaking: NVIDIA Control Panel → 3D Settings → Bannerlord.exe → Power management = Prefer maximum performance, Shader Cache Size = Unlimited, OFF Image Sharpening / DLSS Frame Generation. AMD Adrenalin → Bannerlord.exe profile → OFF AFMF, Anti-Lag, HYPR-RX, Radeon Boost."
       - "Keep an eye on Task Manager → Performance → GPU → Dedicated GPU memory while playing. If usage is climbing 50–100 MB / 10 min and never drops in main menu — that's the leak; restart cycle is the only fix until your GPU vendor patches it."
       - "Lower Texture Quality to Medium if you can't restart often (smaller textures = fewer handles consumed per minute, buys you longer sessions)."
+    zh:
+      - "现在就：重新启动游戏；进程重启后描述符池是干净的，下一次游戏可以正常持续约 3 小时。"
+      - "养成习惯：每玩 2–3 小时——保存 → 退出到桌面 → 等 30 秒 → 再次启动。不是'主菜单 → Continue'（那不会重置池，进程还是同一个）。"
+      - "直接从 NVIDIA / AMD 官网把显卡驱动更新到最新 WHQL（Windows Update 落后好几个月）。NVIDIA Blackwell 580.x+ 和 AMD Adrenalin 25.4+ 是首批部分修复了泄漏的版本。"
+      - "如果你已经是最新驱动却仍在泄漏：NVIDIA Control Panel → 3D Settings → Bannerlord.exe → Power management = Prefer maximum performance、Shader Cache Size = Unlimited，关闭 Image Sharpening / DLSS Frame Generation。AMD Adrenalin → Bannerlord.exe 配置 → 关闭 AFMF、Anti-Lag、HYPR-RX、Radeon Boost。"
+      - "游戏时留意 任务管理器 → 性能 → GPU → 专用 GPU 内存。如果每 10 分钟上涨 50–100 MB 且回到主菜单也从不下降——那就是泄漏；在你的显卡厂商修复之前，重启循环是唯一的办法。"
+      - "如果没法经常重启，就把 Texture Quality 降到 Medium（贴图更小 = 每分钟消耗的句柄更少，让单次游戏更久）。"
+    tr:
+      - "Hemen şimdi: oyunu yeniden başlatın; işlem yeniden başladıktan sonra tanımlayıcı havuzu tertemizdir, bir sonraki oturum yaklaşık 3 saat daha normal çalışır."
+      - "Alışkanlık: her 2–3 saatlik oyundan sonra — Kaydet → Masaüstüne Çık → 30 sn bekle → tekrar başlat. 'Ana menü → Continue' DEĞİL (bu havuzu sıfırlamaz, işlem aynıdır)."
+      - "Ekran kartı sürücüsünü doğrudan NVIDIA / AMD web sitesinden en son WHQL'ye güncelleyin (Windows Update aylarca geridedir). NVIDIA Blackwell 580.x+ ve AMD Adrenalin 25.4+, sızıntının kısmen düzeltildiği ilk sürümlerdir."
+      - "Zaten en son sürücüdeyseniz ve hâlâ sızıntı varsa: NVIDIA Control Panel → 3D Settings → Bannerlord.exe → Power management = Prefer maximum performance, Shader Cache Size = Unlimited, Image Sharpening / DLSS Frame Generation KAPALI. AMD Adrenalin → Bannerlord.exe profili → AFMF, Anti-Lag, HYPR-RX, Radeon Boost KAPALI."
+      - "Oynarken Görev Yöneticisi → Performans → GPU → Ayrılmış GPU belleğine göz atın. Kullanım her 10 dakikada 50–100 MB artıyor ve ana menüde hiç düşmüyorsa — sızıntı budur; ekran kartı üreticiniz düzeltene kadar yeniden başlatma döngüsü tek çözümdür."
+      - "Sık yeniden başlatamıyorsanız Texture Quality değerini Medium yapın (daha küçük dokular = dakikada daha az tutamaç tüketimi, daha uzun oturumlar kazandırır)."
     ru:
       - "Прямо сейчас: перезапусти игру — после рестарта процесса пул дескрипторов чистый, следующая сессия пройдёт нормально ещё ~3 часа."
       - "Привычка: каждые 2–3 часа игры — Сохранить → Выйти на рабочий стол → подожди 30 сек → запусти заново. НЕ «главное меню → Continue» (это не сбрасывает пул, процесс тот же)."

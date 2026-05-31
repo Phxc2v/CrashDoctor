@@ -7,6 +7,8 @@
   title:
     en: "A required module DLL could not be loaded"
     ru: "Не удалось загрузить DLL одного из модов"
+    zh: "无法加载某个必需模组的 DLL"
+    tr: "Gerekli bir modül DLL'i yüklenemedi"
   description:
     en: |
       Bannerlord could not load the DLL of one of the active modules. The mod is
@@ -16,6 +18,13 @@
       Bannerlord не смог загрузить DLL одного из активных модов. У мода либо нет
       нужных файлов, либо Windows заблокировал DLL ('blocked file' после
       скачивания), либо мод на другую версию игры.
+    zh: |
+      Bannerlord 无法加载某个已启用模组的 DLL。该模组要么缺少文件，要么被
+      Windows 阻止（下载后出现 'blocked file'），要么是为其他游戏版本安装的。
+    tr: |
+      Bannerlord, etkin modüllerden birinin DLL'ini yükleyemedi. Modun ya
+      dosyaları eksik, ya Windows tarafından engellenmiş ('blocked file' indirme
+      sonrası), ya da farklı bir oyun sürümü için kurulmuş.
   fix:
     en:
       - "Check that the mod is installed in <Bannerlord>/Modules/<ModId>/, not nested."
@@ -25,6 +34,14 @@
       - "Проверь, что мод лежит в <Bannerlord>/Modules/<ModId>/, не вложен."
       - "Правый клик по DLL мода → Свойства → Разблокировать (если есть галочка)."
       - "Переустанови мод под текущую версию Bannerlord."
+    zh:
+      - "确认模组安装在 <Bannerlord>/Modules/<ModId>/ 下，没有多套一层目录。"
+      - "右键模组的 .dll → 属性 → 解除阻止（如果有该选项）。"
+      - "为当前 Bannerlord 版本重新安装该模组。"
+    tr:
+      - "Modun <Bannerlord>/Modules/<ModId>/ içinde, iç içe olmadan kurulu olduğunu doğrulayın."
+      - "Modun .dll dosyasına sağ tıklayın → Özellikler → Engellemeyi kaldır (görünüyorsa)."
+      - "Modu mevcut Bannerlord sürümü için yeniden yükleyin."
   match:
     # Narrow on "module" so we don't false-positive on the engine's "Cannot load
     # font", "Couldn't load shader", "Couldn't load icon" which are unrelated
@@ -45,6 +62,8 @@
   title:
     en: "BadImageFormatException — DLL bitness mismatch"
     ru: "BadImageFormatException — несовпадение разрядности DLL"
+    zh: "BadImageFormatException — DLL 位数不匹配"
+    tr: "BadImageFormatException — DLL bit uyumsuzluğu"
   description:
     en: |
       A mod's DLL was compiled for a different bitness or runtime than the game.
@@ -52,6 +71,13 @@
     ru: |
       DLL мода собран под другую разрядность или рантайм, чем игра. Почти всегда —
       устаревший мод под старую версию Bannerlord.
+    zh: |
+      某个模组的 DLL 是按与游戏不同的位数或运行时编译的。几乎总是由
+      针对旧版 Bannerlord 的过时模组引起。
+    tr: |
+      Bir modun DLL'i oyundan farklı bir bit yapısı veya çalışma zamanı için
+      derlenmiş. Neredeyse her zaman önceki bir Bannerlord sürümünü hedefleyen
+      eski bir mod nedeniyledir.
   fix:
     en:
       - "Update the mod to the version compatible with the current Bannerlord."
@@ -61,6 +87,14 @@
       - "Обнови мод до версии под текущий Bannerlord."
       - "Проверь требуемую версию Bannerlord на странице мода в NexusMods."
       - "Отключи мод, если обновления нет."
+    zh:
+      - "把模组更新到与当前 Bannerlord 兼容的版本。"
+      - "在模组的 NexusMods 页面查看其要求的 Bannerlord 版本。"
+      - "如果没有更新可用，就禁用该模组。"
+    tr:
+      - "Modu mevcut Bannerlord ile uyumlu sürüme güncelleyin."
+      - "Modun NexusMods sayfasında gereken Bannerlord sürümünü kontrol edin."
+      - "Güncelleme yoksa modu devre dışı bırakın."
   match:
     all:
       - log_line:
@@ -75,6 +109,8 @@
   title:
     en: "Mod dependency version mismatch"
     ru: "Несовпадение версий зависимостей модов"
+    zh: "模组依赖版本不匹配"
+    tr: "Mod bağımlılık sürümü uyuşmazlığı"
   description:
     en: |
       A mod requires another mod at a specific version, and the version installed
@@ -82,6 +118,12 @@
     ru: |
       Мод требует другой мод определённой версии, а установлена другая. Лаунчер
       подсвечивает это красным при старте.
+    zh: |
+      某个模组要求另一个模组为特定版本，而已安装的版本不同。启动器在启动时
+      会用红色标出此问题。
+    tr: |
+      Bir mod, başka bir modun belirli bir sürümünü gerektiriyor ama kurulu sürüm
+      farklı. Başlatıcı bunu açılışta kırmızıyla işaretler.
   fix:
     en:
       - "Open the launcher and read which mod has the version conflict."
@@ -91,6 +133,14 @@
       - "Открой лаунчер и посмотри, у какого мода конфликт версий."
       - "Обнови зависимость до требуемой версии."
       - "Если свежей нет — откати зависящий мод на старую версию."
+    zh:
+      - "打开启动器，查看哪个模组存在版本冲突。"
+      - "把该依赖更新到要求的版本。"
+      - "如果新版本不兼容，就把依赖它的那个模组降级。"
+    tr:
+      - "Başlatıcıyı açın ve hangi modda sürüm çakışması olduğunu okuyun."
+      - "Bağımlılığı gereken sürüme güncelleyin."
+      - "Daha yeni sürüm uyumlu değilse, bağımlı modu eski sürüme düşürün."
   match:
     any:
       - log_line:
@@ -107,6 +157,8 @@
   title:
     en: "TypeLoadException — class signature mismatch"
     ru: "TypeLoadException — несовпадение сигнатуры класса"
+    zh: "TypeLoadException — 类签名不匹配"
+    tr: "TypeLoadException — sınıf imzası uyuşmazlığı"
   description:
     en: |
       A mod tried to use a TaleWorlds type that has changed between game versions.
@@ -114,6 +166,12 @@
     ru: |
       Мод пытается использовать тип TaleWorlds, который изменился между версиями
       игры. Мод собран под другую версию Bannerlord.
+    zh: |
+      某个模组试图使用一个在不同游戏版本间发生了变化的 TaleWorlds 类型。
+      该模组是针对其他 Bannerlord 版本编译的。
+    tr: |
+      Bir mod, oyun sürümleri arasında değişmiş bir TaleWorlds türünü kullanmaya
+      çalıştı. Mod farklı bir Bannerlord sürümüne göre derlenmiş.
   fix:
     en:
       - "Read the next stack frames after TypeLoadException — they name the offending mod."
@@ -121,6 +179,12 @@
     ru:
       - "Прочитай следующие фреймы стека после TypeLoadException — там имя мода."
       - "Обнови мод или откати Bannerlord до его целевой версии."
+    zh:
+      - "查看 TypeLoadException 之后的几个堆栈帧——里面会写出出问题的模组名。"
+      - "更新该模组，或把 Bannerlord 降级到它对应的目标版本。"
+    tr:
+      - "TypeLoadException'dan sonraki yığın çerçevelerini okuyun — sorunlu modun adını verirler."
+      - "Modu güncelleyin ya da Bannerlord'u hedef sürümüne düşürün."
   match:
     any:
       - log_line:
@@ -135,6 +199,8 @@
   title:
     en: "MissingMethodException — outdated mod"
     ru: "MissingMethodException — устаревший мод"
+    zh: "MissingMethodException — 模组已过时"
+    tr: "MissingMethodException — eski mod"
   description:
     en: |
       A mod called a TaleWorlds method that no longer exists. Same root cause as
@@ -142,6 +208,12 @@
     ru: |
       Мод позвал метод TaleWorlds, которого больше нет. Та же причина, что и у
       TypeLoadException — мод собран под старый Bannerlord.
+    zh: |
+      某个模组调用了一个已经不存在的 TaleWorlds 方法。根本原因与
+      TypeLoadException 相同——模组是针对旧版 Bannerlord 编译的。
+    tr: |
+      Bir mod, artık var olmayan bir TaleWorlds yöntemini çağırdı. Kök neden
+      TypeLoadException ile aynı — mod eski bir Bannerlord'a göre derlenmiş.
   fix:
     en:
       - "Read the next stack frames — they name the offending mod and method."
@@ -151,6 +223,14 @@
       - "Прочитай следующие фреймы стека — там мод и метод, который не нашёлся."
       - "Обнови мод с NexusMods."
       - "Отключи мод, если обновления нет."
+    zh:
+      - "查看后续的堆栈帧——里面会写出出问题的模组及方法名。"
+      - "从 NexusMods 更新该模组。"
+      - "如果没有更新，就禁用该模组。"
+    tr:
+      - "Sonraki yığın çerçevelerini okuyun — sorunlu modu ve yöntemi adlandırırlar."
+      - "Modu NexusMods'tan güncelleyin."
+      - "Güncelleme yoksa modu devre dışı bırakın."
   match:
     any:
       - log_line:
@@ -165,6 +245,8 @@
   title:
     en: "Stray 0Harmony.dll in game's main bin folder"
     ru: "Лишний 0Harmony.dll в основной bin-папке игры"
+    zh: "游戏主 bin 文件夹中有多余的 0Harmony.dll"
+    tr: "Oyunun ana bin klasöründe fazladan 0Harmony.dll"
   description:
     en: |
       Cannot load: Bannerlord.Harmony.dll. A stray copy of 0Harmony.dll has
@@ -177,6 +259,17 @@
       <Bannerlord>/bin/Win64_Shipping_Client/ (вместо Modules/Bannerlord.Harmony/bin/...).
       Нативный загрузчик берёт эту копию первой и проваливает версионную
       проверку. Часто после ручной установки Harmony или багов Vortex deploy.
+    zh: |
+      Cannot load: Bannerlord.Harmony.dll。一份多余的 0Harmony.dll 被放进了
+      <Bannerlord>/bin/Win64_Shipping_Client/（而不是 Modules/Bannerlord.Harmony/bin/...）。
+      原生加载器会先取到这份副本并导致版本检查失败。常见于手动安装
+      Harmony 或 Vortex 部署出错之后。
+    tr: |
+      Cannot load: Bannerlord.Harmony.dll. 0Harmony.dll'in fazladan bir kopyası
+      <Bannerlord>/bin/Win64_Shipping_Client/ içine bırakılmış
+      (Modules/Bannerlord.Harmony/bin/... yerine). Yerel yükleyici önce o kopyayı
+      alır ve sürüm denetiminde başarısız olur. Genelde elle Harmony kurulumu
+      ya da Vortex dağıtım hatalarından sonra görülür.
   fix:
     en:
       - "Open <Bannerlord install>/bin/Win64_Shipping_Client/ in Explorer."
@@ -188,6 +281,16 @@
       - "Удали 0Harmony.dll, если он там есть (правильный лежит в Modules/Bannerlord.Harmony/bin/Win64_Shipping_Client/)."
       - "Перезапусти игру."
       - "Если используешь Vortex — переходи на ручную установку Bannerlord.Harmony."
+    zh:
+      - "在资源管理器中打开 <Bannerlord install>/bin/Win64_Shipping_Client/。"
+      - "如果存在 0Harmony.dll 就删除它（正确的那份位于 Modules/Bannerlord.Harmony/bin/Win64_Shipping_Client/）。"
+      - "重新启动游戏。"
+      - "如果使用 Vortex——改为手动安装 Bannerlord.Harmony。"
+    tr:
+      - "Dosya Gezgini'nde <Bannerlord install>/bin/Win64_Shipping_Client/ klasörünü açın."
+      - "Varsa 0Harmony.dll dosyasını silin (doğrusu Modules/Bannerlord.Harmony/bin/Win64_Shipping_Client/ altındadır)."
+      - "Oyunu yeniden başlatın."
+      - "Vortex kullanıyorsanız — Bannerlord.Harmony için elle kuruluma geçin."
   match:
     all:
       - log_line:
@@ -207,6 +310,8 @@
   title:
     en: "BLSE 1.6.4 startup FormatException — locale regression"
     ru: "BLSE 1.6.4 краш на старте FormatException — регрессия локали"
+    zh: "BLSE 1.6.4 启动时 FormatException — 区域设置回归问题"
+    tr: "BLSE 1.6.4 başlangıç FormatException — bölge ayarı gerilemesi"
   description:
     en: |
       FormatException inside TaleWorlds.GauntletUI.PrefabSystem.ConstantDefinition.GetValue_Patch2.
@@ -218,6 +323,15 @@
       Известная регрессия BLSE 1.6.4 с не-en-US локалями (русская, европейские).
       Запатченный метод парсит число по системной культуре и падает. Лечится
       даунгрейдом BLSE.
+    zh: |
+      TaleWorlds.GauntletUI.PrefabSystem.ConstantDefinition.GetValue_Patch2 内部出现
+      FormatException。这是 BLSE 1.6.4 在非 en-US 区域（俄语、欧洲）下的已知回归问题。
+      被修改的方法按系统区域格式解析数字时出错崩溃。降级 BLSE 即可解决。
+    tr: |
+      TaleWorlds.GauntletUI.PrefabSystem.ConstantDefinition.GetValue_Patch2 içinde
+      FormatException. en-US dışı bölgelerde (Rusça, AB) bilinen bir BLSE 1.6.4
+      gerilemesidir. Yamalı yöntem, bir sayıyı sistem kültürüne göre ayrıştırmaya
+      çalışır ve patlar. BLSE'yi eski sürüme düşürmek çözer.
   fix:
     en:
       - "Downgrade BLSE to 1.6.3 from butr.link/butrloader (the previous release)."
@@ -227,6 +341,14 @@
       - "Откати BLSE до 1.6.3 с butr.link/butrloader (предыдущий релиз)."
       - "Или временно поставь регион Windows English (US) — Параметры → Время и язык → Регион → Английский."
       - "Жди BLSE 1.6.5+ с фиксом."
+    zh:
+      - "从 butr.link/butrloader 把 BLSE 降级到 1.6.3（上一个版本）。"
+      - "或临时把 Windows 区域改为 English (US)——系统设置 → 时间和语言 → 区域 → English。"
+      - "留意带修复的 BLSE 1.6.5+。"
+    tr:
+      - "BLSE'yi butr.link/butrloader üzerinden 1.6.3'e (önceki sürüm) düşürün."
+      - "Ya da Windows bölgesini geçici olarak English (US) yapın — Sistem Ayarları → Saat ve Dil → Bölge → English."
+      - "Düzeltmeli BLSE 1.6.5+ sürümünü bekleyin."
   match:
     all:
       - log_line:
@@ -246,6 +368,8 @@
   title:
     en: "ButterLib settings file is corrupt"
     ru: "Файл настроек ButterLib битый"
+    zh: "ButterLib 设置文件已损坏"
+    tr: "ButterLib ayar dosyası bozuk"
   description:
     en: |
       System.IO.StringReader..ctor inside ButterLib.Options.SettingsProvider.
@@ -256,6 +380,15 @@
       JSON-настройки ButterLib в папке ModSettings пользователя битые (часто
       после неаккуратного удаления мода или частичного сохранения). ButterLib
       падает при загрузке.
+    zh: |
+      ButterLib.Options.SettingsProvider 内部出现 System.IO.StringReader..ctor。
+      用户在 ModSettings 中的 ButterLib JSON 配置已损坏（常见于模组卸载失败或
+      保存不完整之后）。ButterLib 在加载时直接失败。
+    tr: |
+      ButterLib.Options.SettingsProvider içinde System.IO.StringReader..ctor.
+      Kullanıcının ButterLib için ModSettings JSON dosyası bozulmuş (genelde
+      başarısız bir mod kaldırma ya da yarım kaydetme sonrası). ButterLib
+      yüklemede tamamen başarısız olur.
   fix:
     en:
       - "Delete the folder Documents/Mount and Blade II Bannerlord/Configs/ModSettings/ButterLib/ ."
@@ -263,6 +396,12 @@
     ru:
       - "Удали папку Documents/Mount and Blade II Bannerlord/Configs/ModSettings/ButterLib/ ."
       - "Запусти игру — ButterLib пересоздаст настройки заново."
+    zh:
+      - "删除文件夹 Documents/Mount and Blade II Bannerlord/Configs/ModSettings/ButterLib/ 。"
+      - "启动游戏——ButterLib 会重建默认设置。"
+    tr:
+      - "Documents/Mount and Blade II Bannerlord/Configs/ModSettings/ButterLib/ klasörünü silin."
+      - "Oyunu başlatın — ButterLib varsayılanları yeniden oluşturur."
   match:
     all:
       - log_line:
@@ -279,6 +418,8 @@
   title:
     en: "MCM PrefabInjector ArgumentNullException fieldInfo"
     ru: "MCM PrefabInjector ArgumentNullException fieldInfo"
+    zh: "MCM PrefabInjector ArgumentNullException fieldInfo"
+    tr: "MCM PrefabInjector ArgumentNullException fieldInfo"
   description:
     en: |
       MCM.UI.Functionality.Injectors.PrefabInjector throws ArgumentNullException
@@ -288,6 +429,14 @@
       MCM.UI.Functionality.Injectors.PrefabInjector выбрасывает ArgumentNullException
       с именем параметра 'fieldInfo'. Специфично для MCM 4.0.7 (TypeInit-цепочка
       на старых ModLib-настройках) и регрессии MCM 5.0.4 на загрузке preset.
+    zh: |
+      MCM.UI.Functionality.Injectors.PrefabInjector 抛出 ArgumentNullException，
+      参数名为 'fieldInfo'。这是 MCM 4.0.7（旧 ModLib 形式设置上的 TypeInit 链）
+      以及 MCM 5.0.4 预设加载回归问题特有的现象。
+    tr: |
+      MCM.UI.Functionality.Injectors.PrefabInjector, 'fieldInfo' parametre adıyla
+      ArgumentNullException fırlatır. MCM 4.0.7'ye (eski ModLib biçimli ayarlarda
+      TypeInit zinciri) ve MCM 5.0.4 ön ayar yükleme gerilemesine özgüdür.
   fix:
     en:
       - "Update MCM to 4.3.13 or 5.0.5+ from NexusMods."
@@ -297,6 +446,14 @@
       - "Обнови MCM до 4.3.13 или 5.0.5+ с NexusMods."
       - "Если стоит MCM 4.0.7 со старыми ModLib-модами — снеси настройки ModLib-форма."
       - "Параллельно обнови UIExtenderEx (они делят prefab-конвейер)."
+    zh:
+      - "从 NexusMods 把 MCM 更新到 4.3.13 或 5.0.5+。"
+      - "如果使用 MCM 4.0.7 并带有旧 ModLib 模组——卸载所有 ModLib 形式的设置。"
+      - "同时更新 UIExtenderEx（它和 MCM 共用 prefab 管线）。"
+    tr:
+      - "MCM'yi NexusMods'tan 4.3.13 veya 5.0.5+ sürümüne güncelleyin."
+      - "Eski ModLib modlarıyla MCM 4.0.7 kullanıyorsanız — tüm ModLib biçimli ayarları kaldırın."
+      - "MCM ile birlikte UIExtenderEx'i de güncelleyin (prefab hattını paylaşırlar)."
   match:
     all:
       - log_line:
@@ -316,6 +473,8 @@
   title:
     en: "Harmony patch failed to apply"
     ru: "Harmony-патч не применился"
+    zh: "Harmony 补丁应用失败"
+    tr: "Harmony yaması uygulanamadı"
   description:
     en: |
       A Harmony patch threw during apply. Two patches from different mods are
@@ -323,6 +482,12 @@
     ru: |
       Патч Harmony упал при применении. Скорее всего два мода патчат один и тот же
       метод несовместимо.
+    zh: |
+      一个 Harmony 补丁在应用时抛出了异常。很可能是来自不同模组的两个补丁以
+      不兼容的方式修改了同一个方法。
+    tr: |
+      Bir Harmony yaması uygulanırken hata fırlattı. Muhtemelen farklı modlardan
+      gelen iki yama aynı yöntemi uyumsuz şekilde değiştiriyor.
   fix:
     en:
       - "Read the next lines after Harmony.PatchException — they name the patcher mod."
@@ -332,6 +497,14 @@
       - "Прочитай следующие строки после Harmony.PatchException — там имя мода-патчера."
       - "Обнови мод-патчер до свежей версии."
       - "Отключай моды по одному, чтобы локализовать конфликт."
+    zh:
+      - "查看 Harmony.PatchException 之后的几行——里面会写出打补丁的模组名。"
+      - "把打补丁的那个模组更新到最新版本。"
+      - "逐个禁用模组以定位冲突。"
+    tr:
+      - "Harmony.PatchException'dan sonraki satırları okuyun — yamayı uygulayan modu adlandırırlar."
+      - "Yamayı uygulayan modu en son sürüme güncelleyin."
+      - "Çakışmayı yerelleştirmek için modları tek tek devre dışı bırakın."
   match:
     any:
       - log_line:

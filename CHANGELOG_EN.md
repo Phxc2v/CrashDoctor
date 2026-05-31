@@ -10,7 +10,35 @@ subscribers.
 
 ---
 
-## Next publish — Fixes: characters no longer lie on their side, GPU crashes recognised more precisely, no false mod-conflict warnings, GPU driver cache card no longer sticks, false save mismatch on translation version bumps, crash logs preserved during cleanup, clear message for log-less crashes, export now attaches ButterLib logs
+## 2026-05-31 — Fixes: a save with a broken garrison no longer crashes on load and repairs itself, removing a mod from a save actually drops it from the save's record, scrollbars are draggable again and no longer overlap data, base-game modules removed from the save-cleaning list, the mod analyser no longer flags disabled mods
+
+> Visible mod version stays `v1.4.0` forever.
+
+A round of fixes:
+- **a save with a "broken garrison" no longer crashes on load.** If a save still held a garrison with no town or castle of its own (the settlement disappeared during the campaign, or because the mod set changed between sessions), the game crashed to desktop on every attempt to load that save — during the clan-strength calculation. Crash Doctor now keeps the game from crashing there and, on entering the campaign, removes the broken garrison itself; once you re-save, the save is clean for good. This crash is now also recognised in the analyser, with the cause and the steps;
+- **"Remove a mod from a save" now actually drops the mod from the save's record.** Previously the mod's name (e.g. a translation pack) stayed in the save's module list after cleaning, so it looked like nothing had happened. Now the wiped mods' names are removed from the save's record (and from the game's "this save was made with mod …" warning), and the result window honestly reports how many objects were actually removed — and says plainly when a mod stored no data in the save (a translation or content mod);
+- **scrollbars are draggable with the mouse again and no longer overlap data.** On every Crash Doctor tab (and in the save-cleaning window) the scrollbar can be dragged with the mouse again, and it no longer covers the cards and lists;
+- **base-game modules removed from the save-cleaning list.** A casing bug let a base-game module (Sandbox) show up in the "remove a mod from a save" list — wiping that would have destroyed the save. Base-game/infrastructure modules are no longer shown there at all, plus a guard prevents wiping them even if one slips through;
+- **the mod analyser no longer flags disabled mods.** The Mods tab used to check patch conflicts, dependencies and load order across every installed mod — including ones disabled in the launcher that the game never loads — so a disabled mod could get a red "conflict" or "missing dependency" badge even though it isn't running and can't cause anything. Those checks now run only on enabled mods; disabled ones show as "off" with no false badges.
+
+### More detail: crash when loading a save with a settlement-less garrison
+
+In Bannerlord every garrison always has its own town or castle. If that settlement
+went away during play (or because the mod set changed between sessions) while the
+garrison party itself stayed in the save, then on load the game — recomputing every
+clan's strength — reaches for the missing settlement and **crashes to desktop**. It
+crashes at the same spot every time, not randomly. This is a crash in the game's own
+code over corrupted save data, not a Crash Doctor or TOR bug.
+
+Crash Doctor now guards that spot: instead of crashing, the load goes through, and
+right after you enter the campaign the mod finds the orphaned garrison and removes it
+cleanly. Just **save once** after loading and the problem is gone from the save for
+good. If you'd rather have a clean save with no edits, you can instead load an earlier
+save from before the problem appeared.
+
+---
+
+## 2026-05-26 — Fixes: characters no longer lie on their side, GPU crashes recognised more precisely, no false mod-conflict warnings, GPU driver cache card no longer sticks, false save mismatch on translation version bumps, crash logs preserved during cleanup, clear message for log-less crashes, export now attaches ButterLib logs
 
 > Visible mod version stays `v1.4.0` forever.
 

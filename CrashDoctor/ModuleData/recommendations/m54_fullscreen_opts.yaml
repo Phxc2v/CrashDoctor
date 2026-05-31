@@ -2,6 +2,8 @@
   title:
     en: "Disable Fullscreen Optimizations for Bannerlord.exe"
     ru: "Отключить полноэкранные оптимизации для Bannerlord.exe"
+    zh: "为 Bannerlord.exe 禁用全屏优化"
+    tr: "Bannerlord.exe için Tam Ekran Optimizasyonlarını devre dışı bırak"
   description:
     en: |
       "Fullscreen optimizations" is a Windows feature that quietly turns "exclusive fullscreen"
@@ -13,6 +15,16 @@
       режим в borderless-windowed через компоновщик. Это добавляет 1–2 кадра input lag и
       замораживает Alt-Tab на несколько секунд в Bannerlord. Отключение через ключ реестра
       AppCompatFlags возвращает настоящий полноэкранный режим.
+    zh: |
+      「全屏优化」是 Windows 的一项功能，它会悄悄地把「独占全屏」变成一次经过合成器的
+      无边框窗口处理。这会增加 1–2 帧的输入延迟，并使 Bannerlord 中的 Alt-Tab 卡顿数秒。
+      通过 AppCompatFlags 注册表键将其禁用，可恢复真正的全屏行为。
+    tr: |
+      "Tam ekran optimizasyonları", "özel tam ekranı" sessizce bir birleştirici geçişi
+      üzerinden kenarlıksız-pencereli moda çeviren bir Windows özelliğidir. 1–2 kare
+      giriş gecikmesi ekler ve Bannerlord'da Alt-Tab'i birkaç saniye dondurur.
+      AppCompatFlags kayıt defteri anahtarı aracılığıyla devre dışı bırakmak, gerçek tam
+      ekran davranışını geri yükler.
   details:
     en:
       - "No UAC needed — writes to HKCU only."
@@ -24,3 +36,13 @@
       - "То же самое что правый клик на Bannerlord.exe → Свойства → Совместимость → «Отключить полноэкранные оптимизации»."
       - "Действует со следующего запуска."
       - "Откат — из вкладки Журнал."
+    zh:
+      - "无需 UAC——只写入 HKCU。"
+      - "效果等同于右键点击 Bannerlord.exe → 属性 → 兼容性 →「禁用全屏优化」。"
+      - "下次启动时生效。"
+      - "可从「历史」选项卡撤销。"
+    tr:
+      - "UAC gerekmez — yalnızca HKCU'ya yazar."
+      - "Bannerlord.exe'ye sağ tıklayıp → Özellikler → Uyumluluk → 'Tam ekran optimizasyonlarını devre dışı bırak' ile aynı etki."
+      - "Bir sonraki başlatmada etkili olur."
+      - "Geçmiş sekmesinden geri alınabilir."

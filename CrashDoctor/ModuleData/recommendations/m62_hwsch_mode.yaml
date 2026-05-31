@@ -2,6 +2,8 @@
   title:
     en: "Hardware-Accelerated GPU Scheduling (HAGS) state"
     ru: "Состояние Hardware-Accelerated GPU Scheduling (HAGS)"
+    zh: "硬件加速GPU计划（HAGS）状态"
+    tr: "Donanım Hızlandırmalı GPU Zamanlaması (HAGS) durumu"
   description:
     en: |
       HAGS is a Win10 2004+ / Win11 feature that hands GPU command-queue management
@@ -20,6 +22,23 @@
 
       Карточка появляется только когда HAGS ВКЛЮЧЁН и установлен TOR — рисковая
       связка. На чистой ванилле или HAGS=Off карточка скрыта.
+    zh: |
+      HAGS 是 Win10 2004+ / Win11 的一项功能，它把 GPU 命令队列的管理交给驱动。
+      在现代驱动上（NVIDIA 535+、AMD Adrenalin 24.x）它很稳定；在旧驱动上与 TOR
+      繁重的着色器编译工作负载结合时，会在「Build Shader Cache」期间产生
+      TDR / DXGI_ERROR_DEVICE_HUNG 级联和着色器内存溢出崩溃。
+
+      这张卡片只在 HAGS 开启且已安装 TOR 时才出现——这是有风险的组合。纯净的原版，
+      或 HAGS=Off，都会让卡片隐藏。
+    tr: |
+      HAGS, GPU komut-kuyruğu yönetimini sürücüye devreden bir Win10 2004+ / Win11
+      özelliğidir. Modern sürücülerde (NVIDIA 535+, AMD Adrenalin 24.x) kararlıdır;
+      TOR'un ağır gölgelendirici-derleme iş yüküyle birleşen eski sürücülerde, "Build
+      Shader Cache" sırasında TDR / DXGI_ERROR_DEVICE_HUNG kademeleri ve gölgelendirici
+      bellek yetersizliği çökmeleri üretir.
+
+      Kart yalnızca HAGS AÇIK olduğunda ve TOR kurulu olduğunda görünür — riskli
+      kombinasyon. Düz vanilla veya HAGS=Off kartı gizli bırakır.
   details:
     en:
       - "Source: HKLM\\SYSTEM\\CurrentControlSet\\Control\\GraphicsDrivers\\HwSchMode (1=Off, 2=On)."
@@ -33,3 +52,15 @@
       - "Переключатель требует ПЕРЕЗАГРУЗКИ — не применится до следующего boot'а."
       - "Crash Doctor в реестр не пишет — этим переключателем владеет Windows."
       - "Откат не предусмотрен (мы его не трогаем)."
+    zh:
+      - "来源：HKLM\\SYSTEM\\CurrentControlSet\\Control\\GraphicsDrivers\\HwSchMode（1=关，2=开）。"
+      - "「应用」会打开 设置 → 系统 → 显示 → 图形 → 默认图形设置。"
+      - "切换需要重启——在下次启动前不会生效。"
+      - "Crash Doctor 绝不写入注册表——这个开关由 Windows 掌管。"
+      - "不可撤销（我们不会触碰它）。"
+    tr:
+      - "Kaynak: HKLM\\SYSTEM\\CurrentControlSet\\Control\\GraphicsDrivers\\HwSchMode (1=Kapalı, 2=Açık)."
+      - "«Uygula» Ayarlar → Sistem → Ekran → Grafikler → Varsayılan grafik ayarları'nı açar."
+      - "Geçiş YENİDEN BAŞLATMA gerektirir — bir sonraki açılışa kadar etkin olmaz."
+      - "Crash Doctor kayıt defterine asla yazmaz — bu geçiş Windows'a aittir."
+      - "Geri alınamaz (biz ona dokunmuyoruz)."

@@ -2,6 +2,8 @@
   title:
     en: "Documents folder is on OneDrive"
     ru: "Папка «Документы» на OneDrive"
+    zh: "「文档」文件夹位于 OneDrive 上"
+    tr: "Belgeler klasörü OneDrive üzerinde"
   description:
     en: |
       Bannerlord stores saves, configs and shader logs under Documents. When Documents is
@@ -17,6 +19,20 @@
       это калечит сейвы в долгой кампании — или ломает ротацию логов когда облако занято.
       Рекомендованный фикс: пометить папку Bannerlord как «Всегда сохранять на этом
       устройстве» или полностью отключить резервное копирование «Документов» в OneDrive.
+    zh: |
+      Bannerlord 将存档、配置和着色器日志保存在「文档」文件夹下。当「文档」通过
+      OneDrive 重定向时（新装 Windows 的默认设置），OneDrive 的延迟同步可能会在
+      写入过程中锁定文件——这会损坏长期战役的存档——或在云端繁忙时导致日志轮转失败。
+      推荐的修复方法是将 Bannerlord 文件夹标记为「始终保留在此设备上」，或者完全禁用
+      OneDrive 对「文档」的备份。
+    tr: |
+      Bannerlord kayıtları, yapılandırmaları ve gölgelendirici günlüklerini Belgeler
+      altında saklar. Belgeler OneDrive üzerinden yönlendirildiğinde (yeni Windows
+      kurulumlarında varsayılan), OneDrive'ın tembel eşitlemesi yazma sırasında
+      dosyaları kilitleyebilir — bu da uzun bir kampanyada kayıtları bozar — veya bulut
+      meşgulken günlük döndürmeyi başarısız kılabilir. Önerilen düzeltme, Bannerlord
+      klasörünü 'Her zaman bu cihazda tut' olarak işaretlemek veya Belgeler'in OneDrive
+      yedeklemesini tamamen devre dışı bırakmaktır.
   details:
     en:
       - "⚠ DO NOT delete the OneDrive folder. That wipes your saves both locally and in the cloud sync. Use the steps below — they keep your saves intact."
@@ -32,3 +48,17 @@
       - "Полный фикс: OneDrive → Настройки → Резервное копирование → снять галку «Документы». Файлы остаются в локальной папке Документы, OneDrive просто перестаёт их синкать."
       - "Если уже случайно удалил папку OneDrive — сейвы восстанавливаются 30 дней через https://onedrive.live.com → Корзина (и локальная Корзина Windows)."
       - "После репина риск битых сейвов в долгой кампании резко падает."
+    zh:
+      - "⚠ 不要删除整个 OneDrive 文件夹。那会同时抹掉你本地和云端同步中的存档。请使用下面的步骤——它们会保持你的存档完好。"
+      - "「应用」会打开「文档」中的 Bannerlord 文件夹。"
+      - "右键点击「Mount and Blade II Bannerlord」→「始终保留在此设备上」（强制本地副本，存档保留）。"
+      - "永久修复：OneDrive 设置 → 备份 → 管理备份 → 取消勾选「文档」。文件会保留在你本地的「文档」文件夹中，OneDrive 只是停止同步它们。"
+      - "如果你已经不小心删除了 OneDrive 文件夹：存档可在 30 天内通过 https://onedrive.live.com → 回收站（以及本地回收站）恢复。"
+      - "重新固定后，长期战役中存档损坏的风险会大幅下降。"
+    tr:
+      - "⚠ OneDrive klasörünü tamamen SİLMEYİN. Bu, kayıtlarınızı hem yerelde hem de bulut eşitlemesinde siler. Aşağıdaki adımları kullanın — bunlar kayıtlarınızı sağlam tutar."
+      - "«Uygula», Belgeler içindeki Bannerlord klasörünü açar."
+      - "'Mount and Blade II Bannerlord' üzerine sağ tıklayın → 'Her zaman bu cihazda tut' (yerel kopyayı zorlar, kayıtlar kalır)."
+      - "Kalıcı düzeltme: OneDrive Ayarları → Yedekleme → Yedeklemeyi yönet → 'Belgeler' işaretini kaldırın. Dosyalar yerel Belgeler klasörünüzde kalır, OneDrive yalnızca eşitlemeyi durdurur."
+      - "OneDrive klasörünü yanlışlıkla zaten sildiyseniz: kayıtlar 30 gün boyunca https://onedrive.live.com → Geri Dönüşüm Kutusu (ve yerel Geri Dönüşüm Kutusu) üzerinden kurtarılabilir."
+      - "Yeniden sabitledikten sonra, uzun kampanyalarda kayıt bozulma riski belirgin şekilde düşer."

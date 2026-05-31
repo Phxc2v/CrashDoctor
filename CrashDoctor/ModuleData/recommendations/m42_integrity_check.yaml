@@ -2,6 +2,8 @@
   title:
     en: "SHA-256 integrity check against shipped manifest"
     ru: "Проверка целостности SHA-256 по shipped-манифесту"
+    zh: "根据随附清单进行 SHA-256 完整性检查"
+    tr: "Birlikte gelen manifestoya karşı SHA-256 bütünlük denetimi"
   description:
     en: |
       Catches: partial Workshop downloads (Steam said "subscribed" but a file is
@@ -30,6 +32,30 @@
 
       «Применить» файлы не трогает; открывает страницу Steam Workshop чтобы
       переподписаться на затронутый мод (каноничный фикс corruption Workshop'а).
+    zh: |
+      可捕捉：创意工坊的部分下载（Steam 显示「已订阅」，但某个文件比预期短）、
+      被杀毒软件隔离后变成零字节的 DLL、用户对模组文件的手动编辑，以及篡改 /
+      「premium fix」恶意软件 DLL 覆盖在合法模组之上的情况。
+
+      清单位于 `ModuleData/integrity_manifest.json`。默认情况下它是空的——
+      只有在我们拥有经过验证的干净参考安装可供哈希比对时才会填充。在此之前，
+      这张卡片保持 NotApplicable 并隐藏，因此在全新安装上不会出现误报。
+
+      「应用」不会触碰文件；它只是打开 Steam 创意工坊页面，让用户重新订阅
+      受影响的模组（创意工坊损坏的标准修复方法）。
+    tr: |
+      Şunları yakalar: kısmi Atölye indirmeleri (Steam "abone olundu" der ama bir dosya
+      beklenenden kısadır), geri döndüğünde sıfır bayt olan AV karantinasındaki DLL'ler,
+      kullanıcının mod dosyalarında yaptığı manuel düzenlemeler ve meşru modun üzerine
+      geçen kurcalama / "premium fix" kötü amaçlı DLL'ler.
+
+      Manifesto `ModuleData/integrity_manifest.json` içinde yer alır. Varsayılan olarak
+      boştur — yalnızca karşılaştırma için doğrulanmış-temiz bir referans kurulumumuz
+      olduğunda doldurulur. O zamana kadar kart NotApplicable kalır ve gizlenir, böylece
+      yeni bir kurulumda yanlış pozitif olmaz.
+
+      Uygula dosyalara dokunmaz; yalnızca kullanıcının etkilenen moda yeniden abone
+      olabilmesi için Steam Atölye sayfasını açar (Atölye bozulması için standart düzeltme).
   details:
     en:
       - "Read-only check. Hash algorithm: SHA-256."
@@ -41,3 +67,13 @@
       - "Пустой манифест = NotApplicable (карточка скрыта)."
       - "«Применить» откроет steam://url/CommunityFilePage/261550."
       - "Откат не предусмотрен (read-only)."
+    zh:
+      - "只读检查。哈希算法：SHA-256。"
+      - "空清单 = NotApplicable（卡片隐藏）。"
+      - "「应用」会打开 steam://url/CommunityFilePage/261550。"
+      - "不可撤销（只读）。"
+    tr:
+      - "Salt okunur kontrol. Karma algoritması: SHA-256."
+      - "Boş manifesto = NotApplicable (kart gizli)."
+      - "«Uygula» steam://url/CommunityFilePage/261550 adresini açar."
+      - "Geri alınamaz (salt okunur)."

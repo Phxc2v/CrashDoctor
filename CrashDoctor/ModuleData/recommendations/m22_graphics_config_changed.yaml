@@ -2,6 +2,8 @@
   title:
     en: "Graphics settings changed — clear shader cache before next launch"
     ru: "Графика изменилась — очисти кэш шейдеров перед следующим запуском"
+    zh: "图形设置已更改 — 下次启动前请清理着色器缓存"
+    tr: "Grafik ayarları değişti — bir sonraki açılıştan önce gölgelendirici önbelleğini temizle"
   description:
     en: |
       Auto-detector for the user-driven case: you opened in-game Options → Graphics,
@@ -50,6 +52,51 @@
       Первый запуск: если снэпшота ещё нет, Crash Doctor молча запишет baseline и
       останется Healthy. Карточка появится только когда графические ключи реально
       изменятся между сессиями.
+    zh: |
+      针对用户操作场景的自动检测：你打开了游戏内的 选项 → 图形，
+      降低了 Texture / Shader / Shadow / Terrain Quality（或任何其他图形项），
+      保存并退出。新数值现在已写入 engine_config.txt，但预编译的着色器缓存
+      仍然是基于旧数值构建的。下次启动会尝试加载它、遇到不匹配，并在
+      帝国士兵启动画面上崩溃 —— 这正是我们建议「降低 Texture
+      Quality」之后用户一直反馈的那种崩溃。
+
+      Crash Doctor 在每次运行时都会把图形相关的项保存一份快照到它的状态文件夹里。
+      当快照与实时的 engine_config 出现分歧时，这张卡片就会出现，并提供一个
+      一键修复：清理着色器缓存 + 同步快照。请在重启电脑并从主菜单重建缓存
+      之前应用它。
+
+      应用后的强制步骤（跳过 → 启动画面崩溃）：
+        1. 重启电脑。
+        2. 启动 Bannerlord。
+        3. 主菜单 → 'Build Shader Cache' → 等待 20–60 分钟。
+        4. 编译期间不要关闭游戏，不要打开 Chrome / Discord。
+
+      首次运行说明：如果还没有快照，Crash Doctor 会静默记录基线并保持 Healthy。
+      只有当图形项在两次会话之间确实发生变化时，卡片才会触发。
+    tr: |
+      Kullanıcı kaynaklı durum için otomatik dedektör: oyun içi Seçenekler → Grafik'i açtın,
+      Texture / Shader / Shadow / Terrain Quality'yi (ya da başka herhangi bir grafik anahtarını)
+      düşürdün, kaydedip çıktın. Yeni değerler artık engine_config.txt içinde, ancak önceden
+      derlenmiş gölgelendirici önbelleği hâlâ ESKİ değerlere göre oluşturulmuş olan. Bir
+      sonraki açılış onu yüklemeye çalışır, bir uyumsuzlukla karşılaşır ve imparatorluk
+      askeri açılış ekranında çöker — kullanıcıların "Texture Quality'yi düşür" tavsiyemizden
+      sonra bildirdiği çökme türünün aynısı.
+
+      Crash Doctor her çalışmada grafikle ilgili anahtarların bir anlık görüntüsünü kendi durum
+      klasörüne kaydeder. Anlık görüntü canlı engine_config'den ayrıştığında bu kart tek
+      düğmelik bir çözümle ortaya çıkar: gölgelendirici önbelleğini temizle + anlık görüntüyü
+      eşitle. Bunu yeniden başlatmadan ve önbelleği ana menüden yeniden oluşturmadan ÖNCE
+      uygula.
+
+      Uygula'dan sonra ZORUNLU sıra (atla → açılış ekranı çökmesi):
+        1. Bilgisayarı YENİDEN BAŞLAT.
+        2. Bannerlord'u başlat.
+        3. Ana Menü → 'Build Shader Cache' → 20–60 dakika bekle.
+        4. Derleme sırasında oyunu kapatma, Chrome / Discord açma.
+
+      İlk çalıştırma notu: henüz bir anlık görüntü yoksa, Crash Doctor temel değeri sessizce
+      kaydeder ve Healthy kalır. Kart yalnızca grafik anahtarları oturumlar arasında gerçekten
+      değiştiğinde tetiklenir.
   details:
     en:
       - "Snapshot file: <Documents>/Mount and Blade II Bannerlord/CrashDoctor/state/engine_config_snapshot.txt"
@@ -63,3 +110,15 @@
       - "Снэпшот обновится на текущие значения после «Применить» — следующий Detect вернёт Healthy."
       - "Отслеживаемые ключи: texture / shader / terrain / shadow / particle / postfx / DLSS / antialiasing / разрешение. Звук, мышь, гамма — НЕ отслеживаются."
       - "Откат не предусмотрен: кэш шейдеров в Корзине, если очень надо — восстанови оттуда; иначе игра просто пересоберёт."
+    zh:
+      - "快照文件：<Documents>/Mount and Blade II Bannerlord/CrashDoctor/state/engine_config_snapshot.txt"
+      - "应用会清理：ProgramData/Shaders + game/Shaders/D3D11/compressed_shaders_cache.sack + 各模块的 .sack 文件（全部移到回收站）。"
+      - "应用后快照会更新为当前数值 —— 下次检测返回 Healthy。"
+      - "追踪的项：texture / shader / terrain / shadow / particle / postfx / DLSS / antialiasing / 分辨率。声音、鼠标、gamma 项不会被追踪。"
+      - "不可撤销：着色器缓存在回收站里，如果确实需要可以从那里还原；否则游戏会自行重建。"
+    tr:
+      - "Anlık görüntü dosyası: <Documents>/Mount and Blade II Bannerlord/CrashDoctor/state/engine_config_snapshot.txt"
+      - "Uygula şunları temizler: ProgramData/Shaders + game/Shaders/D3D11/compressed_shaders_cache.sack + modül başına .sack dosyaları (hepsi Geri Dönüşüm Kutusu'na)."
+      - "Uygula'dan sonra anlık görüntü mevcut değerlere güncellenir — bir sonraki Detect Healthy döner."
+      - "İzlenen anahtarlar: texture / shader / terrain / shadow / particle / postfx / DLSS / antialiasing / çözünürlük. Ses, fare, gamma anahtarları İZLENMEZ."
+      - "Geri alınamaz: gölgelendirici önbelleği gerçekten geri lazımsa Geri Dönüşüm Kutusu'nda; aksi halde oyun onu yeniden oluşturur."

@@ -2,6 +2,8 @@
   title:
     en: "SubModule.xml dependency graph audit"
     ru: "Аудит графа зависимостей SubModule.xml"
+    zh: "SubModule.xml 依赖图审查"
+    tr: "SubModule.xml bağımlılık grafiği denetimi"
   description:
     en: |
       Catches the most common mod-config crash — "subscribed to mod X but forgot
@@ -12,6 +14,7 @@
       - Missing hard dependency (Mod X needs Y, Y isn't installed). Critical.
       - Version mismatch (Mod X needs Y >= v1.2.3, installed Y is older). Warning.
       - Duplicate module Id across game+workshop (Bannerlord picks one at random).
+      - Declared incompatibility (Mod X marks itself incompatible with Y, both installed) — a likely crash; disable one of them.
 
       Optional dependencies (DependedModuleMetadata with optional="true") are
       respected — missing optionals are silently ignored.
@@ -24,9 +27,37 @@
       - Отсутствующая жёсткая зависимость (Мод X требует Y, Y не установлен). Critical.
       - Несовпадение версий (X требует Y >= v1.2.3, установлен старее). Warning.
       - Дубликат Id в game+workshop (Bannerlord выбирает один наугад).
+      - Заявленная несовместимость (мод X помечает себя несовместимым с Y, оба установлены) — вероятный краш; отключи один из них.
 
       Опциональные зависимости (DependedModuleMetadata с optional="true") учитываются —
       отсутствующие опциональные молча игнорируем.
+    zh: |
+      捕捉最常见的模组配置崩溃——「订阅了模组 X 却忘了它的依赖 Y」——在玩家启动
+      并在战役进行 5 分钟后撞上 NullReferenceException 之前就发现它。会遍历
+      <game>\Modules\ 和 <workshop>\261550\<id>\ 中的每个 SubModule.xml，构建依赖图，
+      并标记：
+
+      - 缺失的硬依赖（模组 X 需要 Y，但 Y 未安装）。Critical。
+      - 版本不匹配（模组 X 需要 Y >= v1.2.3，但已安装的 Y 更旧）。Warning。
+      - game+workshop 中模块 Id 重复（Bannerlord 会随机选择其中一个）。
+      - 声明的不兼容性（模组 X 将自己标记为与 Y 不兼容，且两者都已安装）——很可能崩溃；禁用其中之一。
+
+      可选依赖（带 optional="true" 的 DependedModuleMetadata）会被尊重——
+      缺失的可选依赖会被悄无声息地忽略。
+    tr: |
+      En yaygın mod yapılandırması çökmesini yakalar — "X moduna abone oldum ama
+      bağımlılığı Y'yi unuttum" — oyuncu başlatıp kampanyanın 5. dakikasında bir
+      NullReferenceException'a çarpmadan ÖNCE. <game>\Modules\ ve
+      <workshop>\261550\<id>\ içindeki her SubModule.xml'i gezer, bağımlılık grafiğini
+      oluşturur ve şunları işaretler:
+
+      - Eksik sıkı bağımlılık (X modu Y'ye ihtiyaç duyar, Y kurulu değil). Critical.
+      - Sürüm uyumsuzluğu (X modu Y >= v1.2.3'e ihtiyaç duyar, kurulu Y daha eski). Warning.
+      - game+workshop genelinde yinelenen modül Id (Bannerlord birini rastgele seçer).
+      - Bildirilen uyumsuzluk (X modu kendini Y ile uyumsuz olarak işaretler, ikisi de kurulu) — olası bir çökme; birini devre dışı bırakın.
+
+      İsteğe bağlı bağımlılıklar (optional="true" ile DependedModuleMetadata) dikkate
+      alınır — eksik isteğe bağlılar sessizce yok sayılır.
   details:
     en:
       - "Read-only XML audit. We never modify SubModule.xml or LauncherData.xml."
@@ -40,3 +71,15 @@
       - "Опциональные зависимости с optional=\"true\" исключаются из проверки missing-dep."
       - "Сравнение версий убирает префикс 'v'/'e' и сплитит по '.'/'-'. Нечитаемые версии пропускаем (нет false positive)."
       - "Откат не предусмотрен (только аудит)."
+    zh:
+      - "只读 XML 审查。我们绝不修改 SubModule.xml 或 LauncherData.xml。"
+      - "「应用」会为 Bannerlord 打开 Steam 创意工坊（缺失的依赖请自行订阅）。"
+      - "带 optional=\"true\" 的可选依赖会被排除在缺失依赖检查之外。"
+      - "版本比较会去除 'v'/'e' 前缀并按 '.'/'-' 拆分。无法解析的版本会跳过检查（无误报）。"
+      - "不可撤销（仅审查）。"
+    tr:
+      - "Salt okunur XML denetimi. SubModule.xml veya LauncherData.xml'i asla değiştirmeyiz."
+      - "«Uygula» Bannerlord için Steam Atölyesi'ni açar (eksik bağımlılıklara kendiniz abone olun)."
+      - "optional=\"true\" olan isteğe bağlı bağımlılıklar eksik bağımlılık kontrollerinden hariç tutulur."
+      - "Sürüm karşılaştırması 'v'/'e' önekini kaldırır ve '.'/'-' üzerinden böler. Ayrıştırılamayan sürümler kontrolü atlar (yanlış pozitif yok)."
+      - "Geri alınamaz (yalnızca denetim)."
