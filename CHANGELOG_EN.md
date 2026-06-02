@@ -10,20 +10,32 @@ subscribers.
 
 ---
 
-## 2026-06-02 — Bannerlord 1.3 and 1.4 support, fixed RAM / pagefile / GPU detection on newer game versions, "Clear crashes" now also removes Crash Doctor's own reports, the per-mod "swallow errors" list is populated again
+## 2026-06-02 — Crash Doctor now catches a "code crash" and names the culprit itself (even without ButterLib/BetterExceptionWindow), Bannerlord 1.3 and 1.4 support, works without the Harmony module, fixed RAM / pagefile / GPU on newer versions, the enchant-a-book window (TOR) is unblocked, fixed a false "mod missing" on the saves tab, crash cleanup also clears our own reports
 
 > Visible mod version stays `v1.4.0` forever.
 
-A big compatibility update. The mod used to effectively target a single game version (1.3.15). It now runs on several Bannerlord versions (1.3.x and 1.4.x).
+The biggest release since the May fixes. The headline: Crash Doctor now **captures "code crashes" (.NET exceptions) itself and names the culprit mod**, the way ButterLib / BetterExceptionWindow do — but without them. On top of that the mod learned to run on several Bannerlord versions (1.3.x and 1.4.x) and to load without the Harmony module, and a pile of Tune-Up cards that silently broke on newer game versions are fixed.
 
-- **Bannerlord 1.3.x and 1.4.x support.** The mod adapts to the running game version at runtime: the things that differ between versions (the main-menu button, opening the Crash Doctor screen, the installed-mod list, working with a save's module list) are now resolved live instead of being baked to one version. Features a given version doesn't have are hidden cleanly rather than crashing. (Versions 1.2 and the early-access e1.x line are not supported.)
+- **Crash Doctor catches a "code crash" and names the culprit itself.** Previously, when a mod's code threw (.NET exception), Crash Doctor might suggest "rebuild your shaders" — which never fixes that kind of crash. The mod now captures the exception itself (the way ButterLib / BetterExceptionWindow do, but **without needing them, or BLSE**), works out the game subsystem and the **culprit mod**, writes a readable report into its own folder (ready to send to the developer), and on the Crashes tab gives the honest verdict: "this is a code bug, shaders/driver won't help — send the report to the developer." If your last session ended in such a crash, a one-time reminder appears at the main menu.
+- **Bannerlord 1.3.x and 1.4.x support.** The mod adapts to the running game version at runtime: the things that differ between versions (the main-menu button, opening the Crash Doctor screen, the installed-mod list, working with a save's module list, some Tune-Up checks such as late-game health) are now resolved live instead of being baked to one version. Features a given version doesn't have are hidden cleanly rather than crashing. (Versions 1.2 and the early-access e1.x line are not supported.)
 - **Works correctly without the Harmony module.** The live protections (anti-crash safety nets, UI-error guard, Save Cleaner, "swallow a specific mod's errors") need the Bannerlord.Harmony module enabled — without it they're disabled automatically, removed from Settings, and a one-time notice is shown at the main menu. The core — crash analysis, Tune-Up, reports, the screen — loads and works regardless. Enable the Harmony module and the protections come back.
+- **Fixed a false "mods are missing from the system" on the saves tab.** A mod that's actually installed could be flagged as "missing". Presence is now cross-checked against three sources (loaded mods + on-disk mods + the launcher list): loaded → not flagged; on disk but disabled → "enable it" instead of "missing".
+- **The enchant-a-book window (TOR) is unblocked.** Our use-item safety net was stopping the hero-selection window for enchanting a book from opening (the mod swallowed the exception as "crash prevented"). The safety net is retuned so it no longer gets in the way: the window appears as it should.
 - **Correct RAM amount detection.** On newer game versions the memory card showed, for example, "15 GB" instead of 16 and could needlessly warn "TOR needs 16 GB+". The amount is now detected correctly — up to the real installed DIMM size.
 - **No false "configure a pagefile" recommendation.** On newer game versions reading the pagefile settings failed, and the card asked you to create one even when it was already configured. The settings are now read reliably and the card shows the real state.
 - **GPU and pending-reboot detection work again.** Graphics-card info (model, driver, VRAM) and the "a reboot is pending" check stopped working on newer game versions — they're read without failures now.
+- **Crash export flags "crash NOT recognised" prominently.** When Crash Doctor finds no match in its known-crash catalogue, the exported report now says so up top — a new signature that needs a human to look at — so those cases reach the developer instead of being lost.
+- **The Mods tab flags the known BetterExceptionWindow + ButterLib conflict.** This pair is often installed together and fights over the same hook; the mod now highlights that combination specifically.
 - **"Clear crashes" now also removes Crash Doctor's own reports.** Cleanup used to touch only the game's dumps, so the crashes the mod itself captured (with the culprit analysis) survived and reappeared in the list. They are cleaned too now — to the Recycle Bin, with the same "keep last 3" rule.
 - **The per-mod "swallow a specific mod's errors" list is populated again.** On newer game versions it was empty (the old way of enumerating mods stopped working). Installed mods are now found directly and show up in the list again — you can pre-select the ones you want.
 - **The mod shows in the launcher again on supported versions.** Removed the hard version requirement in the mod's description that could hide it from the list on some versions.
+- **More Chinese and Turkish.** The "bad GPU driver" card and several messages are now fully localised in 简体中文 and Türkçe.
+
+### More detail: how the "code crash" capture works
+
+Most Bannerlord crashes are either hardware / driver / shader problems (which Crash Doctor already diagnosed from the logs) or **a bug in some mod's code** (a .NET exception). The second kind shows up in the game logs as a bare `0xE0434352` code with no detail, and the mod could previously be misled toward shader advice.
+
+Crash Doctor now installs its own handler (on the same boundary ButterLib / BetterExceptionWindow hook, without fighting them and without requiring them): at the moment of the crash it captures the .NET stack, works out the game subsystem and **the mod whose code threw**, and writes a compact report into its own folder (ready to send to the developer). On the Crashes tab such a case gets a high-priority "this is a code bug" verdict instead of generic shader advice. If the previous run died this way, a one-time reminder pops at the main menu.
 
 ### More detail: why the fix touched RAM, pagefile and GPU at once
 
