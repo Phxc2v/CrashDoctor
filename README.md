@@ -10,8 +10,8 @@ no dependencies.
 
 > **Steam Workshop:** [3717685432](https://steamcommunity.com/sharedfiles/filedetails/?id=3717685432)
 > **Compatibility:** Bannerlord v1.3.x – v1.4.x (Steam build only — Game Pass /
-> MS Store not supported). The Bannerlord.Harmony module is recommended for the
-> live protections, but the mod loads and analyses crashes without it too.
+> MS Store not supported). The Bannerlord.Harmony module is needed for the live
+> protections; the core crash analysis loads and works even with it off.
 
 ---
 
@@ -380,8 +380,8 @@ Calradia Expanded, RBM, Banner Kings и т.д. Без интернета, без
 
 > **Steam Workshop:** [3717685432](https://steamcommunity.com/sharedfiles/filedetails/?id=3717685432)
 > **Совместимость:** Bannerlord v1.3.x – v1.4.x (только Steam-версия). Модуль
-> Bannerlord.Harmony рекомендуется для «живых» защит, но мод грузится и
-> анализирует краши и без него.
+> Bannerlord.Harmony нужен для «живых» защит; ядро (анализ крашей) грузится и
+> работает и без него.
 
 ## Что делает
 
