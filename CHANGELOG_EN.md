@@ -10,6 +10,33 @@ subscribers.
 
 ---
 
+## 2026-06-02 — Bannerlord 1.3 and 1.4 support, the mod loads even without the Harmony module, fixed RAM / pagefile / GPU detection on newer game versions, "Clear crashes" now also removes Crash Doctor's own reports, the per-mod "swallow errors" list is populated again
+
+> Visible mod version stays `v1.4.0` forever.
+
+A big compatibility update. The mod used to effectively target a single game version (1.3.15) and required the Harmony module enabled. It now runs on several Bannerlord versions and no longer fails even when Harmony is off.
+
+- **Bannerlord 1.3.x and 1.4.x support.** The mod adapts to the running game version at runtime: the things that differ between versions (the main-menu button, opening the Crash Doctor screen, the installed-mod list, working with a save's module list) are now resolved live instead of being baked to one version. Features a given version doesn't have are hidden cleanly rather than crashing. (Versions 1.2 and the early-access e1.x line are not supported.)
+- **The mod loads even without the Bannerlord.Harmony module.** Previously, if Harmony wasn't enabled in the launcher, the game skipped Crash Doctor entirely (or crashed on startup). The mod now carries everything it needs and loads on its own: crash analysis, Tune-Up, reports and the screen all work without Harmony. The live protections (anti-crash safety nets, UI-error guard, Save Cleaner, "swallow a specific mod's errors") only make sense alongside the real Harmony — so with the module off they are disabled automatically, removed from Settings, and a one-time notice is shown at the main menu. Enable the Harmony module and they all come back.
+- **Correct RAM amount detection.** On newer game versions the memory card showed, for example, "15 GB" instead of 16 and could needlessly warn "TOR needs 16 GB+". The amount is now detected correctly — up to the real installed DIMM size.
+- **No false "configure a pagefile" recommendation.** On newer game versions reading the pagefile settings failed, and the card asked you to create one even when it was already configured. The settings are now read reliably and the card shows the real state.
+- **GPU and pending-reboot detection work again.** Graphics-card info (model, driver, VRAM) and the "a reboot is pending" check stopped working on newer game versions — they're read without failures now.
+- **"Clear crashes" now also removes Crash Doctor's own reports.** Cleanup used to touch only the game's dumps, so the crashes the mod itself captured (with the culprit analysis) survived and reappeared in the list. They are cleaned too now — to the Recycle Bin, with the same "keep last 3" rule.
+- **The per-mod "swallow a specific mod's errors" list is populated again.** On newer game versions it was empty (the old way of enumerating mods stopped working). Installed mods are now found directly and show up in the list again — you can pre-select the ones you want.
+- **The mod shows in the launcher again on supported versions.** Removed the hard version requirement in the mod's description that could hide it from the list on some versions.
+
+### More detail: how the mod now works without the Harmony module
+
+Crash Doctor uses Harmony for its live protections — these are hooks into the game's code that catch crashes (NullReference / AccessViolation) on the fly, swallow UI errors, and power the Save Cleaner. Previously all of that required the Bannerlord.Harmony module to be enabled, and without it the mod didn't load at all.
+
+The mod is now self-contained: it ships the libraries it needs, so it loads and analyses crashes regardless. But the live protections only make sense with the real Harmony module — so when it's off, the mod doesn't activate them, hides the matching toggles in Settings, and says so once at the menu. This isn't an error: the core (crash analysis, Tune-Up, reports) always works, and the full set of protections kicks in when Harmony is enabled.
+
+### More detail: why the fix touched RAM, pagefile and GPU at once
+
+Modern Bannerlord versions moved to a new runtime (.NET) where the old system way of reading hardware and Windows info (WMI) no longer works and throws an error. Because of that, several Tune-Up cards got wrong data at once: RAM was under-reported, the pagefile "couldn't be read", the GPU "wasn't found". All of those checks were switched to methods that work on the new runtime — so the data is correct again.
+
+---
+
 ## 2026-05-31 — Fixes: a save with a broken garrison no longer crashes on load and repairs itself, removing a mod from a save actually drops it from the save's record, scrollbars are draggable again and no longer overlap data, base-game modules removed from the save-cleaning list, the mod analyser no longer flags disabled mods
 
 > Visible mod version stays `v1.4.0` forever.
