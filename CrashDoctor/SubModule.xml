@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Module>
   <Id value="CrashDoctor" />
   <Name value="Crash Doctor" />
@@ -6,17 +6,19 @@
   <DefaultModule value="false" />
   <ModuleCategory value="Singleplayer" />
   <ModuleType value="Community" />
-  <DependedModules>
-    <!-- Floor only. DependentVersion is a MINIMUM, not an exact match: this requires
-         Native/SandBox at least v1.3.0, so ANY 1.3.x release is accepted (the engine API
-         is stable within the 1.3 minor series, and our DLL is built against 1.3). It
-         blocks only older builds (1.2.x) where the DLL would not run. Newer (1.4+) also
-         passes this gate — a real upper bound / multi-version build is tracked in
-         MULTIVERSION_BUILD_PLAN.md. No third-party mod is listed; no runtime deps. -->
-    <DependedModule Id="Native" DependentVersion="v1.3.0" />
-    <DependedModule Id="SandBoxCore" DependentVersion="v1.3.0" />
-    <DependedModule Id="Sandbox" DependentVersion="v1.3.0" />
-  </DependedModules>
+  <!-- Dependencies are intentionally EMPTY, for two reasons:
+       1) The native launcher's "CAUTION ... depends on Native(vX), current is Native(vY) ...
+          Are you sure?" dialog is produced ONLY by <DependedModules> entries carrying a
+          version. A <DependedModule DependentVersion="v1.3.0"> here also HID the mod entirely
+          on game versions older than 1.3 (e.g. early-access e1.7, and 1.2) because the hard
+          minimum wasn't met — that is exactly why the mod "wasn't in the launcher" on 1.7.
+       2) <DependedModuleMetadatas> is only understood by newer launchers; older ones may
+          choke on it. Leaving it out keeps the SubModule.xml parseable on EVERY version.
+       We ship our own 0Harmony.dll (+ MonoMod/Cecil) so we don't depend on the Harmony
+       module loading first, and our own Harmony patches are applied at game start (OnGameStart
+       / OnAfterGameInitializationFinished) once every module is loaded — so no load-order
+       constraint is needed. Community modules already load after the official ones by default. -->
+  <DependedModules />
   <SubModules>
     <SubModule>
       <Name value="CrashDoctor SubModule" />

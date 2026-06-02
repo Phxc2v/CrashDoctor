@@ -10,13 +10,13 @@
                     Brush.FontSize="44" Brush.FontColor="#F4E1C4FF" Brush.TextHorizontalAlignment="Center"
                     Text="@HeaderText" />
 
-        <!-- NEW (2026-05-14) Patch conflict badge: top-right, only visible if Harmony state
-             has 2+ owners on the same method. Click opens crashdoctor.log folder where the
-             full conflict list was written by PatchConflictDetector.LogConflicts. Warm
-             amber tint to convey "informational caution", not "error". -->
+        <!-- Patch conflict badge: top-right, only visible if Harmony state has 2+ owners on the
+             same method. Click shows the conflict list (methods + which mods) in a popup, so the
+             player sees the actual problem instead of being dropped into a log folder. Warm amber
+             tint to convey "informational caution", not "error". -->
         <ButtonWidget IsVisible="@HasPatchConflicts"
                       DoNotPassEventsToChildren="true"
-                      Command.Click="ExecuteOpenLogFolder"
+                      Command.Click="ExecuteShowPatchConflicts"
                       WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="640" SuggestedHeight="30"
                       HorizontalAlignment="Right" VerticalAlignment="Top" MarginTop="40" MarginRight="30"
                       Brush="ButtonBrush1">
@@ -135,6 +135,20 @@
                         </ListPanel>
                       </Children>
                     </ScrollablePanel>
+
+                    <!-- Evidence (subsystem / culprit mod / stack frames) can be long, so it lives
+                         in its own scrollable popup behind this button instead of overflowing the
+                         panel. Hidden when there's nothing to show. -->
+                    <ButtonWidget IsVisible="@HasEvidence" DoNotPassEventsToChildren="true"
+                                  Command.Click="ExecuteShowEvidence" Brush="ButtonBrush1"
+                                  WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="340" SuggestedHeight="40"
+                                  HorizontalAlignment="Center" VerticalAlignment="Top" MarginTop="560">
+                      <Children>
+                        <TextWidget DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
+                                    Brush.FontSize="16" Brush.FontColor="#F4E1C4FF" Brush.TextHorizontalAlignment="Center"
+                                    Text="@LabelViewEvidence" />
+                      </Children>
+                    </ButtonWidget>
 
                     <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="22"
                                 VerticalAlignment="Bottom" MarginBottom="14" MarginLeft="20" MarginRight="20"
@@ -871,9 +885,9 @@
                                   </Children>
                                 </Widget>
 
-                                <!-- ===== CARD 3: UI Error Patching ===== -->
+                                <!-- ===== CARD 3: UI Error Patching ===== (Harmony-module-only) -->
                                 <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="1100" SuggestedHeight="140"
-                                        HorizontalAlignment="Center" MarginBottom="14"
+                                        HorizontalAlignment="Center" MarginBottom="14" IsVisible="@ShowHarmonyFeatures"
                                         Sprite="StdAssets\Popup\canvas">
                                   <Children>
                                     <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
@@ -902,9 +916,9 @@
                                   </Children>
                                 </Widget>
 
-                                <!-- ===== CARD 4: NRE Safety Nets ===== -->
+                                <!-- ===== CARD 4: NRE Safety Nets ===== (Harmony-module-only) -->
                                 <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="1100" SuggestedHeight="140"
-                                        HorizontalAlignment="Center" MarginBottom="14"
+                                        HorizontalAlignment="Center" MarginBottom="14" IsVisible="@ShowHarmonyFeatures"
                                         Sprite="StdAssets\Popup\canvas">
                                   <Children>
                                     <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
@@ -933,9 +947,9 @@
                                   </Children>
                                 </Widget>
 
-                                <!-- ===== CARD 5: Dangling Roster Cleanup ===== -->
+                                <!-- ===== CARD 5: Dangling Roster Cleanup ===== (Harmony-module-only) -->
                                 <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="1100" SuggestedHeight="140"
-                                        HorizontalAlignment="Center" MarginBottom="14"
+                                        HorizontalAlignment="Center" MarginBottom="14" IsVisible="@ShowHarmonyFeatures"
                                         Sprite="StdAssets\Popup\canvas">
                                   <Children>
                                     <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
@@ -964,9 +978,9 @@
                                   </Children>
                                 </Widget>
 
-                                <!-- ===== CARD 6: Per-mod opt-in (contains its own scrollable mod list) ===== -->
+                                <!-- ===== CARD 6: Per-mod opt-in (contains its own scrollable mod list) ===== (Harmony-module-only) -->
                                 <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="1100" SuggestedHeight="420"
-                                        HorizontalAlignment="Center" MarginBottom="14"
+                                        HorizontalAlignment="Center" MarginBottom="14" IsVisible="@ShowHarmonyFeatures"
                                         Sprite="StdAssets\Popup\canvas">
                   <Children>
                     <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"

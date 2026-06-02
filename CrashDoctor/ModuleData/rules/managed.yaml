@@ -1,0 +1,67 @@
+# Managed (.NET) crash verdicts. These fire when Crash Doctor captured the actual managed
+# exception for this crash (our own capture, works without ButterLib / BetterExceptionWindow).
+# A managed exception means a CODE bug with a real culprit — rebuilding shaders or changing
+# drivers will NOT help. critical severity so this verdict sorts ABOVE the shader/GPU cards.
+# The matcher fills the evidence with the exact subsystem, culprit module and top stack frames
+# — that's what the player copies into the report for the developer.
+
+- id: managed.code_bug
+  category: managed
+  severity: critical
+  confidence: high
+  evidence_source: "Crash Doctor managed-exception capture (Module.OnApplicationTick finalizer + AppDomain handler)"
+  requires_sources: [managed_exception]
+  title:
+    en: "Code-level crash — a mod's code threw, NOT a shader/driver problem"
+    ru: "Краш в коде — упал код мода, это НЕ проблема шейдеров/драйвера"
+    zh: "代码级崩溃——是某个模组的代码抛出的，而非着色器/驱动问题"
+    tr: "Kod düzeyinde çökme — bir modun kodu hata verdi, bu bir gölgelendirici/sürücü sorunu DEĞİL"
+  description:
+    en: |
+      Crash Doctor captured the actual .NET exception for this crash. That means the game
+      crashed because a piece of mod/game CODE threw — not because of shaders, drivers or
+      your GPU. Rebuilding the shader cache or updating the driver will NOT fix this.
+      The affected subsystem, the likely culprit module and the top stack frames are listed
+      in the evidence below — that is exactly what the developer needs to write a patch.
+    ru: |
+      Crash Doctor поймал само .NET-исключение этого краша. Значит игра упала из-за того,
+      что упал КОД мода/игры — а не из-за шейдеров, драйвера или видеокарты. Пересборка
+      кэша шейдеров или обновление драйвера это НЕ починит. Затронутая подсистема,
+      вероятный виновник-мод и верхние кадры стека перечислены ниже в уликах — это ровно
+      то, что нужно разработчику, чтобы сделать патч.
+    zh: |
+      Crash Doctor 捕获到了本次崩溃的真实 .NET 异常。这意味着游戏崩溃是因为某段
+      模组/游戏代码抛出了异常——而不是着色器、驱动或显卡的问题。重建着色器缓存或
+      更新驱动都无法修复它。受影响的子系统、可能的肇事模组以及顶部堆栈帧已列在下方
+      证据中——这正是开发者编写补丁所需要的信息。
+    tr: |
+      Crash Doctor bu çökmenin gerçek .NET istisnasını yakaladı. Bu, oyunun bir mod/oyun
+      KODU hata fırlattığı için çöktüğü anlamına gelir — gölgelendiriciler, sürücüler veya
+      ekran kartın yüzünden değil. Gölgelendirici önbelleğini yeniden oluşturmak ya da
+      sürücüyü güncellemek bunu DÜZELTMEZ. Etkilenen alt sistem, olası suçlu mod ve üstteki
+      yığın çerçeveleri aşağıdaki kanıtlarda listelenmiştir — geliştiricinin bir yama
+      yazması için ihtiyaç duyduğu tam olarak budur.
+  fix:
+    en:
+      - "Click «Open folder» at the bottom and send the developer the report.txt file inside it — it already holds the exception, the culprit mod and the full stack trace, everything needed for a patch."
+      - "Report channel: https://t.me/CodeRickTg . Mention what you were doing when it crashed (battle / menu / save load / which mods)."
+      - "Copy the evidence below (subsystem, culprit mod, stack frames) into your message — that's exactly what pinpoints the bug."
+      - "Do NOT rebuild shaders or change drivers for this crash — it's a code bug, that won't help. If the culprit is a specific mod, try disabling it as a temporary workaround."
+    ru:
+      - "Нажми «Открыть папку» внизу и пришли разработчику файл report.txt из неё — в нём уже есть исключение, виновник-мод и полный стек, всё что нужно для патча."
+      - "Канал для отчётов: https://t.me/CodeRickTg . Напиши, что делал в момент краша (бой / меню / загрузка сейва / какие моды)."
+      - "Скопируй улики ниже (подсистема, виновник-мод, кадры стека) в сообщение — именно они указывают на баг."
+      - "НЕ пересобирай шейдеры и не меняй драйвер из-за этого краша — это баг кода, не поможет. Если виновник — конкретный мод, попробуй временно отключить его."
+    zh:
+      - "点击下方「打开文件夹」，把里面的 report.txt 文件发给开发者——它已包含异常、肇事模组和完整堆栈，做补丁所需的一切都在里面。"
+      - "反馈频道：https://t.me/CodeRickTg 。说明崩溃时你在做什么（战斗 / 菜单 / 读取存档 / 哪些模组）。"
+      - "把下方证据（子系统、肇事模组、堆栈帧）复制到你的消息里——正是它们定位了 bug。"
+      - "不要为这次崩溃重建着色器或更换驱动——这是代码 bug，没用。如果肇事者是某个具体模组，可尝试临时禁用它。"
+    tr:
+      - "Aşağıdaki «Klasörü aç» düğmesine tıkla ve içindeki report.txt dosyasını geliştiriciye gönder — istisnayı, suçlu modu ve tam yığın izini, yani yama için gereken her şeyi zaten içerir."
+      - "Rapor kanalı: https://t.me/CodeRickTg . Çökme anında ne yaptığını belirt (savaş / menü / kayıt yükleme / hangi modlar)."
+      - "Aşağıdaki kanıtları (alt sistem, suçlu mod, yığın çerçeveleri) mesajına kopyala — hatayı tam olarak bunlar gösterir."
+      - "Bu çökme için gölgelendiricileri yeniden oluşturma veya sürücü değiştirme — bu bir kod hatası, yardımcı olmaz. Suçlu belirli bir modsa geçici çözüm olarak onu devre dışı bırakmayı dene."
+  match:
+    managed_exception:
+      present: true
