@@ -854,3 +854,97 @@
           contains: "PopScreen - SandBox.View.CharacterCreation.CharacterCreationScreen"
       - log_line:
           contains: "Start Game Final Cleanup."
+
+- id: tor.mount_status_effect_property
+  category: tor
+  severity: critical
+  confidence: high
+  evidence_source: "Client crash 2026-06-03 report.txt — ArgumentException 'The property was not defined in the status effect system' / MountSpeed, seen 4x in one battle. StatusEffectComponent.GetBaseValueForDrivenProperty ← AgentDrivenPropertiesExtensions.SetDynamicMountMovementProperties ← TORAgentStatCalculateModel.UpdateDynamicAgentDrivenProperties on the mission tick. Captured by Crash Doctor managed capture."
+  requires_sources: [managed_exception]
+  title:
+    en: "TOR mount-speed status effect crash (missing base value) — guarded by Crash Doctor"
+    ru: "Краш TOR в эффекте скорости коня (нет базового значения) — перехвачено Crash Doctor"
+    zh: "TOR 坐骑速度状态效果崩溃（缺少基准值）——已被 Crash Doctor 拦截"
+    tr: "TOR at hızı durum efekti çökmesi (eksik temel değer) — Crash Doctor tarafından korunuyor"
+  description:
+    en: |
+      System.ArgumentException ("The property was not defined in the status effect
+      system", parameter MountSpeed) thrown every mission tick from
+      TOR_Core StatusEffectComponent.GetBaseValueForDrivenProperty, via
+      AgentDrivenPropertiesExtensions.SetDynamicMountMovementProperties and
+      TORAgentStatCalculateModel.UpdateDynamicAgentDrivenProperties.
+
+      TOR caches a rider's "base values" for the speed/maneuver status effects, but
+      the mount-specific keys (MountSpeed / MountDash / MountManeuver) are only
+      stored when the rider already has a mount at cache time. If the values were
+      captured before the unit mounted (spawn / mount-up timing), the cache lacks
+      the mount keys, and once the now-mounted unit is recomputed TOR asks for
+      MountSpeed, finds no entry and throws — repeatedly, because it runs from the
+      per-frame stat update. This is a TOR_Core bug, not a shader/driver issue.
+    ru: |
+      System.ArgumentException («The property was not defined in the status effect
+      system», параметр MountSpeed) на каждом тике миссии из
+      TOR_Core StatusEffectComponent.GetBaseValueForDrivenProperty, через
+      AgentDrivenPropertiesExtensions.SetDynamicMountMovementProperties и
+      TORAgentStatCalculateModel.UpdateDynamicAgentDrivenProperties.
+
+      TOR кэширует «базовые значения» эффектов скорости/манёвра у всадника, но
+      ключи коня (MountSpeed / MountDash / MountManeuver) сохраняются только если у
+      всадника УЖЕ есть конь в момент кэширования. Если значения сняты до того, как
+      боец сел на коня (тайминг спавна / посадки), в кэше нет ключей коня, и при
+      пересчёте уже конного бойца TOR просит MountSpeed, не находит запись и падает —
+      повторно, потому что это идёт из покадрового обновления статов. Это баг
+      TOR_Core, а не проблема шейдеров/драйвера.
+    zh: |
+      System.ArgumentException（"The property was not defined in the status effect
+      system"，参数 MountSpeed）在每个任务 tick 从
+      TOR_Core StatusEffectComponent.GetBaseValueForDrivenProperty 抛出，经由
+      AgentDrivenPropertiesExtensions.SetDynamicMountMovementProperties 和
+      TORAgentStatCalculateModel.UpdateDynamicAgentDrivenProperties。
+
+      TOR 会缓存骑手用于速度/机动状态效果的"基准值"，但坐骑专属的键
+      （MountSpeed / MountDash / MountManeuver）只有在缓存时骑手已经骑乘时才会
+      存储。如果这些值在单位上马之前就被捕获（生成 / 上马时序），缓存里就缺少坐骑
+      键，于是当已上马的单位被重新计算时，TOR 请求 MountSpeed 却找不到条目而抛出
+      异常——并且反复发生，因为它来自逐帧的属性更新。这是 TOR_Core 的 bug，不是
+      着色器/驱动问题。
+    tr: |
+      Her görev tick'inde TOR_Core StatusEffectComponent.GetBaseValueForDrivenProperty'den,
+      AgentDrivenPropertiesExtensions.SetDynamicMountMovementProperties ve
+      TORAgentStatCalculateModel.UpdateDynamicAgentDrivenProperties üzerinden
+      System.ArgumentException ("The property was not defined in the status effect
+      system", parametre MountSpeed) fırlatılır.
+
+      TOR, bir binicinin hız/manevra durum efektleri için "temel değerlerini"
+      önbelleğe alır, ancak ata özgü anahtarlar (MountSpeed / MountDash /
+      MountManeuver) yalnızca binici önbellekleme anında zaten bir ata sahipse
+      saklanır. Değerler birim ata binmeden önce yakalandıysa (doğma / ata binme
+      zamanlaması), önbellekte at anahtarları yoktur ve artık atlı olan birim yeniden
+      hesaplandığında TOR MountSpeed'i ister, kayıt bulamaz ve hata fırlatır — kare
+      başına stat güncellemesinden geldiği için tekrar tekrar. Bu bir TOR_Core
+      hatasıdır, gölgelendirici/sürücü sorunu değil.
+  fix:
+    en:
+      - "Crash Doctor already guards this — its safety net re-syncs the mount values and swallows the leftover error so the battle continues. Keep the «exception guards» setting ON."
+      - "If it still spams: update TOR_Core to the latest version (the cache-timing bug is on TOR's side)."
+      - "Harmless gameplay-wise — at worst a mounted unit's speed effect is one frame stale; nothing is lost."
+      - "Do NOT rebuild shaders or change drivers for this — it's a code bug, that won't help."
+    ru:
+      - "Crash Doctor уже это перехватывает — safety net пересинхронизирует значения коня и глушит остаточную ошибку, бой продолжается. Держи настройку «перехват ошибок» ВКЛ."
+      - "Если всё равно спамит — обнови TOR_Core до свежей версии (баг тайминга кэша на стороне TOR)."
+      - "На геймплей не влияет — в худшем случае эффект скорости конного бойца на кадр устаревает; ничего не теряется."
+      - "НЕ пересобирай шейдеры и не меняй драйвер из-за этого — это баг кода, не поможет."
+    zh:
+      - "Crash Doctor 已经拦截了它——安全网会重新同步坐骑数值并吞掉残余错误，战斗继续。保持「异常防护」设置为开。"
+      - "如果仍然刷屏：把 TOR_Core 更新到最新版本（缓存时序 bug 在 TOR 一侧）。"
+      - "对玩法无害——最坏情况下骑乘单位的速度效果只是延迟一帧；不会有任何损失。"
+      - "不要为此重建着色器或更换驱动——这是代码 bug，没用。"
+    tr:
+      - "Crash Doctor bunu zaten koruyor — güvenlik ağı at değerlerini yeniden eşitler ve kalan hatayı yutar, savaş devam eder. «İstisna korumaları» ayarını AÇIK tut."
+      - "Hâlâ spam yapıyorsa: TOR_Core'u en son sürüme güncelle (önbellek zamanlama hatası TOR tarafında)."
+      - "Oynanış açısından zararsız — en kötü ihtimalle atlı bir birimin hız efekti bir kare eskidir; hiçbir şey kaybolmaz."
+      - "Bunun için gölgelendiricileri yeniden oluşturma veya sürücü değiştirme — bu bir kod hatası, yardımcı olmaz."
+  match:
+    all:
+      - managed_exception: { frame_contains: "SetDynamicMountMovementProperties" }
+      - managed_exception: { type_contains: "ArgumentException" }

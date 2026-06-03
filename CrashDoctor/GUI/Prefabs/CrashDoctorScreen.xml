@@ -186,7 +186,8 @@
                 <!-- Vanilla Bannerlord scroll pattern: ScrollablePanel needs ClipRect+InnerPanel+
                      VerticalScrollbar attributes to wire it to a sibling ScrollbarWidget. Without
                      them the panel clips but never scrolls. Reference: BannerEditor.xml. -->
-                <Widget Id="TuneUpScrollWrap" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
+                <Widget Id="TuneUpScrollWrap" IsVisible="@TuneUpShowResults"
+                        WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
                         MarginTop="86" MarginBottom="80" MarginLeft="12" MarginRight="32">
                   <Children>
                     <ScrollablePanel Id="TuneUpScroll" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
@@ -297,6 +298,42 @@
                                      HorizontalAlignment="Center" Brush="FaceGen.Scrollbar.Handle" />
                       </Children>
                     </ScrollbarWidget>
+                  </Children>
+                </Widget>
+
+                <!-- Scanning overlay — covers the (mostly empty) list while the chunked scan runs,
+                     so the tab never looks frozen/empty. Centered live status + "please wait" +
+                     a progress bar (fill 0..600 px). Hides the instant the scan finishes. -->
+                <Widget IsVisible="@TuneUpIsScanning"
+                        WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
+                        MarginTop="86" MarginBottom="80">
+                  <Children>
+                    <!-- Compact centered "checking…" card (not a full-area panel) — just big enough
+                         for the wait text + live status + progress bar. -->
+                    <ListPanel WidthSizePolicy="Fixed" HeightSizePolicy="CoverChildren" SuggestedWidth="700"
+                               HorizontalAlignment="Center" VerticalAlignment="Center"
+                               StackLayout.LayoutMethod="VerticalTopToBottom">
+                      <Children>
+                        <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="40"
+                                    MarginBottom="10"
+                                    Brush.FontSize="24" Brush.FontColor="#F4E1C4FF"
+                                    Brush.TextHorizontalAlignment="Center" Text="@LabelTuneUpPleaseWait" />
+                        <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="24"
+                                    MarginBottom="18"
+                                    Brush.FontSize="16" Brush.FontColor="#C8B898CC"
+                                    Brush.TextHorizontalAlignment="Center" Text="@TuneUpStatusText" />
+                        <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="600" SuggestedHeight="14"
+                                HorizontalAlignment="Center"
+                                Sprite="BlankWhiteSquare_9" Color="#3A2A1AFF">
+                          <Children>
+                            <Widget HeightSizePolicy="StretchToParent"
+                                    WidthSizePolicy="Fixed" SuggestedWidth="@TuneUpScanProgressFillWidth"
+                                    HorizontalAlignment="Left"
+                                    Sprite="BlankWhiteSquare_9" Color="#7AC07AFF" />
+                          </Children>
+                        </Widget>
+                      </Children>
+                    </ListPanel>
                   </Children>
                 </Widget>
 
@@ -780,6 +817,110 @@
           </Children>
         </Widget>
 
+        <!-- ===================== TAB: CRASH FIXES (NEW 2026-06-03) =====================
+             Per-patch on/off list. Each row = checkbox + name + plain-language description +
+             live status badge. All fixes ON by default; the user can disable any single one
+             (e.g. if our own fix misbehaves). Mirrors the Mods-tab scroll structure. -->
+        <Widget IsVisible="@IsCrashFixesTabActive"
+                WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
+                MarginTop="190" MarginBottom="120">
+          <Children>
+            <!-- Summary line -->
+            <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="30"
+                        VerticalAlignment="Top" MarginTop="6" MarginLeft="32" MarginRight="32"
+                        Brush.FontSize="16" Brush.FontColor="#C8B898FF"
+                        Brush.TextHorizontalAlignment="Center" Text="@CrashFixesSummary" />
+
+            <!-- Optional note (amber): Harmony missing / master off -->
+            <TextWidget IsVisible="@ShowCrashFixesNote"
+                        WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="38"
+                        VerticalAlignment="Top" MarginTop="36" MarginLeft="32" MarginRight="32"
+                        Brush.FontSize="14" Brush.FontColor="#EEBB66FF"
+                        Brush.TextHorizontalAlignment="Center" Text="@CrashFixesNote" />
+
+            <!-- Scrollable list of patches -->
+            <Widget Id="CrashFixesScrollWrap"
+                    WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
+                    VerticalAlignment="Top" MarginTop="80" MarginBottom="24" MarginLeft="32" MarginRight="56">
+              <Children>
+                <ScrollablePanel Id="CrashFixesScroll"
+                                 WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
+                                 AutoHideScrollBars="true"
+                                 ClipRect="CrashFixesClipRect"
+                                 InnerPanel="CrashFixesClipRect\CrashFixesList"
+                                 VerticalScrollbar="..\CrashFixesScrollbar">
+                  <Children>
+                    <Widget Id="CrashFixesClipRect"
+                            WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
+                            MarginRight="20" ClipContents="true">
+                      <Children>
+                        <ListPanel Id="CrashFixesList" DataSource="{CrashFixesList}"
+                                   WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren"
+                                   StackLayout.LayoutMethod="VerticalBottomToTop">
+                          <ItemTemplate>
+                            <!-- Whole row is the click target (toggles the fix). Children carry the
+                                 visuals and don't accept events so the click reaches the button. -->
+                            <ButtonWidget DoNotPassEventsToChildren="true" Command.Click="ExecuteToggle"
+                                          WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="78"
+                                          MarginTop="2" MarginBottom="2">
+                              <Children>
+                                <!-- Checkbox square (green = on, grey = off) -->
+                                <Widget DoNotAcceptEvents="true"
+                                        WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="18" SuggestedHeight="18"
+                                        HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="16" MarginTop="12"
+                                        Sprite="BlankWhiteSquare_9" Color="@ToggleIndicatorColor" />
+                                <!-- Patch name -->
+                                <TextWidget DoNotAcceptEvents="true"
+                                            WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="760" SuggestedHeight="26"
+                                            HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="48" MarginTop="9"
+                                            Brush.FontSize="16" Brush.FontColor="#F4E1C4FF"
+                                            Brush.TextHorizontalAlignment="Left" Text="@Name" />
+                                <!-- Plain-language description (wraps) -->
+                                <TextWidget DoNotAcceptEvents="true"
+                                            WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="980" SuggestedHeight="40"
+                                            HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="48" MarginTop="36"
+                                            Brush.FontSize="13" Brush.FontColor="#C8B898CC"
+                                            Brush.TextHorizontalAlignment="Left" Text="@Description" />
+                                <!-- Status badge (colour by status) -->
+                                <TextWidget DoNotAcceptEvents="true"
+                                            WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="240"
+                                            HorizontalAlignment="Right" VerticalAlignment="Top" MarginRight="24" MarginTop="9"
+                                            Brush.FontSize="14" Brush.FontColor="@StatusColor"
+                                            Brush.TextHorizontalAlignment="Right" Text="@StatusText" />
+                                <!-- Subtle bottom separator -->
+                                <Widget DoNotAcceptEvents="true"
+                                        WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="1"
+                                        VerticalAlignment="Bottom"
+                                        Sprite="BlankWhiteSquare_9" Color="#5a4033FF" AlphaFactor="0.3" />
+                              </Children>
+                            </ButtonWidget>
+                          </ItemTemplate>
+                        </ListPanel>
+                      </Children>
+                    </Widget>
+                  </Children>
+                </ScrollablePanel>
+                <ScrollbarWidget Id="CrashFixesScrollbar"
+                                 WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent"
+                                 SuggestedWidth="10" HorizontalAlignment="Right" VerticalAlignment="Top"
+                                 MarginTop="6" MarginBottom="6" MarginRight="2"
+                                 AlignmentAxis="Vertical" Handle="CrashFixesScrollbarHandle"
+                                 MaxValue="100" MinValue="0">
+                  <Children>
+                    <Widget WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="4"
+                            HorizontalAlignment="Center"
+                            Sprite="BlankWhiteSquare_9" Color="#5a4033FF" AlphaFactor="0.4" />
+                    <ImageWidget Id="CrashFixesScrollbarHandle"
+                                 WidthSizePolicy="Fixed" HeightSizePolicy="Fixed"
+                                 SuggestedHeight="40" SuggestedWidth="10"
+                                 HorizontalAlignment="Center" Brush="FaceGen.Scrollbar.Handle" />
+                  </Children>
+                </ScrollbarWidget>
+              </Children>
+            </Widget>
+          </Children>
+        </Widget>
+
         <!-- ===================== TAB 6: SETTINGS (NEW 2026-05-14) =====================
              Holds all 2026-05-14 feature toggles. Layout: vertical list of (button + hint) rows.
              Per-mod opt-in stub at the bottom — wired in next iteration. -->
@@ -916,70 +1057,20 @@
                                   </Children>
                                 </Widget>
 
-                                <!-- ===== CARD 4: NRE Safety Nets ===== (Harmony-module-only) -->
-                                <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="1100" SuggestedHeight="140"
-                                        HorizontalAlignment="Center" MarginBottom="14" IsVisible="@ShowHarmonyFeatures"
-                                        Sprite="StdAssets\Popup\canvas">
-                                  <Children>
-                                    <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
-                                            Sprite="frame_9" ExtendLeft="14" ExtendTop="14" ExtendRight="14" ExtendBottom="14"
-                                            IsEnabled="false" />
-                                    <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="700" SuggestedHeight="30"
-                                                HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="28" MarginTop="14"
-                                                Brush.FontSize="20" Brush.FontColor="#F4E1C4FF"
-                                                Brush.TextHorizontalAlignment="Left"
-                                                Text="@LabelCardNreSafetyPatches" />
-                                    <ButtonWidget DoNotPassEventsToChildren="true" Command.Click="ExecuteToggleNreSafetyPatches"
-                                                  Brush="Popup.Done.Button"
-                                                  WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="140" SuggestedHeight="62"
-                                                  HorizontalAlignment="Right" VerticalAlignment="Top" MarginTop="6" MarginRight="24">
-                                      <Children>
-                                        <TextWidget DoNotAcceptEvents="true"
-                                                    WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
-                                                    Brush="Popup.Button.Text" Brush.FontSize="17" Brush.TextHorizontalAlignment="Center"
-                                                    Text="@NreSafetyPatchesToggleLabel" />
-                                      </Children>
-                                    </ButtonWidget>
-                                    <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="820" SuggestedHeight="80"
-                                                HorizontalAlignment="Left" VerticalAlignment="Bottom" MarginLeft="28" MarginBottom="12" MarginRight="220"
-                                                Brush.FontSize="14" Brush.FontColor="#C8B898CC"
-                                                Brush.TextHorizontalAlignment="Left" Text="@HintNreSafetyPatches" />
-                                  </Children>
-                                </Widget>
+                                <!-- (Removed 2026-06-03) The "NRE safety nets" master card moved to the
+                                     dedicated "Crash Fixes" tab, which lists each fix (wage / food /
+                                     mount / prisoners / ...) with its own on/off + status. Keeping a
+                                     duplicate master card here was confusing. The group still installs
+                                     by default (EnableNreSafetyPatches defaults true); the Crash Fixes
+                                     tab is the place to turn individual fixes off. -->
 
-                                <!-- ===== CARD 5: Dangling Roster Cleanup ===== (Harmony-module-only) -->
-                                <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="1100" SuggestedHeight="140"
-                                        HorizontalAlignment="Center" MarginBottom="14" IsVisible="@ShowHarmonyFeatures"
-                                        Sprite="StdAssets\Popup\canvas">
-                                  <Children>
-                                    <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
-                                            Sprite="frame_9" ExtendLeft="14" ExtendTop="14" ExtendRight="14" ExtendBottom="14"
-                                            IsEnabled="false" />
-                                    <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="700" SuggestedHeight="30"
-                                                HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="28" MarginTop="14"
-                                                Brush.FontSize="20" Brush.FontColor="#F4E1C4FF"
-                                                Brush.TextHorizontalAlignment="Left"
-                                                Text="@LabelCardDanglingRosterCleanup" />
-                                    <ButtonWidget DoNotPassEventsToChildren="true" Command.Click="ExecuteToggleDanglingRosterCleanup"
-                                                  Brush="Popup.Done.Button"
-                                                  WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="140" SuggestedHeight="62"
-                                                  HorizontalAlignment="Right" VerticalAlignment="Top" MarginTop="6" MarginRight="24">
-                                      <Children>
-                                        <TextWidget DoNotAcceptEvents="true"
-                                                    WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
-                                                    Brush="Popup.Button.Text" Brush.FontSize="17" Brush.TextHorizontalAlignment="Center"
-                                                    Text="@DanglingRosterCleanupToggleLabel" />
-                                      </Children>
-                                    </ButtonWidget>
-                                    <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="820" SuggestedHeight="80"
-                                                HorizontalAlignment="Left" VerticalAlignment="Bottom" MarginLeft="28" MarginBottom="12" MarginRight="220"
-                                                Brush.FontSize="14" Brush.FontColor="#C8B898CC"
-                                                Brush.TextHorizontalAlignment="Left" Text="@HintDanglingRosterCleanup" />
-                                  </Children>
-                                </Widget>
+                                <!-- (Removed 2026-06-03) "Dangling troop cleanup on load" moved to the
+                                     "Crash Fixes" tab — it's a crash-fix (removes broken troops that
+                                     would crash the AI tick), so it belongs with the other fixes, not
+                                     in Settings. -->
 
                                 <!-- ===== CARD 6: Per-mod opt-in (contains its own scrollable mod list) ===== (Harmony-module-only) -->
-                                <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="1100" SuggestedHeight="420"
+                                <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="1100" SuggestedHeight="500"
                                         HorizontalAlignment="Center" MarginBottom="14" IsVisible="@ShowHarmonyFeatures"
                                         Sprite="StdAssets\Popup\canvas">
                   <Children>
@@ -990,9 +1081,9 @@
                                 VerticalAlignment="Top" MarginTop="14"
                                 Brush.FontSize="20" Brush.FontColor="#F4E1C4FF"
                                 Brush.TextHorizontalAlignment="Center" Text="@LabelPerModSection" />
-                    <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="1000" SuggestedHeight="50"
+                    <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="1010" SuggestedHeight="124"
                                 HorizontalAlignment="Center" VerticalAlignment="Top" MarginTop="50"
-                                Brush.FontSize="14" Brush.FontColor="#C8B898CC"
+                                Brush.FontSize="14" Brush.FontColor="#D8C49A"
                                 Brush.TextHorizontalAlignment="Center" Text="@HintPerModSection" />
 
                 <!-- Per-mod list nested inside Card 4 (offsets are RELATIVE to the card's
@@ -1002,7 +1093,7 @@
                 <Widget Id="PerModScrollWrap"
                         WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
                         VerticalAlignment="Top" HorizontalAlignment="Center"
-                        MarginTop="110" MarginBottom="20" MarginLeft="36" MarginRight="36">
+                        MarginTop="184" MarginBottom="20" MarginLeft="36" MarginRight="36">
                   <Children>
                     <ScrollablePanel Id="PerModScroll"
                                      WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
@@ -1110,51 +1201,53 @@
              Four tabs: Crashes, Tune-up, History, Optimization. Widths reduced to fit a 4th
              button on the same horizontal strip. Active-tab strip indicator widgets below
              were removed in this layout pass — the active button is implied by content. -->
+        <!-- 7 tabs now (added "Crash Fixes" 2026-06-03). Widths shrunk to ~188 so all seven
+             fit on one centered horizontal strip without overflowing the panel. -->
         <ListPanel WidthSizePolicy="CoverChildren" HeightSizePolicy="Fixed" SuggestedHeight="66"
                    HorizontalAlignment="Center" VerticalAlignment="Top" MarginTop="100"
                    StackLayout.LayoutMethod="HorizontalLeftToRight">
           <Children>
             <ButtonWidget DoNotPassEventsToChildren="true" Command.Click="ExecuteShowCrashesTab"
                           Brush="Popup.Done.Button"
-                          WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="270" SuggestedHeight="66"
-                          MarginRight="8">
+                          WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="188" SuggestedHeight="66"
+                          MarginRight="6">
               <Children>
                 <TextWidget DoNotAcceptEvents="true"
                             WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
-                            Brush="Popup.Button.Text" Brush.FontSize="16"
+                            Brush="Popup.Button.Text" Brush.FontSize="15"
                             Brush.TextHorizontalAlignment="Center" Text="@LabelTabCrashes" />
               </Children>
             </ButtonWidget>
             <ButtonWidget DoNotPassEventsToChildren="true" Command.Click="ExecuteShowTuneUpTab"
                           Brush="Popup.Done.Button"
-                          WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="270" SuggestedHeight="66"
-                          MarginRight="8">
+                          WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="188" SuggestedHeight="66"
+                          MarginRight="6">
               <Children>
                 <TextWidget DoNotAcceptEvents="true"
                             WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
-                            Brush="Popup.Button.Text" Brush.FontSize="16"
+                            Brush="Popup.Button.Text" Brush.FontSize="15"
                             Brush.TextHorizontalAlignment="Center" Text="@LabelTabTuneUp" />
               </Children>
             </ButtonWidget>
             <ButtonWidget DoNotPassEventsToChildren="true" Command.Click="ExecuteShowHistoryTab"
                           Brush="Popup.Done.Button"
-                          WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="220" SuggestedHeight="66"
-                          MarginRight="8">
+                          WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="188" SuggestedHeight="66"
+                          MarginRight="6">
               <Children>
                 <TextWidget DoNotAcceptEvents="true"
                             WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
-                            Brush="Popup.Button.Text" Brush.FontSize="16"
+                            Brush="Popup.Button.Text" Brush.FontSize="15"
                             Brush.TextHorizontalAlignment="Center" Text="@LabelTabHistory" />
               </Children>
             </ButtonWidget>
             <ButtonWidget DoNotPassEventsToChildren="true" Command.Click="ExecuteShowSavesTab"
                           Brush="Popup.Done.Button"
-                          WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="220" SuggestedHeight="66"
-                          MarginRight="8">
+                          WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="188" SuggestedHeight="66"
+                          MarginRight="6">
               <Children>
                 <TextWidget DoNotAcceptEvents="true"
                             WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
-                            Brush="Popup.Button.Text" Brush.FontSize="16"
+                            Brush="Popup.Button.Text" Brush.FontSize="15"
                             Brush.TextHorizontalAlignment="Center" Text="@LabelTabSaves" />
               </Children>
             </ButtonWidget>
@@ -1162,24 +1255,36 @@
                  (Harmony conflicts / missing deps / disabled-in-save / load order). -->
             <ButtonWidget DoNotPassEventsToChildren="true" Command.Click="ExecuteShowModsTab"
                           Brush="Popup.Done.Button"
-                          WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="220" SuggestedHeight="66"
-                          MarginRight="8">
+                          WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="188" SuggestedHeight="66"
+                          MarginRight="6">
               <Children>
                 <TextWidget DoNotAcceptEvents="true"
                             WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
-                            Brush="Popup.Button.Text" Brush.FontSize="16"
+                            Brush="Popup.Button.Text" Brush.FontSize="15"
                             Brush.TextHorizontalAlignment="Center" Text="@LabelTabMods" />
               </Children>
             </ButtonWidget>
-            <!-- NEW (2026-05-14) Settings tab — 6th in the strip. Holds Emergency Save / Native
-                 crash log / UI error patching toggles + future per-mod opt-in section. -->
-            <ButtonWidget DoNotPassEventsToChildren="true" Command.Click="ExecuteShowSettingsTab"
+            <!-- NEW (2026-06-03) Crash Fixes tab — per-patch on/off list with status badges. -->
+            <ButtonWidget DoNotPassEventsToChildren="true" Command.Click="ExecuteShowCrashFixesTab"
                           Brush="Popup.Done.Button"
-                          WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="220" SuggestedHeight="66">
+                          WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="188" SuggestedHeight="66"
+                          MarginRight="6">
               <Children>
                 <TextWidget DoNotAcceptEvents="true"
                             WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
-                            Brush="Popup.Button.Text" Brush.FontSize="16"
+                            Brush="Popup.Button.Text" Brush.FontSize="15"
+                            Brush.TextHorizontalAlignment="Center" Text="@LabelTabCrashFixes" />
+              </Children>
+            </ButtonWidget>
+            <!-- NEW (2026-05-14) Settings tab — last in the strip. Holds Emergency Save / Native
+                 crash log / UI error patching toggles + per-mod opt-in section. -->
+            <ButtonWidget DoNotPassEventsToChildren="true" Command.Click="ExecuteShowSettingsTab"
+                          Brush="Popup.Done.Button"
+                          WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="188" SuggestedHeight="66">
+              <Children>
+                <TextWidget DoNotAcceptEvents="true"
+                            WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
+                            Brush="Popup.Button.Text" Brush.FontSize="15"
                             Brush.TextHorizontalAlignment="Center" Text="@LabelTabSettings" />
               </Children>
             </ButtonWidget>
