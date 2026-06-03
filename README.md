@@ -17,14 +17,20 @@ no dependencies.
 
 ## What it does
 
-Four tabs from the Bannerlord main menu — Crashes, System Tune-Up, History,
-Saves. (A prior 5th tab, "Optimization", was removed 2026-05-10 after
-late-game testing showed Bannerlord's architectural ceiling makes throttle-
-style FPS optimization non-viable.)
+Seven tabs from the Bannerlord main menu — Crashes, System Tune-Up, History,
+Saves, Mods, **Crash Fixes**, Settings. (A prior "Optimization" tab was removed
+2026-05-10 after late-game testing showed Bannerlord's architectural ceiling
+makes throttle-style FPS optimization non-viable.)
+
+The **Crash Fixes** tab lists every runtime anti-crash guard the mod installs —
+each with an on/off checkbox, a plain-language description and a live status
+badge (Active / Off / Skipped — required mod not loaded / Install error). All
+fixes are on by default; you can disable any single one if it misbehaves on
+your setup, without touching the rest.
 
 ### 🔬 Crash diagnosis
 Scans `C:\ProgramData\Mount and Blade II Bannerlord\crashes\` and the BUTR HTML
-crash reports if you have BLSE/ButterLib. Matches every crash against **66 YAML
+crash reports if you have BLSE/ButterLib. Matches every crash against **79 YAML
 rules** covering:
 
 - **GPU / DirectX:** integrated-GPU misroute, DXGI device removed/hung, shader
@@ -152,27 +158,45 @@ crashing save is loaded.
 
 ### 🛡 Runtime crash prevention
 
-A small layer of generic safety nets that intercept the most common late-game
-crashes caused by **other mods leaving "dangling" units in party rosters or
-issue sent-troops lists** (typical pattern: another mod creates a temporary
-hero, drops it into a foreign party, then deletes the hero without scrubbing
-the roster — the next AI hourly tick or daily issue-completion crashes on the
-null reference) plus a save-load crash from an orphaned garrison party. These
-protections show an in-game toast (bilingual EN / RU based on game locale,
-rate-limited per category) so the player can see Crash Doctor actively saved
-them from a crash.
+A layer of generic safety nets that intercept the most common crashes — many
+caused by **other mods leaving "dangling" units in party rosters or issue
+sent-troops lists** (typical pattern: another mod creates a temporary hero,
+drops it into a foreign party, then deletes the hero without scrubbing the
+roster — the next AI hourly tick or daily issue-completion crashes on the null
+reference), plus save-load, end-of-battle, inventory and prisoner-sell crashes.
+Each catch shows an in-game toast (EN / RU / 简体中文 / Türkçe based on game
+locale, rate-limited per category) so the player sees Crash Doctor actively
+saved them from a crash.
 
-| Layer | What it does | Toggle |
-|---|---|---|
-| **`WageModelNRESafetyPatch`** | Three Harmony guards on `TOR_Core.Models.TORPartyWageModel` (`CalculateCharacterWageCache`, `GetCharacterWage`, `GetTotalWage`). Returns wage = 0 instead of crashing on a null-culture character; finalizer logs the offending roster contents. | **Settings → NRE safety nets** (default ON) |
-| **`FoodConsumptionNRESafetyPatch`** | Finalizer on `TORMobilePartyFoodConsumptionModel.CalculateDailyFoodConsumptionf`. Same dangling-character source as above, surfaces on food consumption tick. | same toggle |
-| **`AiHourlyTickNRESafetyPatch`** | Reflection-based finalizer applied to every `AiHourlyTick` method in `TaleWorlds.CampaignSystem.CampaignBehaviors.AiBehaviors` (catches `AiPatrolling`, `AiVisitSettlement`, `AiMilitia`, etc.). The offending party silently skips that tick; game continues. | same toggle |
-| **`IssueBaseNRESafetyPatch`** | Prefix sanitizer + finalizer on `TaleWorlds.CampaignSystem.Issues.IssueBase.AlternativeSolutionEndWithSuccess`. Prefix scrubs `AlternativeSolutionSentTroops` via `RemoveIf` so the inner `FindAll` lambda (`x => x.Character.UpgradeTargets / x.Character.IsHero`) never sees a null `Character`; finalizer swallows any residual NRE so `IssueManager.DailyTick` continues — the issue retries next day on a clean roster. | same toggle |
-| **`DanglingTroopCleanerBehavior`** | `OnSessionLaunched` scan: walks every `MobileParty`, `Settlement` and active issue roster (`Campaign.Current.IssueManager.Issues[*].AlternativeSolutionSentTroops`), uses `TroopRoster.RemoveIf` to drop elements where `Character == null` or `Character.Culture == null`. **Also removes orphaned garrison parties** (`IsGarrison && CurrentSettlement == null`) via `DestroyPartyAction` so a re-save heals the campaign. Runs before the first AI tick so the cleanup happens BEFORE the next hourly tick or day rollover would crash. | **Settings → Dangling troop cleanup on load** (default ON) |
-| **`GarrisonStarvingNullSafetyPatch`** | Prefix on `Helpers.SettlementHelper.IsGarrisonStarving`: returns `false` when the settlement is null (an orphaned garrison with no `CurrentSettlement`) instead of letting vanilla `DefaultPartyMoraleModel.GetEffectivePartyMorale` dereference it inside `Clan.AfterLoad` on save load. Installed in `OnGameStart` (before `OnGameLoaded`) so it guards the very first load; the cleaner above then removes the orphan. | **Settings → NRE safety nets** (default ON) |
-| **`SafetyNetMessenger`** | Bilingual user-visible toast helper used by the guards above. Detects `BannerlordConfig.Language`, picks RU/EN text, applies amber (catch) or green (cleanup) color, rate-limits to one toast per category per 60 s. | always on |
+**Every one of these is listed on the Crash Fixes tab** with its own on/off
+checkbox and a live status badge — turn off just the one that misbehaves on
+your setup. All on by default; off-choices persist (diff-only) across restarts.
+A shared `PatchCatalog` is the single source of truth feeding both the installer
+(`SafetyNetCoordinator`) and the UI, so the list, install state and toggles can
+never drift.
 
-These guards are generic — they do not require TOR_Core to be loaded (`AccessTools.TypeByName` no-ops gracefully when TOR is absent) and they trigger regardless of which third-party mod actually caused the dangling reference. Both Settings toggles persist diff-only against the workshop defaults, so a future defaults update isn't shadowed by stale user state.
+| Fix | What it does |
+|---|---|
+| **`WageModelNRESafetyPatch`** (TOR) | Three guards on `TOR_Core.Models.TORPartyWageModel` (`CalculateCharacterWageCache`, `GetCharacterWage`, `GetTotalWage`). Returns wage = 0 instead of crashing on a null-culture character. |
+| **`FoodConsumptionNRESafetyPatch`** (TOR) | Finalizer on `TORMobilePartyFoodConsumptionModel.CalculateDailyFoodConsumptionf`. Same dangling-character source, on the food-consumption tick. |
+| **`AiHourlyTickNRESafetyPatch`** | Reflection-based finalizer on every `AiHourlyTick` in `TaleWorlds.CampaignSystem.CampaignBehaviors.AiBehaviors` (`AiPatrolling`, `AiVisitSettlement`, `AiMilitia`, …). The offending party skips that tick; the game continues. |
+| **`IssueBaseNRESafetyPatch`** | Prefix sanitizer + finalizer on `IssueBase.AlternativeSolutionEndWithSuccess`. Scrubs `AlternativeSolutionSentTroops` so the inner `FindAll` lambda never sees a null `Character`; the issue retries next day on a clean roster. |
+| **`VictoryCheerAVSafetyPatch`** | Reverse-patch + CSE-aware guard on `AgentVictoryLogic.ChooseWeaponToCheerWithCheerAndUpdateTimer` — swallows an end-of-battle AccessViolation (a freed/dangling agent, common with combat overhauls like RBM or summon/raise-dead mods); one soldier skips its cheer. |
+| **`BehaviorFlankAiWeightSafetyPatch`** | Finalizer on vanilla `BehaviorFlank.GetAiWeight` — returns 0 priority instead of an NRE when the targeted formation vanishes mid-calculation. |
+| **`InventoryUseItemSafetyPatch`** (TOR) | Transpiler + finalizer on `SPItemVMExtension.ExecuteUseItem`: swaps the brittle `Type.GetType` for an all-assemblies resolver (fixes the enchantment-book "choose a hero" popup not opening) and swallows any other inventory-use-script exception. |
+| **`UICommandSafetyPatch`** | Universal finalizer on the Gauntlet `ViewModel.ExecuteCommand` choke point — a misbehaving menu/UI button shows a message instead of crashing the game. |
+| **`GarrisonStarvingNullSafetyPatch`** | Prefix on `Helpers.SettlementHelper.IsGarrisonStarving`: returns `false` for a null settlement (orphaned garrison) instead of letting `Clan.AfterLoad` dereference it on save load. Installed in `OnGameStart` (before `OnGameLoaded`) so it guards the very first load. |
+| **`TorMountStatusEffectSafetyPatch`** (TOR) | Signature-aware guard on `AgentDrivenPropertiesExtensions.SetDynamicMountMovementProperties` — re-syncs the mount base values (older TOR) or just swallows the `ArgumentException` (newer TOR) so a mounted unit doesn't crash the battle every frame. Inert on TOR builds that already fixed the root cause. |
+| **`SellPrisonersUnderflowSafetyPatch`** | Finalizer on `SellPrisonersAction.ApplyInternal` — swallows the `MBUnderFlowException` when a desynced prison roster goes below zero during a town auto-sell; the party skips that one sale. |
+| **`DanglingTroopCleanerBehavior`** | `OnSessionLaunched` scan: drops roster elements with `Character == null` / `Character.Culture == null` across every party, settlement and active issue, and **removes orphaned garrison parties** (`IsGarrison && CurrentSettlement == null`) so a re-save heals the campaign. Listed on the Crash Fixes tab as **"Fix broken troops on save load"**. |
+| **`SafetyNetMessenger`** | Four-language toast helper used by the guards above. Picks EN/RU/ZH/TR by `BannerlordConfig.Language`, amber (catch) or green (cleanup), one toast per category per 60 s. (Always on — infrastructure.) |
+
+These guards are generic — TOR-specific ones (marked **TOR**) self-skip via
+`AccessTools.TypeByName` when TOR isn't loaded (shown as *Skipped* on the tab),
+and the rest trigger regardless of which third-party mod caused the dangling
+reference. All of them need the Bannerlord.Harmony module to run; with it off
+they're hidden and the core crash analysis still works. (The whole group sits
+under the Crash Fixes tab; there is no separate "master" toggle in Settings.)
 
 ---
 
@@ -385,12 +409,17 @@ Calradia Expanded, RBM, Banner Kings и т.д. Без интернета, без
 
 ## Что делает
 
-Четыре вкладки в главном меню — Диагностика крашей, Настройка системы, Журнал,
-Сейвы. (Раньше была пятая, «Оптимизация»; убрана 2026-05-10 после long-run
-тестирования — архитектурный потолок Bannerlord не даёт стабильно ускорить
-поздние кампании через throttle-патчи.)
+Семь вкладок в главном меню — Диагностика крашей, Настройка системы, Журнал,
+Сейвы, Моды, **Фиксы крашей**, Настройки. (Раньше была «Оптимизация»; убрана
+2026-05-10 после long-run тестирования — архитектурный потолок Bannerlord не
+даёт стабильно ускорить поздние кампании через throttle-патчи.)
 
-- **Диагностика крашей** — **66+ YAML-правил** под GPU/DirectX (включая авторитетный
+Вкладка **«Фиксы крашей»** показывает все «живые» защиты от вылетов, которые
+ставит мод: у каждой галочка вкл/выкл, понятное описание и статус (Активен /
+Выключен / Пропущен — нет нужного мода / Ошибка). Все включены по умолчанию;
+любой фикс можно отключить по отдельности, если он мешает.
+
+- **Диагностика крашей** — **79 YAML-правил** под GPU/DirectX (включая авторитетный
   детект iGPU из rgl_log + whitelist карт где DxDiag врёт VRAM), native runtime,
   повреждённые `.tpac` ассеты, save / late-game, mission / engine (NRE в диалогах,
   team-index шторм), TOR (включая Naval DLC + TOR conflict, Assimilation

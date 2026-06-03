@@ -62,6 +62,95 @@
       - "Rapor kanalı: https://t.me/CodeRickTg . Çökme anında ne yaptığını belirt (savaş / menü / kayıt yükleme / hangi modlar)."
       - "Aşağıdaki kanıtları (alt sistem, suçlu mod, yığın çerçeveleri) mesajına kopyala — hatayı tam olarak bunlar gösterir."
       - "Bu çökme için gölgelendiricileri yeniden oluşturma veya sürücü değiştirme — bu bir kod hatası, yardımcı olmaz. Suçlu belirli bir modsa geçici çözüm olarak onu devre dışı bırakmayı dene."
+  # present:true fires for ANY managed crash. Exclude the signatures that have a
+  # dedicated rule below (mount status-effect, prisoner-sell underflow) so we don't
+  # stack a generic "code bug" card on top of the specific verdict at equal severity.
   match:
-    managed_exception:
-      present: true
+    all:
+      - managed_exception:
+          present: true
+      - none:
+          - managed_exception: { frame_contains: "SetDynamicMountMovementProperties" }
+          - managed_exception: { frame_contains: "SellPrisonersAction" }
+
+- id: campaign.sell_prisoners_underflow
+  category: managed
+  severity: critical
+  confidence: high
+  evidence_source: "Client crash 2026-06-03 report2.txt — MBUnderFlowException ItemRosterElement::Character via SellPrisonersAction.ApplyInternal ← PartiesSellPrisonerCampaignBehavior.OnSettlementEntered. Captured by Crash Doctor managed capture."
+  requires_sources: [managed_exception]
+  title:
+    en: "Prisoner auto-sell underflow (roster desync) — guarded by Crash Doctor"
+    ru: "Андерфлоу при автопродаже пленных (рассинхрон ростера) — перехвачено Crash Doctor"
+    zh: "俘虏自动出售下溢（名册不同步）——已被 Crash Doctor 拦截"
+    tr: "Esir otomatik satış alt taşması (kadro uyumsuzluğu) — Crash Doctor tarafından korunuyor"
+  description:
+    en: |
+      MBUnderFlowException ("ItemRosterElement::Character") thrown from
+      SellPrisonersAction.ApplyInternal while a party auto-sold prisoners on
+      entering a town (PartiesSellPrisonerCampaignBehavior.OnSettlementEntered)
+      or on a settlement's daily tick. ApplyInternal subtracts the sold counts
+      from the seller's live prison roster; when that roster is out of sync
+      (more troops, or more wounded, than are actually present) a roster count
+      goes below zero and the engine throws — taking the whole campaign tick down.
+      The desync comes from a corrupt/edited prison roster or another mod mutating
+      prisoners; vanilla has no guard. This is a code/roster bug, NOT a shader or
+      driver problem — rebuilding shaders will not help.
+    ru: |
+      MBUnderFlowException («ItemRosterElement::Character») из
+      SellPrisonersAction.ApplyInternal в момент, когда отряд автоматически
+      продавал пленных при входе в город
+      (PartiesSellPrisonerCampaignBehavior.OnSettlementEntered) или на дневном
+      тике поселения. ApplyInternal вычитает проданное из живого ростера пленных
+      продавца; если ростер рассинхронизирован (больше бойцов или раненых, чем
+      есть на самом деле) — счётчик уходит в минус и движок падает, унося весь
+      тик кампании. Рассинхрон — от повреждённого/отредактированного ростера
+      пленных или другого мода, меняющего пленных; в ванили защиты нет. Это баг
+      кода/ростера, а НЕ проблема шейдеров или драйвера — пересборка шейдеров не
+      поможет.
+    zh: |
+      MBUnderFlowException（"ItemRosterElement::Character"）从
+      SellPrisonersAction.ApplyInternal 抛出，发生在某支队伍进入城镇时自动
+      出售俘虏（PartiesSellPrisonerCampaignBehavior.OnSettlementEntered）或定居点
+      每日结算时。ApplyInternal 会从卖方的实时俘虏名册中扣除售出数量；当名册
+      不同步（士兵或伤员多于实际存在的数量）时，名册计数会降到零以下，引擎抛出
+      异常——拖垮整个战役 tick。不同步源自损坏/被编辑的俘虏名册或其他修改俘虏的
+      模组；原版没有防护。这是代码/名册 bug，不是着色器或驱动问题——重建着色器
+      没有用。
+    tr: |
+      Bir grup kasabaya girerken esirleri otomatik satarken
+      (PartiesSellPrisonerCampaignBehavior.OnSettlementEntered) ya da bir
+      yerleşimin günlük tick'inde SellPrisonersAction.ApplyInternal'dan
+      MBUnderFlowException ("ItemRosterElement::Character") fırlatıldı.
+      ApplyInternal, satılan sayıları satıcının canlı esir kadrosundan çıkarır;
+      bu kadro uyumsuz olduğunda (gerçekte var olandan daha fazla asker veya yaralı)
+      bir kadro sayısı sıfırın altına iner ve motor hata fırlatır — tüm sefer
+      tick'ini düşürür. Uyumsuzluk, bozuk/düzenlenmiş bir esir kadrosundan ya da
+      esirleri değiştiren başka bir moddan gelir; orijinalde koruma yoktur. Bu bir
+      kod/kadro hatasıdır, gölgelendirici veya sürücü sorunu DEĞİL — gölgelendirici
+      yeniden oluşturmak yardımcı olmaz.
+  fix:
+    en:
+      - "Crash Doctor already guards this — its safety net swallows the underflow so the game continues; the affected party just skips that one auto-sell. Keep the «exception guards» setting ON."
+      - "If it keeps happening on the same save: a prison roster on that save is corrupt. Sell/release the prisoners of the party that crashes (often a specific lord's party near a town you just entered)."
+      - "Suspect any mod that edits prisoners/rosters (recruit-prisoners, garrison, troop-editor mods). Disable them one at a time to find the source."
+      - "Do NOT rebuild shaders or change drivers — this is a roster bug, that won't help."
+    ru:
+      - "Crash Doctor уже это перехватывает — safety net глушит андерфлоу, игра продолжается; задетый отряд просто пропускает одну автопродажу. Держи настройку «перехват ошибок» ВКЛ."
+      - "Если повторяется на том же сейве — ростер пленных в этом сейве повреждён. Продай/отпусти пленных у отряда, на котором падает (часто это конкретный лорд рядом с городом, в который ты только что вошёл)."
+      - "Подозревай любой мод, меняющий пленных/ростеры (вербовка пленных, гарнизоны, редакторы отрядов). Отключай по одному, чтобы найти источник."
+      - "НЕ пересобирай шейдеры и не меняй драйвер — это баг ростера, не поможет."
+    zh:
+      - "Crash Doctor 已经拦截了它——安全网吞掉了下溢，游戏继续；受影响的队伍只是跳过那一次自动出售。保持「异常防护」设置为开。"
+      - "如果在同一个存档上反复发生：该存档上的某个俘虏名册已损坏。出售/释放崩溃队伍的俘虏（通常是你刚进入的城镇附近某个特定领主的队伍）。"
+      - "怀疑任何编辑俘虏/名册的模组（招募俘虏、驻军、部队编辑器类）。逐个禁用以找到来源。"
+      - "不要重建着色器或更换驱动——这是名册 bug，没用。"
+    tr:
+      - "Crash Doctor bunu zaten koruyor — güvenlik ağı alt taşmayı yutar, oyun devam eder; etkilenen grup sadece o tek otomatik satışı atlar. «İstisna korumaları» ayarını AÇIK tut."
+      - "Aynı kayıtta tekrarlanıyorsa: o kayıttaki bir esir kadrosu bozuk. Çöken grubun esirlerini sat/serbest bırak (genellikle yeni girdiğin bir kasabanın yakınındaki belirli bir lordun grubu)."
+      - "Esirleri/kadroları düzenleyen her modu şüpheli gör (esir devşirme, garnizon, birlik düzenleyici modları). Kaynağı bulmak için teker teker devre dışı bırak."
+      - "Gölgelendiricileri yeniden oluşturma veya sürücü değiştirme — bu bir kadro hatası, yardımcı olmaz."
+  match:
+    all:
+      - managed_exception: { frame_contains: "SellPrisonersAction" }
+      - managed_exception: { type_contains: "UnderFlow" }

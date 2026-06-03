@@ -10,6 +10,27 @@ subscribers.
 
 ---
 
+## 2026-06-03 — New "Crash Fixes" tab: see every anti-crash guard, toggle each one on/off and see its live status; two new fixes (mounted-unit battle crash in TOR and prisoner auto-sell crash in towns); "fix broken troops on save load" moved in with the other fixes
+
+> Visible mod version stays `v1.4.0` forever.
+
+The headline of this release is a **new "Crash Fixes" tab** that shows everything the mod does against crashes and lets you turn any single fix off. Plus two new crash interceptions from reported crashes.
+
+- **New "Crash Fixes" tab.** A list of every anti-crash guard: each has an on/off checkbox, a plain-language "what it is and why" description, and a live status (**Active** / **Off** / **Skipped — required mod not loaded** / **Install error**). All on by default. Why it matters: first, you can see at a glance how much the mod actually does; second, if one of our own fixes ever gets in the way on your setup, you can switch off just that one in a single click without touching the rest.
+- **New fix: mounted-unit battle crash (TOR).** On some TOR versions the mount-speed status effect read an unfilled base value and the game crashed in battle — repeatedly, every frame. It's now intercepted and the battle continues. Newer TOR versions already fixed the root cause themselves, so for those players the fix simply sits idle and gets in the way of nothing.
+- **New fix: prisoner auto-sell crash in towns.** When an AI party entered a town and auto-sold prisoners, a desynced prisoner roster could drive a count below zero and crash the game on the campaign map. It's now intercepted — the party just skips that one sale and the game continues.
+- **Both crashes are now recognized by the analyzer.** If such a crash already happened, the Crashes tab gives a plain verdict with the cause and a "this is not shaders/driver" note, instead of a raw stack trace.
+- **"Fix broken troops on save load" moved from Settings to the Crash Fixes tab.** It's effectively the same kind of crash fix (it removes broken troops the AI would crash on during save load), so it now sits with the other fixes. It's no longer in Settings.
+- **Fixes show "Active" immediately.** Previously, when the screen was opened from the main menu (before a campaign loaded) the fixes looked inactive until you clicked a checkbox. They now activate and show the correct status as soon as the tab opens.
+- **The "System Tune-up" tab no longer hangs on open.** Opening it could freeze the game for 3–6 seconds (a slow permissions check and a walk of the `%TEMP%` folder ran in a single frame). The tab now opens instantly, immediately shows "Please wait — checking your system…" with a **progress bar** that fills smoothly, and the result cards appear when it finishes. The heavy checks are cached, so re-opening the tab is instant.
+- **Warning on "swallow a specific mod's errors".** For some mods, wrapping their code breaks character models (soldiers freeze in a T-pose or appear flipped). There's now a clear warning above the mod list: if your models break after ticking a mod, untick the mods one by one to find the culprit and leave it off — the models recover.
+
+### More detail: why the "Crash Fixes" tab
+
+Crash Doctor has long shipped a set of "safety nets" — small interceptions of the most common crashes (dangling units left by other mods, end-of-battle crash, save-load crash from an orphaned garrison, etc.). They used to be controlled by one master switch in Settings with no visibility into what was actually running. Now each fix is its own row with a checkbox, a description and a status. That's both trust (you see how much the mod does) and a safety valve against our own mistakes: if a specific fix turns out wrong on someone's setup, they disable just that one rather than all protection. The old "NRE safety nets" master switch was removed from Settings — the tab itself replaces it.
+
+---
+
 ## 2026-06-02 — Crash Doctor now catches a "code crash" and names the culprit itself (even without ButterLib/BetterExceptionWindow), Bannerlord 1.3 and 1.4 support, works without the Harmony module, fixed RAM / pagefile / GPU on newer versions, the enchant-a-book window (TOR) is unblocked, fixed a false "mod missing" on the saves tab, crash cleanup also clears our own reports
 
 > Visible mod version stays `v1.4.0` forever.
