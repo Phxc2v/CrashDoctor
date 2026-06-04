@@ -121,10 +121,13 @@ module so a new state surfaces on its merits.
 | **M6.1** | DirectX 11 runtime + feature level probe (D3D11CreateDevice) | no | no | — |
 | **M6.2** | HwSchMode (Hardware-Accelerated GPU Scheduling) state — TOR-risky combo flag | no | yes | — |
 
-Note: `M5.1` Defender exclusions and `M3.5` recommended load order are
-implemented but currently **not registered** — they ship in the source tree
-but stay hidden in the UI until Win11 Tamper Protection detection (M5.1) and
-launcher rewrite handling (M3.5) are robust enough.
+Note: Crash Doctor does **not** touch Windows Defender or antivirus exclusions
+in any way — it never adds, removes, or reads AV exclusion lists. Antivirus
+configuration is left entirely to the user.
+
+`M3.5` recommended load order is implemented but currently **not registered** —
+it ships in the source tree but stays hidden in the UI until the launcher
+rewrite handling is robust enough.
 
 ### 📜 History
 Every Apply / Rollback is journaled with timestamp and result. Rolled-back

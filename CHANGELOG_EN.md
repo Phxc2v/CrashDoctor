@@ -10,6 +10,22 @@ subscribers.
 
 ---
 
+## 2026-06-05 — The mod no longer touches your antivirus (the Windows Defender exclusions feature is fully removed); the "swallow errors from a specific mod" list now shows only mods that actually need it and resizes to fit their count; a batch of reliability fixes after a code review
+
+> Visible mod version stays `v1.4.0` forever.
+
+The headline of this release is **transparency and trust**. We fully removed the feature that could add the game's folders to Windows Defender exclusions. Plus the per-mod list on the guards tab is tidied up and a batch of reliability fixes landed.
+
+- **The mod has nothing to do with your antivirus anymore.** There used to be a card under "System tune-up" that — at the player's request, with an admin prompt — could add Bannerlord's folders to Windows Defender exclusions so the antivirus wouldn't fight shader compilation. That feature is **fully removed from the mod**: Crash Doctor no longer adds, reads, or removes antivirus exclusions in any way. Antivirus configuration is entirely the player's call. (If anyone scanned the mod's files and saw mentions of touching Defender exclusions — they're gone now: none of that code remains in the build.)
+- **The "swallow errors from a specific mod" list now shows only relevant mods.** This option intercepts errors *in battle* (in scene/mission code). So the list now shows only mods that actually have battle code worth guarding. Pure-XML, UI-only and balance mods (and mods disabled in the launcher) no longer clutter the list — enabling them there did nothing. If there are no eligible mods at all, instead of a blank area you get a clear "nothing to intercept here, and that's expected" message.
+- **The mod-list card resizes to fit the mod count.** The block used to be a fixed height, leaving a big blank area below 1–2 mods. Now the card height grows with the number of mods, and a long list (8+) gets a scrollbar — no empty gap and no full-screen wall.
+- **Fixed the checkbox in the "models may break" warning popup.** Unchecking a mod in the warning no longer enables it "anyway." The popup no longer shows up twice. And if a mod has nothing to intercept, the mod says so honestly instead of pretending it turned something on.
+- **Clearer statuses on the "Crash Fixes" tab.** A fix that simply isn't needed on your setup (no matching situation) is now marked with a neutral "not needed here" instead of an alarming "required mod missing." The red "install error" mark only shows when a fix genuinely failed to install, not when it's just out of place.
+- **More accurate verdicts for "code crashes."** The detection rule was tightened: it now matches both the crash location and the exception type together — less chance of a wrong verdict on a similar-but-different crash.
+- **Clean migration of an old setting.** If you previously turned off the global "NRE safety nets" switch in Settings (removed last release), your choice is now carried over to the new fixes list automatically — the matching guards stay off, just as you wanted.
+
+---
+
 ## 2026-06-03 — New "Crash Fixes" tab: see every anti-crash guard, toggle each one on/off and see its live status; two new fixes (mounted-unit battle crash in TOR and prisoner auto-sell crash in towns); "fix broken troops on save load" moved in with the other fixes
 
 > Visible mod version stays `v1.4.0` forever.

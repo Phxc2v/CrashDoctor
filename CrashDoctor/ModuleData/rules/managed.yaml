@@ -65,13 +65,23 @@
   # present:true fires for ANY managed crash. Exclude the signatures that have a
   # dedicated rule below (mount status-effect, prisoner-sell underflow) so we don't
   # stack a generic "code bug" card on top of the specific verdict at equal severity.
+  # Each exclusion must match the SAME frame AND exception type as the specific rule it
+  # defers to (one `all:` per rule) — NOT frame alone. Excluding on frame only would
+  # suppress this catch-all for, say, an NRE thrown through SellPrisonersAction while the
+  # specific (UnderFlow-gated) rule does not fire either, leaving that crash with no verdict.
+  # (Two args in one managed_exception node are OR-combined by the matcher, so AND needs
+  # two separate nodes under an `all:`.)
   match:
     all:
       - managed_exception:
           present: true
       - none:
-          - managed_exception: { frame_contains: "SetDynamicMountMovementProperties" }
-          - managed_exception: { frame_contains: "SellPrisonersAction" }
+          - all:
+              - managed_exception: { frame_contains: "SetDynamicMountMovementProperties" }
+              - managed_exception: { type_contains: "ArgumentException" }
+          - all:
+              - managed_exception: { frame_contains: "SellPrisonersAction" }
+              - managed_exception: { type_contains: "UnderFlow" }
 
 - id: campaign.sell_prisoners_underflow
   category: managed
