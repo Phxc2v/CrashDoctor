@@ -1070,7 +1070,10 @@
                                      in Settings. -->
 
                                 <!-- ===== CARD 6: Per-mod opt-in (contains its own scrollable mod list) ===== (Harmony-module-only) -->
-                                <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="1100" SuggestedHeight="500"
+                                <!-- Height is data-bound (@PerModCardHeight) so the card shrinks to the
+                                     actual mod count instead of leaving a big blank area when only 1-2
+                                     eligible mods are installed. Capped at 500 in the VM → scroll for long lists. -->
+                                <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="1100" SuggestedHeight="@PerModCardHeight"
                                         HorizontalAlignment="Center" MarginBottom="14" IsVisible="@ShowHarmonyFeatures"
                                         Sprite="StdAssets\Popup\canvas">
                   <Children>
@@ -1163,6 +1166,15 @@
                     </ScrollbarWidget>
                   </Children>
                 </Widget>
+
+                <!-- Empty-state: shown ONLY after the mod scan runs and finds no installed mod
+                     with in-mission code to wrap. Centered in the card so a blank list doesn't
+                     read as a bug. Mutually exclusive with the populated list above. -->
+                <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="900" SuggestedHeight="160"
+                            HorizontalAlignment="Center" VerticalAlignment="Center" MarginTop="60"
+                            IsVisible="@ShowNoEligibleMods"
+                            Brush.FontSize="16" Brush.FontColor="#C8A86AFF"
+                            Brush.TextHorizontalAlignment="Center" Text="@LabelNoEligibleMods" />
                                 <!-- close per-mod (Card 6) Children + Widget -->
                                 </Children>
                                 </Widget>
