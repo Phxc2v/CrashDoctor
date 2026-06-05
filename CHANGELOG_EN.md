@@ -10,6 +10,19 @@ subscribers.
 
 ---
 
+## 2026-06-05 (hotfix) — Fixed a crash when casting spells from the RTS / free camera (RTS Camera mod); added a dedicated toggle for this fix and analyzer recognition of the crash
+
+> Visible mod version stays `v1.4.0` forever.
+
+A targeted hotfix for a reported crash: the game crashed when a spell was cast while in the RTS / free (commander) camera.
+
+- **New fix: spell-cast crash from the RTS / free camera (TOR + RTS Camera).** When you cast a spell while in RTS Camera's commander view, that mod detaches control from your hero — and TOR's magic was routed into the internal AI-wizard path, which lacked your hero's data and crashed the battle. It's now intercepted: the spell is cast as your hero and the battle continues.
+- **A dedicated toggle on the "Crash Fixes" tab.** The fix is a new row "Spell-cast crash guard — RTS/free camera (TOR)" with a checkbox, description and status; on by default. Shown only when TOR is installed.
+- **The crash is now recognized by the analyzer.** If such a crash already happened, the Crashes tab gives a plain verdict with the cause, a workaround and a "this is not shaders/driver" note, instead of a raw stack trace.
+- **Workaround without updating.** Before casting a spell, leave the RTS / free camera and take direct control of your hero — it's casting while "detached" that triggers it.
+
+---
+
 ## 2026-06-05 — The mod no longer touches your antivirus (the Windows Defender exclusions feature is fully removed); the "swallow errors from a specific mod" list now shows only mods that actually need it and resizes to fit their count; a batch of reliability fixes after a code review
 
 > Visible mod version stays `v1.4.0` forever.

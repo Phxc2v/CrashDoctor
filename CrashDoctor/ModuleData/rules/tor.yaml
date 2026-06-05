@@ -948,3 +948,92 @@
     all:
       - managed_exception: { frame_contains: "SetDynamicMountMovementProperties" }
       - managed_exception: { type_contains: "ArgumentException" }
+
+- id: tor.ability_cast_rts_camera_nre
+  category: tor_compatibility
+  severity: critical
+  confidence: high
+  evidence_source: "Client crash 2026-06-05 report.txt (fe1c70fc) — NullReferenceException in TOR_Core.AbilitySystem.Ability.CalculateAICastMatrixFrame ← GetSpawnFrame ← ActivateAbility ← DoCast ← TryCastCurrentAbility ← AbilityManagerMissionLogic.HandleInput. Player casting Sylvania spell in battle with RTS Camera v5.3.25 active. Captured by Crash Doctor managed capture."
+  requires_sources: [managed_exception]
+  title:
+    en: "TOR spell-cast crash from the RTS / free camera — guarded by Crash Doctor"
+    ru: "Краш TOR при касте из RTS / свободной камеры — перехвачено Crash Doctor"
+    zh: "TOR 在 RTS／自由镜头下施法崩溃——已被 Crash Doctor 拦截"
+    tr: "RTS / serbest kameradan TOR büyü-yapma çökmesi — Crash Doctor tarafından korunuyor"
+  description:
+    en: |
+      System.NullReferenceException thrown from TOR_Core
+      Ability.CalculateAICastMatrixFrame ← Ability.GetSpawnFrame ← ActivateAbility /
+      DoCast ← AgentExtensions.TryCastCurrentAbility ←
+      AbilityManagerMissionLogic.HandleInput while you cast a spell in battle.
+
+      Trigger: casting a TOR spell while in the RTS / free (commander) camera. RTS
+      Camera detaches control from your hero, so the engine no longer reports it as
+      player-controlled. TOR's GetSpawnFrame then routes the cast into its AI branch
+      (CalculateAICastMatrixFrame), which immediately reads a WizardAIComponent that
+      only AI-controlled wizards ever get — your hero has none, so it is null and the
+      cast dereferences null and crashes the battle. This is a TOR + RTS Camera
+      interaction bug, not a shader / driver issue.
+    ru: |
+      System.NullReferenceException из TOR_Core
+      Ability.CalculateAICastMatrixFrame ← Ability.GetSpawnFrame ← ActivateAbility /
+      DoCast ← AgentExtensions.TryCastCurrentAbility ←
+      AbilityManagerMissionLogic.HandleInput при касте спелла в бою.
+
+      Триггер: каст спелла TOR в режиме RTS / свободной (командирской) камеры. RTS
+      Camera отцепляет управление от твоего героя, и движок перестаёт считать его
+      player-controlled. Тогда GetSpawnFrame у TOR уводит каст в AI-ветку
+      (CalculateAICastMatrixFrame), которая сразу читает WizardAIComponent — а он
+      бывает только у ИИ-магов; у твоего героя его нет, значит null, и каст падает на
+      разыменовании null, роняя бой. Это баг взаимодействия TOR + RTS Camera, а не
+      проблема шейдеров / драйвера.
+    zh: |
+      在战斗中施法时，从 TOR_Core
+      Ability.CalculateAICastMatrixFrame ← Ability.GetSpawnFrame ← ActivateAbility /
+      DoCast ← AgentExtensions.TryCastCurrentAbility ←
+      AbilityManagerMissionLogic.HandleInput 抛出 System.NullReferenceException。
+
+      触发条件：在 RTS／自由（指挥）镜头下施放 TOR 法术。RTS Camera 会分离对你英雄的
+      控制，引擎不再将其报告为玩家控制。于是 TOR 的 GetSpawnFrame 把施法导向其 AI 分支
+      （CalculateAICastMatrixFrame），该分支立即读取只有 AI 法师才有的
+      WizardAIComponent——你的英雄没有，因此为 null，施法对 null 解引用而崩溃。这是
+      TOR + RTS Camera 的交互 bug，不是着色器／驱动问题。
+    tr: |
+      Savaşta büyü yaparken TOR_Core
+      Ability.CalculateAICastMatrixFrame ← Ability.GetSpawnFrame ← ActivateAbility /
+      DoCast ← AgentExtensions.TryCastCurrentAbility ←
+      AbilityManagerMissionLogic.HandleInput'ten System.NullReferenceException
+      fırlatılır.
+
+      Tetikleyici: RTS / serbest (komutan) kamerada bir TOR büyüsü yapmak. RTS
+      Camera kahramanının kontrolünü ayırır, böylece motor onu artık oyuncu kontrollü
+      olarak bildirmez. TOR'un GetSpawnFrame'i büyüyü AI dalına
+      (CalculateAICastMatrixFrame) yönlendirir; bu dal yalnızca AI büyücülerinde
+      bulunan bir WizardAIComponent'i hemen okur — kahramanında yoktur, dolayısıyla
+      null'dır ve büyü null başvurusuyla çöker. Bu bir TOR + RTS Camera etkileşim
+      hatasıdır, gölgelendirici / sürücü sorunu değil.
+  fix:
+    en:
+      - "Crash Doctor already guards this — its safety net reroutes the cast to your hero and the battle continues. Keep the «Spell-cast crash guard — RTS/free camera» fix ON (Crash Fixes tab)."
+      - "Workaround: leave the RTS / free camera and take direct control of your hero before casting a spell — casting while detached is what triggers it."
+      - "Do NOT rebuild shaders or change drivers for this — it's a code-interaction bug, that won't help."
+      - "Report it to the RTS Camera / TOR authors so it's fixed at the source."
+    ru:
+      - "Crash Doctor уже это перехватывает — safety net перенаправляет каст на твоего героя, бой продолжается. Держи фикс «Защита от вылета при касте из RTS/свободной камеры» ВКЛ (вкладка «Фиксы крашей»)."
+      - "Обходной путь: выйди из RTS / свободной камеры и возьми прямое управление героем перед кастом — падает именно каст в отцепленном режиме."
+      - "НЕ пересобирай шейдеры и не меняй драйвер из-за этого — это баг взаимодействия кода, не поможет."
+      - "Сообщи авторам RTS Camera / TOR, чтобы починили в первоисточнике."
+    zh:
+      - "Crash Doctor 已经拦截了它——安全网会把施法重定向到你的英雄，战斗继续。保持「施法崩溃防护——RTS／自由镜头」修复为开（崩溃修复标签页）。"
+      - "变通方法：在施法前退出 RTS／自由镜头并直接控制你的英雄——在分离状态下施法正是触发条件。"
+      - "不要为此重建着色器或更换驱动——这是代码交互 bug，没用。"
+      - "向 RTS Camera / TOR 作者报告，以便从源头修复。"
+    tr:
+      - "Crash Doctor bunu zaten koruyor — güvenlik ağı büyüyü kahramanına yönlendirir ve savaş devam eder. «Büyü çökme koruması — RTS/serbest kamera» düzeltmesini AÇIK tut (Çökme Düzeltmeleri sekmesi)."
+      - "Geçici çözüm: büyü yapmadan önce RTS / serbest kameradan çık ve kahramanının doğrudan kontrolünü al — ayrık durumdayken büyü yapmak tetikleyicidir."
+      - "Bunun için gölgelendiricileri yeniden oluşturma veya sürücü değiştirme — bu bir kod-etkileşim hatasıdır, yardımcı olmaz."
+      - "Kaynağında düzeltilmesi için RTS Camera / TOR yazarlarına bildir."
+  match:
+    all:
+      - managed_exception: { frame_contains: "CalculateAICastMatrixFrame" }
+      - managed_exception: { type_contains: "NullReferenceException" }
