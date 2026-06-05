@@ -1502,7 +1502,7 @@
                 WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
                 Sprite="BlankWhiteSquare_9" Color="#000000EE">
           <Children>
-            <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="900" SuggestedHeight="640"
+            <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="900" SuggestedHeight="560"
                     HorizontalAlignment="Center" VerticalAlignment="Center"
                     Sprite="StdAssets\Popup\canvas">
               <Children>
@@ -1518,27 +1518,10 @@
                             Brush.FontSize="28" Brush.FontColor="#E0A040FF" Brush.TextHorizontalAlignment="Center"
                             Text="@LabelSupportTitle" />
 
-                <!-- PressF (RU bank cards) — clickable text, no button skin.
-                     ButtonWidget without Brush= renders transparent — looks like
-                     plain text. Hyperlink-yellow tint cues clickability.
-                     RU-only: pressf.com is a Russian-card-only donation site,
-                     no payment path for EN users. EN sees USDT rows only. -->
-                <ButtonWidget DoNotPassEventsToChildren="true" Command.Click="ExecuteOpenPressFDonate"
-                              IsVisible="@IsPressFVisible"
-                              WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="820" SuggestedHeight="32"
-                              VerticalAlignment="Top" HorizontalAlignment="Center" MarginTop="80">
-                  <Children>
-                    <TextWidget DoNotAcceptEvents="true"
-                                WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
-                                Brush.FontSize="17" Brush.FontColor="#FFD27AFF" Brush.TextHorizontalAlignment="Center"
-                                Text="@LabelSupportPressF" />
-                  </Children>
-                </ButtonWidget>
-
                 <!-- USDT Tron — clickable text, copies to clipboard -->
                 <ButtonWidget DoNotPassEventsToChildren="true" Command.Click="ExecuteCopyTron"
                               WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="820" SuggestedHeight="28"
-                              VerticalAlignment="Top" HorizontalAlignment="Center" MarginTop="124">
+                              VerticalAlignment="Top" HorizontalAlignment="Center" MarginTop="90">
                   <Children>
                     <TextWidget DoNotAcceptEvents="true"
                                 WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
@@ -1550,7 +1533,7 @@
                 <!-- USDT ERC-20 — clickable text, copies to clipboard -->
                 <ButtonWidget DoNotPassEventsToChildren="true" Command.Click="ExecuteCopyErc20"
                               WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="820" SuggestedHeight="28"
-                              VerticalAlignment="Top" HorizontalAlignment="Center" MarginTop="158">
+                              VerticalAlignment="Top" HorizontalAlignment="Center" MarginTop="124">
                   <Children>
                     <TextWidget DoNotAcceptEvents="true"
                                 WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
@@ -1561,7 +1544,7 @@
 
                 <!-- Disclaimer + thanks (multiline, scrollable not needed at this length) -->
                 <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="780" SuggestedHeight="280"
-                            HorizontalAlignment="Center" VerticalAlignment="Top" MarginTop="240"
+                            HorizontalAlignment="Center" VerticalAlignment="Top" MarginTop="170"
                             Brush.FontSize="15" Brush.FontColor="#C8B898FF" Brush.TextHorizontalAlignment="Left"
                             Text="@LabelSupportBody" />
 
