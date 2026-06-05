@@ -10,6 +10,14 @@ subscribers.
 
 ---
 
+## 2026-06-05 (hotfix 2) — Removed a dead donation link; the "Support the author" popup is now USDT-only
+
+> Visible mod version stays `v1.4.0` forever.
+
+- **Removed a dead donation link.** The "tip the author (RU bank cards)" line in the "Support the author" popup pointed to a broken page — it's fully removed from the mod. The popup now shows only the **USDT** wallets (Tron and ERC-20): clicking an address copies it to the clipboard. The popup is also a bit more compact.
+
+---
+
 ## 2026-06-05 (hotfix) — Fixed a crash when casting spells from the RTS / free camera (RTS Camera mod); added a dedicated toggle for this fix and analyzer recognition of the crash
 
 > Visible mod version stays `v1.4.0` forever.
