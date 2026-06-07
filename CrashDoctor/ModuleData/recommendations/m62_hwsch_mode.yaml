@@ -3,6 +3,7 @@
     en: "Hardware-Accelerated GPU Scheduling (HAGS) state"
     ru: "Состояние Hardware-Accelerated GPU Scheduling (HAGS)"
     zh: "硬件加速GPU计划（HAGS）状态"
+    zht: "硬體加速GPU排程（HAGS）狀態"
     tr: "Donanım Hızlandırmalı GPU Zamanlaması (HAGS) durumu"
   description:
     en: |
@@ -30,6 +31,14 @@
 
       这张卡片只在 HAGS 开启且已安装 TOR 时才出现——这是有风险的组合。纯净的原版，
       或 HAGS=Off，都会让卡片隐藏。
+    zht: |
+      HAGS 是 Win10 2004+ / Win11 的一項功能，它把 GPU 命令佇列的管理交給驅動。
+      在現代驅動上（NVIDIA 535+、AMD Adrenalin 24.x）它很穩定；在舊驅動上與 TOR
+      繁重的著色器編譯工作負載結合時，會在「Build Shader Cache」期間產生
+      TDR / DXGI_ERROR_DEVICE_HUNG 級聯和著色器記憶體溢位當機。
+
+      這張卡片只在 HAGS 開啟且已安裝 TOR 時才出現——這是有風險的組合。純淨的原版，
+      或 HAGS=Off，都會讓卡片隱藏。
     tr: |
       HAGS, GPU komut-kuyruğu yönetimini sürücüye devreden bir Win10 2004+ / Win11
       özelliğidir. Modern sürücülerde (NVIDIA 535+, AMD Adrenalin 24.x) kararlıdır;
@@ -58,6 +67,12 @@
       - "切换需要重启——在下次启动前不会生效。"
       - "Crash Doctor 绝不写入注册表——这个开关由 Windows 掌管。"
       - "不可撤销（我们不会触碰它）。"
+    zht:
+      - "來源：HKLM\\SYSTEM\\CurrentControlSet\\Control\\GraphicsDrivers\\HwSchMode（1=關，2=開）。"
+      - "「套用」會開啟 設定 → 系統 → 顯示 → 圖形 → 預設圖形設定。"
+      - "切換需要重新啟動——在下次啟動前不會生效。"
+      - "Crash Doctor 絕不寫入登錄——這個開關由 Windows 掌管。"
+      - "不可復原（我們不會觸碰它）。"
     tr:
       - "Kaynak: HKLM\\SYSTEM\\CurrentControlSet\\Control\\GraphicsDrivers\\HwSchMode (1=Kapalı, 2=Açık)."
       - "«Uygula» Ayarlar → Sistem → Ekran → Grafikler → Varsayılan grafik ayarları'nı açar."

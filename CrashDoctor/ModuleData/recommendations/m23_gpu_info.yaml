@@ -3,6 +3,7 @@
     en: "GPU info — model, accurate VRAM, driver version"
     ru: "Информация о GPU — модель, точный VRAM, версия драйвера"
     zh: "显卡信息 — 型号、准确显存、驱动程序版本"
+    zht: "顯示卡資訊 — 型號、準確顯示記憶體、驅動程式版本"
     tr: "Ekran kartı bilgisi — model, doğru VRAM, sürücü sürümü"
   description:
     en: |
@@ -38,6 +39,17 @@
 
       在报告 bug 时，用它来获取「你实际拥有的显卡 + 驱动程序 + 显存」。
       Crash Doctor 无法升级硬件。
+    zht: |
+      唯讀顯示。從 `Win32_VideoController` 提取即時資料（名稱、驅動程式
+      版本、驅動程式日期），並從裝置類別登錄項目讀取準確的顯示記憶體。
+
+      WMI 的 `AdapterRAM` 欄位是 uint32 —— 在任何現代顯示卡上都會在 4 GB 處飽和，
+      所以我們直接讀取登錄中的 `HardwareInformation.qwMemorySize`
+      （REG_QWORD，64 位元）。這與 NVIDIA / AMD / Intel 控制台
+      報告的數值一致。無需 DXGI / Vortice 相依性。
+
+      在報告 bug 時，用它來取得「你實際擁有的顯示卡 + 驅動程式 + 顯示記憶體」。
+      Crash Doctor 無法升級硬體。
     tr: |
       Salt okunur görüntü. Canlı verileri `Win32_VideoController`'dan (ad, sürücü
       sürümü, sürücü tarihi) ve doğru VRAM için cihaz sınıfı kayıt defteri
@@ -67,6 +79,11 @@
       - "来源 2：HKLM\\SYSTEM\\CurrentControlSet\\Control\\Class\\{4d36e968-...}\\NNNN\\HardwareInformation.qwMemorySize。"
       - "只读 —— 应用按钮不会做任何破坏性操作。"
       - "不可撤销（只读）。"
+    zht:
+      - "來源 1：Win32_VideoController WMI。"
+      - "來源 2：HKLM\\SYSTEM\\CurrentControlSet\\Control\\Class\\{4d36e968-...}\\NNNN\\HardwareInformation.qwMemorySize。"
+      - "唯讀 —— 套用按鈕不會做任何破壞性操作。"
+      - "不可復原（唯讀）。"
     tr:
       - "Kaynak 1: Win32_VideoController WMI."
       - "Kaynak 2: HKLM\\SYSTEM\\CurrentControlSet\\Control\\Class\\{4d36e968-...}\\NNNN\\HardwareInformation.qwMemorySize."

@@ -3,6 +3,7 @@
     en: "Known-bad GPU driver detection"
     ru: "Детект GPU-драйвера из known-bad списка"
     zh: "已知问题显卡驱动程序检测"
+    zht: "已知問題顯示卡驅動程式偵測"
     tr: "Bilinen sorunlu ekran kartı sürücüsü tespiti"
   description:
     en: |
@@ -40,6 +41,17 @@
 
       清单位于 ModuleData/bad_drivers.json，以数据方式编辑。
       发现了新的问题驱动程序？在 t.me/CodeRickTg 留言，我们会加一条记录。
+    zht: |
+      將你的即時驅動程式版本與隨附的 JSON 清單進行比對，該清單記錄了
+      社群在 Telegram 頻道上回報的已知問題版本。
+      給出確切原因（例如 "TDR cascade in TOR shader compile"）以及
+      建議的操作（升級到 N+ / 回復到 N-）。
+
+      Crash Doctor 從不安裝或回復驅動程式 —— 風險太高且因廠商而異。
+      套用會開啟對應廠商的驅動程式頁面。安裝由你自己完成。
+
+      清單位於 ModuleData/bad_drivers.json，以資料方式編輯。
+      發現了新的問題驅動程式？在 t.me/CodeRickTg 留言，我們會加一條記錄。
     tr: |
       Canlı sürücü sürümünüzü, topluluğun Telegram kanalında bildirdiği bilinen
       sorunlu sürümlerin paketlenmiş bir JSON bildirimine karşı arar.
@@ -69,6 +81,11 @@
       - "匹配：显卡名称中的厂商子串 + 精确的驱动程序版本字符串。"
       - "应用会打开厂商驱动程序页面（NVIDIA / AMD / Intel）。"
       - "不可撤销 —— 应用只会打开 URL。"
+    zht:
+      - "來源：ModuleData/bad_drivers.json（清單）。"
+      - "比對：顯示卡名稱中的廠商子字串 + 精確的驅動程式版本字串。"
+      - "套用會開啟廠商驅動程式頁面（NVIDIA / AMD / Intel）。"
+      - "不可復原 —— 套用只會開啟 URL。"
     tr:
       - "Kaynak: ModuleData/bad_drivers.json (bildirim)."
       - "Eşleşme: ekran kartı adındaki üretici alt dizesi + tam sürücü sürümü dizesi."

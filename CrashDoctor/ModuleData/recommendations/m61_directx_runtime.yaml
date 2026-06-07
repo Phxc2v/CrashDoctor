@@ -3,6 +3,7 @@
     en: "DirectX 11 runtime + feature level check"
     ru: "Проверка DirectX 11 runtime + feature level"
     zh: "DirectX 11 运行库 + 功能级别检查"
+    zht: "DirectX 11 執行階段程式庫 + 功能等級檢查"
     tr: "DirectX 11 çalışma zamanı + özellik düzeyi kontrolü"
   description:
     en: |
@@ -31,6 +32,14 @@
 
       这张卡片只在 d3d11.dll 缺失、D3D11CreateDevice 失败，或可用的最高功能级别
       低于 11_0 时才出现。
+    zht: |
+      Bannerlord 的算繪器硬性要求 D3D 功能等級 11_0——TaleWorlds.Native 直接連結
+      d3d11.dll，沒有任何回退路徑。在精簡的 Win10/11 LTSC 版本上、在沒有 DXVK 的
+      Wine/Proton 上，或在 GPU 介面卡只暴露 FL10_x 的機器上，啟動器會以
+      「TaleWorlds.MountAndBlade.dll could not be loaded」悄無聲息地失敗，玩家則責怪模組。
+
+      這張卡片只在 d3d11.dll 缺失、D3D11CreateDevice 失敗，或可用的最高功能等級
+      低於 11_0 時才出現。
     tr: |
       Bannerlord'un işleyicisi D3D özellik düzeyi 11_0'ı zorunlu kılar —
       TaleWorlds.Native doğrudan d3d11.dll'ye bağlanır ve geri dönüş yolu yoktur.
@@ -57,6 +66,11 @@
       - "「应用」会打开 https://www.microsoft.com/en-us/download/details.aspx?id=35 —— DirectX 最终用户运行库。"
       - "如果问题在于功能级别（FL10_x 显卡），任何安装程序都修复不了——是 GPU 本身太旧了。"
       - "不可撤销。"
+    zht:
+      - "透過 D3D11CreateDevice 進行唯讀探測（硬體驅動類型）。"
+      - "「套用」會開啟 https://www.microsoft.com/en-us/download/details.aspx?id=35 —— DirectX 一般使用者執行階段。"
+      - "如果問題在於功能等級（FL10_x 顯示卡），任何安裝程式都修復不了——是 GPU 本身太舊了。"
+      - "不可復原。"
     tr:
       - "D3D11CreateDevice aracılığıyla salt okunur sınama (donanım sürücüsü türü)."
       - "«Uygula» https://www.microsoft.com/en-us/download/details.aspx?id=35 adresini açar — DirectX Son Kullanıcı Çalışma Zamanı."

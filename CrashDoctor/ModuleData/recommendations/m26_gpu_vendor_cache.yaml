@@ -3,6 +3,7 @@
     en: "Clear GPU vendor shader cache (NVIDIA / AMD / Intel)"
     ru: "Очистить vendor-кэш шейдеров (NVIDIA / AMD / Intel)"
     zh: "清理显卡厂商着色器缓存（NVIDIA / AMD / Intel）"
+    zht: "清理顯示卡廠商著色器快取（NVIDIA / AMD / Intel）"
     tr: "Ekran kartı üretici gölgelendirici önbelleğini temizle (NVIDIA / AMD / Intel)"
   description:
     en: |
@@ -37,6 +38,16 @@
       CreateShaderResourceView 失败和 DXGI_ERROR_DEVICE_REMOVED —— 这些症状
       看起来与 Bannerlord 缓存问题完全相同，但仅清理 Bannerlord 一侧并不能解决。
       如果 M2.1 没有帮助而你仍然看到 device-removed 崩溃，也试试这个。
+    zht: |
+      補充 M2.1（它清理 Bannerlord 自己的著色器快取）。本模組清理顯示卡驅動程式
+      自身的著色器快取，它位於 `%LOCALAPPDATA%\NVIDIA\DXCache`
+      （NVIDIA）、`%LOCALAPPDATA%\AMD\DxCache` 和 `\AMD\DXC`（AMD），或
+      `%LOCALAPPDATA%\Intel\ShaderCache`（Intel）。
+
+      在驅動程式更新或大幅更換顯示卡之後，這些快取會過時並導致
+      CreateShaderResourceView 失敗和 DXGI_ERROR_DEVICE_REMOVED —— 這些症狀
+      看起來與 Bannerlord 快取問題完全相同，但僅清理 Bannerlord 一側並不能解決。
+      如果 M2.1 沒有幫助而你仍然看到 device-removed 當機，也試試這個。
     tr: |
       M2.1'i tamamlar (o, Bannerlord'un kendi gölgelendirici önbelleğini temizler). Bu modül
       ekran kartı sürücüsünün KENDİ gölgelendirici önbelleğini temizler; bu önbellek
@@ -64,6 +75,11 @@
       - "文件会移到回收站，可以还原。"
       - "影响系统上所有的 DirectX 游戏（不只是 Bannerlord）—— 它们在下次启动时会多花几秒重建各自的厂商缓存。可接受的取舍。"
       - "无法从 Crash Doctor 撤销。"
+    zht:
+      - "'NeedsAction' 閾值：近期當機記錄中出現廠商快取症狀字串，或快取 > 2 GB。"
+      - "檔案會移到資源回收筒，可以還原。"
+      - "影響系統上所有的 DirectX 遊戲（不只是 Bannerlord）—— 它們在下次啟動時會多花幾秒重建各自的廠商快取。可接受的取捨。"
+      - "無法從 Crash Doctor 復原。"
     tr:
       - "'NeedsAction' eşiği: son çökme günlüklerinde üretici önbelleği belirti dizeleri VEYA önbellek > 2 GB."
       - "Dosyalar Geri Dönüşüm Kutusu'na gider ve geri yüklenebilir."

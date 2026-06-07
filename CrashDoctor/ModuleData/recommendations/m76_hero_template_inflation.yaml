@@ -3,6 +3,7 @@
     en: "Hero template inflation (mod-spawned NPC bloat)"
     ru: "Перебор героев по шаблону (распухание от модных NPC)"
     zh: "英雄模板膨胀（模组生成的 NPC 膨胀）"
+    zht: "英雄範本膨脹（模組生成的 NPC 膨脹）"
     tr: "Kahraman şablonu şişmesi (mod kaynaklı NPC şişmesi)"
   description:
     en: |
@@ -89,6 +90,30 @@
       Cleaner 图遍历器会将所有指向这些 Hero 的引用置空，并写入一个单独的
       「CrashDoctor_cleaned_*」存档；你磁盘上的原始存档不会被触碰。从
       Load Game 加载清理后的存档。
+    zht: |
+      當某個 CharacterObject 範本在已載入的戰役中擁有超過 100 個存活的
+      Hero 實例時，這張卡片會出現。這是由那些 HourlyTickParty 鉤子無上限地
+      生成新 Hero 的模組所導致的後期模式——最明顯的是 LoreHardcore 的綠皮
+      招募邏輯，但這種故障模式與具體範本無關。
+
+      為什麼重要：每個 Hero 都會帶上自己的 Equipment，從而載入（並固定）
+      一套獨特的 GPU 紋理。一旦著色器快取無法把它們全部駐留，遊戲就會在
+      算繪器內部以 0xC0000005 開始當機——通常是在一次快進每日 tick 之後的
+      幾秒鐘內。存檔本身能正常載入；損害在遊戲過程中累積，只有當快取溢位時
+      才會爆發。那些移除了肇事模組並在同一存檔上繼續遊戲的玩家回報不再當機
+      ——這就證實了模組是源頭。
+
+      掃描器做什麼：按 CharacterObject.StringId 對 Hero.AllAliveHeroes 分組，
+      將玩家 / 玩家氏族 / 顯要人物排除在計數之外，並回報任何超過閾值的範本。
+      如果沒有範本出問題，卡片保持 Healthy。
+
+      清理器做什麼（當你在 Save Health 面板中按下 Clean 時）：對每個超過閾值
+      的範本，保持前 20 個 Hero 不動（這樣該兵種之後仍能生成），並把其餘的
+      標記為可移除——僅當它們通過嚴格的安全檢查時：不是氏族首領、不是顯要
+      人物、不是隊伍首領、沒有家族關係、沒有定居點 / 總督錨定。隨後 Save
+      Cleaner 圖遍歷器會將所有指向這些 Hero 的參考置空，並寫入一個單獨的
+      「CrashDoctor_cleaned_*」存檔；你磁碟上的原始存檔不會被觸碰。從
+      Load Game 載入清理後的存檔。
     tr: |
       Yüklü kampanyada tek bir CharacterObject şablonunun 100'den fazla hayatta
       Hero örneği olduğunda görünür. Bu, HourlyTickParty kancası sınır olmadan
@@ -140,6 +165,13 @@
       - "移除通过 Save Cleaner 图遍历器进行——真正的引用置空，而非高层 Action 调用。结果是一个单独的存档文件；你的原始存档不会被触碰。"
       - "在健康的存档上卡片隐藏（未加载战役时为 NotApplicable；当每个模板都不超过 100 时为 Healthy）。"
       - "崩溃日志中的症状：0xC0000005 加上 rgl_log_*.txt 中刷屏的 'Missing shader from sack: pbr_terrain'，通常出现在 Speed x4-x8 快进之后。"
+    zht:
+      - "閾值：超過 100 個共享同一 CharacterObject 範本的存活英雄。"
+      - "保留下限：每個範本始終保留 20 個英雄。"
+      - "跳過：玩家、玩家氏族、顯要人物、領主、派系首領、總督、錨定到定居點的英雄、隊伍首領、俘虜、有家族關係的英雄（配偶 / 父母 / 子女）、同伴、流浪者。"
+      - "移除透過 Save Cleaner 圖遍歷器進行——真正的參考置空，而非高層 Action 呼叫。結果是一個單獨的存檔檔案；你的原始存檔不會被觸碰。"
+      - "在健康的存檔上卡片隱藏（未載入戰役時為 NotApplicable；當每個範本都不超過 100 時為 Healthy）。"
+      - "當機記錄中的症狀：0xC0000005 加上 rgl_log_*.txt 中洗版的 'Missing shader from sack: pbr_terrain'，通常出現在 Speed x4-x8 快進之後。"
     tr:
       - "Eşik: tek bir CharacterObject şablonunu paylaşan > 100 hayatta kahraman."
       - "Koruma tabanı: şablon başına 20 kahraman her zaman korunur."

@@ -3,6 +3,7 @@
     en: "Clean stale %TEMP% files"
     ru: "Очистить старые файлы из %TEMP%"
     zh: "清理 %TEMP% 中的陈旧文件"
+    zht: "清理 %TEMP% 中的陳舊檔案"
     tr: "%TEMP% içindeki eski dosyaları temizle"
   description:
     en: |
@@ -33,6 +34,14 @@
       仅逐个文件删除：跳过任何被其他进程（Steam、Edge、Office、OneDrive）锁定的文件。
       只会动 7 天以上的文件。可以在其他应用打开时安全运行。Bannerlord 必须关闭
       （启动器本身可能持有 /Temp/RGL_*.tmp 着色器临时文件的句柄）。
+    zht: |
+      Bannerlord 的著色器編譯器和 TaleWorlds.Native FMOD 層會把中間暫存檔寫到
+      使用者的 %TEMP% 資料夾。在長期執行的安裝上 %TEMP% 會漲到 5–20 GB，於是 Windows
+      開始缺少暫存空間 — 這時著色器編譯記憶體不足當機就會在最隨機的時刻出現。
+
+      僅逐個檔案刪除：跳過任何被其他處理程序（Steam、Edge、Office、OneDrive）鎖定的檔案。
+      只會動 7 天以上的檔案。可以在其他應用程式開啟時安全執行。Bannerlord 必須關閉
+      （啟動器本身可能持有 /Temp/RGL_*.tmp 著色器暫存檔的控制代碼）。
     tr: |
       Bannerlord'un gölgelendirici derleyicisi ve TaleWorlds.Native FMOD katmanı ara
       geçici dosyaları kullanıcının %TEMP% klasörüne yazar. Uzun süredir kurulu bir
@@ -64,6 +73,12 @@
       - "只删除 7 天以上的文件；较新的文件是活动应用的临时数据。"
       - "尽可能把文件放入回收站（部分被 Shell 锁定的项会直接删除）。"
       - "无法从 Crash Doctor 撤销。"
+    zht:
+      - "路徑：$env:TEMP（通常為 %LOCALAPPDATA%\\Temp）。"
+      - "出現「NeedsAction」卡片的閾值：%TEMP% 總計 > 1 GB。"
+      - "只刪除 7 天以上的檔案；較新的檔案是使用中應用程式的暫存資料。"
+      - "盡可能把檔案放入資源回收筒（部分被 Shell 鎖定的項目會直接刪除）。"
+      - "無法從 Crash Doctor 復原。"
     tr:
       - "Yol: $env:TEMP (genellikle %LOCALAPPDATA%\\Temp)."
       - "'NeedsAction' kartı eşiği: toplam %TEMP% > 1 GB."

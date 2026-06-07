@@ -8,6 +8,7 @@
     en: "RAM below Bannerlord minimum"
     ru: "Меньше RAM, чем требует Bannerlord"
     zh: "内存低于 Bannerlord 最低要求"
+    zht: "記憶體低於 Bannerlord 最低要求"
     tr: "RAM, Bannerlord'un alt sınırının altında"
   description:
     en: |
@@ -19,6 +20,9 @@
     zh: |
       Bannerlord 最低需要 6 GB 内存，建议 8 GB。使用 TOR 这类重型模组时，
       低于 16 GB 会频繁崩溃。
+    zht: |
+      Bannerlord 最低需要 6 GB 記憶體，建議 8 GB。使用 TOR 這類重型模組時，
+      低於 16 GB 會頻繁當機。
     tr: |
       Bannerlord en az 6 GB RAM ister, önerilen 8 GB. TOR gibi ağır modlarla
       16 GB altındaki her şey düzenli olarak çökecektir.
@@ -35,6 +39,10 @@
       - "启动前关闭 Chrome、Discord、浏览器和其他后台程序。"
       - "游戏内：Options → Graphics → 把 Texture Quality 和 Shadow Quality 设为 Low。"
       - "如果主板允许，加装一条内存条。"
+    zht:
+      - "啟動前關閉 Chrome、Discord、瀏覽器和其他背景程式。"
+      - "遊戲內：Options → Graphics → 把 Texture Quality 和 Shadow Quality 設為 Low。"
+      - "如果主機板允許，加裝一條記憶體模組。"
     tr:
       - "Başlatmadan önce Chrome, Discord, tarayıcıları ve diğer arka plan uygulamalarını kapatın."
       - "Oyun içinde: Options → Graphics → Texture Quality ve Shadow Quality değerlerini Low yapın."
@@ -55,6 +63,7 @@
     en: "RAM is tight for TOR"
     ru: "Маловато RAM для TOR"
     zh: "运行 TOR 内存偏紧"
+    zht: "執行 TOR 記憶體偏緊"
     tr: "TOR için RAM yetersiz"
   description:
     en: |
@@ -66,6 +75,9 @@
     zh: |
       The Old Realms 很吃资源。内存不足 16 GB 且启用了 TOR_Core 时，
       长时间游戏或攻城战中很可能崩溃。
+    zht: |
+      The Old Realms 很吃資源。記憶體不足 16 GB 且啟用了 TOR_Core 時，
+      長時間遊戲或攻城戰中很可能當機。
     tr: |
       The Old Realms ağır bir moddur. 16 GB'den az RAM ile TOR_Core etkinken,
       uzun oturumlarda veya kuşatmalarda çökmeler olasıdır.
@@ -82,6 +94,10 @@
       - "游戏内：降低 Texture Quality 和 Shadow Quality。"
       - "启动前关闭所有后台程序。"
       - "每 1–2 小时退回主菜单，再点 Continue 继续，以释放内存。"
+    zht:
+      - "遊戲內：降低 Texture Quality 和 Shadow Quality。"
+      - "啟動前關閉所有背景程式。"
+      - "每 1–2 小時退回主選單，再點 Continue 繼續，以釋放記憶體。"
     tr:
       - "Oyun içinde: Texture Quality ve Shadow Quality değerlerini düşürün."
       - "Başlatmadan önce arka plandaki her şeyi kapatın."
@@ -105,6 +121,7 @@
     en: "GPU has less than 2 GB VRAM"
     ru: "У видеокарты меньше 2 ГБ VRAM"
     zh: "显卡显存少于 2 GB"
+    zht: "顯示卡顯示記憶體少於 2 GB"
     tr: "Ekran kartında 2 GB'den az VRAM var"
   description:
     en: |
@@ -116,6 +133,9 @@
     zh: |
       当前显卡的专用显存不足 2 GB。Bannerlord 最低需要 2 GB，
       建议 4 GB 以上。使用 TOR 时需要 6 GB 以上。
+    zht: |
+      目前顯示卡的專用顯示記憶體不足 2 GB。Bannerlord 最低需要 2 GB，
+      建議 4 GB 以上。使用 TOR 時需要 6 GB 以上。
     tr: |
       Etkin ekran kartında 2 GB'den az ayrılmış VRAM var. Bannerlord en az 2 GB,
       önerilen 4 GB ve üzeri ister. TOR ile 6 GB ve üzeri.
@@ -129,6 +149,9 @@
     zh:
       - "游戏内：降低 Texture Quality 和 Texture Budget。"
       - "禁用任何重型贴图模组。"
+    zht:
+      - "遊戲內：降低 Texture Quality 和 Texture Budget。"
+      - "停用任何重型貼圖模組。"
     tr:
       - "Oyun içinde: Texture Quality ve Texture Budget değerlerini düşürün."
       - "Ağır doku modlarını devre dışı bırakın."
@@ -148,6 +171,7 @@
     en: "GPU likely under-VRAMed for TOR (under 6 GB reported)"
     ru: "У видеокарты, похоже, мало VRAM для TOR (меньше 6 ГБ)"
     zh: "显卡显存可能不足以运行 TOR（报告低于 6 GB）"
+    zht: "顯示卡顯示記憶體可能不足以執行 TOR（報告低於 6 GB）"
     tr: "Ekran kartının VRAM'i TOR için yetersiz olabilir (6 GB altında bildirildi)"
   description:
     en: |
@@ -169,6 +193,15 @@
       部分高端 NVIDIA 显卡（某些配置下的 RTX 4080/4090）在报告中会被
       限制为 3072–4095 MB，尽管显卡实际有 12-24 GB。如果你的显卡属于这种
       情况且游戏本来运行正常——忽略此卡片。否则该警告是真实的。
+    zht: |
+      DXDIAG 報告目前顯示卡的專用顯示記憶體不足 6 GB。TOR + Bannerlord 在 1080p 以上
+      需要 6 GB 以上；低於此值，重型戰鬥或載入護甲模組時會出現
+      "out of video memory" 或 CreateTexture2D 失敗。
+
+      重要提示：DXDIAG 在新顯示卡上常常誤報顯示記憶體。AMD RX 7000/9000 系列和
+      部分高階 NVIDIA 顯示卡（某些設定下的 RTX 4080/4090）在報告中會被
+      限制為 3072–4095 MB，儘管顯示卡實際有 12-24 GB。如果你的顯示卡屬於這種
+      情況且遊戲本來執行正常——忽略此卡片。否則該警告是真實的。
     tr: |
       DXDIAG, etkin ekran kartında 6 GB'den az ayrılmış VRAM bildiriyor. TOR +
       Bannerlord 1080p ve üzerinde 6 GB ve üzeri ister; bunun altında ağır
@@ -207,6 +240,14 @@
       - "打开 Crash Doctor → 系统调优 → 如果出现 '占用显存的程序' 卡片——它会列出你机器上当前真正在运行的程序。"
       - "如果显卡物理显存不足 4 GB：重型模组（TOR + 护甲包）不现实。请运行原版 Bannerlord 或选择更轻的模组。"
       - "更改任何图形设置之后：重启电脑，然后 Crash Doctor → 系统调优 → '清理着色器缓存'，再到主菜单 → 'Build Shader Cache'（20–60 分钟）。跳过任一步 → 下次启动会在启动画面崩溃。"
+    zht:
+      - "如果你實際擁有 RX 7700 XT / 7800 XT / 7900 / 9070 / RTX 4070 Super+ / 4080 / 4090 / 5080 / 5090——忽略此卡片，DXDIAG 誤報了你的顯示記憶體。繼續即可。"
+      - "如果你用的是同時帶內顯和獨顯的遊戲筆電（NVIDIA Optimus / AMD SmartShift——聯想拯救者、華碩 ROG、微星、雷蛇等）：DXDIAG 總是透過內顯視角低報獨顯的顯示記憶體。你的真實顯示記憶體是廠商標註的值（RTX 4060 Laptop 通常 8 GB，4070 Laptop 通常 12 GB 等）。忽略此卡片。"
+      - "否則：遊戲內 Options → Graphics → Texture Quality = Medium、Texture Budget = Medium、Shadow Quality = Medium。"
+      - "啟動前關閉所有佔用顯示記憶體的背景程式：VR 執行階段（Oculus、SteamVR、Mixed Reality Portal）、AI 工具（Ollama、LM Studio、Stable Diffusion）、影片剪輯（DaVinci Resolve、Premiere、After Effects）、開了很多分頁的瀏覽器（Chrome / Edge / Firefox / Brave）、處於 Game Capture 模式的 OBS。"
+      - "打開 Crash Doctor → 系統調校 → 如果出現 '佔用顯示記憶體的程式' 卡片——它會列出你機器上目前真正在執行的程式。"
+      - "如果顯示卡實體顯示記憶體不足 4 GB：重型模組（TOR + 護甲包）不切實際。請執行原版 Bannerlord 或選擇更輕的模組。"
+      - "變更任何圖形設定之後：重新啟動電腦，然後 Crash Doctor → 系統調校 → '清理著色器快取'，再到主選單 → 'Build Shader Cache'（20–60 分鐘）。跳過任一步 → 下次啟動會在啟動畫面當機。"
     tr:
       - "Gerçekten RX 7700 XT / 7800 XT / 7900 / 9070 / RTX 4070 Super+ / 4080 / 4090 / 5080 / 5090 kartınız varsa bu kartı yok sayın, DXDIAG VRAM'inizi düşük bildiriyor. Devam edin."
       - "Hem tümleşik hem ayrık ekran kartlı bir oyun dizüstüsündeyseniz (NVIDIA Optimus / AMD SmartShift — Lenovo Legion, ASUS ROG, MSI, Razer vb.): DXDIAG, tümleşik kart üzerinden ayrık kartın VRAM'ini her zaman düşük bildirir. Gerçek VRAM'iniz üreticinin belirttiği değerdir (genelde RTX 4060 Laptop'ta 8 GB, 4070 Laptop'ta 12 GB vb.). Bu kartı yok sayın."
@@ -239,6 +280,7 @@
     en: "GPU driver is over 18 months old"
     ru: "Драйвер видеокарты старше 18 месяцев"
     zh: "显卡驱动程序超过 18 个月未更新"
+    zht: "顯示卡驅動程式超過 18 個月未更新"
     tr: "Ekran kartı sürücüsü 18 aydan eski"
   description:
     en: |
@@ -250,6 +292,9 @@
     zh: |
       显示驱动程序是较早年份发布的。许多与 TaleWorlds 和模组相关的着色器/渲染
       问题在较新的驱动程序版本中已修复。
+    zht: |
+      顯示驅動程式是較早年份發布的。許多與 TaleWorlds 和模組相關的著色器/渲染
+      問題在較新的驅動程式版本中已修復。
     tr: |
       Ekran sürücüsü farklı bir yıla ait. TaleWorlds ve modlarla ilgili birçok
       gölgelendirici/render hatası daha yeni sürücü sürümlerinde düzeltildi.
@@ -266,6 +311,10 @@
       - "AMD：打开 AMD Software → Auto-detect → 安装最新驱动程序。"
       - "NVIDIA：打开 GeForce Experience 或从 nvidia.com 下载 → 安装最新 Game Ready。"
       - "安装后重启电脑。"
+    zht:
+      - "AMD：打開 AMD Software → Auto-detect → 安裝最新驅動程式。"
+      - "NVIDIA：打開 GeForce Experience 或從 nvidia.com 下載 → 安裝最新 Game Ready。"
+      - "安裝後重新啟動電腦。"
     tr:
       - "AMD: AMD Software → Auto-detect → en son sürücüyü yükleyin."
       - "NVIDIA: GeForce Experience'ı açın veya nvidia.com'dan indirin → en son Game Ready'i yükleyin."
@@ -286,6 +335,7 @@
     en: "Windows 7 or 8 is no longer supported by Bannerlord"
     ru: "Bannerlord не поддерживает Windows 7 / 8"
     zh: "Bannerlord 不再支持 Windows 7 或 8"
+    zht: "Bannerlord 不再支援 Windows 7 或 8"
     tr: "Windows 7 veya 8 artık Bannerlord tarafından desteklenmiyor"
   description:
     en: |
@@ -297,6 +347,9 @@
     zh: |
       Bannerlord 1.2 及以上版本需要 Windows 10 或 11。在 Windows 7/8 上游戏可以启动，
       但崩溃无法避免。
+    zht: |
+      Bannerlord 1.2 及以上版本需要 Windows 10 或 11。在 Windows 7/8 上遊戲可以啟動，
+      但當機無法避免。
     tr: |
       Bannerlord 1.2+ Windows 10 veya 11 gerektirir. Windows 7/8 üzerinde oyun
       açılabilir ama çökmeler kaçınılmazdır.
@@ -307,6 +360,8 @@
       - "Обновись до Windows 10 или 11."
     zh:
       - "升级到 Windows 10 或 11。"
+    zht:
+      - "升級到 Windows 10 或 11。"
     tr:
       - "Windows 10 veya 11'e yükseltin."
   match:
@@ -328,6 +383,7 @@
     en: "Page file is exhausted or disabled"
     ru: "Файл подкачки исчерпан или выключен"
     zh: "页面文件已耗尽或被禁用"
+    zht: "分頁檔已耗盡或被停用"
     tr: "Sayfa dosyası tükendi veya devre dışı"
   description:
     en: |
@@ -339,6 +395,9 @@
     zh: |
       Windows 页面文件可用空间不足 1 GB。使用重型模组时，这会导致
       access violation 崩溃。
+    zht: |
+      Windows 分頁檔可用空間不足 1 GB。使用重型模組時，這會導致
+      access violation 當機。
     tr: |
       Windows sayfa dosyasında 1 GB'den az boş alan var. Ağır modlarla bu,
       access violation çökmelerine yol açar.
@@ -352,6 +411,9 @@
     zh:
       - "系统属性 → 高级 → 性能 → 设置 → 高级 → 虚拟内存 → 在 SSD 上自定义 32–64 GB。"
       - "应用后重启电脑。"
+    zht:
+      - "系統內容 → 進階 → 效能 → 設定 → 進階 → 虛擬記憶體 → 在 SSD 上自訂 32–64 GB。"
+      - "套用後重新啟動電腦。"
     tr:
       - "Sistem Özellikleri → Gelişmiş → Performans → Ayarlar → Gelişmiş → Sanal Bellek → SSD üzerinde özel 32–64 GB."
       - "Uyguladıktan sonra yeniden başlatın."

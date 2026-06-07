@@ -13,6 +13,7 @@
     en: "Workshop mod has a corrupted .tpac asset pack"
     ru: "У Workshop-мода повреждён .tpac-пакет ассетов"
     zh: "某个创意工坊模组有一个损坏的 .tpac 资源包"
+    zht: "某個創意工坊模組有一個損壞的 .tpac 資源包"
     tr: "Bir Workshop modunun bozuk bir .tpac varlık paketi var"
   description:
     en: |
@@ -62,6 +63,21 @@
 
       原因几乎总是 Steam 下载中断或杀毒软件隔离——文件在磁盘上，但被截断 / 0 字节 /
       被阻止了。
+    zht: |
+      Bannerlord 無法從某個創意工坊模組資料夾非同步讀取一個 .tpac 資源包，隨後記錄了
+      "ERROR: File read failed! Please try to verify your installation!"。evidence 裡
+      的資源包編號和創意工坊 ID 告訴我們是哪個模組損壞了（把那個數字 ID 和你的
+      Steam 創意工坊訂閱對照一下）。
+
+      一旦某個 .tpac 載入失敗，裡面宣告的每一個預製件 / 骨架 / 粒子在本次工作階段的
+      剩下時間裡都會缺失。典型的連鎖反應：
+      - "Unable to find particle system with name <psys_blaze_small_1, comet_of_sigmar, ...>"
+      - "Emitter hierarchy does not match invalid_particle-invalid_particle"
+      - 缺失的骨架會無聲地回退到 invalid_particle，隨後在第一個需要它們的單位生成時
+        崩潰（TOR 裡的獸人、巨魔、哥布林）。
+
+      原因幾乎總是 Steam 下載中斷或防毒軟體隔離——檔案在磁碟上，但被截斷 / 0 位元組 /
+      被阻止了。
     tr: |
       Bannerlord, bir Workshop modu klasöründen bir .tpac varlık paketini
       eşzamansız olarak okuyamadı ve ardından "ERROR: File read failed! Please try
@@ -97,6 +113,12 @@
       - "如果重新订阅后同一个 .tpac 仍然失败：Windows Defender → 保护历史记录 → 恢复任何被隔离的 Bannerlord/Workshop 文件，然后手动把 Workshop 文件夹加入 Defender 排除（设置 → 隐私和安全性 → Windows 安全中心 → 病毒和威胁防护 → 管理设置 → 添加或删除排除项 → 文件夹）。"
       - "Steam → Bannerlord → 属性 → 已安装文件 → 验证完整性。能抓住原版 .tpac 损坏的罕见情况（Steam 验证不会碰模组）。"
       - "Crash Doctor → Tune-Up 里的 'SHA-256 integrity check' 卡片能发现 Steam 验证看不到的无声损坏（创意工坊模组）。"
+    zht:
+      - "在 evidence 裡找到 Workshop ID（/261550/<id>/ 後面的那個數字）。開啟 https://steamcommunity.com/sharedfiles/filedetails/?id=<id> 看看這是哪個模組。"
+      - "Steam → 創意工坊 → 已訂閱 → 找到該模組 → 取消訂閱。等 30 秒讓 Steam 刪除它的檔案。然後重新訂閱——完整地重新下載。"
+      - "如果重新訂閱後同一個 .tpac 仍然失敗：Windows Defender → 保護歷程記錄 → 還原任何被隔離的 Bannerlord/Workshop 檔案，然後手動把 Workshop 資料夾加入 Defender 排除（設定 → 隱私權與安全性 → Windows 安全性 → 病毒與威脅防護 → 管理設定 → 新增或移除排除項 → 資料夾）。"
+      - "Steam → Bannerlord → 內容 → 已安裝檔案 → 驗證完整性。能抓住原版 .tpac 損壞的罕見情況（Steam 驗證不會碰模組）。"
+      - "Crash Doctor → Tune-Up 裡的 'SHA-256 integrity check' 卡片能發現 Steam 驗證看不到的無聲損壞（創意工坊模組）。"
     tr:
       - "Evidence'ta Workshop kimliğini bul (/261550/<id>/ sonrasındaki sayı). Hangi mod olduğunu görmek için https://steamcommunity.com/sharedfiles/filedetails/?id=<id> adresini aç."
       - "Steam → Workshop → Abonelikler → modu bul → Abonelikten çık. Steam dosyaları silsin diye 30 saniye bekle. Sonra yeniden abone ol — tam yeniden indirme."
@@ -123,6 +145,7 @@
     en: "Asset pack exceeds Bannerlord's memory pool limit"
     ru: "Pack ассетов превышает лимит memory pool Bannerlord"
     zh: "资源包超出了 Bannerlord 的内存池上限"
+    zht: "資源包超出了 Bannerlord 的記憶體池上限"
     tr: "Varlık paketi Bannerlord'un bellek havuzu sınırını aşıyor"
   description:
     en: |
@@ -158,6 +181,16 @@
       它本身不会崩溃——是自定义内容繁重的模组堆叠的症状。常见的肇事者：4K 纹理包
       （"Improved Visuals"、"RealisticBattle" 护甲包）、大型城市重做、吸血鬼城堡的
       预制件包。
+    zht: |
+      Bannerlord 記錄了 "Performance warning read N byte from <path>/pack0.tpac
+      is bigger than memory pool limit M"——單個 .tpac 的負載超出了 256 MB 的資源
+      快取。引擎的應對方式是分塊串流而不是快取，這會拖慢戰鬥載入，並加劇
+      VRAM/RAM 的抖動。在中等配置（記憶體低於 32 GB、顯示記憶體低於 8 GB）加上 TOR + 重型
+      模組的情況下，這種爭用可能在下一次切換場景時引發「記憶體不足」的連鎖反應。
+
+      它本身不會崩潰——是自訂內容繁重的模組堆疊的症狀。常見的肇事者：4K 紋理包
+      （"Improved Visuals"、"RealisticBattle" 護甲包）、大型城市重做、吸血鬼城堡的
+      預製件包。
     tr: |
       Bannerlord, "Performance warning read N byte from <path>/pack0.tpac is
       bigger than memory pool limit M" kaydetti — tek bir .tpac yükü 256 MB'lik
@@ -186,6 +219,11 @@
       - "把游戏里的 Texture Quality 和 Texture Budget 各降低一档。能释放几百 MB 的内存池空间。"
       - "启动前关闭吃内存的后台应用：浏览器（Chrome / Edge）、VR 运行时、AI 工具（Ollama）。Crash Doctor → Tune-Up → 'Heavy VRAM apps' 会列出当前正在运行的。"
       - "把页面文件提到 32+ GB 系统托管（Crash Doctor → Tune-Up → 'Pagefile' 卡片）——当内存池饱和时给串流层一个退路。"
+    zht:
+      - "找出堆疊裡最重的紋理 / 預製件模組——Workshop ID 在 evidence 裡。如果不是非要不可，就取消訂閱。"
+      - "把遊戲裡的 Texture Quality 和 Texture Budget 各降低一檔。能釋放幾百 MB 的記憶體池空間。"
+      - "啟動前關閉吃記憶體的背景應用程式：瀏覽器（Chrome / Edge）、VR 執行階段、AI 工具（Ollama）。Crash Doctor → Tune-Up → 'Heavy VRAM apps' 會列出目前正在執行的。"
+      - "把分頁檔提到 32+ GB 系統託管（Crash Doctor → Tune-Up → 'Pagefile' 卡片）——當記憶體池飽和時給串流層一個退路。"
     tr:
       - "Yığındaki en ağır doku/prefab modlarını bul — Workshop kimliği evidence'ta. Onlara kesin ihtiyacın yoksa abonelikten çık."
       - "Oyun içi Texture Quality ve Texture Budget'ı birer kademe düşür. Birkaç yüz MB havuz alanı açar."
@@ -206,6 +244,7 @@
     en: "Bannerlord asset file read failed (verify your installation)"
     ru: "Не удалось прочитать файл ассетов Bannerlord (проверь установку)"
     zh: "Bannerlord 资源文件读取失败（请验证你的安装）"
+    zht: "Bannerlord 資源檔案讀取失敗（請驗證你的安裝）"
     tr: "Bannerlord varlık dosyası okuması başarısız (kurulumunu doğrula)"
   description:
     en: |
@@ -240,6 +279,16 @@
         但大小为 0 字节。
       - 某个模组在游戏途中被卸载，而玩家继续在玩。
       - 磁盘坏扇区——在 SSD 上罕见，在老旧 HDD 上常见。
+    zht: |
+      Bannerlord 的 IO 層擲出了 "ERROR: File read failed! Please try to verify
+      your installation!"，前面沒有清晰的非同步讀取標籤，所以我們無法定位到某個
+      具體的模組。這是一般性的 IO 故障：引擎本應讀取的某個檔案讀不了。典型原因：
+
+      - Steam 下載中斷（檔案比資訊清單條目要短）。
+      - 在某次 Windows 更新後，防毒軟體把某個 .dll / .tpac 隔離了——檔案還在磁碟上，
+        但大小為 0 位元組。
+      - 某個模組在遊戲途中被解除安裝，而玩家繼續在玩。
+      - 磁碟壞磁區——在 SSD 上罕見，在老舊 HDD 上常見。
     tr: |
       Bannerlord'un IO katmanı, önünde net bir eşzamansız okuma etiketi olmadan
       "ERROR: File read failed! Please try to verify your installation!" fırlattı,
@@ -270,6 +319,12 @@
       - "检查 Windows Defender → 保护历史记录。恢复任何与 Bannerlord 相关的被隔离项，然后手动把安装文件夹和 Workshop 文件夹加入排除（设置 → 隐私和安全性 → Windows 安全中心 → 病毒和威胁防护 → 管理设置 → 添加或删除排除项 → 文件夹）。"
       - "如果在验证 + 恢复之后问题仍然存在：重新订阅所有创意工坊模组（Steam 创意工坊 → 已订阅 → 取消订阅 → 重新订阅）。强制完整重新下载。"
       - "老旧 HDD：在装有 Bannerlord 的磁盘上运行 `chkdsk /r`。如果罪魁祸首是磁盘，坏扇区重映射可能能恢复该文件。"
+    zht:
+      - "Steam → Bannerlord → 內容 → 已安裝檔案 → 驗證遊戲檔案完整性。會重新下載任何過短 / 缺失的檔案。"
+      - "Crash Doctor → Tune-Up 裡的 'SHA-256 integrity check' 卡片。能發現創意工坊模組的損壞（Steam 驗證只檢查遊戲檔案，不查模組）。"
+      - "檢查 Windows Defender → 保護歷程記錄。還原任何與 Bannerlord 相關的被隔離項，然後手動把安裝資料夾和 Workshop 資料夾加入排除（設定 → 隱私權與安全性 → Windows 安全性 → 病毒與威脅防護 → 管理設定 → 新增或移除排除項 → 資料夾）。"
+      - "如果在驗證 + 還原之後問題仍然存在：重新訂閱所有創意工坊模組（Steam 創意工坊 → 已訂閱 → 取消訂閱 → 重新訂閱）。強制完整重新下載。"
+      - "老舊 HDD：在裝有 Bannerlord 的磁碟上執行 `chkdsk /r`。如果罪魁禍首是磁碟，壞磁區重新對應可能能還原該檔案。"
     tr:
       - "Steam → Bannerlord → Özellikler → Yüklü Dosyalar → Oyun dosyalarının bütünlüğünü doğrula. Kısa/eksik dosyaları yeniden indirir."
       - "Crash Doctor → Tune-Up'taki 'SHA-256 integrity check' kartı. Workshop-mod bozulmasını yakalar (Steam doğrulaması yalnızca oyun dosyalarını kontrol eder, modları değil)."

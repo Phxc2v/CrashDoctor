@@ -3,6 +3,7 @@
     en: "Close heavy VRAM-eating background apps"
     ru: "Закрыть жрущие VRAM фоновые приложения"
     zh: "关闭占用大量显存的后台应用程序"
+    zht: "關閉佔用大量顯示記憶體的背景應用程式"
     tr: "Çok fazla VRAM tüketen arka plan uygulamalarını kapat"
   description:
     en: |
@@ -38,6 +39,16 @@
       ComfyUI），视频编辑器（DaVinci Resolve、Adobe Premiere / After Effects、Topaz Video AI）。
       第二梯队（0.5–2 GB）：开了硬件加速且有许多标签页的 Chrome / Edge / Firefox、
       处于 Game Capture 模式的 OBS Studio、NVIDIA Broadcast、Epic Games Launcher、Wallpaper Engine。
+    zht: |
+      與 M5.7 不同的另一項掃描——這裡關注的不是掛鉤 D3D 的搗亂程式，而是執行時單純佔用
+      大量獨立顯示記憶體的應用程式。TOR + Bannerlord 在 1080p+ 下已經佔用 5–8 GB 顯示記憶體，
+      此時背景只要有任何一個這類應用程式，就足以在中階顯示卡上把下一次 CreateTexture2D 推過臨界點。
+
+      最嚴重的（即使閒置也佔 1.5 GB+）：VR 執行階段（Oculus / Meta Quest Link、SteamVR
+      合成器、Windows Mixed Reality），AI / LLM 工具（Ollama、LM Studio、Stable Diffusion、
+      ComfyUI），影片編輯器（DaVinci Resolve、Adobe Premiere / After Effects、Topaz Video AI）。
+      第二梯隊（0.5–2 GB）：開了硬體加速且有許多分頁的 Chrome / Edge / Firefox、
+      處於 Game Capture 模式的 OBS Studio、NVIDIA Broadcast、Epic Games Launcher、Wallpaper Engine。
     tr: |
       M5.7'den ayrı bir tarama — burada D3D'ye kanca takan baş belaları değil, sadece
       çalışırken büyük bir özel GPU bellek dilimini tutan uygulamalar hedeflenir. TOR +
@@ -79,6 +90,15 @@
       - "浏览器（开了硬件加速 + 许多标签页）：Chrome、Edge、Firefox、Brave、Opera GX。"
       - "其他：Epic Games Launcher（后台视频）、Discord（硬件加速 + 叠加层）、Wallpaper Engine。"
       - "关闭应用后重新扫描，确认卡片已消除。"
+    zht:
+      - "「套用」會開啟工作管理員——盡可能透過應用程式自己的介面關閉它們。強行結束 VR 執行階段可能會讓頭戴裝置卡死，直到重新啟動。"
+      - "VR 執行階段：Oculus / Meta Quest Link、SteamVR（vrcompositor / vrserver）、Mixed Reality Portal、Virtual Desktop Streamer。"
+      - "AI / LLM：Ollama、LM Studio、Stable Diffusion（A1111 / ComfyUI）。"
+      - "影片 / 3D：DaVinci Resolve、Adobe Premiere Pro、Adobe After Effects、Topaz Video AI、Blender、Photoshop、Lightroom。"
+      - "串流 / 擷取：OBS Studio、NVIDIA Broadcast、NVIDIA ShadowPlay、XSplit。"
+      - "瀏覽器（開了硬體加速 + 許多分頁）：Chrome、Edge、Firefox、Brave、Opera GX。"
+      - "其他：Epic Games Launcher（背景影片）、Discord（硬體加速 + 覆蓋層）、Wallpaper Engine。"
+      - "關閉應用程式後重新掃描，確認卡片已消除。"
     tr:
       - "«Uygula» Görev Yöneticisi'ni açar — mümkünse uygulamaları kendi arayüzleri üzerinden kapatın. VR çalışma zamanlarını sertçe sonlandırmak, yeniden başlatana kadar başlığı kilitleyebilir."
       - "VR çalışma zamanları: Oculus / Meta Quest Link, SteamVR (vrcompositor / vrserver), Mixed Reality Portal, Virtual Desktop Streamer."

@@ -3,6 +3,7 @@
     en: "Documents folder is on OneDrive"
     ru: "Папка «Документы» на OneDrive"
     zh: "「文档」文件夹位于 OneDrive 上"
+    zht: "「文件」資料夾位於 OneDrive 上"
     tr: "Belgeler klasörü OneDrive üzerinde"
   description:
     en: |
@@ -25,6 +26,12 @@
       写入过程中锁定文件——这会损坏长期战役的存档——或在云端繁忙时导致日志轮转失败。
       推荐的修复方法是将 Bannerlord 文件夹标记为「始终保留在此设备上」，或者完全禁用
       OneDrive 对「文档」的备份。
+    zht: |
+      Bannerlord 將存檔、設定和著色器記錄儲存在「文件」資料夾下。當「文件」透過
+      OneDrive 重新導向時（新裝 Windows 的預設設定），OneDrive 的延遲同步可能會在
+      寫入過程中鎖定檔案——這會損壞長期戰役的存檔——或在雲端忙碌時導致記錄輪替失敗。
+      推薦的修復方法是將 Bannerlord 資料夾標記為「永遠保留在此裝置上」，或者完全停用
+      OneDrive 對「文件」的備份。
     tr: |
       Bannerlord kayıtları, yapılandırmaları ve gölgelendirici günlüklerini Belgeler
       altında saklar. Belgeler OneDrive üzerinden yönlendirildiğinde (yeni Windows
@@ -55,6 +62,13 @@
       - "永久修复：OneDrive 设置 → 备份 → 管理备份 → 取消勾选「文档」。文件会保留在你本地的「文档」文件夹中，OneDrive 只是停止同步它们。"
       - "如果你已经不小心删除了 OneDrive 文件夹：存档可在 30 天内通过 https://onedrive.live.com → 回收站（以及本地回收站）恢复。"
       - "重新固定后，长期战役中存档损坏的风险会大幅下降。"
+    zht:
+      - "⚠ 不要刪除整個 OneDrive 資料夾。那會同時抹掉你本機和雲端同步中的存檔。請使用下面的步驟——它們會保持你的存檔完好。"
+      - "「套用」會開啟「文件」中的 Bannerlord 資料夾。"
+      - "右鍵點擊「Mount and Blade II Bannerlord」→「永遠保留在此裝置上」（強制本機副本，存檔保留）。"
+      - "永久修復：OneDrive 設定 → 備份 → 管理備份 → 取消勾選「文件」。檔案會保留在你本機的「文件」資料夾中，OneDrive 只是停止同步它們。"
+      - "如果你已經不小心刪除了 OneDrive 資料夾：存檔可在 30 天內透過 https://onedrive.live.com → 資源回收筒（以及本機資源回收筒）復原。"
+      - "重新固定後，長期戰役中存檔損壞的風險會大幅下降。"
     tr:
       - "⚠ OneDrive klasörünü tamamen SİLMEYİN. Bu, kayıtlarınızı hem yerelde hem de bulut eşitlemesinde siler. Aşağıdaki adımları kullanın — bunlar kayıtlarınızı sağlam tutar."
       - "«Uygula», Belgeler içindeki Bannerlord klasörünü açar."

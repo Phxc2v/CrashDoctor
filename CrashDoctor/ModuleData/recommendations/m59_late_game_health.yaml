@@ -3,6 +3,7 @@
     en: "Late-game campaign health check"
     ru: "Проверка здоровья поздней кампании"
     zh: "后期战役健康检查"
+    zht: "後期戰役健康檢查"
     tr: "Geç oyun kampanya sağlık kontrolü"
   description:
     en: |
@@ -64,6 +65,24 @@
         重启一次会话；考虑开一局新战役。
 
       仅在 Campaign.Current 非 null 时触发。游戏全新启动且未加载存档后，卡片保持隐藏。
+    zht: |
+      讀取即時的 Campaign.Current，以估計存檔是否正走向已知的後期當機區域。這些問題
+      沒有一個會在當機記錄中留下指紋——它們在數小時內逐漸拖垮戰役，然後在下一次載入
+      存檔時爆發。這是 Crash Doctor 中唯一的「前瞻性」診斷。
+
+      閾值（來自收集的後期 CTD 目錄）：
+
+      * 英雄膨脹——800+ 個存活英雄。存檔膨脹、每日 tick 卡頓以及載入時的 NRE
+        級聯幾乎必然發生。Heroes Must Die（Nexus 1164）會動態削減。
+      * 滾雪球——在第 200 天之前，40%+ 的初始王國被消滅。會引發派系合併的 NRE
+        和 KingdomDestructionAction 當機。Diplomacy（Nexus 832）提供互不侵犯條約和
+        基於政治成本的和平，減緩滾雪球。
+      * 戰爭級聯——玩家王國同時處於 3+ 場戰爭。會給 AI 帶來壓力並加速經濟崩潰。
+        Diplomacy + AutoBlocker 可以應對。
+      * 長期戰役——第 500 天+ 且有 600+ 個英雄。有記憶體洩漏風險；每 60–90 分鐘
+        重新啟動一次工作階段；考慮開一局新戰役。
+
+      僅在 Campaign.Current 非 null 時觸發。遊戲全新啟動且未載入存檔後，卡片保持隱藏。
     tr: |
       Kayıtın bilinen geç oyun çökme bölgesine doğru gidip gitmediğini tahmin etmek için
       canlı Campaign.Current'ı okur. Bu sorunların hiçbirinin çökme günlüğünde bir parmak
@@ -102,6 +121,11 @@
       - "卡片为信息性——不会自动应用。安装模组、重启游戏、重新扫描以验证。"
       - "如果一切正常：卡片保持隐藏（Healthy / NotApplicable）。"
       - "只有在你本次会话中加载了存档之后才有意义——在全新主菜单中 Campaign.Current 为 null。"
+    zht:
+      - "「套用」會開啟 NexusMods 上最相關的修復模組頁面（Heroes Must Die / Diplomacy / Death Reduced）。"
+      - "卡片為資訊性——不會自動套用。安裝模組、重新啟動遊戲、重新掃描以驗證。"
+      - "如果一切正常：卡片保持隱藏（Healthy / NotApplicable）。"
+      - "只有在你本次工作階段中載入了存檔之後才有意義——在全新主選單中 Campaign.Current 為 null。"
     tr:
       - "«Uygula» NexusMods'taki en alakalı düzeltme-mod sayfasını açar (Heroes Must Die / Diplomacy / Death Reduced)."
       - "Kart bilgilendirme amaçlıdır — otomatik uygulama yok. Modu kurun, oyunu yeniden başlatın, doğrulamak için yeniden tarayın."

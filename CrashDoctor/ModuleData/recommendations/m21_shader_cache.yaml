@@ -3,6 +3,7 @@
     en: "Clear Bannerlord shader cache"
     ru: "Очистить кэш шейдеров Bannerlord"
     zh: "清理 Bannerlord 着色器缓存"
+    zht: "清理 Bannerlord 著色器快取"
     tr: "Bannerlord gölgelendirici önbelleğini temizle"
   description:
     en: |
@@ -16,6 +17,10 @@
     zh: |
       着色器缓存保存着已编译的 GPU 着色器。在 Bannerlord 或 TOR 更新之后，或在
       更换显卡驱动程序之后，缓存可能会过时并触发 d3d 错误、黑屏，或着色器编译崩溃
+      （"Error compiling shader file: ...particle_shading.rs"）。
+    zht: |
+      著色器快取保存著已編譯的 GPU 著色器。在 Bannerlord 或 TOR 更新之後，或在
+      更換顯示卡驅動程式之後，快取可能會過時並觸發 d3d 錯誤、黑畫面，或著色器編譯當機
       （"Error compiling shader file: ...particle_shading.rs"）。
     tr: |
       Gölgelendirici önbelleği derlenmiş GPU gölgelendiricilerini tutar. Bir Bannerlord veya TOR
@@ -38,6 +43,11 @@
       - "清理后首次启动 Bannerlord 会花费 10–60 分钟重新编译着色器。"
       - "重启游戏后请立即在主菜单点击 'Build Shader Cache' 按钮，"
       - "否则第一场战斗会严重卡顿。"
+    zht:
+      - "檔案會被移到 Windows 資源回收筒，需要時可以還原。"
+      - "清理後首次啟動 Bannerlord 會花費 10–60 分鐘重新編譯著色器。"
+      - "重新啟動遊戲後請立即在主選單點擊 'Build Shader Cache' 按鈕，"
+      - "否則第一場戰鬥會嚴重卡頓。"
     tr:
       - "Dosyalar Windows Geri Dönüşüm Kutusu'na taşınır ve gerekirse geri yüklenebilir."
       - "Bundan sonra Bannerlord'un ilk açılışı gölgelendiricileri yeniden derlemek için 10–60 dakika harcar."

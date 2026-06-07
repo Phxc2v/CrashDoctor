@@ -3,6 +3,7 @@
     en: "SubModule.xml dependency graph audit"
     ru: "Аудит графа зависимостей SubModule.xml"
     zh: "SubModule.xml 依赖图审查"
+    zht: "SubModule.xml 相依圖審查"
     tr: "SubModule.xml bağımlılık grafiği denetimi"
   description:
     en: |
@@ -44,6 +45,19 @@
 
       可选依赖（带 optional="true" 的 DependedModuleMetadata）会被尊重——
       缺失的可选依赖会被悄无声息地忽略。
+    zht: |
+      捕捉最常見的模組設定當機——「訂閱了模組 X 卻忘了它的相依項 Y」——在玩家啟動
+      並在戰役進行 5 分鐘後撞上 NullReferenceException 之前就發現它。會遍歷
+      <game>\Modules\ 和 <workshop>\261550\<id>\ 中的每個 SubModule.xml，建構相依圖，
+      並標記：
+
+      - 缺失的硬相依（模組 X 需要 Y，但 Y 未安裝）。Critical。
+      - 版本不匹配（模組 X 需要 Y >= v1.2.3，但已安裝的 Y 更舊）。Warning。
+      - game+workshop 中模組 Id 重複（Bannerlord 會隨機選擇其中一個）。
+      - 宣告的不相容性（模組 X 將自己標記為與 Y 不相容，且兩者都已安裝）——很可能當機；停用其中之一。
+
+      可選相依（帶 optional="true" 的 DependedModuleMetadata）會被尊重——
+      缺失的可選相依會被悄無聲息地忽略。
     tr: |
       En yaygın mod yapılandırması çökmesini yakalar — "X moduna abone oldum ama
       bağımlılığı Y'yi unuttum" — oyuncu başlatıp kampanyanın 5. dakikasında bir
@@ -77,6 +91,12 @@
       - "带 optional=\"true\" 的可选依赖会被排除在缺失依赖检查之外。"
       - "版本比较会去除 'v'/'e' 前缀并按 '.'/'-' 拆分。无法解析的版本会跳过检查（无误报）。"
       - "不可撤销（仅审查）。"
+    zht:
+      - "唯讀 XML 審查。我們絕不修改 SubModule.xml 或 LauncherData.xml。"
+      - "「套用」會為 Bannerlord 開啟 Steam 創意工坊（缺失的相依項請自行訂閱）。"
+      - "帶 optional=\"true\" 的可選相依會被排除在缺失相依檢查之外。"
+      - "版本比較會去除 'v'/'e' 前綴並按 '.'/'-' 拆分。無法解析的版本會跳過檢查（無誤報）。"
+      - "不可復原（僅審查）。"
     tr:
       - "Salt okunur XML denetimi. SubModule.xml veya LauncherData.xml'i asla değiştirmeyiz."
       - "«Uygula» Bannerlord için Steam Atölyesi'ni açar (eksik bağımlılıklara kendiniz abone olun)."

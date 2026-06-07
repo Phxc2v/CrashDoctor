@@ -15,6 +15,7 @@
     en: "Code-level crash — a mod's code threw, NOT a shader/driver problem"
     ru: "Краш в коде — упал код мода, это НЕ проблема шейдеров/драйвера"
     zh: "代码级崩溃——是某个模组的代码抛出的，而非着色器/驱动问题"
+    zht: "程式碼層級崩潰——是某個模組的程式碼擲出的，而非著色器/驅動問題"
     tr: "Kod düzeyinde çökme — bir modun kodu hata verdi, bu bir gölgelendirici/sürücü sorunu DEĞİL"
   description:
     en: |
@@ -34,6 +35,11 @@
       模组/游戏代码抛出了异常——而不是着色器、驱动或显卡的问题。重建着色器缓存或
       更新驱动都无法修复它。受影响的子系统、可能的肇事模组以及顶部堆栈帧已列在下方
       证据中——这正是开发者编写补丁所需要的信息。
+    zht: |
+      Crash Doctor 捕獲到了本次崩潰的真實 .NET 例外。這代表遊戲崩潰是因為某段
+      模組/遊戲程式碼擲出了例外——而不是著色器、驅動或顯示卡的問題。重建著色器快取或
+      更新驅動都無法修復它。受影響的子系統、可能的肇事模組以及頂部堆疊框架已列在下方
+      證據中——這正是開發者編寫修補程式所需要的資訊。
     tr: |
       Crash Doctor bu çökmenin gerçek .NET istisnasını yakaladı. Bu, oyunun bir mod/oyun
       KODU hata fırlattığı için çöktüğü anlamına gelir — gölgelendiriciler, sürücüler veya
@@ -57,6 +63,11 @@
       - "反馈频道：https://t.me/CodeRickTg 。说明崩溃时你在做什么（战斗 / 菜单 / 读取存档 / 哪些模组）。"
       - "把下方证据（子系统、肇事模组、堆栈帧）复制到你的消息里——正是它们定位了 bug。"
       - "不要为这次崩溃重建着色器或更换驱动——这是代码 bug，没用。如果肇事者是某个具体模组，可尝试临时禁用它。"
+    zht:
+      - "點擊下方「開啟資料夾」，把裡面的 report.txt 檔案傳給開發者——它已包含例外、肇事模組和完整堆疊，做修補程式所需的一切都在裡面。"
+      - "回報頻道：https://t.me/CodeRickTg 。說明崩潰時你在做什麼（戰鬥 / 選單 / 讀取存檔 / 哪些模組）。"
+      - "把下方證據（子系統、肇事模組、堆疊框架）複製到你的訊息裡——正是它們定位了 bug。"
+      - "不要為這次崩潰重建著色器或更換驅動——這是程式碼 bug，沒用。如果肇事者是某個具體模組，可嘗試暫時停用它。"
     tr:
       - "Aşağıdaki «Klasörü aç» düğmesine tıkla ve içindeki report.txt dosyasını geliştiriciye gönder — istisnayı, suçlu modu ve tam yığın izini, yani yama için gereken her şeyi zaten içerir."
       - "Rapor kanalı: https://t.me/CodeRickTg . Çökme anında ne yaptığını belirt (savaş / menü / kayıt yükleme / hangi modlar)."
@@ -82,6 +93,12 @@
           - all:
               - managed_exception: { frame_contains: "SellPrisonersAction" }
               - managed_exception: { type_contains: "UnderFlow" }
+          - all:
+              - managed_exception: { frame_contains: "NavalMobilePartyVisual" }
+              - managed_exception: { type_contains: "AccessViolation" }
+          - all:
+              - managed_exception: { frame_contains: "game_menu_encounter_on_init" }
+              - managed_exception: { type_contains: "NullReference" }
 
 - id: campaign.sell_prisoners_underflow
   category: managed
@@ -93,6 +110,7 @@
     en: "Prisoner auto-sell underflow (roster desync) — guarded by Crash Doctor"
     ru: "Андерфлоу при автопродаже пленных (рассинхрон ростера) — перехвачено Crash Doctor"
     zh: "俘虏自动出售下溢（名册不同步）——已被 Crash Doctor 拦截"
+    zht: "俘虜自動出售下溢（名冊不同步）——已被 Crash Doctor 攔截"
     tr: "Esir otomatik satış alt taşması (kadro uyumsuzluğu) — Crash Doctor tarafından korunuyor"
   description:
     en: |
@@ -127,6 +145,15 @@
       异常——拖垮整个战役 tick。不同步源自损坏/被编辑的俘虏名册或其他修改俘虏的
       模组；原版没有防护。这是代码/名册 bug，不是着色器或驱动问题——重建着色器
       没有用。
+    zht: |
+      MBUnderFlowException（"ItemRosterElement::Character"）從
+      SellPrisonersAction.ApplyInternal 擲出，發生在某支隊伍進入城鎮時自動
+      出售俘虜（PartiesSellPrisonerCampaignBehavior.OnSettlementEntered）或聚落
+      每日結算時。ApplyInternal 會從賣方的即時俘虜名冊中扣除售出數量；當名冊
+      不同步（士兵或傷員多於實際存在的數量）時，名冊計數會降到零以下，引擎擲出
+      例外——拖垮整個戰役 tick。不同步源自損壞/被編輯的俘虜名冊或其他修改俘虜的
+      模組；原版沒有防護。這是程式碼/名冊 bug，不是著色器或驅動問題——重建著色器
+      沒有用。
     tr: |
       Bir grup kasabaya girerken esirleri otomatik satarken
       (PartiesSellPrisonerCampaignBehavior.OnSettlementEntered) ya da bir
@@ -155,6 +182,11 @@
       - "如果在同一个存档上反复发生：该存档上的某个俘虏名册已损坏。出售/释放崩溃队伍的俘虏（通常是你刚进入的城镇附近某个特定领主的队伍）。"
       - "怀疑任何编辑俘虏/名册的模组（招募俘虏、驻军、部队编辑器类）。逐个禁用以找到来源。"
       - "不要重建着色器或更换驱动——这是名册 bug，没用。"
+    zht:
+      - "Crash Doctor 已經攔截了它——安全網吞掉了下溢，遊戲繼續；受影響的隊伍只是跳過那一次自動出售。保持「例外防護」設定為開啟。"
+      - "如果在同一個存檔上反覆發生：該存檔上的某個俘虜名冊已損壞。出售/釋放崩潰隊伍的俘虜（通常是你剛進入的城鎮附近某個特定領主的隊伍）。"
+      - "懷疑任何編輯俘虜/名冊的模組（招募俘虜、駐軍、部隊編輯器類）。逐個停用以找到來源。"
+      - "不要重建著色器或更換驅動——這是名冊 bug，沒用。"
     tr:
       - "Crash Doctor bunu zaten koruyor — güvenlik ağı alt taşmayı yutar, oyun devam eder; etkilenen grup sadece o tek otomatik satışı atlar. «İstisna korumaları» ayarını AÇIK tut."
       - "Aynı kayıtta tekrarlanıyorsa: o kayıttaki bir esir kadrosu bozuk. Çöken grubun esirlerini sat/serbest bırak (genellikle yeni girdiğin bir kasabanın yakınındaki belirli bir lordun grubu)."
@@ -164,3 +196,230 @@
     all:
       - managed_exception: { frame_contains: "SellPrisonersAction" }
       - managed_exception: { type_contains: "UnderFlow" }
+
+- id: campaign.encounter_menu_init_nre
+  category: managed
+  severity: critical
+  confidence: high
+  evidence_source: "Client crash 2026-06-07 report(4).txt — NullReferenceException EncounterGameMenuBehavior.game_menu_encounter_on_init ← GameMenu.RunOnInit ← MenuContext.HandleStates ← MapState.EnterMenuMode ← MapState.OnLoadingFinished. Captured by Crash Doctor managed capture."
+  requires_sources: [managed_exception]
+  title:
+    en: "Save-load crash — broken encounter in the save — guarded by Crash Doctor"
+    ru: "Вылет при загрузке — повреждённое столкновение в сейве — перехвачено Crash Doctor"
+    zh: "读档崩溃——存档中的遭遇已损坏——已被 Crash Doctor 拦截"
+    zht: "讀檔崩潰——存檔中的遭遇已損壞——已被 Crash Doctor 攔截"
+    tr: "Kayıt yükleme çökmesi — kayıtta bozuk karşılaşma — Crash Doctor tarafından korunuyor"
+  description:
+    en: |
+      NullReferenceException thrown from EncounterGameMenuBehavior.game_menu_encounter_on_init
+      right after a save finished loading (MapState.OnLoadingFinished → EnterMenuMode → RunOnInit).
+      The save's last menu was the "encounter" menu (you saved during a battle / siege /
+      settlement entry), but the PlayerEncounter state did not restore: PlayerEncounter.Current
+      and MobileParty.MainParty.MapEvent are both null. Vanilla init then calls
+      PlayerEncounter.StartBattle()/Update(), which dereference the null encounter and crash the
+      whole load. This is a broken/dangling encounter saved into THAT save file — a state bug,
+      NOT a shader or driver problem, and not specific to one mod's code (TOR also patches this
+      menu but its prefix passes through to vanilla here).
+    ru: |
+      NullReferenceException из EncounterGameMenuBehavior.game_menu_encounter_on_init сразу
+      после того, как сейв догрузился (MapState.OnLoadingFinished → EnterMenuMode → RunOnInit).
+      Последним меню в сейве было меню «столкновения» (сохранялись во время боя / осады /
+      входа в поселение), но состояние PlayerEncounter не восстановилось: PlayerEncounter.Current
+      и MobileParty.MainParty.MapEvent оба null. Ванильный код вызывает
+      PlayerEncounter.StartBattle()/Update() по null-столкновению и роняет всю загрузку. Это
+      повреждённое/висящее столкновение, записанное именно в ЭТОТ сейв — баг состояния, а НЕ
+      проблема шейдеров или драйвера, и не вина кода конкретного мода (TOR тоже патчит это меню,
+      но его prefix здесь пропускает в ваниль).
+    zh: |
+      存档刚加载完毕（MapState.OnLoadingFinished → EnterMenuMode → RunOnInit）后，
+      EncounterGameMenuBehavior.game_menu_encounter_on_init 抛出空引用异常。存档的最后一个菜单
+      是“遭遇”菜单（你在战斗／围城／进入定居点时保存），但 PlayerEncounter 状态未能恢复：
+      PlayerEncounter.Current 和 MobileParty.MainParty.MapEvent 都为 null。原版代码随后调用
+      PlayerEncounter.StartBattle()/Update()，对空遭遇取引用，导致整个读档崩溃。这是写入“该”
+      存档的损坏／悬空遭遇——是状态 bug，不是着色器或驱动问题，也不是某个模组代码的错（TOR 也
+      会修补此菜单，但其前缀在此处放行到原版）。
+    zht: |
+      存檔剛載入完畢（MapState.OnLoadingFinished → EnterMenuMode → RunOnInit）後，
+      EncounterGameMenuBehavior.game_menu_encounter_on_init 擲出空參考例外。存檔的最後一個選單
+      是「遭遇」選單（你在戰鬥／圍城／進入聚落時存檔），但 PlayerEncounter 狀態未能恢復：
+      PlayerEncounter.Current 和 MobileParty.MainParty.MapEvent 都為 null。原版程式碼隨後呼叫
+      PlayerEncounter.StartBattle()/Update()，對空遭遇取參考，導致整個讀檔崩潰。這是寫入「該」
+      存檔的損壞／懸空遭遇——是狀態 bug，不是著色器或驅動問題，也不是某個模組程式碼的錯（TOR 也
+      會修補此選單，但其前綴在此處放行到原版）。
+    tr: |
+      Bir kayıt yüklenmeyi bitirir bitirmez (MapState.OnLoadingFinished → EnterMenuMode →
+      RunOnInit) EncounterGameMenuBehavior.game_menu_encounter_on_init'ten
+      NullReferenceException fırlatıldı. Kaydın son menüsü "karşılaşma" menüsüydü (savaş /
+      kuşatma / yerleşime giriş sırasında kaydetmişsin), ama PlayerEncounter durumu geri
+      yüklenemedi: PlayerEncounter.Current ve MobileParty.MainParty.MapEvent ikisi de null.
+      Orijinal kod sonra PlayerEncounter.StartBattle()/Update() çağırır, null karşılaşmaya
+      başvurur ve tüm yüklemeyi çökertir. Bu, O kayıt dosyasına yazılmış bozuk/asılı bir
+      karşılaşmadır — bir durum hatası, gölgelendirici veya sürücü sorunu DEĞİL ve belirli bir
+      modun kodunun suçu değil (TOR da bu menüyü yamalar ama ön eki burada orijinale geçiş yapar).
+  fix:
+    en:
+      - "Crash Doctor already guards this — its safety net returns you to the campaign map instead of crashing, so the save opens. Keep the «Save-load crash guard (broken encounter)» fix ON (Crash Fixes tab)."
+      - "That specific save is damaged in its encounter state. Load an EARLIER save — one made BEFORE you entered that battle / siege / settlement (an autosave from before the encounter works)."
+      - "If you land on the map via the safety net, save immediately to a fresh slot — that new save is clean."
+      - "Do NOT rebuild shaders or change drivers — this is a save-state bug, that won't help."
+    ru:
+      - "Crash Doctor уже это перехватывает — safety net возвращает тебя на карту кампании вместо вылета, и сейв открывается. Держи фикс «Защита от вылета при загрузке (повреждённое столкновение)» ВКЛ (вкладка «Фиксы крашей»)."
+      - "Конкретно этот сейв повреждён в части столкновения. Загрузи БОЛЕЕ РАННИЙ сейв — сделанный ДО входа в тот бой / осаду / поселение (подойдёт автосейв до столкновения)."
+      - "Если safety net вернул тебя на карту — сразу сохранись в новый слот, этот новый сейв уже чистый."
+      - "НЕ пересобирай шейдеры и не меняй драйвер — это баг состояния сейва, не поможет."
+    zh:
+      - "Crash Doctor 已经拦截了它——安全网会把你送回战役大地图而非崩溃，存档即可打开。在「崩溃修复」页保持「读档崩溃防护（损坏的遭遇）」为开。"
+      - "该存档在遭遇状态上已损坏。请加载更早的存档——在你进入那场战斗／围城／定居点之前所存的（遭遇之前的自动存档即可）。"
+      - "如果安全网把你送回了大地图，立即另存到新槽位——这个新存档是干净的。"
+      - "不要重建着色器或更换驱动——这是存档状态 bug，没用。"
+    zht:
+      - "Crash Doctor 已經攔截了它——安全網會把你送回戰役大地圖而非崩潰，存檔即可開啟。在「崩潰修復」頁保持「讀檔崩潰防護（損壞的遭遇）」為開。"
+      - "該存檔在遭遇狀態上已損壞。請載入更早的存檔——在你進入那場戰鬥／圍城／聚落之前所存的（遭遇之前的自動存檔即可）。"
+      - "如果安全網把你送回了大地圖，立即另存到新欄位——這個新存檔是乾淨的。"
+      - "不要重建著色器或更換驅動——這是存檔狀態 bug，沒用。"
+    tr:
+      - "Crash Doctor bunu zaten koruyor — güvenlik ağı çökmek yerine seni sefer haritasına döndürür, böylece kayıt açılır. «Kayıt yükleme çökme koruması (bozuk karşılaşma)» düzeltmesini AÇIK tut (Çökme Düzeltmeleri sekmesi)."
+      - "O kayıt, karşılaşma durumunda hasarlı. DAHA ÖNCEKİ bir kaydı yükle — o savaşa / kuşatmaya / yerleşime girMEDEN önce yapılmış olanı (karşılaşmadan önceki bir otomatik kayıt işe yarar)."
+      - "Güvenlik ağıyla haritaya inersen hemen yeni bir yuvaya kaydet — o yeni kayıt temizdir."
+      - "Gölgelendiricileri yeniden oluşturma veya sürücü değiştirme — bu bir kayıt durumu hatası, yardımcı olmaz."
+  match:
+    all:
+      - managed_exception: { frame_contains: "game_menu_encounter_on_init" }
+      - managed_exception: { type_contains: "NullReference" }
+
+# War Sails (official naval DLC, module id "NavalDLC") world-map ship-visual crash, caused by a
+# BROKEN third-party "Faster Ships" mod. AccessViolationException (0xC0000005) thrown from
+# NavalMobilePartyVisual.UpdateEntityPosition inside NavalMobilePartyVisualManager.OnTick →
+# TWParallel.For (parallel worker thread, native memory). NavalDLC is the OFFICIAL DLC (the game
+# does NOT list it under "Unofficial modules"; warsails assets everywhere) — do NOT tell the
+# player to delete it. Client 2026-06-05 ROOT CAUSE found in rgl_log: right after the valid
+# NavalDLC/ModuleData/ship_hulls.xml, the game opens Modules/Faster Ships/ModuleData/faster_ships.xml
+# and ShipHulls.xsd rejects every entry — ~92 ship hulls each MISSING 19 required attributes,
+# including map_visual_scale and mission_ship (the exact data UpdateEntityPosition reads to place
+# the ship entity on the map). Faster Ships overrides the hull table with junk; ships built on those
+# hulls have a null/zero map-visual entity, and once enough naval parties exist (~50h) one ticks
+# through the parallel visual update with a bad native pointer → AV. Crash lands in official DLC code
+# because that's the consumer of Faster Ships' broken data. This is a corrupted-state exception on a
+# worker thread, NOT a managed exception we can swallow — Crash Doctor can only NAME it. Opening
+# Crash Doctor over the naval map keeps the naval tick alive → fires there too (same crash).
+- id: engine.warsails_ship_visual_av
+  category: managed
+  severity: critical
+  confidence: high
+  evidence_source: "Client crash 2026-06-05 report.txt — AccessViolationException at NavalDLC.View.Map.Visuals.NavalMobilePartyVisual.UpdateEntityPosition ← NavalMobilePartyVisualManager.OnTick ← TWParallel.For ← MapState.OnMapModeTick. Native rgl_log_errors: 0xC0000005, bottom frame NavalDLC.View.pdb. rgl_log: NavalDLC absent from 'Unofficial modules' (= official War Sails DLC); 'Faster Ships/ModuleData/faster_ships.xml' fails ShipHulls.xsd with 1748 'required attribute missing' errors over 92 hulls (map_visual_scale, mission_ship, max_hitpoints, sea_worthiness, …). Captured by Crash Doctor managed capture (no BEW)."
+  requires_sources: [managed_exception]
+  title:
+    en: "War Sails ship-visual crash caused by the broken 'Faster Ships' mod — remove Faster Ships, keep the DLC"
+    ru: "Краш визуала кораблей War Sails из-за сломанного мода «Faster Ships» — удали Faster Ships, DLC оставь"
+    zh: "War Sails 船只视觉崩溃，由损坏的「Faster Ships」模组引起——移除 Faster Ships，保留 DLC"
+    zht: "War Sails 船隻視覺崩潰，由損壞的「Faster Ships」模組引起——移除 Faster Ships，保留 DLC"
+    tr: "Bozuk 'Faster Ships' modunun yol açtığı War Sails gemi-görsel çökmesi — Faster Ships'i kaldır, DLC'yi koru"
+  description:
+    en: |
+      AccessViolationException (0xC0000005 — read/write of protected memory) thrown from
+      NavalMobilePartyVisual.UpdateEntityPosition (official "War Sails" DLC, module "NavalDLC"),
+      called inside NavalMobilePartyVisualManager.OnTick through TWParallel.For — a parallel
+      worker thread that positions every ship on the world map. The DLC itself is fine and is
+      part of your game; the real cause is the third-party "Faster Ships" mod. In the log, right
+      after the game loads the valid NavalDLC ship_hulls.xml it loads Faster Ships'
+      faster_ships.xml, and the ship-hull validator rejects all ~92 of its hull entries — each is
+      MISSING 19 required attributes, including map_visual_scale and mission_ship, the exact data
+      this crash method reads to place the ship's 3D entity on the map. Faster Ships overwrites the
+      ship-hull table with junk; ships built on those hulls get a null/zero map entity, and once
+      enough naval parties exist (about 50h in) one of them ticks through the parallel visual update
+      with a bad pointer and the engine instantly dies. That is why a fresh start scans clean (no
+      such ship yet) and the crash only appears after hours of play. NOTE: opening Crash Doctor over
+      the naval map (Ctrl+Alt+D) keeps the naval tick running, so it crashes there too — same crash.
+    ru: |
+      AccessViolationException (0xC0000005 — чтение/запись защищённой памяти) из метода
+      NavalMobilePartyVisual.UpdateEntityPosition (официальное DLC «War Sails», модуль «NavalDLC»),
+      вызванного внутри NavalMobilePartyVisualManager.OnTick через TWParallel.For — параллельный
+      рабочий поток, который расставляет каждый корабль на карте мира. Само DLC исправно и является
+      частью игры; настоящая причина — сторонний мод «Faster Ships». В логе сразу после того, как
+      игра грузит корректный NavalDLC ship_hulls.xml, открывается faster_ships.xml этого мода, и
+      валидатор корпусов кораблей отвергает все ~92 его записи — у каждой ОТСУТСТВУЮТ 19 обязательных
+      атрибутов, включая map_visual_scale и mission_ship — ровно те данные, которые этот падающий
+      метод читает, чтобы поставить 3D-модель корабля на карту. Faster Ships перезаписывает таблицу
+      корпусов мусором; у кораблей на таких корпусах модель на карте оказывается null/нулевой, и как
+      только морских отрядов накапливается достаточно (примерно к 50 часам), один из них проходит
+      через параллельное обновление визуала с битым указателем — и движок мгновенно падает. Поэтому
+      свежий старт сканируется чисто (такого корабля ещё нет), а краш появляется только спустя часы
+      игры. ВАЖНО: открытие Crash Doctor поверх морской карты (Ctrl+Alt+D) не останавливает морской
+      тик, поэтому там падает тоже — это тот же краш.
+    zh: |
+      AccessViolationException（0xC0000005——读写受保护内存）从
+      NavalMobilePartyVisual.UpdateEntityPosition（官方「War Sails」DLC，模块「NavalDLC」）抛出，
+      该方法在 NavalMobilePartyVisualManager.OnTick 中通过 TWParallel.For 调用——这是一个在世界
+      地图上为每艘船定位的并行工作线程。DLC 本身没问题，是你游戏的一部分；真正的原因是第三方
+      「Faster Ships」模组。日志显示：游戏加载了有效的 NavalDLC ship_hulls.xml 之后，紧接着加载
+      Faster Ships 的 faster_ships.xml，而船体验证器拒绝了它全部约 92 条船体条目——每条都缺少
+      19 个必需属性，包括 map_visual_scale 和 mission_ship，正是这个崩溃方法用来把船的 3D 实体
+      放到地图上的数据。Faster Ships 用垃圾数据覆盖了船体表；基于这些船体的船只在地图上得到一个
+      空/零实体，一旦海军队伍积累到足够多（大约 50 小时后），其中一个在并行视觉更新中带着错误
+      指针被处理，引擎立即崩溃。这就是为什么全新开局扫描是干净的（还没有这种船），崩溃只在游戏
+      数小时后出现。注意：在海图上打开 Crash Doctor（Ctrl+Alt+D）不会停止海军 tick，所以在那里
+      也会崩溃——同一个崩溃。
+    zht: |
+      AccessViolationException（0xC0000005——讀寫受保護記憶體）從
+      NavalMobilePartyVisual.UpdateEntityPosition（官方「War Sails」DLC，模組「NavalDLC」）擲出，
+      該方法在 NavalMobilePartyVisualManager.OnTick 中透過 TWParallel.For 呼叫——這是一個在世界
+      地圖上為每艘船定位的並行工作執行緒。DLC 本身沒問題，是你遊戲的一部分；真正的原因是第三方
+      「Faster Ships」模組。日誌顯示：遊戲載入了有效的 NavalDLC ship_hulls.xml 之後，緊接著載入
+      Faster Ships 的 faster_ships.xml，而船體驗證器拒絕了它全部約 92 條船體條目——每條都缺少
+      19 個必要屬性，包括 map_visual_scale 和 mission_ship，正是這個崩潰方法用來把船的 3D 實體
+      放到地圖上的資料。Faster Ships 用垃圾資料覆寫了船體表；基於這些船體的船隻在地圖上得到一個
+      空/零實體，一旦海軍隊伍累積到足夠多（大約 50 小時後），其中一個在並行視覺更新中帶著錯誤
+      指標被處理，引擎立即崩潰。這就是為什麼全新開局掃描是乾淨的（還沒有這種船），崩潰只在遊戲
+      數小時後出現。注意：在海圖上開啟 Crash Doctor（Ctrl+Alt+D）不會停止海軍 tick，所以在那裡
+      也會崩潰——同一個崩潰。
+    tr: |
+      NavalMobilePartyVisual.UpdateEntityPosition metodundan (resmî "War Sails" DLC, modül
+      "NavalDLC") AccessViolationException (0xC0000005 — korumalı belleğin okunması/yazılması)
+      fırlatıldı; bu metot NavalMobilePartyVisualManager.OnTick içinde TWParallel.For aracılığıyla
+      çağrılır — dünya haritasındaki her gemiyi konumlandıran paralel bir çalışan iş parçacığı.
+      DLC'nin kendisi sağlamdır ve oyunun bir parçasıdır; asıl neden üçüncü taraf "Faster Ships"
+      modudur. Günlükte, oyun geçerli NavalDLC ship_hulls.xml dosyasını yükledikten hemen sonra
+      Faster Ships'in faster_ships.xml dosyasını yükler ve gemi-gövdesi doğrulayıcısı onun ~92
+      gövde girişinin tümünü reddeder — her biri map_visual_scale ve mission_ship dahil 19 zorunlu
+      özniteliği EKSİK; bunlar tam olarak bu çöken metodun geminin 3B nesnesini haritaya yerleştirmek
+      için okuduğu verilerdir. Faster Ships gövde tablosunu çöple ezer; bu gövdelere dayalı gemiler
+      haritada null/sıfır bir nesne alır ve yeterince deniz grubu oluştuğunda (yaklaşık 50 saat sonra)
+      bunlardan biri paralel görsel güncellemeden hatalı bir işaretçiyle geçer ve motor anında çöker.
+      Bu yüzden yeni bir başlangıç temiz taranır (henüz böyle bir gemi yoktur) ve çökme yalnızca
+      saatlerce oynadıktan sonra ortaya çıkar. NOT: Crash Doctor'u deniz haritasının üzerinde açmak
+      (Ctrl+Alt+D) deniz tick'ini durdurmaz, orada da çöker — aynı çökme.
+  fix:
+    en:
+      - "Remove the 'Faster Ships' mod (folder Modules/Faster Ships). Its faster_ships.xml overwrites the ship-hull table with entries missing the required map data (map_visual_scale, mission_ship, …), which is what corrupts War Sails' ship visuals."
+      - "Do NOT delete NavalDLC — it is the official War Sails naval DLC, part of your game. The crash is in its code only because it consumes Faster Ships' broken data."
+      - "After removing Faster Ships, try loading your existing save first — the hull table reverts to the DLC's valid one, so it will likely stop crashing without a new game. If it still crashes, start a new campaign."
+      - "Do NOT disable your other mods one by one, and do NOT rebuild shaders or change drivers — the log already names Faster Ships, and this is a native memory bug those won't fix."
+      - "Why Crash Doctor can't swallow it: it's native memory corruption (AccessViolation) on a parallel worker thread inside the DLC's own code. .NET does not let such corrupted-state errors be caught safely, and swallowing one risks silently corrupting your save — a clean crash is safer."
+    ru:
+      - "Удали мод «Faster Ships» (папка Modules/Faster Ships). Его faster_ships.xml перезаписывает таблицу корпусов кораблей записями без обязательных данных модели (map_visual_scale, mission_ship и др.) — именно это ломает визуал кораблей War Sails."
+      - "НЕ удаляй NavalDLC — это официальное морское DLC «War Sails», часть игры. Падает его код только потому, что он использует битые данные Faster Ships."
+      - "После удаления Faster Ships сначала попробуй загрузить текущий сейв — таблица корпусов вернётся к корректной из DLC, так что краш, скорее всего, прекратится без новой игры. Если всё равно падает — начинай новую катку."
+      - "НЕ отключай остальные моды по одному и НЕ пересобирай шейдеры/драйвер — лог уже назвал Faster Ships, а это баг нативной памяти, шейдеры/драйвер не помогут."
+      - "Почему Crash Doctor это не глушит: это порча нативной памяти (AccessViolation) на параллельном рабочем потоке внутри кода самого DLC. .NET не даёт безопасно ловить такие ошибки «испорченного состояния», а проглотить её — риск тихо запороть сейв; чистый краш безопаснее."
+    zh:
+      - "移除「Faster Ships」模组（文件夹 Modules/Faster Ships）。它的 faster_ships.xml 用缺少必需地图数据（map_visual_scale、mission_ship 等）的条目覆盖了船体表——正是这破坏了 War Sails 的船只视觉。"
+      - "不要删除 NavalDLC——它是官方 War Sails 海战 DLC，是游戏的一部分。崩溃发生在它的代码里，只是因为它使用了 Faster Ships 的损坏数据。"
+      - "移除 Faster Ships 后，先尝试加载现有存档——船体表会恢复为 DLC 的有效版本，所以很可能无需开新档就不再崩溃。若仍崩溃，再开新战役。"
+      - "不要逐个禁用其他模组，也不要重建着色器或更换驱动——日志已点名 Faster Ships，而且这是本地内存 bug，着色器/驱动都没用。"
+      - "为什么 Crash Doctor 无法吞掉它：这是 DLC 自身代码中、在并行工作线程上的本地内存损坏（访问越界）。.NET 不允许安全地捕获这类「损坏状态」错误，吞掉它有可能悄悄损坏你的存档——干净地崩溃更安全。"
+    zht:
+      - "移除「Faster Ships」模組（資料夾 Modules/Faster Ships）。它的 faster_ships.xml 用缺少必要地圖資料（map_visual_scale、mission_ship 等）的條目覆寫了船體表——正是這破壞了 War Sails 的船隻視覺。"
+      - "不要刪除 NavalDLC——它是官方 War Sails 海戰 DLC，是遊戲的一部分。崩潰發生在它的程式碼裡，只是因為它使用了 Faster Ships 的損壞資料。"
+      - "移除 Faster Ships 後，先嘗試載入現有存檔——船體表會恢復為 DLC 的有效版本，所以很可能無需開新檔就不再崩潰。若仍崩潰，再開新戰役。"
+      - "不要逐個停用其他模組，也不要重建著色器或更換驅動——日誌已點名 Faster Ships，而且這是本機記憶體 bug，著色器/驅動都沒用。"
+      - "為什麼 Crash Doctor 無法吞掉它：這是 DLC 自身程式碼中、在並行工作執行緒上的本機記憶體損壞（存取違規）。.NET 不允許安全地捕獲這類「損壞狀態」錯誤，吞掉它有可能悄悄損壞你的存檔——乾淨地崩潰更安全。"
+    tr:
+      - "'Faster Ships' modunu kaldır (klasör Modules/Faster Ships). faster_ships.xml dosyası gemi-gövdesi tablosunu, gerekli harita verilerini (map_visual_scale, mission_ship, …) içermeyen girişlerle ezer — War Sails'in gemi görsellerini bozan tam olarak budur."
+      - "NavalDLC'yi SİLME — bu resmî War Sails deniz DLC'sidir, oyunun bir parçasıdır. Çökme yalnızca Faster Ships'in bozuk verisini kullandığı için onun kodunda olur."
+      - "Faster Ships'i kaldırdıktan sonra önce mevcut kaydını yüklemeyi dene — gövde tablosu DLC'nin geçerli haline döner, bu yüzden büyük olasılıkla yeni bir oyuna gerek kalmadan çökme durur. Hâlâ çöküyorsa yeni bir sefer başlat."
+      - "Diğer modlarını teker teker kapatma ve gölgelendiricileri yeniden oluşturma veya sürücü değiştirme — günlük zaten Faster Ships'i adlandırdı ve bu, gölgelendirici/sürücünün düzeltemeyeceği yerel bir bellek hatasıdır."
+      - "Crash Doctor neden yutamaz: bu, DLC'nin kendi kodunda paralel bir çalışan iş parçacığında oluşan yerel bellek bozulmasıdır (AccessViolation). .NET bu tür «bozuk durum» hatalarının güvenle yakalanmasına izin vermez ve birini yutmak kaydını sessizce bozma riski taşır — temiz bir çökme daha güvenlidir."
+  match:
+    all:
+      - managed_exception: { frame_contains: "NavalMobilePartyVisual" }
+      - managed_exception: { type_contains: "AccessViolation" }

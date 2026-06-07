@@ -3,6 +3,7 @@
     en: "Windows has a pending reboot"
     ru: "Windows ждёт отложенный перезапуск"
     zh: "Windows 有一个待处理的重启"
+    zht: "Windows 有一個待處理的重新啟動"
     tr: "Windows'ta bekleyen bir yeniden başlatma var"
   description:
     en: |
@@ -33,6 +34,14 @@
       着色器内存溢出崩溃。
 
       只有当存在三个 Microsoft 记录的重启信号中至少一个时，这张卡片才会出现。
+    zht: |
+      裝了模組的 Bannerlord（尤其是 TOR）對半套用的驅動更新和分頁檔更改極其敏感。
+      如果 Windows 正掛著一個排隊的重新啟動——來自 Windows 更新、驅動安裝，或在開機時
+      重新命名檔案的操作——受影響的元件就處於半套用狀態。玩家會說「Crash Doctor 說
+      TdrDelay 被設為 60s」，但其實它還沒真正生效，於是他們在下一次啟動時就撞上
+      著色器記憶體溢位當機。
+
+      只有當存在三個 Microsoft 記錄的重新啟動訊號中至少一個時，這張卡片才會出現。
     tr: |
       Modlu Bannerlord (özellikle TOR), yarı uygulanmış sürücü güncellemelerine ve sayfa
       dosyası değişikliklerine aşırı duyarlıdır. Windows bir Windows Update'ten, bir
@@ -57,6 +66,10 @@
       - "来源：HKLM Component Based Servicing\\RebootPending、WindowsUpdate\\Auto Update\\RebootRequired、Session Manager\\PendingFileRenameOperations。"
       - "「应用」会通过 shutdown.exe /r /t 60 安排一个 60 秒后的重启。用 shutdown /a 取消。"
       - "只读检测。重启本身不可撤销（无法取消已发生的重启）。"
+    zht:
+      - "來源：HKLM Component Based Servicing\\RebootPending、WindowsUpdate\\Auto Update\\RebootRequired、Session Manager\\PendingFileRenameOperations。"
+      - "「套用」會透過 shutdown.exe /r /t 60 安排一個 60 秒後的重新啟動。用 shutdown /a 取消。"
+      - "唯讀偵測。重新啟動本身不可復原（無法取消已發生的重新啟動）。"
     tr:
       - "Kaynaklar: HKLM Component Based Servicing\\RebootPending, WindowsUpdate\\Auto Update\\RebootRequired, Session Manager\\PendingFileRenameOperations."
       - "«Uygula» shutdown.exe /r /t 60 ile 60 saniyelik bir yeniden başlatma zamanlar. shutdown /a ile iptal edin."

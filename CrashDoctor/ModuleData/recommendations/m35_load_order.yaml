@@ -3,6 +3,7 @@
     en: "Fix mod load order in LauncherData.xml"
     ru: "Починить порядок модов в LauncherData.xml"
     zh: "修复 LauncherData.xml 中的模组加载顺序"
+    zht: "修復 LauncherData.xml 中的模組載入順序"
     tr: "LauncherData.xml içindeki mod yükleme sırasını düzelt"
   description:
     en: |
@@ -18,6 +19,10 @@
       当加载顺序与规范的 TOR 顺序不匹配时，Bannerlord 会在启动时崩溃，或者模块会
       悄无声息地失效。先是原生游戏模块，然后是 Harmony / ButterLib / UIExtenderEx / MCM，
       接着是社区模组，最后是 TOR_*。
+    zht: |
+      當載入順序與規範的 TOR 順序不匹配時，Bannerlord 會在啟動時當機，或者模組會
+      悄無聲息地失效。先是原生遊戲模組，然後是 Harmony / ButterLib / UIExtenderEx / MCM，
+      接著是社群模組，最後是 TOR_*。
     tr: |
       Yükleme sırası standart TOR sırasıyla eşleşmediğinde Bannerlord başlangıçta çöker
       veya modüller sessizce çalışmaz. Önce yerel oyun modülleri, ardından
@@ -44,6 +49,13 @@
       - "应用后：直接通过 Play 启动游戏。不要在 TaleWorlds 启动器窗口中手动上下拖动模组"
       - "——那会把顺序覆盖回启动器认为正确的状态。安装了 BLSE Launcher 后，"
       - "顺序无论如何都会保持不变。"
+    zht:
+      - "重寫前會備份 LauncherData.xml。"
+      - "只更改順序——不會新增、移除或停用任何模組。"
+      - "如果出現問題，可從「歷史」索引標籤復原。"
+      - "套用後：直接透過 Play 啟動遊戲。不要在 TaleWorlds 啟動器視窗中手動上下拖動模組"
+      - "——那會把順序覆蓋回啟動器認為正確的狀態。安裝了 BLSE Launcher 後，"
+      - "順序無論如何都會保持不變。"
     tr:
       - "LauncherData.xml yeniden yazılmadan önce yedeklenir."
       - "Yalnızca sıra değişir — hiçbir mod eklenmez, kaldırılmaz veya devre dışı bırakılmaz."

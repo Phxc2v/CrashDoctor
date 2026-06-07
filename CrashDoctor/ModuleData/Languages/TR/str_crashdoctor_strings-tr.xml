@@ -118,11 +118,9 @@
     <string id="cd_tab_settings" text="Ayarlar  ★" />
     <string id="cd_toggle_ui_error_patching" text="Arayüz hatası yutma" />
     <string id="cd_settings_title" text="Crash Doctor ayarları" />
-    <string id="cd_settings_per_mod_title" text="Mod bazında hata yutma" />
     <string id="cd_hint_emergency_save" text="Oyun bir .NET hatasıyla çökmek üzereyken, Crash Doctor saatlerce ilerlemenizi kaybetmemeniz için son bir 'Farklı Kaydet' dener. 'CrashDoctor_Emergency_&lt;timestamp&gt;' adıyla kaydeder." />
     <string id="cd_hint_native_crash_log" text="Yerel bir çökme (erişim ihlali, yığın taşması, öbek bozulması) olduğunda crashdoctor.log dosyasına tek satırlık özet yazar. Çökmenin kendisi etkilenmez — TaleWorlds dökümü yine oluşur." />
-    <string id="cd_hint_ui_error_patching" text="Seçilmiş bir arayüz yenileme yöntemleri listesini sarar (Ansiklopedi, Envanter, Birlik, Hanedan, Krallık, Görevler). YALNIZCA arayüzü kapsar — savaşlar, AI, günlük döngü, görev sahneleri korunmaz. Belirli bir modun oyun mantığını da sarmak için aşağıdaki bölümden o modu işaretleyin." />
-    <string id="cd_hint_per_mod_section" text="Bir modun görev geri çağrılarını (OnAgentHit, OnMissionTick vb.) aynı hata-yutma korumasıyla sarmak için onu işaretleyin. Belirli bir mod açıkça bozukken, düzeltme beklerken oynamaya devam etmek istediğinizde kullanın." />
+    <string id="cd_hint_ui_error_patching" text="Seçilmiş bir arayüz yenileme yöntemleri listesini sarar (Ansiklopedi, Envanter, Birlik, Hanedan, Krallık, Görevler). YALNIZCA arayüzü kapsar — savaşlar, AI, günlük döngü, görev sahneleri korunmaz." />
     <string id="cd_toggle_nre_safety_patches" text="NRE güvenlik ağları (maaş / yiyecek / AI döngüsü)" />
     <string id="cd_hint_nre_safety_patches" text="TOR_Core'un maaş ve yiyecek tüketimi modellerindeki ve her saatlik AI döngüsündeki boş referans çökmelerini yakalar. Bu çökmeler başka bir mod bir birlik kadrosunda 'sarkan' bir asker bıraktığında olur (kaldırılmış ama temizlenmemiş bir birim). Güvenlik ağı açıkken, sorunlu birlik o döngüyü atlar ve oyun devam eder. Varsayılan AÇIK." />
     <string id="cd_toggle_dangling_roster_cleanup" text="Yüklemede sarkan asker temizliği" />

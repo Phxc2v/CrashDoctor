@@ -1,26 +1,34 @@
 # Changelog — Crash Doctor
 
-All changes since the last Steam Workshop publish.
-
-Format: one block per "shipped" version (the one that lands in Steam). Point
-bump-releases between them are folded into one block to avoid noise for
-subscribers.
+Change history, by version.
 
 > 🇷🇺 Russian version: [`CHANGELOG.md`](CHANGELOG.md)
 
 ---
 
-## 2026-06-05 (hotfix 2) — Removed a dead donation link; the "Support the author" popup is now USDT-only
+## 2026-06-07 — New fix: save-load crash from a broken encounter; removed the "swallow a specific mod's errors" option
 
-> Visible mod version stays `v1.4.0` forever.
+- **New fix: save-load crash from a broken encounter.** If a save was made during a battle / siege / settlement entry and that "encounter" state didn't restore on load, the game crashed right on loading — the save wouldn't open at all. Crash Doctor now catches this and gently returns you to the campaign map instead of crashing. New row "Save-load crash guard (broken encounter)" on the "Crash Fixes" tab (on by default), plus a clear analyzer verdict advising "load an earlier save".
+- **Removed the per-mod "swallow errors" option.** The Settings tab had a checklist of installed mods: ticking one wrapped that mod's in-battle code in an error guard. The problem is that for mods which drive unit models, that wrapper **broke character models** — soldiers froze in a T-pose or looked flipped, even when no error was thrown. It was a common complaint and the occasional crash it prevented didn't justify it. The feature and its entire UI are gone. Per-fix crash protection on the "Crash Fixes" tab, crash analysis and "System Tune-Up" work exactly as before.
+
+---
+
+## 2026-06-06 — Traditional Chinese (繁體中文); recognises the War Sails crash caused by the "Faster Ships" mod; new "possible culprit mod" button; the mod loads even without Harmony
+
+- **New language: Traditional Chinese (繁體中文).** The whole mod — UI, crash verdicts, Tune-Up cards and hints — is now available in Traditional Chinese (Taiwan vocabulary), in addition to English, Russian, Simplified Chinese and Turkish. Pick it in the game's language settings.
+- **Recognises the War Sails crash caused by the "Faster Ships" mod.** When the game crashes on the world map inside the War Sails naval DLC code (ship visuals), the analyzer now explains that the real cause is the third-party **Faster Ships** mod, whose file corrupts the ship-hull data (missing required fields such as `map_visual_scale`/`mission_ship`). Advice: remove Faster Ships, keep the DLC itself.
+- **New "Show possible culprit mod" button.** On the Crashes tab, next to "View stack & evidence". If the game log contains a mod whose data failed the game's own validation, the doctor gently points it out — "the crash is possibly linked to this mod" (with the file name and the list of broken fields) and how to confirm. The button only appears when there is something to show.
+- **The mod no longer takes the game down without Harmony.** If the Bannerlord.Harmony module is disabled, Crash Doctor could previously crash the game at startup — it now loads in observe-only mode (live fixes auto-disable) and the game starts normally. In that mode the "Crash Fixes" tab is disabled, since it manages live patches.
+
+---
+
+## 2026-06-05 (hotfix 2) — Removed a dead donation link; the "Support the author" popup is now USDT-only
 
 - **Removed a dead donation link.** The "tip the author (RU bank cards)" line in the "Support the author" popup pointed to a broken page — it's fully removed from the mod. The popup now shows only the **USDT** wallets (Tron and ERC-20): clicking an address copies it to the clipboard. The popup is also a bit more compact.
 
 ---
 
 ## 2026-06-05 (hotfix) — Fixed a crash when casting spells from the RTS / free camera (RTS Camera mod); added a dedicated toggle for this fix and analyzer recognition of the crash
-
-> Visible mod version stays `v1.4.0` forever.
 
 A targeted hotfix for a reported crash: the game crashed when a spell was cast while in the RTS / free (commander) camera.
 
@@ -32,8 +40,6 @@ A targeted hotfix for a reported crash: the game crashed when a spell was cast w
 ---
 
 ## 2026-06-05 — The mod no longer touches your antivirus (the Windows Defender exclusions feature is fully removed); the "swallow errors from a specific mod" list now shows only mods that actually need it and resizes to fit their count; a batch of reliability fixes after a code review
-
-> Visible mod version stays `v1.4.0` forever.
 
 The headline of this release is **transparency and trust**. We fully removed the feature that could add the game's folders to Windows Defender exclusions. Plus the per-mod list on the guards tab is tidied up and a batch of reliability fixes landed.
 
@@ -48,8 +54,6 @@ The headline of this release is **transparency and trust**. We fully removed the
 ---
 
 ## 2026-06-03 — New "Crash Fixes" tab: see every anti-crash guard, toggle each one on/off and see its live status; two new fixes (mounted-unit battle crash in TOR and prisoner auto-sell crash in towns); "fix broken troops on save load" moved in with the other fixes
-
-> Visible mod version stays `v1.4.0` forever.
 
 The headline of this release is a **new "Crash Fixes" tab** that shows everything the mod does against crashes and lets you turn any single fix off. Plus two new crash interceptions from reported crashes.
 
@@ -69,8 +73,6 @@ Crash Doctor has long shipped a set of "safety nets" — small interceptions of 
 ---
 
 ## 2026-06-02 — Crash Doctor now catches a "code crash" and names the culprit itself (even without ButterLib/BetterExceptionWindow), Bannerlord 1.3 and 1.4 support, works without the Harmony module, fixed RAM / pagefile / GPU on newer versions, the enchant-a-book window (TOR) is unblocked, fixed a false "mod missing" on the saves tab, crash cleanup also clears our own reports
-
-> Visible mod version stays `v1.4.0` forever.
 
 The biggest release since the May fixes. The headline: Crash Doctor now **captures "code crashes" (.NET exceptions) itself and names the culprit mod**, the way ButterLib / BetterExceptionWindow do — but without them. On top of that the mod learned to run on several Bannerlord versions (1.3.x and 1.4.x) and to load without the Harmony module, and a pile of Tune-Up cards that silently broke on newer game versions are fixed.
 
@@ -103,8 +105,6 @@ Modern Bannerlord versions moved to a new runtime (.NET) where the old system wa
 
 ## 2026-05-31 — Fixes: a save with a broken garrison no longer crashes on load and repairs itself, removing a mod from a save actually drops it from the save's record, scrollbars are draggable again and no longer overlap data, base-game modules removed from the save-cleaning list, the mod analyser no longer flags disabled mods
 
-> Visible mod version stays `v1.4.0` forever.
-
 A round of fixes:
 - **a save with a "broken garrison" no longer crashes on load.** If a save still held a garrison with no town or castle of its own (the settlement disappeared during the campaign, or because the mod set changed between sessions), the game crashed to desktop on every attempt to load that save — during the clan-strength calculation. Crash Doctor now keeps the game from crashing there and, on entering the campaign, removes the broken garrison itself; once you re-save, the save is clean for good. This crash is now also recognised in the analyser, with the cause and the steps;
 - **"Remove a mod from a save" now actually drops the mod from the save's record.** Previously the mod's name (e.g. a translation pack) stayed in the save's module list after cleaning, so it looked like nothing had happened. Now the wiped mods' names are removed from the save's record (and from the game's "this save was made with mod …" warning), and the result window honestly reports how many objects were actually removed — and says plainly when a mod stored no data in the save (a translation or content mod);
@@ -131,8 +131,6 @@ save from before the problem appeared.
 
 ## 2026-05-26 — Fixes: characters no longer lie on their side, GPU crashes recognised more precisely, no false mod-conflict warnings, GPU driver cache card no longer sticks, false save mismatch on translation version bumps, crash logs preserved during cleanup, clear message for log-less crashes, export now attaches ButterLib logs
 
-> Visible mod version stays `v1.4.0` forever.
-
 A round of fixes:
 - **the GPU driver cache card no longer sticks on screen.** On large NVIDIA caches (2+ GB) the "clear GPU driver cache" card used to stay up after you pressed Clear and ask you to press it again — even though the driver holds those files open and they can't be deleted while the game runs. The card now appears only when there are real driver-crash markers in the logs, not just because the cache is large;
 - **the Saves tab no longer raises a false mismatch.** A translation mod version bump (e.g. a localisation pack) or a minor mod update is no longer flagged as incompatible — only version changes that can actually break a save load count;
@@ -146,8 +144,6 @@ A round of fixes:
 ---
 
 ## 2026-05-22 — Crash prevention for AI hourly tick, issue completion and save load, hybrid-graphics laptop GPU pin, pagefile respects manual split configs and keeps a small entry on C:, hero template inflation card + Ironman save backup, smarter terrain-shader crash advice, dedicated card for AMD RX 9000 driver regressions, new rule for the character-creation Back-button crash
-
-> Visible mod version stays `v1.4.0` forever.
 
 Several changes landing together:
 - **a new crash-prevention layer for the AI hourly tick and issue completion**: Crash Doctor catches four typical crashes (wage / food consumption / AI hourly tick / alternative-solution issue completion) when another mod left a "dangling" unit in a party's roster or in an issue's sent-troops list, and surfaces an in-game banner telling the player the crash was prevented;
@@ -526,8 +522,6 @@ isn't needed there.
 
 ## 2026-05-15 — Built-in save cleaner, Mods tab, Ctrl+D in-game save analysis, defensive guards, Windows TEMP relocation, support author button
 
-> Visible mod version stays `v1.4.0` forever.
-
 Large update: a full **built-in save cleaner** (previously we just pointed
 people at an external Save Cleaner on Nexus), a new **Mods tab** that
 analyses every installed module and flags issues, a **Ctrl+D** hotkey that
@@ -729,8 +723,6 @@ A new `late_game.yaml` collects patterns specific to long campaigns
 
 ## 2026-05-10 — New Saves tab, late-game crash rules, performance subsystem removed
 
-> Visible mod version stays `v1.4.0` forever.
-
 **New: Saves tab.**
 
 Crash Doctor can now diagnose your save files **before you load them** —
@@ -823,8 +815,6 @@ guide for future mods in `docs/Gauntlet_HUD_Overlay.md`.
 ---
 
 ## 2026-05-09 — Optimization HUD, new crash rules, false-positive cleanup
-
-> Visible mod version stays `v1.4.0` forever.
 
 **New — Optimization HUD + Performance tab in Crash Doctor.**
 
