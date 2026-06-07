@@ -3,6 +3,7 @@
     en: "Fix TOR-incompatible values in engine_config.txt"
     ru: "Исправить TOR-несовместимые значения в engine_config.txt"
     zh: "修复 engine_config.txt 中与 TOR 不兼容的值"
+    zht: "修復 engine_config.txt 中與 TOR 不相容的值"
     tr: "engine_config.txt içindeki TOR ile uyumsuz değerleri düzelt"
   description:
     en: |
@@ -56,6 +57,21 @@
         2. 启动 Bannerlord。
         3. 主菜单 → 按下「Build Shader Cache」并等待 20–60 分钟。
         4. 编译期间不要关闭游戏，不要打开 Chrome / Discord / 浏览器。
+    zht: |
+      已知 engine_config.txt 中的一些值會專門在 TOR 上引發 d3d 當機、大型戰鬥中的記憶體溢位
+      或聲音遮蔽凍結。Crash Doctor 只會修改有記錄的不良影響的鍵；其他所有內容都按原樣保留。
+
+      為什麼這張卡片需要重新啟動 + 重建著色器：更改圖形鍵
+      （terrain_quality、tesselation、shader_quality 等）會使預編譯的著色器快取失效。
+      Bannerlord 下次啟動時會載入針對舊值建構的快取，遇到不匹配，
+      並在帶有帝國士兵圖像的啟動畫面上當機。為防止這種情況，「套用」還會將著色器快取
+      傳送到資源回收筒——之後遊戲在首次啟動時會花費 10–60 分鐘重建著色器。
+
+      「套用」後的必要步驟順序（跳過任何一步 → 遊戲將無法啟動）：
+        1. 重新啟動電腦。
+        2. 啟動 Bannerlord。
+        3. 主選單 → 按下「Build Shader Cache」並等待 20–60 分鐘。
+        4. 編譯期間不要關閉遊戲，不要開啟 Chrome / Discord / 瀏覽器。
     tr: |
       engine_config.txt içindeki birkaç değerin özellikle TOR'da d3d çökmelerine, büyük
       savaşlarda bellek yetersizliğine veya ses oklüzyon donmalarına yol açtığı bilinir.
@@ -95,6 +111,12 @@
       - "着色器缓存（ProgramData/Shaders + game/Shaders/D3D11/compressed_shaders_cache.sack + 每个模块的 sack）会被发送到回收站。"
       - "如果游戏完全无法启动的恢复方法：参见 Workshop 描述中的「If the game won't launch」或 docs/Recovery_If_Game_Wont_Start_EN.md。"
       - "可从「历史」选项卡撤销——会恢复 engine_config.txt；着色器缓存不会恢复，游戏只是再次重建它。"
+    zht:
+      - "重寫前會備份 engine_config.txt（如果回滾失敗，復原區 = Documents 備用位置）。"
+      - "註解和未知鍵保持原樣不動。"
+      - "著色器快取（ProgramData/Shaders + game/Shaders/D3D11/compressed_shaders_cache.sack + 每個模組的 sack）會被傳送到資源回收筒。"
+      - "如果遊戲完全無法啟動的復原方法：參見 Workshop 描述中的「If the game won't launch」或 docs/Recovery_If_Game_Wont_Start_EN.md。"
+      - "可從「歷史」索引標籤復原——會還原 engine_config.txt；著色器快取不會還原，遊戲只是再次重建它。"
     tr:
       - "engine_config.txt yeniden yazılmadan önce yedeklenir (Geri Alma başarısız olursa Kurtarma Kutusu = Documents yedeği)."
       - "Yorumlar ve bilinmeyen anahtarlar dokunulmadan tutulur."

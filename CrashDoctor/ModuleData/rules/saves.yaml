@@ -8,6 +8,7 @@
     en: "NullReferenceException while loading save"
     ru: "NullReferenceException при загрузке сейва"
     zh: "加载存档时出现 NullReferenceException"
+    zht: "載入存檔時出現 NullReferenceException"
     tr: "Kayıt yüklenirken NullReferenceException"
   description:
     en: |
@@ -19,6 +20,9 @@
     zh: |
       存档引用的某个对象在当前数据集中已不存在。常见于你禁用 / 卸载了该存档
       所依赖的某个模组之后。
+    zht: |
+      存檔引用的某個物件在目前資料集中已不存在。常見於你停用 / 解除安裝了該存檔
+      所依賴的某個模組之後。
     tr: |
       Kaydın başvurduğu bir nesne artık mevcut veri kümesinde yok. Kaydın
       bağımlı olduğu bir modu devre dışı bıraktığında / kaldırdığında sık görülür.
@@ -35,6 +39,10 @@
       - "重新启用你在制作此存档之后禁用的所有模组。"
       - "如果该模组已被彻底删除——这个存档没救了，开新游戏吧。"
       - "用 Save Editor for Bannerlord 清除失效引用（进阶操作）。"
+    zht:
+      - "重新啟用你在製作此存檔之後停用的所有模組。"
+      - "如果該模組已被徹底刪除——這個存檔沒救了，開新遊戲吧。"
+      - "用 Save Editor for Bannerlord 清除失效引用（進階操作）。"
     tr:
       - "Bu kayıt yapıldıktan sonra devre dışı bıraktığın modları yeniden etkinleştir."
       - "Mod kalıcı olarak silindiyse — yeni bir oyun başlat (bu kayıt gitti)."
@@ -59,6 +67,7 @@
     en: "Save file is corrupt or unreadable"
     ru: "Файл сохранения повреждён или нечитаем"
     zh: "存档文件损坏或无法读取"
+    zht: "存檔檔案損壞或無法讀取"
     tr: "Kayıt dosyası bozuk veya okunamıyor"
   description:
     en: |
@@ -69,6 +78,8 @@
       крашнулась посреди сохранения.
     zh: |
       存档文件的结构无法解析。写入时发生磁盘错误，或者游戏在保存过程中崩溃了。
+    zht: |
+      存檔檔案的結構無法解析。寫入時發生磁碟錯誤，或者遊戲在儲存過程中當機了。
     tr: |
       Kayıt dosyasının yapısı ayrıştırılamıyor. Yazma sırasında disk hatası ya
       da oyun kaydetme ortasında çöktü.
@@ -85,6 +96,10 @@
       - "尝试更早的自动存档（Continue → 管理存档）。"
       - "对 Documents/Mount and Blade II Bannerlord/Game Saves/ 所在的 SSD/HDD 运行 chkdsk。"
       - "让自动存档更频繁：选项 → 游戏 → 自动存档间隔。"
+    zht:
+      - "嘗試更早的自動存檔（Continue → 管理存檔）。"
+      - "對 Documents/Mount and Blade II Bannerlord/Game Saves/ 所在的 SSD/HDD 執行 chkdsk。"
+      - "讓自動存檔更頻繁：選項 → 遊戲 → 自動存檔間隔。"
     tr:
       - "Daha eski bir otomatik kaydı dene (Continue → kayıtları yönet)."
       - "Documents/Mount and Blade II Bannerlord/Game Saves/ klasörünün bulunduğu SSD/HDD üzerinde chkdsk çalıştır."
@@ -106,6 +121,7 @@
     en: "Late-game save load NRE — stale war party / clan reference"
     ru: "NRE при загрузке поздней кампании — мёртвая ссылка на клан/отряд"
     zh: "后期存档读取空引用——失效的战队 / 氏族引用"
+    zht: "後期存檔讀取空引用——失效的戰隊 / 氏族引用"
     tr: "Geç oyun kayıt yükleme boş referansı — eskimiş savaş grubu / klan referansı"
   description:
     en: |
@@ -125,6 +141,11 @@
       MobileParty.OnRemoveParty / PreAfterLoad 内部遇到空值。存档里仍保留着对一个
       已被消灭的氏族或英雄的引用，而清理逻辑没有移除这个反向引用。通常在第 100 天
       之后、第一批王国开始覆灭时连锁发生。
+    zht: |
+      讀取存檔時，WarPartyComponent.get_Clan 或 WarPartyComponent.OnFinalize 在
+      MobileParty.OnRemoveParty / PreAfterLoad 內部遇到空值。存檔裡仍保留著對一個
+      已被消滅的氏族或英雄的引用，而清理邏輯沒有移除這個反向引用。通常在第 100 天
+      之後、第一批王國開始覆滅時連鎖發生。
     tr: |
       Kayıt yüklenirken WarPartyComponent.get_Clan veya WarPartyComponent.OnFinalize,
       MobileParty.OnRemoveParty / PreAfterLoad içinde boş değere takılır. Kayıt,
@@ -144,6 +165,10 @@
       - "从 NexusMods 安装 Null Hero Fix（mod 4728）——修补校验器，让它跳过失效引用。"
       - "如果每次读取都崩溃——回退到更早的存档。"
       - "如果在用 Diplomacy 模组——更新它；旧版本是最常见的根源。"
+    zht:
+      - "從 NexusMods 安裝 Null Hero Fix（mod 4728）——修補驗證器，讓它跳過失效引用。"
+      - "如果每次讀取都當機——回退到更早的存檔。"
+      - "如果在用 Diplomacy 模組——更新它；舊版本是最常見的根源。"
     tr:
       - "NexusMods'tan Null Hero Fix'i kur (mod 4728) — doğrulayıcıyı ölü referansları atlayacak şekilde yamalar."
       - "Çökme her yükleme denemesinde oluyorsa daha eski bir kaydı yükle."
@@ -173,6 +198,7 @@
     en: "Save load NRE — garrison with no settlement (morale calc)"
     ru: "NRE при загрузке сейва — гарнизон без поселения (расчёт морали)"
     zh: "存档读取空引用——没有据点的驻军（士气计算）"
+    zht: "存檔讀取空引用——沒有據點的駐軍（士氣計算）"
     tr: "Kayıt yükleme boş referansı — yerleşimi olmayan garnizon (moral hesabı)"
   description:
     en: |
@@ -205,6 +231,15 @@
       变了）。驻军士气分支引用了这个缺失的据点，于是读取崩溃。每次尝试读取该
       存档都会崩溃，并非随机。这不是 TOR 或 Crash Doctor 造成的——崩溃发生在
       原版代码上，是被损坏的存档数据绊倒的。
+    zht: |
+      SettlementHelper.IsGarrisonStarving 中的空引用例外，由
+      DefaultPartyMoraleModel.GetEffectivePartyMorale 進入（TOR 的士氣模型只是
+      呼叫它），發生在讀取存檔時引擎在 Clan.AfterLoad 內重新計算每個氏族實力的
+      過程中。存檔裡有一支據點引用為空的孤立駐軍——健康的駐軍總是駐紮在自己的
+      據點裡，所以該據點已遺失（在戰役中被摧毀 / 易主，或兩次遊戲之間模組組合
+      變了）。駐軍士氣分支引用了這個缺失的據點，於是讀取當機。每次嘗試讀取該
+      存檔都會當機，並非隨機。這不是 TOR 或 Crash Doctor 造成的——當機發生在
+      原版程式碼上，是被損壞的存檔資料絆倒的。
     tr: |
       SettlementHelper.IsGarrisonStarving içinde NullReferenceException; buraya
       DefaultPartyMoraleModel.GetEffectivePartyMorale üzerinden gelinir (TOR'un
@@ -229,6 +264,10 @@
       - "保持启用 Crash Doctor 并再次读取存档：它现在会自动阻止这次崩溃并移除损坏的驻军。然后保存游戏以使修复永久生效。"
       - "如果你想要一个干净的存档——读取问题出现之前的较早存档。"
       - "确认模组组合与创建存档时一致（重新启用你在两次游戏之间关闭的内容）。"
+    zht:
+      - "保持啟用 Crash Doctor 並再次讀取存檔：它現在會自動阻止這次當機並移除損壞的駐軍。然後儲存遊戲以使修復永久生效。"
+      - "如果你想要一個乾淨的存檔——讀取問題出現之前的較早存檔。"
+      - "確認模組組合與建立存檔時一致（重新啟用你在兩次遊戲之間關閉的內容）。"
     tr:
       - "Crash Doctor'ı etkin tut ve kaydı tekrar yükle: artık bu çökmeyi otomatik engeller ve bozuk garnizonu kaldırır. Ardından düzeltmenin kalıcı olması için oyunu KAYDET."
       - "Temiz bir kayıt istiyorsan — sorun ortaya çıkmadan önceki daha eski bir kaydı yükle."
@@ -255,6 +294,7 @@
     en: "Pregnancy / birth NRE — companion of rare culture"
     ru: "NRE на беременности / рождении — компаньон редкой культуры"
     zh: "怀孕 / 分娩空引用——稀有文化的同伴"
+    zht: "懷孕 / 分娩空引用——稀有文化的同伴"
     tr: "Hamilelik / doğum boş referansı — nadir kültürlü yoldaş"
   description:
     en: |
@@ -270,6 +310,10 @@
       当孩子由一个其文化没有 body-property 模板的同伴所生时，
       HeroCreator.DeliverOffSpring → PregnancyCampaignBehavior.CheckOffspringsToDeliver
       会崩溃（对于 TOR 这类模组引入的稀有 / 非原生文化很典型）。
+    zht: |
+      當孩子由一個其文化沒有 body-property 範本的同伴所生時，
+      HeroCreator.DeliverOffSpring → PregnancyCampaignBehavior.CheckOffspringsToDeliver
+      會當機（對於 TOR 這類模組引入的稀有 / 非原生文化很典型）。
     tr: |
       Kültürünün body-property şablonu olmayan bir yoldaştan çocuk doğduğunda
       HeroCreator.DeliverOffSpring → PregnancyCampaignBehavior.CheckOffspringsToDeliver
@@ -287,6 +331,10 @@
       - "从 NexusMods 安装 Baby Of Rare Culture Crash Fix（mod 9487）。"
       - "安装前的临时办法：在预产期之前用控制台杀掉怀孕的同伴（campaign.kill_hero）——先存档。"
       - "如果装不了这个修复，就别娶 / 嫁文化不寻常的流浪者同伴。"
+    zht:
+      - "從 NexusMods 安裝 Baby Of Rare Culture Crash Fix（mod 9487）。"
+      - "安裝前的臨時辦法：在預產期之前用主控台殺掉懷孕的同伴（campaign.kill_hero）——先存檔。"
+      - "如果裝不了這個修復，就別娶 / 嫁文化不尋常的流浪者同伴。"
     tr:
       - "NexusMods'tan Baby Of Rare Culture Crash Fix'i kur (mod 9487)."
       - "Kurana kadar geçici çözüm: doğum tarihinden önce hamile yoldaşı konsoldan öldür (campaign.kill_hero) — önce kaydet."
@@ -311,6 +359,7 @@
     en: "Late-game daily-tick crash — KingdomDecisionProposal on dead clan"
     ru: "Поздняя кампания: краш daily tick на KingdomDecisionProposal с мёртвым кланом"
     zh: "后期每日 tick 崩溃——KingdomDecisionProposal 涉及已消亡的氏族"
+    zht: "後期每日 tick 當機——KingdomDecisionProposal 涉及已消亡的氏族"
     tr: "Geç oyun günlük tick çökmesi — ölü klan üzerinde KingdomDecisionProposal"
   description:
     en: |
@@ -329,6 +378,10 @@
       在 AI 决策 tick 期间，KingdomDecisionProposalBehavior.GetRandomAnnexationDecision
       （或同类的 Decision* 方法）抛出 NullReferenceException。存档里仍引用着一个已被
       消灭的氏族；原版清理漏掉了决策队列中的反向指针。在长期战役中常见于第 700 天之后。
+    zht: |
+      在 AI 決策 tick 期間，KingdomDecisionProposalBehavior.GetRandomAnnexationDecision
+      （或同類的 Decision* 方法）拋出 NullReferenceException。存檔裡仍引用著一個已被
+      消滅的氏族；原版清理漏掉了決策佇列中的反向指標。在長期戰役中常見於第 700 天之後。
     tr: |
       AI karar tick'i sırasında KingdomDecisionProposalBehavior.GetRandomAnnexationDecision
       (veya kardeş Decision* yöntemleri) NullReferenceException fırlatır. Kayıt hâlâ
@@ -347,6 +400,10 @@
       - "安装 Save Cleaner 模组（NexusMods #7763）——从存档中清除孤立的氏族 / 队伍引用。"
       - "临时办法：读取早 1-2 天的存档，然后慢慢跳过天数；决策队列往往会自行理顺。"
       - "如果每次读取都能复现：这个存档已被污染。Save Cleaner 是唯一的退路，否则只能重开。"
+    zht:
+      - "安裝 Save Cleaner 模組（NexusMods #7763）——從存檔中清除孤立的氏族 / 隊伍引用。"
+      - "臨時辦法：讀取早 1-2 天的存檔，然後慢慢跳過天數；決策佇列往往會自行理順。"
+      - "如果每次讀取都能重現：這個存檔已被污染。Save Cleaner 是唯一的退路，否則只能重開。"
     tr:
       - "Save Cleaner modunu kur (NexusMods #7763) — kayıttan sahipsiz klan/grup referanslarını temizler."
       - "Geçici çözüm: 1-2 gün önceki bir kaydı yükle ve günleri yavaşça geç; karar kuyruğu genellikle kendini düzeltir."
@@ -373,6 +430,7 @@
     en: "Daily-tick crash on issue completion — broken troop in 'sent troops' roster"
     ru: "Краш на ежедневном тике при завершении issue — повреждённая запись в отправленном отряде"
     zh: "完成委托时每日 tick 崩溃——“派出部队”名册里有损坏的单位"
+    zht: "完成委託時每日 tick 當機——「派出部隊」名冊裡有損壞的單位"
     tr: "Görev tamamlanırken günlük tick çökmesi — 'gönderilen birlikler' kadrosunda bozuk birim"
   description:
     en: |
@@ -413,6 +471,16 @@
       Crash Doctor 的名册清理器现在会在读取存档时扫描活跃的委托（不只是普通队伍和
       定居点），并移除 Character 为空的条目。IssueBase 上的 Harmony 安全网会接住仍然
       漏过去的情况，让 DailyTick 继续。两者默认开启。
+    zht: |
+      IssueBase.AlternativeSolutionEndWithSuccess 內部出現 NullReferenceException，
+      由 IssueManager.DailyTick 呼叫。你用「替代解決方案」選項派部隊去解決某個委託
+      （領主需要駐軍、伏擊商隊等等）。當一天結束、引擎試圖完成該委託時，那些被派出
+      的部隊中有一個的 CharacterObject 為空——這是某個模組登出了某個角色卻沒有把它
+      從名冊裡移除而留下的失效引用。FindAll 的 lambda 解引用 x.Character 時就當機了。
+
+      Crash Doctor 的名冊清理器現在會在讀取存檔時掃描活躍的委託（不只是普通隊伍和
+      聚落），並移除 Character 為空的條目。IssueBase 上的 Harmony 安全網會接住仍然
+      漏過去的情況，讓 DailyTick 繼續。兩者預設開啟。
     tr: |
       IssueBase.AlternativeSolutionEndWithSuccess içinde NullReferenceException;
       IssueManager.DailyTick'ten çağrılır. Bir görevi alternatif-çözüm seçeneğiyle
@@ -442,6 +510,11 @@
       - "更新后重新读取一次存档：清理器会在 OnSessionLaunched 时运行，静默移除损坏的条目。"
       - "如果仍然看到该提示——记下当时活跃的是哪种委托类型（DailyTick 顶住时安全网横幅会恰好出现），并反馈给我们；说明清理器漏了某个边角情况。"
       - "可选：在一天结束之前，从任务菜单取消这个替代解决方案的委托，然后干净地重新接取。"
+    zht:
+      - "把 Crash Doctor 更新到最新版本——修復已內建（設定 → 「名冊清理」和「NRE 安全修補」必須開啟，兩者預設都開啟）。"
+      - "更新後重新讀取一次存檔：清理器會在 OnSessionLaunched 時執行，靜默移除損壞的條目。"
+      - "如果仍然看到該提示——記下當時活躍的是哪種委託類型（DailyTick 頂住時安全網橫幅會恰好出現），並回報給我們；說明清理器漏了某個邊角情況。"
+      - "可選：在一天結束之前，從任務選單取消這個替代解決方案的委託，然後乾淨地重新接取。"
     tr:
       - "Crash Doctor'ı en son sürüme güncelle — düzeltme yerleşik gelir (Ayarlar → 'Kadro temizliği' ve 'NRE güvenlik yamaları' açık olmalı, ikisi de varsayılan olarak açıktır)."
       - "Güncelledikten sonra kaydı bir kez yeniden yükle: temizleyici OnSessionLaunched'da çalışır ve bozuk girişleri sessizce kaldırır."

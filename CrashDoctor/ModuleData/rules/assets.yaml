@@ -8,6 +8,7 @@
     en: "Scene file not found"
     ru: "Файл сцены не найден"
     zh: "找不到场景文件"
+    zht: "找不到場景檔案"
     tr: "Sahne dosyası bulunamadı"
   description:
     en: |
@@ -19,6 +20,9 @@
     zh: |
       某个模组试图加载磁盘上不存在的场景。要么是模组没装完整，要么是该场景在
       较新的模组版本里被改了名字。
+    zht: |
+      某個模組試圖載入磁碟上不存在的場景。要麼是模組沒裝完整，要麼是該場景在
+      較新的模組版本裡被改了名字。
     tr: |
       Bir mod, diskte var olmayan bir sahneyi yüklemeye çalıştı. Ya mod kurulumu
       eksik ya da sahne daha yeni bir mod sürümünde yeniden adlandırıldı.
@@ -32,6 +36,9 @@
     zh:
       - "彻底重新安装该模组——重新添加之前先完全删除它的文件夹。"
       - "查看该模组在 NexusMods 上的 Required Files（往往有一个单独的 'Scenes' 下载）。"
+    zht:
+      - "徹底重新安裝該模組——重新加入之前先完全刪除它的資料夾。"
+      - "查看該模組在 NexusMods 上的 Required Files（往往有一個單獨的 'Scenes' 下載）。"
     tr:
       - "Modu tamamen yeniden kur — yeniden eklemeden önce klasörünü tümüyle sil."
       - "Modun NexusMods'taki Required Files bölümüne bak (genellikle ayrı bir 'Scenes' indirmesi olur)."
@@ -52,6 +59,7 @@
     en: "Mesh asset not found"
     ru: "Меш не найден"
     zh: "找不到网格资源"
+    zht: "找不到網格資源"
     tr: "Mesh varlığı bulunamadı"
   description:
     en: |
@@ -63,6 +71,9 @@
     zh: |
       物品 / 场景 XML 引用的某个模型在磁盘上没有对应的 .obj/.mesh 文件。通常是
       模组缺失或没装完整。
+    zht: |
+      物品 / 場景 XML 引用的某個模型在磁碟上沒有對應的 .obj/.mesh 檔案。通常是
+      模組缺失或沒裝完整。
     tr: |
       Eşya/sahne XML'inin başvurduğu bir model, diskte .obj/.mesh olarak yok.
       Genellikle eksik veya yarım bir mod kurulumu.
@@ -75,6 +86,9 @@
       - "Проверь Required Files на NexusMods."
     zh:
       - "重新安装肇事的模组（日志里的网格路径通常包含模组 ID）。"
+      - "查看 NexusMods 上的 Required Files。"
+    zht:
+      - "重新安裝肇事的模組（日誌裡的網格路徑通常包含模組 ID）。"
       - "查看 NexusMods 上的 Required Files。"
     tr:
       - "Sorunlu modu yeniden kur (günlükteki mesh yolu genellikle mod kimliğini içerir)."
@@ -94,6 +108,7 @@
     en: "FMOD audio bank failed to load"
     ru: "FMOD не загрузил аудиобанк"
     zh: "FMOD 音频库加载失败"
+    zht: "FMOD 音訊庫載入失敗"
     tr: "FMOD ses bankası yüklenemedi"
   description:
     en: |
@@ -107,6 +122,9 @@
     zh: |
       某个音频库文件（.bank）缺失或损坏。Bannerlord 通常会在声音损坏的情况下继续
       运行，但严重的 FMOD 错误也可能在第一段战斗音乐时导致崩溃。
+    zht: |
+      某個音訊庫檔案（.bank）缺失或損壞。Bannerlord 通常會在聲音損壞的情況下繼續
+      執行，但嚴重的 FMOD 錯誤也可能在第一段戰鬥音樂時導致崩潰。
     tr: |
       Bir ses bankası dosyası (.bank) eksik veya bozuk. Bannerlord genellikle
       bozuk seslerle çalışmaya devam eder, ama ağır bir FMOD hatası ilk savaş
@@ -121,6 +139,9 @@
     zh:
       - "Steam → Bannerlord → 属性 → 已安装文件 → 验证完整性。"
       - "逐个重新安装音频模组以找出冲突。"
+    zht:
+      - "Steam → Bannerlord → 內容 → 已安裝檔案 → 驗證完整性。"
+      - "逐個重新安裝音訊模組以找出衝突。"
     tr:
       - "Steam → Bannerlord → Özellikler → Yüklü Dosyalar → Bütünlüğü doğrula."
       - "Çakışmayı bulmak için ses modlarını teker teker yeniden kur."
@@ -144,6 +165,7 @@
     en: "Async I/O fault on compressed asset (.tpac) — engine couldn't read pack"
     ru: "Ошибка асинхронного чтения сжатого ассета (.tpac) — движок не смог прочитать пак"
     zh: "压缩资源（.tpac）的异步 I/O 故障——引擎无法读取该资源包"
+    zht: "壓縮資源（.tpac）的非同步 I/O 故障——引擎無法讀取該資源包"
     tr: "Sıkıştırılmış varlıkta (.tpac) eşzamansız G/Ç hatası — motor paketi okuyamadı"
   description:
     en: |
@@ -194,6 +216,22 @@
       没有安装 BLSE + ButterLib，Bannerlord 不会把托管堆栈写进 rgl_log，所以我们
       无法指出究竟是哪个 .tpac 出了问题——只能指出问题的类别。如果再次出现，请在
       下次游戏前装上 BLSE。
+    zht: |
+      日誌裡出現一連串 "Trying to make partial read on compressed asset data"
+      警告（往往連續幾十到幾百次），這是 Bannerlord 的 .tpac 資源包（存放網格、
+      紋理和圖示的壓縮檔案）發生非同步 I/O 故障的已知特徵。當這種模式出現在一個
+      託管 CLR 例外（0xE0434352）之前時，引擎通常拋出了一個沒人接住的
+      System.IO.FileNotFoundException 或非同步讀取失敗，於是遊戲倒下了。
+
+      論壇已證實的、這一確切模式的根本原因：
+      1. 基礎遊戲裡損壞或沒下載完整的 .tpac（通常是 Modules/Native/AssetPackages/pack0.tpac），或者某個創意工坊模組裡的。
+      2. 防毒軟體 / Defender 即時掃描在引擎對大塊 .tpac 進行讀取時阻止了它開啟的非同步檔案控制代碼。
+      3. 磁碟 I/O 錯誤（壞磁區、USB 外接儲存逾時、遊戲在串流資源時 HDD 負載過高）。
+      4. 模組資源引用了一個模組作者忘記一併發布的檔案。
+
+      沒有安裝 BLSE + ButterLib，Bannerlord 不會把託管堆疊寫進 rgl_log，所以我們
+      無法指出究竟是哪個 .tpac 出了問題——只能指出問題的類別。如果再次出現，請在
+      下次遊戲前裝上 BLSE。
     tr: |
       Günlükte yoğun bir "Trying to make partial read on compressed asset data"
       uyarısı dizisi var (genellikle peş peşe onlarca ila yüzlerce kez); bu,
@@ -231,6 +269,12 @@
       - "把 Bannerlord 安装文件夹和 steamapps\\workshop\\content\\261550 加入杀毒软件 / Windows Defender 的排除列表，然后重启电脑。"
       - "从管理员控制台运行 'chkdsk C: /f'（需要重启）——确认装游戏的磁盘没有 I/O 错误。"
       - "下次游戏前安装 BLSE + ButterLib——它们会让 Bannerlord 写出托管堆栈，这样下次我们就能指出究竟是哪个 .tpac 出错了。"
+    zht:
+      - "Steam → Bannerlord → 內容 → 已安裝檔案 → 驗證完整性（如果 Native pack0.tpac 壞了，會重建它）。"
+      - "透過 Steam 創意工坊重新下載你的大型內容模組：取消訂閱 → 關閉 Steam → 刪除 steamapps\\workshop\\content\\261550\\<id>\\ 下的模組資料夾 → 重新開啟 Steam → 重新訂閱（強制乾淨地重新下載——創意工坊沒有內建的「驗證」功能）。"
+      - "把 Bannerlord 安裝資料夾和 steamapps\\workshop\\content\\261550 加入防毒軟體 / Windows Defender 的排除清單，然後重新啟動電腦。"
+      - "從系統管理員主控台執行 'chkdsk C: /f'（需要重新啟動）——確認裝遊戲的磁碟沒有 I/O 錯誤。"
+      - "下次遊戲前安裝 BLSE + ButterLib——它們會讓 Bannerlord 寫出託管堆疊，這樣下次我們就能指出究竟是哪個 .tpac 出錯了。"
     tr:
       - "Steam → Bannerlord → Özellikler → Yüklü Dosyalar → Bütünlüğü doğrula (Native pack0.tpac bozuksa yeniden oluşturur)."
       - "Büyük içerik modlarını Steam Workshop üzerinden yeniden indir: abonelikten çık → Steam'i kapat → steamapps\\workshop\\content\\261550\\<id>\\ altındaki mod klasörünü sil → Steam'i yeniden aç → yeniden abone ol (temiz bir yeniden indirme zorlar — Workshop'un yerleşik bir 'doğrula' özelliği yoktur)."

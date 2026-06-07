@@ -8,6 +8,7 @@
     en: "Crash during pre-battle deployment phase (formation troop transfer)"
     ru: "Краш в фазе расстановки перед боем (перенос юнитов между формациями)"
     zh: "战前部署阶段崩溃（在编队间转移部队）"
+    zht: "戰前部署階段崩潰（在編隊間轉移部隊）"
     tr: "Savaş öncesi yerleştirme aşamasında çökme (düzen arası birlik aktarımı)"
   description:
     en: |
@@ -38,6 +39,14 @@
 
       没有托管堆栈（BetterExceptionWindow / BLSE）就无法指认是哪个补丁所致。如果反复
       出现就安装 BLSE——见 m41 模块。
+    zht: |
+      來自真實客戶崩潰的特徵：日誌在編隊間轉移部隊 + 'Selected formations being
+      cleared' 這行之後立即結束，正處於部署介面的戰鬥中途。下一行始終沒有寫出來——
+      遊戲在 Mission 的編隊 / 部隊名冊操作內部崩潰。與修補部署 / 部隊池邏輯的模組高度
+      相關（RestoreLordTroops、RBM、覆寫 DeploymentMissionController 的自訂勢力模組）。
+
+      沒有託管堆疊（BetterExceptionWindow / BLSE）就無法指認是哪個修補程式所致。如果反覆
+      出現就安裝 BLSE——見 m41 模組。
     tr: |
       Gerçek bir müşteri çökmesinden alınan imza: günlük, düzenler arası bir birlik
       aktarımı + 'Selected formations being cleared' satırından hemen sonra,
@@ -68,6 +77,12 @@
       - "Steam → 验证文件完整性（如果缺少某个部署资源，可发现 Bannerlord 安装不完整）。"
       - "下次游戏前安装 BLSE + BetterExceptionWindow——能捕获带补丁名称的托管堆栈。"
       - "如果整个战役都这样：（装好 BLSE 后）把 crash_report.html 发到 t.me/CodeRickTg。"
+    zht:
+      - "試一場戰鬥，在部署時不在編隊間移動部隊——如果仍然崩潰，原因在別處；如果不崩，觸發條件就確認了。"
+      - "逐個停用修補部隊池 / 部署的模組：RestoreLordTroops、RBM、自訂勢力。再按組重新啟用以找出元兇。"
+      - "Steam → 驗證檔案完整性（如果缺少某個部署資源，可發現 Bannerlord 安裝不完整）。"
+      - "下次遊戲前安裝 BLSE + BetterExceptionWindow——能擷取帶修補程式名稱的託管堆疊。"
+      - "如果整個戰役都這樣：（裝好 BLSE 後）把 crash_report.html 發到 t.me/CodeRickTg。"
     tr:
       - "Yerleştirmede düzenler arası birlik taşımadan bir savaş dene — yine çöküyorsa neden başka yerde; çökmüyorsa tetikleyici doğrulanmıştır."
       - "Birlik havuzunu / yerleştirmeyi yamalayan modları teker teker devre dışı bırak: RestoreLordTroops, RBM, özel hizipler. Suçluyu bulmak için gruplar hâlinde yeniden etkinleştir."
@@ -94,6 +109,7 @@
     en: "Crash on inventory screen open (equipment-mod conflict)"
     ru: "Краш при открытии инвентаря (конфликт equipment-мода)"
     zh: "打开物品栏界面时崩溃（装备模组冲突）"
+    zht: "開啟物品欄介面時崩潰（裝備模組衝突）"
     tr: "Envanter ekranı açılırken çökme (ekipman-mod çakışması)"
   description:
     en: |
@@ -122,6 +138,14 @@
 
       如果某个模组给英雄的装备里加了一件如今已不存在的物品（模组在存档中途被卸载），
       原版也可能遇到这个问题。
+    zht: |
+      點擊物品欄標籤頁 → 遊戲崩潰。rgl_log 中的特徵：最後幾條記錄是
+      GauntletInventoryScreen.HandleActivate / HandleResume，之後再無內容（遊戲在填充
+      物品欄時崩潰）。在 TOR 安裝環境中，典型原因是某個裝備模組（OpenSourceArmory、
+      ExpandedArmoury、Distinguished Service）破壞了 TOR 的裝備 ID。
+
+      如果某個模組給英雄的裝備裡加了一件如今已不存在的物品（模組在存檔中途被解除安裝），
+      原版也可能遇到這個問題。
     tr: |
       Envanter sekmesine tıkla → oyun ölür. rgl_log'daki imza: son girişler
       GauntletInventoryScreen.HandleActivate / HandleResume gösterir, ardından
@@ -147,6 +171,11 @@
       - "如果在用 TOR + Distinguished Service——在 Nexus 上安装 TOR DS Compat Patch。"
       - "如果在纯原版下问题仍在：读取添加 / 移除该装备模组之前的更早存档。"
       - "Steam → 验证文件完整性，以确认没有缺失的装备 XML。"
+    zht:
+      - "停用裝備模組（OpenSourceArmory、ExpandedArmoury、Distinguished Service）後再試。"
+      - "如果在用 TOR + Distinguished Service——在 Nexus 上安裝 TOR DS Compat Patch。"
+      - "如果在純原版下問題仍在：讀取加入 / 移除該裝備模組之前的更早存檔。"
+      - "Steam → 驗證檔案完整性，以確認沒有缺失的裝備 XML。"
     tr:
       - "Ekipman modlarını devre dışı bırak (OpenSourceArmory, ExpandedArmoury, Distinguished Service) ve tekrar dene."
       - "TOR + Distinguished Service kullanıyorsan — Nexus'tan TOR DS Compat Patch'i kur."
@@ -174,6 +203,7 @@
     en: "Crash on loot screen after battle"
     ru: "Краш на экране лута после боя"
     zh: "战斗后战利品界面崩溃"
+    zht: "戰鬥後戰利品介面崩潰"
     tr: "Savaştan sonra ganimet ekranında çökme"
   description:
     en: |
@@ -199,6 +229,13 @@
 
       置信度低——rgl_log 中的特征只是 'battle won' 然后一片沉默。没有 BLSE 提供的
       crash_report.html，我们无法确定原因。
+    zht: |
+      戰鬥結束 → 戰利品介面 → 崩潰。常見於 MissionAfterMath / LootCampaignBehavior
+      內部的空引用，由某個第三方修改戰利品的模組（Loot Anywhere、Loot Filter）觸發——
+      它在底層類別簽章改變之後仍然修補了原有邏輯。
+
+      信賴度低——rgl_log 中的特徵只是 'battle won' 然後一片沉默。沒有 BLSE 提供的
+      crash_report.html，我們無法確定原因。
     tr: |
       Savaş biter → ganimet ekranı → çökme. Genellikle MissionAfterMath /
       LootCampaignBehavior içinde bir boş referans; altta yatan sınıf imzası
@@ -220,6 +257,10 @@
       - "禁用修改战利品的模组（Loot Anywhere、Loot Filter、自定义掉率模组）。"
       - "读取战斗前的存档，再打同一场战斗——如果能复现，就是模组冲突；如果不能，就是竞态问题（不会稳定重现）。"
       - "安装 BLSE + BetterExceptionWindow，以便下次发生时获得托管堆栈。"
+    zht:
+      - "停用修改戰利品的模組（Loot Anywhere、Loot Filter、自訂掉率模組）。"
+      - "讀取戰鬥前的存檔，再打同一場戰鬥——如果能重現，就是模組衝突；如果不能，就是競態問題（不會穩定重現）。"
+      - "安裝 BLSE + BetterExceptionWindow，以便下次發生時取得託管堆疊。"
     tr:
       - "Ganimet-değiştiren modları devre dışı bırak (Loot Anywhere, Loot Filter, özel düşme oranı modları)."
       - "Savaş öncesi kaydı yükle ve aynı savaşı tekrar dene — tekrarlanabiliyorsa mod çakışması; değilse yarış durumu (güvenilir şekilde tekrarlamaz)."
@@ -244,6 +285,7 @@
     en: "Steam session init failed — multiplayer / Workshop sync broken"
     ru: "Не удалось инициировать сессию Steam — multiplayer / Workshop sync сломаны"
     zh: "Steam 会话初始化失败——多人 / 创意工坊同步损坏"
+    zht: "Steam 工作階段初始化失敗——多人 / 創意工坊同步損壞"
     tr: "Steam oturumu başlatılamadı — çok oyunculu / Workshop senkronizasyonu bozuk"
   description:
     en: |
@@ -271,6 +313,13 @@
 
       最常见的原因是 Steam 处于离线模式（或其登录令牌过期）。较少见的：Steam 进程
       没在运行、杀毒软件拦截了 SteamAPI64.dll，或者 Steam 临时故障（查看 steamstat.us）。
+    zht: |
+      Bannerlord 無法建立 Steam 工作階段。意味著：SteamAPI 交握失敗、創意工坊 API 沒有
+      回應，或者使用者的 Steam 用戶端處於離線狀態。多人遊戲完全不可用；創意工坊模組的
+      自動更新不會執行；雲端存檔不會同步。
+
+      最常見的原因是 Steam 處於離線模式（或其登入權杖過期）。較少見的：Steam 行程
+      沒在執行、防毒軟體攔截了 SteamAPI64.dll，或者 Steam 臨時故障（查看 steamstat.us）。
     tr: |
       Bannerlord bir Steam oturumu kuramadı. Şu anlama gelir: SteamAPI el sıkışması
       başarısız oldu, Workshop API yanıt vermedi ya da kullanıcının Steam istemcisi
@@ -297,6 +346,11 @@
       - "Steam → 点击你的用户名 → 如果显示离线就点“切换到在线”。"
       - "杀毒软件排除：添加 SteamAPI64.dll 的路径（通常是 <Steam>\\steamapps\\common\\Mount & Blade II Bannerlord\\bin\\Win64_Shipping_Client\\）。"
       - "在 https://steamstat.us 查看 Steam 状态——如果 'Steam API' 显示红色，等它恢复。"
+    zht:
+      - "重新啟動 Steam：從系統匣完全退出（右鍵 → 退出），等 10 秒，再重新啟動。"
+      - "Steam → 點擊你的使用者名稱 → 如果顯示離線就點「切換到線上」。"
+      - "防毒軟體排除：加入 SteamAPI64.dll 的路徑（通常是 <Steam>\\steamapps\\common\\Mount & Blade II Bannerlord\\bin\\Win64_Shipping_Client\\）。"
+      - "在 https://steamstat.us 查看 Steam 狀態——如果 'Steam API' 顯示紅色，等它恢復。"
     tr:
       - "Steam'i yeniden başlat: sistem tepsisinden tamamen çık (sağ tık → Çık), 10 saniye bekle, yeniden başlat."
       - "Steam → kullanıcı adına tıkla → çevrimdışı görünüyorsa 'Çevrimiçi ol'."

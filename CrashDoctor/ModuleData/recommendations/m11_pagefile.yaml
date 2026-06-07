@@ -3,6 +3,7 @@
     en: "Increase pagefile to 40 / 60 GB for TOR"
     ru: "Увеличить pagefile до 40 / 60 ГБ для TOR"
     zh: "为 TOR 将页面文件增大到 40 / 60 GB"
+    zht: "為 TOR 將分頁檔增大到 40 / 60 GB"
     tr: "TOR için sayfa dosyasını 40 / 60 GB'a çıkar"
   description:
     en: |
@@ -39,6 +40,17 @@
       Crash Doctor 会拆分：在 C: 上保留一个小的 800 / 4096 MB 项（这样在蓝屏时
       Windows 仍能写入内核内存转储），而 TOR 所需的大项放到另一个磁盘上。C: 上的
       页面文件永远不会被悄悄删除。
+    zht: |
+      TOR 包含約 30 GB 的素材，並在首次執行時重新編譯數千個著色器變體。在 Windows
+      自動管理分頁檔的情況下，認可記憶體經常不夠用，於是遊戲當機並報
+      «Application crashed because it could not get new memory»。把分頁檔設為
+      40000 / 60000 MB（初始 / 最大）即可解決。
+
+      磁碟機的選擇是自動的。如果 C: 磁碟有 ≥ 65 GB 空閒空間，分頁檔就保留在 C: 上
+      （Windows 的預設方式）。如果 C: 磁碟空間不足，但另一個固定磁碟有 ≥ 65 GB 空閒，
+      Crash Doctor 會拆分：在 C: 上保留一個小的 800 / 4096 MB 項目（這樣在藍色畫面時
+      Windows 仍能寫入核心記憶體傾印），而 TOR 所需的大項目放到另一個磁碟上。C: 上的
+      分頁檔永遠不會被悄悄刪除。
     tr: |
       TOR yaklaşık 30 GB içerik içerir ve ilk çalıştırmada binlerce gölgelendirici
       (shader) çeşidini yeniden derler. Windows'un yönettiği sayfa dosyasıyla taahhüt
@@ -71,6 +83,12 @@
       - "在重写之前，HKLM 注册表分支会导出为 .reg 备份。"
       - "可从「历史」标签页撤销。"
       - "需要任意固定磁盘上有 ≥ 65 GB 空闲空间。如果该磁盘不是 C:，C: 上会保留一个小的 800 / 4096 MB 页面文件用于内核内存转储。"
+    zht:
+      - "點擊「套用」：Windows 會彈出一個 UAC 同意對話方塊 — 點擊「是」。"
+      - "需要重新啟動 — Windows 只在開機時讀取分頁檔設定。"
+      - "在重寫之前，HKLM 登錄分支會匯出為 .reg 備份。"
+      - "可從「歷史」標籤頁復原。"
+      - "需要任意固定磁碟上有 ≥ 65 GB 空閒空間。如果該磁碟不是 C:，C: 上會保留一個小的 800 / 4096 MB 分頁檔用於核心記憶體傾印。"
     tr:
       - "«Uygula»'ya tıkla: Windows tek bir UAC onay penceresi gösterir — «Evet»'e tıkla."
       - "Yeniden başlatma gerekir — Windows sayfa dosyası ayarlarını yalnızca açılışta okur."

@@ -150,6 +150,20 @@
                       </Children>
                     </ButtonWidget>
 
+                    <!-- Suspect-mod button: appears (below the evidence button) only when the rgl_log
+                         scan flagged a mod with broken XML. Names the SOURCE mod of a broken-data
+                         crash, which the managed stack can't reveal. Phrased as "possible culprit". -->
+                    <ButtonWidget IsVisible="@HasSuspectMods" DoNotPassEventsToChildren="true"
+                                  Command.Click="ExecuteShowSuspectMod" Brush="ButtonBrush1"
+                                  WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="340" SuggestedHeight="40"
+                                  HorizontalAlignment="Center" VerticalAlignment="Top" MarginTop="608">
+                      <Children>
+                        <TextWidget DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
+                                    Brush.FontSize="16" Brush.FontColor="#FFD9A0FF" Brush.TextHorizontalAlignment="Center"
+                                    Text="@LabelViewSuspectMod" />
+                      </Children>
+                    </ButtonWidget>
+
                     <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="22"
                                 VerticalAlignment="Bottom" MarginBottom="14" MarginLeft="20" MarginRight="20"
                                 Brush.FontSize="14" Brush.FontColor="#988673FF" Text="@DiagnosisEvidenceSource" />
@@ -1069,116 +1083,6 @@
                                      would crash the AI tick), so it belongs with the other fixes, not
                                      in Settings. -->
 
-                                <!-- ===== CARD 6: Per-mod opt-in (contains its own scrollable mod list) ===== (Harmony-module-only) -->
-                                <!-- Height is data-bound (@PerModCardHeight) so the card shrinks to the
-                                     actual mod count instead of leaving a big blank area when only 1-2
-                                     eligible mods are installed. Capped at 500 in the VM → scroll for long lists. -->
-                                <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="1100" SuggestedHeight="@PerModCardHeight"
-                                        HorizontalAlignment="Center" MarginBottom="14" IsVisible="@ShowHarmonyFeatures"
-                                        Sprite="StdAssets\Popup\canvas">
-                  <Children>
-                    <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
-                            Sprite="frame_9" ExtendLeft="14" ExtendTop="14" ExtendRight="14" ExtendBottom="14"
-                            IsEnabled="false" />
-                    <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="32"
-                                VerticalAlignment="Top" MarginTop="14"
-                                Brush.FontSize="20" Brush.FontColor="#F4E1C4FF"
-                                Brush.TextHorizontalAlignment="Center" Text="@LabelPerModSection" />
-                    <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="1010" SuggestedHeight="124"
-                                HorizontalAlignment="Center" VerticalAlignment="Top" MarginTop="50"
-                                Brush.FontSize="14" Brush.FontColor="#D8C49A"
-                                Brush.TextHorizontalAlignment="Center" Text="@HintPerModSection" />
-
-                <!-- Per-mod list nested inside Card 4 (offsets are RELATIVE to the card's
-                     top, not the outer settings panel). Uses the vanilla Bannerlord scroll
-                     pattern: wrapper Widget + ScrollablePanel with ClipRect/InnerPanel/
-                     VerticalScrollbar + sibling ScrollbarWidget. -->
-                <Widget Id="PerModScrollWrap"
-                        WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
-                        VerticalAlignment="Top" HorizontalAlignment="Center"
-                        MarginTop="184" MarginBottom="20" MarginLeft="36" MarginRight="36">
-                  <Children>
-                    <ScrollablePanel Id="PerModScroll"
-                                     WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
-                                     AutoHideScrollBars="true"
-                                     ClipRect="PerModClipRect"
-                                     InnerPanel="PerModClipRect\PerModList"
-                                     VerticalScrollbar="..\PerModScrollbar">
-                      <Children>
-                        <Widget Id="PerModClipRect"
-                                WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
-                                MarginRight="20" ClipContents="true">
-                          <Children>
-                            <ListPanel Id="PerModList" DataSource="{InstalledMods}"
-                                       WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren"
-                                       StackLayout.LayoutMethod="VerticalBottomToTop">
-                              <ItemTemplate>
-                                <!-- Row is a fixed-width ButtonWidget (620), Horizontal=Center.
-                                     The button itself sits in the middle of the row. Children
-                                     use simple MarginLeft inside the centered button — no
-                                     inner ListPanel needed. ButtonWidget honours children
-                                     HorizontalAlignment more reliably than a nested ListPanel. -->
-                                <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="36"
-                                        MarginTop="2" MarginBottom="2">
-                                  <Children>
-                                    <ButtonWidget DoNotPassEventsToChildren="true" Command.Click="ExecuteToggle"
-                                                  WidthSizePolicy="Fixed" HeightSizePolicy="Fixed"
-                                                  SuggestedWidth="620" SuggestedHeight="36"
-                                                  HorizontalAlignment="Center" VerticalAlignment="Center">
-                                      <Children>
-                                        <Widget DoNotAcceptEvents="true"
-                                                WidthSizePolicy="Fixed" HeightSizePolicy="Fixed"
-                                                SuggestedWidth="16" SuggestedHeight="16"
-                                                HorizontalAlignment="Left" VerticalAlignment="Center"
-                                                MarginLeft="14"
-                                                Sprite="BlankWhiteSquare_9" Color="@ToggleIndicatorColor" />
-                                        <TextWidget DoNotAcceptEvents="true"
-                                                    WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
-                                                    HorizontalAlignment="Left" VerticalAlignment="Center"
-                                                    MarginLeft="44" MarginRight="10"
-                                                    Brush.FontSize="15" Brush.FontColor="#E8DCC4FF"
-                                                    Brush.TextHorizontalAlignment="Left" Text="@Name" />
-                                      </Children>
-                                    </ButtonWidget>
-                                  </Children>
-                                </Widget>
-                              </ItemTemplate>
-                            </ListPanel>
-                          </Children>
-                        </Widget>
-                      </Children>
-                    </ScrollablePanel>
-                    <ScrollbarWidget Id="PerModScrollbar"
-                                     WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent"
-                                     SuggestedWidth="10" HorizontalAlignment="Right" VerticalAlignment="Top"
-                                     MarginTop="6" MarginBottom="6" MarginRight="2"
-                                     AlignmentAxis="Vertical" Handle="PerModScrollbarHandle"
-                                     MaxValue="100" MinValue="0">
-                      <Children>
-                        <Widget WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="4"
-                                HorizontalAlignment="Center"
-                                Sprite="BlankWhiteSquare_9" Color="#5a4033FF" AlphaFactor="0.4" />
-                        <ImageWidget Id="PerModScrollbarHandle"
-                                     WidthSizePolicy="Fixed" HeightSizePolicy="Fixed"
-                                     SuggestedHeight="40" SuggestedWidth="10"
-                                     HorizontalAlignment="Center" Brush="FaceGen.Scrollbar.Handle" />
-                      </Children>
-                    </ScrollbarWidget>
-                  </Children>
-                </Widget>
-
-                <!-- Empty-state: shown ONLY after the mod scan runs and finds no installed mod
-                     with in-mission code to wrap. Centered in the card so a blank list doesn't
-                     read as a bug. Mutually exclusive with the populated list above. -->
-                <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="900" SuggestedHeight="160"
-                            HorizontalAlignment="Center" VerticalAlignment="Center" MarginTop="60"
-                            IsVisible="@ShowNoEligibleMods"
-                            Brush.FontSize="16" Brush.FontColor="#C8A86AFF"
-                            Brush.TextHorizontalAlignment="Center" Text="@LabelNoEligibleMods" />
-                                <!-- close per-mod (Card 6) Children + Widget -->
-                                </Children>
-                                </Widget>
-
                               </Children>
                             </ListPanel>
                           </Children>
@@ -1276,8 +1180,11 @@
                             Brush.TextHorizontalAlignment="Center" Text="@LabelTabMods" />
               </Children>
             </ButtonWidget>
-            <!-- NEW (2026-06-03) Crash Fixes tab — per-patch on/off list with status badges. -->
+            <!-- NEW (2026-06-03) Crash Fixes tab — per-patch on/off list with status badges.
+                 Disabled (greyed, non-clickable) when the Bannerlord.Harmony module is off: the
+                 whole tab manages live Harmony patches, which can't run without the module. -->
             <ButtonWidget DoNotPassEventsToChildren="true" Command.Click="ExecuteShowCrashFixesTab"
+                          IsEnabled="@ShowHarmonyFeatures"
                           Brush="Popup.Done.Button"
                           WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="188" SuggestedHeight="66"
                           MarginRight="6">
@@ -1289,7 +1196,7 @@
               </Children>
             </ButtonWidget>
             <!-- NEW (2026-05-14) Settings tab — last in the strip. Holds Emergency Save / Native
-                 crash log / UI error patching toggles + per-mod opt-in section. -->
+                 crash log / UI error patching toggles. -->
             <ButtonWidget DoNotPassEventsToChildren="true" Command.Click="ExecuteShowSettingsTab"
                           Brush="Popup.Done.Button"
                           WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="188" SuggestedHeight="66">

@@ -8,11 +8,13 @@
     en: "TOR is enabled without Bannerlord.Harmony"
     ru: "TOR включён без Bannerlord.Harmony"
     zh: "启用了 TOR 但缺少 Bannerlord.Harmony"
+    zht: "啟用了 TOR 但缺少 Bannerlord.Harmony"
     tr: "TOR etkin ama Bannerlord.Harmony yok"
   description:
     en: "The Old Realms requires Harmony to load. Without it the game crashes during module init."
     ru: "The Old Realms требует Harmony для загрузки. Без него игра падает на старте инициализации модов."
     zh: "The Old Realms 需要 Harmony 才能加载。缺少它，游戏会在模块初始化时崩溃。"
+    zht: "The Old Realms 需要 Harmony 才能載入。缺少它，遊戲會在模組初始化時崩潰。"
     tr: "The Old Realms yüklenmek için Harmony gerektirir. Olmadan oyun, modül başlatılırken çöker."
   fix:
     en:
@@ -24,6 +26,9 @@
     zh:
       - "从 NexusMods 安装 Bannerlord.Harmony（mod 2006）。"
       - "在启动器的加载顺序中把它放在 TOR_Core 上面。"
+    zht:
+      - "從 NexusMods 安裝 Bannerlord.Harmony（mod 2006）。"
+      - "在啟動器的載入順序中把它放在 TOR_Core 上面。"
     tr:
       - "NexusMods'tan Bannerlord.Harmony'yi kur (mod 2006)."
       - "Başlatıcıdaki yükleme sırasında onu TOR_Core'un ÜSTÜNE koy."
@@ -42,11 +47,13 @@
     en: "TOR sub-module enabled without TOR_Core"
     ru: "TOR-подмодуль активен, а TOR_Core нет"
     zh: "启用了 TOR 子模块，但没有 TOR_Core"
+    zht: "啟用了 TOR 子模組，但沒有 TOR_Core"
     tr: "TOR alt modülü etkin ama TOR_Core yok"
   description:
     en: "TOR_Armory or TOR_Environment are enabled but TOR_Core is missing. They will fail to load anything."
     ru: "TOR_Armory или TOR_Environment активны, но TOR_Core отсутствует. Они не смогут загрузиться."
     zh: "启用了 TOR_Armory 或 TOR_Environment，但缺少 TOR_Core。它们将无法加载任何内容。"
+    zht: "啟用了 TOR_Armory 或 TOR_Environment，但缺少 TOR_Core。它們將無法載入任何內容。"
     tr: "TOR_Armory veya TOR_Environment etkin ama TOR_Core eksik. Hiçbir şey yükleyemezler."
   fix:
     en:
@@ -55,6 +62,8 @@
       - "Включи TOR_Core в лаунчере и поставь ВЫШЕ TOR_Armory и TOR_Environment."
     zh:
       - "在启动器中启用 TOR_Core，并把它放在 TOR_Armory 和 TOR_Environment 上面。"
+    zht:
+      - "在啟動器中啟用 TOR_Core，並把它放在 TOR_Armory 和 TOR_Environment 上面。"
     tr:
       - "Başlatıcıda TOR_Core'u etkinleştir ve onu TOR_Armory ile TOR_Environment'ın ÜSTÜNE koy."
   match:
@@ -78,11 +87,13 @@
     en: "TOR CareerPerkMissionBehavior null reference"
     ru: "Null reference в TOR_Core.CareerPerkMissionBehavior"
     zh: "TOR CareerPerkMissionBehavior 空引用"
+    zht: "TOR CareerPerkMissionBehavior 空引用"
     tr: "TOR CareerPerkMissionBehavior boş referans"
   description:
     en: "Known TOR bug — CareerPerkMissionBehavior.OnAgentRemoved hits a null when certain career perks fire on an already-dead agent."
     ru: "Известный баг TOR — CareerPerkMissionBehavior.OnAgentRemoved падает на null, когда определённые карьерные перки срабатывают на уже мёртвом агенте."
     zh: "已知的 TOR 缺陷——当某些职业天赋在已经死亡的单位上触发时，CareerPerkMissionBehavior.OnAgentRemoved 会遇到空值。"
+    zht: "已知的 TOR 缺陷——當某些職業天賦在已經死亡的單位上觸發時，CareerPerkMissionBehavior.OnAgentRemoved 會遇到空值。"
     tr: "Bilinen bir TOR hatası — bazı kariyer yetenekleri zaten ölmüş bir birim üzerinde tetiklendiğinde CareerPerkMissionBehavior.OnAgentRemoved boş değere takılır."
   fix:
     en:
@@ -94,6 +105,9 @@
     zh:
       - "在 NexusMods 上把 TOR_Core 更新到最新版本。"
       - "如果能复现：避免使用触发它的那个职业天赋（见 TOR Discord #bug-reports）。"
+    zht:
+      - "在 NexusMods 上把 TOR_Core 更新到最新版本。"
+      - "如果能重現：避免使用觸發它的那個職業天賦（見 TOR Discord #bug-reports）。"
     tr:
       - "NexusMods'ta TOR_Core'u en son sürüme güncelle."
       - "Tekrarlanabiliyorsa: onu tetikleyen belirli kariyer yeteneğini kullanma (bkz. TOR Discord #bug-reports)."
@@ -112,11 +126,13 @@
     en: "TOR GraveyardNightWatchPartyComponent null reference"
     ru: "TOR — null в GraveyardNightWatchPartyComponent"
     zh: "TOR GraveyardNightWatchPartyComponent 空引用"
+    zht: "TOR GraveyardNightWatchPartyComponent 空引用"
     tr: "TOR GraveyardNightWatchPartyComponent boş referans"
   description:
     en: "Known TOR bug in the RaiseDead campaign mechanic — the night-watch party loses its name reference."
     ru: "Известный баг TOR в кампанийной механике RaiseDead — ночная стража теряет ссылку на имя."
     zh: "TOR 的 RaiseDead 战役机制中的已知缺陷——守夜队伍丢失了它的名称引用。"
+    zht: "TOR 的 RaiseDead 戰役機制中的已知缺陷——守夜隊伍遺失了它的名稱引用。"
     tr: "TOR'un RaiseDead sefer mekaniğindeki bilinen bir hata — gece nöbeti grubu isim referansını kaybeder."
   fix:
     en:
@@ -128,6 +144,9 @@
     zh:
       - "把 TOR_Core 更新到最新版本。"
       - "如果能复现：在修复之前，不要在受影响的定居点附近召唤亡灵。"
+    zht:
+      - "把 TOR_Core 更新到最新版本。"
+      - "如果能重現：在修復之前，不要在受影響的定居點附近召喚亡靈。"
     tr:
       - "TOR_Core'u en son sürüme güncelle."
       - "Tekrarlanabiliyorsa: düzeltme gelene kadar etkilenen yerleşimin yakınında ölü diriltme."
@@ -145,11 +164,13 @@
     en: "TOR damage model null reference"
     ru: "Null в TOR damage model"
     zh: "TOR 伤害模型空引用"
+    zht: "TOR 傷害模型空引用"
     tr: "TOR hasar modeli boş referans"
   description:
     en: "TORagentApplyDamageModel.CalculateDamage hit a null. Combat-only crash."
     ru: "TORagentApplyDamageModel.CalculateDamage упал на null. Краш только в бою."
     zh: "TORagentApplyDamageModel.CalculateDamage 遇到空值。仅在战斗中崩溃。"
+    zht: "TORagentApplyDamageModel.CalculateDamage 遇到空值。僅在戰鬥中崩潰。"
     tr: "TORagentApplyDamageModel.CalculateDamage boş değere takıldı. Yalnızca savaşta çökme."
   fix:
     en:
@@ -161,6 +182,9 @@
     zh:
       - "更新 TOR_Core。"
       - "禁用任何修改战斗的模组（RBM Combat、Bannerlord Combat Overhaul）——它们与 TOR 的伤害系统冲突。"
+    zht:
+      - "更新 TOR_Core。"
+      - "停用任何修改戰鬥的模組（RBM Combat、Bannerlord Combat Overhaul）——它們與 TOR 的傷害系統衝突。"
     tr:
       - "TOR_Core'u güncelle."
       - "Savaşı değiştiren modları devre dışı bırak (RBM Combat, Bannerlord Combat Overhaul) — TOR hasarıyla çakışıyorlar."
@@ -178,11 +202,13 @@
     en: "TOR DLL blocked by Windows / antivirus"
     ru: "Windows / антивирус заблокировал TOR DLL"
     zh: "TOR DLL 被 Windows / 杀毒软件阻止"
+    zht: "TOR DLL 被 Windows / 防毒軟體阻止"
     tr: "TOR DLL'i Windows / antivirüs tarafından engellendi"
   description:
     en: "Cannot load TOR_Core.dll — Windows marks downloads from the Internet as 'blocked' until you unblock them, or your antivirus quarantined it."
     ru: "Не загружается TOR_Core.dll — Windows помечает скачанные файлы как 'blocked' пока их не разблокировать; или антивирус посадил DLL в карантин."
     zh: "无法加载 TOR_Core.dll——Windows 会把从网上下载的文件标记为“已阻止”，直到你解除阻止；或者杀毒软件把它隔离了。"
+    zht: "無法載入 TOR_Core.dll——Windows 會把從網上下載的檔案標記為「已阻止」，直到你解除阻止；或者防毒軟體把它隔離了。"
     tr: "TOR_Core.dll yüklenemiyor — Windows, internetten indirilen dosyaları sen engeli kaldırana kadar 'engellenmiş' olarak işaretler veya antivirüsün onu karantinaya aldı."
   fix:
     en:
@@ -197,6 +223,10 @@
       - "Modules/TOR_Core/bin/Win64_Shipping_Client/TOR_Core.dll → 右键 → 属性 → 勾选“解除锁定” → 确定。对其他 TOR DLL 重复此操作。"
       - "把 Modules/TOR_Core 文件夹加入杀毒软件的排除列表。"
       - "如果 DLL 完全丢失，从 NexusMods 重新下载该模组。"
+    zht:
+      - "Modules/TOR_Core/bin/Win64_Shipping_Client/TOR_Core.dll → 右鍵 → 內容 → 勾選「解除鎖定」 → 確定。對其他 TOR DLL 重複此操作。"
+      - "把 Modules/TOR_Core 資料夾加入防毒軟體的排除列表。"
+      - "如果 DLL 完全遺失，從 NexusMods 重新下載該模組。"
     tr:
       - "Modules/TOR_Core/bin/Win64_Shipping_Client/TOR_Core.dll → sağ tık → Özellikler → 'Engellemeyi kaldır'ı işaretle → Tamam. Diğer TOR DLL'leri için tekrarla."
       - "Modules/TOR_Core klasörünü antivirüs istisnalarına ekle."
@@ -219,11 +249,13 @@
     en: "TOR GPU texture array allocation failed"
     ru: "TOR — GPU не выделил массив текстур"
     zh: "TOR GPU 纹理数组分配失败"
+    zht: "TOR GPU 紋理陣列分配失敗"
     tr: "TOR GPU doku dizisi tahsisi başarısız"
   description:
     en: "rglGPU_device::create_texture_array failed. TOR loads many high-res textures at once; on a low-VRAM GPU the call returns an error and the game crashes."
     ru: "rglGPU_device::create_texture_array упал. TOR подгружает много текстур разом; на видеокарте с малым VRAM вызов возвращает ошибку и игра крашится."
     zh: "rglGPU_device::create_texture_array 失败。TOR 会一次性加载许多高分辨率纹理；在显存较小的显卡上，该调用返回错误，游戏崩溃。"
+    zht: "rglGPU_device::create_texture_array 失敗。TOR 會一次性載入許多高解析度紋理；在顯示記憶體較小的顯示卡上，該呼叫返回錯誤，遊戲崩潰。"
     tr: "rglGPU_device::create_texture_array başarısız oldu. TOR aynı anda birçok yüksek çözünürlüklü doku yükler; düşük VRAM'li bir ekran kartında çağrı hata döndürür ve oyun çöker."
   fix:
     en:
@@ -238,6 +270,10 @@
       - "游戏内：选项 → 图形 → 把 Texture Quality 设为 Low，Texture Budget 设为 1。"
       - "重启游戏；如果仍然崩溃——暂时禁用 TOR_Environment。"
       - "如果你有独立显卡，确保游戏运行在独显上（见 gpu.amd_integrated_default）。"
+    zht:
+      - "遊戲內：選項 → 圖形 → 把 Texture Quality 設為 Low，Texture Budget 設為 1。"
+      - "重新啟動遊戲；如果仍然崩潰——暫時停用 TOR_Environment。"
+      - "如果你有獨立顯示卡，確保遊戲執行在獨顯上（見 gpu.amd_integrated_default）。"
     tr:
       - "Oyun içi: Seçenekler → Grafikler → Texture Quality'yi Low, Texture Budget'ı 1 yap."
       - "Oyunu yeniden başlat; hâlâ çöküyorsa — TOR_Environment'ı geçici olarak devre dışı bırak."
@@ -257,11 +293,13 @@
     en: "TOR ability of wrong type"
     ru: "TOR-абилка неверного типа"
     zh: "TOR 技能类型错误"
+    zht: "TOR 技能類型錯誤"
     tr: "TOR yeteneği yanlış türde"
   description:
     en: "An ability XML doesn't inherit from BaseAbility. The mod has a malformed ability definition."
     ru: "XML абилки не наследует BaseAbility. У мода битое определение."
     zh: "某个技能 XML 没有继承 BaseAbility。该模组的技能定义有错误。"
+    zht: "某個技能 XML 沒有繼承 BaseAbility。該模組的技能定義有錯誤。"
     tr: "Bir yetenek XML'i BaseAbility'den türemiyor. Modda hatalı biçimlendirilmiş bir yetenek tanımı var."
   fix:
     en:
@@ -273,6 +311,9 @@
     zh:
       - "更新 TOR 或提供该技能的模组。"
       - "如果是你自己写的技能——修改它的 XML，使其继承 BaseAbility。"
+    zht:
+      - "更新 TOR 或提供該技能的模組。"
+      - "如果是你自己寫的技能——修改它的 XML，使其繼承 BaseAbility。"
     tr:
       - "TOR'u veya bu yeteneği sağlayan modu güncelle."
       - "Yeteneği kendin yazdıysan — XML'ini BaseAbility'den türeyecek şekilde düzelt."
@@ -290,11 +331,13 @@
     en: "TOR triggered script failed to spawn"
     ru: "TOR triggered-скрипт не запустился"
     zh: "TOR 触发脚本未能生成"
+    zht: "TOR 觸發指令稿未能生成"
     tr: "TOR tetiklenen betiği oluşturulamadı"
   description:
     en: "TOR_Core.BattleMechanics.TriggeredEffect.Scripts could not spawn a script — usually missing asset or version mismatch."
     ru: "TOR_Core.BattleMechanics.TriggeredEffect.Scripts не смог запустить скрипт — обычно нет ассета или несовпадение версий."
     zh: "TOR_Core.BattleMechanics.TriggeredEffect.Scripts 无法生成脚本——通常是资源缺失或版本不匹配。"
+    zht: "TOR_Core.BattleMechanics.TriggeredEffect.Scripts 無法生成指令稿——通常是資源缺失或版本不匹配。"
     tr: "TOR_Core.BattleMechanics.TriggeredEffect.Scripts bir betik oluşturamadı — genellikle eksik varlık veya sürüm uyuşmazlığı."
   fix:
     en:
@@ -306,6 +349,9 @@
     zh:
       - "更新 TOR_Core。"
       - "Steam → 验证文件完整性（以防资源丢失）。"
+    zht:
+      - "更新 TOR_Core。"
+      - "Steam → 驗證檔案完整性（以防資源遺失）。"
     tr:
       - "TOR_Core'u güncelle."
       - "Steam → Dosya bütünlüğünü doğrula (varlık kaybı ihtimaline karşı)."
@@ -323,11 +369,13 @@
     en: "TOR null particle on agent bone"
     ru: "TOR — null particle на кости агента"
     zh: "TOR 单位骨骼上的空粒子"
+    zht: "TOR 單位骨骼上的空粒子"
     tr: "TOR birim kemiğinde boş parçacık"
   description:
     en: "Particle ID is empty — usually only a visual glitch, but spam in the log can hide other problems."
     ru: "Particle ID пустой — обычно это просто визуальный баг, но спам в логе может прятать другие проблемы."
     zh: "粒子 ID 为空——通常只是视觉小问题，但日志里大量刷屏可能掩盖其他问题。"
+    zht: "粒子 ID 為空——通常只是視覺小問題，但日誌裡大量洗版可能掩蓋其他問題。"
     tr: "Parçacık kimliği boş — genellikle yalnızca görsel bir aksaklık, ama günlükteki spam başka sorunları gizleyebilir."
   fix:
     en:
@@ -339,6 +387,9 @@
     zh:
       - "更新 TOR_Core。"
       - "只要不伴随崩溃，通常可以放心忽略。"
+    zht:
+      - "更新 TOR_Core。"
+      - "只要不伴隨崩潰，通常可以放心忽略。"
     tr:
       - "TOR_Core'u güncelle."
       - "Bir çökmeyle birlikte gelmediği sürece genellikle görmezden gelmek güvenlidir."
@@ -356,11 +407,13 @@
     en: "TOR does not run on Microsoft Store / Game Pass"
     ru: "TOR не работает на Microsoft Store / Game Pass"
     zh: "TOR 无法在 Microsoft Store / Game Pass 版本上运行"
+    zht: "TOR 無法在 Microsoft Store / Game Pass 版本上執行"
     tr: "TOR, Microsoft Store / Game Pass üzerinde çalışmaz"
   description:
     en: "TOR is built for the Steam version. The MS Store / Game Pass build of Bannerlord uses different binaries."
     ru: "TOR собран под Steam-версию. Версия Microsoft Store / Game Pass использует другие бинарники."
     zh: "TOR 是为 Steam 版本构建的。Bannerlord 的 MS Store / Game Pass 版本使用不同的二进制文件。"
+    zht: "TOR 是為 Steam 版本建置的。Bannerlord 的 MS Store / Game Pass 版本使用不同的二進位檔案。"
     tr: "TOR, Steam sürümü için yapılmıştır. Bannerlord'un MS Store / Game Pass sürümü farklı ikili dosyalar kullanır."
   fix:
     en:
@@ -372,6 +425,9 @@
     zh:
       - "在 Steam 上购买 Bannerlord 才能玩 TOR。"
       - "MS Store 版本没有解决办法——TaleWorlds 和 TOR 都不支持它。"
+    zht:
+      - "在 Steam 上購買 Bannerlord 才能玩 TOR。"
+      - "MS Store 版本沒有解決辦法——TaleWorlds 和 TOR 都不支援它。"
     tr:
       - "TOR oynamak için Bannerlord'u Steam'den satın al."
       - "MS Store sürümü için bir çözüm yok — TaleWorlds ve TOR onu desteklemiyor."
@@ -395,6 +451,7 @@
     en: "TOR Assimilation crash — IndexOutOfRange (Hunger Woods / wraith bind / settlement transition)"
     ru: "Краш TOR Assimilation — IndexOutOfRange (Hunger Woods / bind wraiths / смена фракции города)"
     zh: "TOR 同化崩溃 — IndexOutOfRange（Hunger Woods / 绑定怨灵 / 定居点势力转换）"
+    zht: "TOR 同化崩潰 — IndexOutOfRange（Hunger Woods / 綁定怨靈 / 定居點勢力轉換）"
     tr: "TOR Asimilasyon çökmesi — IndexOutOfRange (Hunger Woods / hayalet bağlama / yerleşim geçişi)"
   description:
     en: |
@@ -423,6 +480,13 @@
           吸血鬼军队同化），经由 TroopRoster.AddToCountsAtIndex → SwapTroopsIfNeeded。
         - 后期定居点的势力转换，此时文化字符串列表里没有对应新势力的条目。
       两者都会产生相同的崩溃特征；根据你的具体情况选择相应的 Nexus 补丁。
+    zht: |
+      AssimilationCampaignBehavior 擲出 System.IndexOutOfRangeException /
+      ArgumentOutOfRangeException。兩個已知觸發點共用同一段程式碼路徑：
+        - 在 Hunger Woods 中「召喚怨靈」 / 「綁定怨靈」（任何同伴名冊索引越界的
+          吸血鬼軍隊同化），經由 TroopRoster.AddToCountsAtIndex → SwapTroopsIfNeeded。
+        - 後期定居點的勢力轉換，此時文化字串列表裡沒有對應新勢力的條目。
+      兩者都會產生相同的崩潰特徵；根據你的具體情況選擇相應的 Nexus 修補。
     tr: |
       AssimilationCampaignBehavior, System.IndexOutOfRangeException /
       ArgumentOutOfRangeException fırlatır. İki bilinen tetikleyici aynı kod
@@ -449,6 +513,11 @@
       - "或安装 TOR Assimilation Fix（NexusMods mod #5512）——修补文化索引查找，找不到时回退到源文化。覆盖定居点势力转换这条路径。"
       - "安装之前：避免“召唤怨灵” / “绑定怨灵”；不要带着吸血鬼军队和同伴进入 Hunger Woods。"
       - "如果读取存档时能复现——回退到第一次绑定怨灵之前、或定居点易主之前的存档。"
+    zht:
+      - "從 NexusMods 安裝 TOR Assimilation Crash Fix（mod 8872）——直接修補 SwapTroopsIfNeeded。覆蓋 Hunger Woods / 綁定怨靈這條路徑。"
+      - "或安裝 TOR Assimilation Fix（NexusMods mod #5512）——修補文化索引查找，找不到時回退到源文化。覆蓋定居點勢力轉換這條路徑。"
+      - "安裝之前：避免「召喚怨靈」 / 「綁定怨靈」；不要帶著吸血鬼軍隊和同伴進入 Hunger Woods。"
+      - "如果讀取存檔時能重現——回退到第一次綁定怨靈之前、或定居點易主之前的存檔。"
     tr:
       - "NexusMods'tan TOR Assimilation Crash Fix'i kur (mod 8872) — doğrudan SwapTroopsIfNeeded'i yamalar. Hunger Woods / hayalet bağlama yolunu kapsar."
       - "Ya da TOR Assimilation Fix'i kur (NexusMods mod #5512) — kültür indeksi aramasını, kayıt bulunamazsa kaynak kültüre dönecek şekilde yamalar. Yerleşim geçişi yolunu kapsar."
@@ -476,6 +545,7 @@
     en: "TOR + Improved Garrisons — PartySizeLimitModel NRE / silent bonus loss"
     ru: "TOR + Improved Garrisons — NRE в PartySizeLimitModel / тихая потеря бонусов"
     zh: "TOR + Improved Garrisons — PartySizeLimitModel 空引用 / 静默丢失加成"
+    zht: "TOR + Improved Garrisons — PartySizeLimitModel 空引用 / 靜默遺失加成"
     tr: "TOR + Improved Garrisons — PartySizeLimitModel boş referans / sessizce bonus kaybı"
   description:
     en: |
@@ -493,6 +563,11 @@
       TOR + Improved Garrisons 相互作用：两个模组都替换了队伍规模模型，互相覆盖。
       要么在 tick 时崩溃，要么静默丢失所有 TOR 的队伍规模加成（Skirmisher / Knight
       骑士团天赋）。
+    zht: |
+      PartySizeLimitModel.GetPartyMemberSizeLimit 中的空引用例外。這是眾所周知的
+      TOR + Improved Garrisons 相互作用：兩個模組都替換了隊伍規模模型，互相覆寫。
+      要麼在 tick 時崩潰，要麼靜默遺失所有 TOR 的隊伍規模加成（Skirmisher / Knight
+      騎士團天賦）。
     tr: |
       PartySizeLimitModel.GetPartyMemberSizeLimit içinde NullReferenceException.
       İyi bilinen TOR + Improved Garrisons etkileşimi: her iki mod da grup boyutu
@@ -509,6 +584,9 @@
     zh:
       - "从 NexusMods 安装 TOR-IG Party Size Fix（mod 8884）。"
       - "替代方案：禁用 Improved Garrisons（TOR 有自己的驻军平衡）。"
+    zht:
+      - "從 NexusMods 安裝 TOR-IG Party Size Fix（mod 8884）。"
+      - "替代方案：停用 Improved Garrisons（TOR 有自己的駐軍平衡）。"
     tr:
       - "NexusMods'tan TOR-IG Party Size Fix'i kur (mod 8884)."
       - "Alternatif: Improved Garrisons'ı devre dışı bırak (TOR'un kendi garnizon dengesi var)."
@@ -532,6 +610,7 @@
     en: "TOR + Distinguished Service — InvalidCast on battle results"
     ru: "TOR + Distinguished Service — InvalidCast на итогах боя"
     zh: "TOR + Distinguished Service — 战斗结算时 InvalidCast"
+    zht: "TOR + Distinguished Service — 戰鬥結算時 InvalidCast"
     tr: "TOR + Distinguished Service — savaş sonucunda InvalidCast"
   description:
     en: |
@@ -546,6 +625,10 @@
       DSBattleLogic.ShowBattleResults 内部的 InvalidCastException——Distinguished
       Service 把 TOR 扩展过的 PartyBase 强制转换为原版类型而失败。在战后结算
       界面崩溃，存档没问题。
+    zht: |
+      DSBattleLogic.ShowBattleResults 內部的 InvalidCastException——Distinguished
+      Service 把 TOR 擴展過的 PartyBase 強制轉換為原版類型而失敗。在戰後結算
+      界面崩潰，存檔沒問題。
     tr: |
       DSBattleLogic.ShowBattleResults içinde InvalidCastException — Distinguished
       Service, TOR ile genişletilmiş bir PartyBase'i orijinal türüne dönüştürür
@@ -560,6 +643,9 @@
     zh:
       - "从 NexusMods 安装 DS Compatibility Patch for TOR（mod 8874）。"
       - "替代方案：玩 TOR 时禁用 Distinguished Service。"
+    zht:
+      - "從 NexusMods 安裝 DS Compatibility Patch for TOR（mod 8874）。"
+      - "替代方案：玩 TOR 時停用 Distinguished Service。"
     tr:
       - "NexusMods'tan DS Compatibility Patch for TOR'u kur (mod 8874)."
       - "Alternatif: TOR oynarken Distinguished Service'i devre dışı bırak."
@@ -583,6 +669,7 @@
     en: "TOR Winds of Magic / spell-cast access violation"
     ru: "TOR Winds of Magic / spell-cast access violation"
     zh: "TOR Winds of Magic / 施法访问冲突"
+    zht: "TOR Winds of Magic / 施法存取違規"
     tr: "TOR Winds of Magic / büyü-yapma erişim ihlali"
   description:
     en: |
@@ -598,6 +685,10 @@
       在 WindsOfMagic / SpellCast 代码路径处或附近发生 0xC0000005 访问冲突。
       约 95% 可在大军中群体施放吸血鬼 / 死灵巫师攻城法术时复现。是原生引擎与
       魔法粒子交互的问题。
+    zht: |
+      在 WindsOfMagic / SpellCast 程式碼路徑處或附近發生 0xC0000005 存取違規。
+      約 95% 可在大軍中群體施放吸血鬼 / 死靈巫師攻城法術時重現。是原生引擎與
+      魔法粒子互動的問題。
     tr: |
       WindsOfMagic / SpellCast kod yollarında ya da yakınında 0xC0000005 erişim
       ihlali. Büyük bir orduyla toplu vampir / necrarch kuşatma büyüleri
@@ -619,6 +710,11 @@
       - "如果装了 RTS Camera 模组就移除它——它会放大范围施法时的崩溃。"
       - "避免群体施放吸血鬼攻城法术；控制好施法领主的法术选择。"
       - "更新 TOR_Core（WITM 1.13a 修复了其中一部分）。"
+    zht:
+      - "遊戲內選項 → 圖形：把 Particle Detail 和 Particle Quality 都調到 Low。"
+      - "如果裝了 RTS Camera 模組就移除它——它會放大範圍施法時的崩潰。"
+      - "避免群體施放吸血鬼攻城法術；控制好施法領主的法術選擇。"
+      - "更新 TOR_Core（WITM 1.13a 修復了其中一部分）。"
     tr:
       - "Oyun içi Seçenekler → Grafikler: Particle Detail ve Particle Quality'yi Low yap."
       - "Kuruluysa RTS Camera modunu kaldır — alan büyülerinde çökmeyi şiddetlendirir."
@@ -644,6 +740,7 @@
     en: "Naval DLC (War Sails) is incompatible with TOR"
     ru: "Naval DLC (War Sails) несовместим с TOR"
     zh: "Naval DLC（War Sails）与 TOR 不兼容"
+    zht: "Naval DLC（War Sails）與 TOR 不相容"
     tr: "Naval DLC (War Sails) ile TOR uyumsuz"
   description:
     en: |
@@ -668,6 +765,16 @@
 
       除了禁用其中之一，没有别的解决办法。TOR 团队已表示他们不打算添加
       Naval DLC 兼容（战役地图重写得太深入了）。
+    zht: |
+      Naval DLC（TaleWorlds 的 "War Sails" 內容；以 Id="NavalDLC" 的 SubModule
+      形式發布）用帶海洋的版本替換了原版戰役地圖，並重做了隊伍移動、場景切換
+      以及若干硬編碼的戰役行為。The Old Realms 透過 TOR_Environment + TOR_Core
+      完全重寫了戰役地圖。兩者無法共用同一個存檔：隊伍位置讀取、場景名稱和
+      勢力領土繫結都會衝突——遊戲要麼在初次讀取存檔時崩潰，要麼在第一個地圖
+      遭遇場景崩潰，要麼不寫託管堆疊就靜默退出。
+
+      除了停用其中之一，沒有別的解決辦法。TOR 團隊已表示他們不打算加入
+      Naval DLC 相容（戰役地圖重寫得太深入了）。
     tr: |
       Naval DLC (TaleWorlds'ün "War Sails" içeriği; Id="NavalDLC" olan bir
       SubModule olarak gelir) orijinal sefer haritasını denizli bir sürümle
@@ -713,6 +820,12 @@
       - "想玩 Naval DLC，就在启动器里取消勾选 TOR_Core、TOR_Environment、TOR_Armory 以及任何 TOR_* 子模块。"
       - "不要把用某一套模组开始的存档在另一套下加载——存档中途改变加载顺序会损坏战役状态。"
       - "如果存档已经被污染（用 TOR 开档，又加了 Naval，无法回退）：用对应的配置开一局新战役。"
+    zht:
+      - "二選一：TOR 或 Naval DLC。它們無法共存。"
+      - "想玩 TOR，就在啟動器裡取消勾選 NavalDLC。"
+      - "想玩 Naval DLC，就在啟動器裡取消勾選 TOR_Core、TOR_Environment、TOR_Armory 以及任何 TOR_* 子模組。"
+      - "不要把用某一套模組開始的存檔在另一套下載入——存檔中途改變載入順序會損壞戰役狀態。"
+      - "如果存檔已經被汙染（用 TOR 開檔，又加了 Naval，無法回退）：用對應的設定開一局新戰役。"
     tr:
       - "Birini seç: TOR ya da Naval DLC. Birlikte var olamazlar."
       - "TOR oynamak istiyorsan başlatıcıda NavalDLC'nin işaretini kaldır."
@@ -740,6 +853,7 @@
     en: "TOR character-creation crash on Back button"
     ru: "TOR — краш при нажатии «Назад» в создании персонажа"
     zh: "TOR 角色创建界面按“返回”时崩溃"
+    zht: "TOR 角色創建界面按「返回」時崩潰"
     tr: "TOR karakter oluşturmada Geri düğmesinde çökme"
   description:
     en: |
@@ -805,6 +919,23 @@
       这是 TOR 的缺陷，不是 Bannerlord 的缺陷——原版角色创建能正确处理
       “返回”。崩溃前的那一行始终是 "Unregister tooltip for type: ExplainedNumber"
       （或它周围的某个 tooltip 类型）。
+    zht: |
+      當玩家打開「新戰役」，進入 TOR 角色創建界面，然後按下「返回」而不是
+      繼續時，Bannerlord 會崩潰（0xC0000005，原生程式碼存取違規）。崩潰在
+      按下後的一瞬間發生，沒有任何遊戲內錯誤提示。
+
+      底層發生的事情：當玩家看到角色創建界面時，引擎已經實例化了一大堆
+      Hero 物件（TOR 預生成的流浪者——日誌裡有許多
+      "creating hero from template with id: tor_wanderer_greenskins_*" 這樣的
+      行）。當玩家按下「返回」時，Bannerlord 呼叫 "Start Game Final Cleanup."
+      來回滾這個半成品的戰役狀態。與此同時 TOR 又在這個清理之上重新啟用
+      它自己的初始界面，於是清理正在拆除 hero / tooltip / scene 狀態，而 TOR
+      剛剛重新掛接上去。最後的 "Unregister tooltip for type:" 級聯觸及一個
+      懸空指標，渲染器隨之崩潰。
+
+      這是 TOR 的缺陷，不是 Bannerlord 的缺陷——原版角色創建能正確處理
+      「返回」。崩潰前的那一行始終是 "Unregister tooltip for type: ExplainedNumber"
+      （或它周圍的某個 tooltip 類型）。
     tr: |
       Oyuncu 'Yeni Sefer'i açıp TOR karakter oluşturma ekranına geldiğinde ve
       devam etmek yerine Geri'ye bastığında Bannerlord çöker (0xC0000005, yerel
@@ -842,6 +973,11 @@
       - "如果你只是想更改已经选好的文化，不要按“返回”往回退界面——而是直接点击你真正想要的文化。该界面允许你在确认前重新选择。"
       - "如果已经崩溃过一次，直接重启 Bannerlord，然后不按“返回”地开始新战役。这次崩溃不会损坏磁盘上的任何东西（没有写入存档），所以干净地重启就够了。"
       - "这个缺陷在 TOR_Core 里，不在 Bannerlord 里——请在 TOR Discord / Steam 创意工坊评论里反馈，好让模组作者修正清理的顺序。"
+    zht:
+      - "暫時辦法：不要在 TOR 角色創建界面裡使用界面上的「返回」按鈕。要退出新戰役設定，請用 Escape →「退出到主選單」（或角落裡的退出按鈕，如果可見）。這條路徑會乾淨地拆除半成品狀態，不會崩潰。"
+      - "如果你只是想更改已經選好的文化，不要按「返回」往回退界面——而是直接點擊你真正想要的文化。該界面允許你在確認前重新選擇。"
+      - "如果已經崩潰過一次，直接重新啟動 Bannerlord，然後不按「返回」地開始新戰役。這次崩潰不會損壞磁碟上的任何東西（沒有寫入存檔），所以乾淨地重新啟動就夠了。"
+      - "這個缺陷在 TOR_Core 裡，不在 Bannerlord 裡——請在 TOR Discord / Steam 創意工坊評論裡回饋，好讓模組作者修正清理的順序。"
     tr:
       - "Geçici çözüm: TOR karakter oluşturma ekranındaki ekran içi Geri düğmesini KULLANMA. Yeni sefer kurulumundan çıkmak için Escape → 'Ana Menüye Çık' (veya görünüyorsa köşedeki Çık düğmesi) kullan. Bu yol yarı kurulmuş durumu temiz bir şekilde söker ve çökmez."
       - "Sadece zaten yaptığın kültür seçimini değiştirmek istiyorsan, ekran yığınında geri gitmek için Geri'ye basma — bunun yerine doğrudan gerçekten istediğin kültüre tıkla. Ekran, onaylamadan önce yeniden seçmene izin verir."
@@ -865,6 +1001,7 @@
     en: "TOR mount-speed status effect crash (missing base value) — guarded by Crash Doctor"
     ru: "Краш TOR в эффекте скорости коня (нет базового значения) — перехвачено Crash Doctor"
     zh: "TOR 坐骑速度状态效果崩溃（缺少基准值）——已被 Crash Doctor 拦截"
+    zht: "TOR 坐騎速度狀態效果崩潰（缺少基準值）——已被 Crash Doctor 攔截"
     tr: "TOR at hızı durum efekti çökmesi (eksik temel değer) — Crash Doctor tarafından korunuyor"
   description:
     en: |
@@ -908,6 +1045,19 @@
       键，于是当已上马的单位被重新计算时，TOR 请求 MountSpeed 却找不到条目而抛出
       异常——并且反复发生，因为它来自逐帧的属性更新。这是 TOR_Core 的 bug，不是
       着色器/驱动问题。
+    zht: |
+      System.ArgumentException（"The property was not defined in the status effect
+      system"，參數 MountSpeed）在每個任務 tick 從
+      TOR_Core StatusEffectComponent.GetBaseValueForDrivenProperty 擲出，經由
+      AgentDrivenPropertiesExtensions.SetDynamicMountMovementProperties 和
+      TORAgentStatCalculateModel.UpdateDynamicAgentDrivenProperties。
+
+      TOR 會快取騎手用於速度/機動狀態效果的"基準值"，但坐騎專屬的鍵
+      （MountSpeed / MountDash / MountManeuver）只有在快取時騎手已經騎乘時才會
+      儲存。如果這些值在單位上馬之前就被捕獲（生成 / 上馬時序），快取裡就缺少坐騎
+      鍵，於是當已上馬的單位被重新計算時，TOR 請求 MountSpeed 卻找不到條目而擲出
+      例外——並且反覆發生，因為它來自逐幀的屬性更新。這是 TOR_Core 的 bug，不是
+      著色器/驅動問題。
     tr: |
       Her görev tick'inde TOR_Core StatusEffectComponent.GetBaseValueForDrivenProperty'den,
       AgentDrivenPropertiesExtensions.SetDynamicMountMovementProperties ve
@@ -939,6 +1089,11 @@
       - "如果仍然刷屏：把 TOR_Core 更新到最新版本（缓存时序 bug 在 TOR 一侧）。"
       - "对玩法无害——最坏情况下骑乘单位的速度效果只是延迟一帧；不会有任何损失。"
       - "不要为此重建着色器或更换驱动——这是代码 bug，没用。"
+    zht:
+      - "Crash Doctor 已經攔截了它——安全網會重新同步坐騎數值並吞掉殘餘錯誤，戰鬥繼續。保持「例外防護」設定為開。"
+      - "如果仍然洗版：把 TOR_Core 更新到最新版本（快取時序 bug 在 TOR 一側）。"
+      - "對玩法無害——最壞情況下騎乘單位的速度效果只是延遲一幀；不會有任何損失。"
+      - "不要為此重建著色器或更換驅動——這是程式碼 bug，沒用。"
     tr:
       - "Crash Doctor bunu zaten koruyor — güvenlik ağı at değerlerini yeniden eşitler ve kalan hatayı yutar, savaş devam eder. «İstisna korumaları» ayarını AÇIK tut."
       - "Hâlâ spam yapıyorsa: TOR_Core'u en son sürüme güncelle (önbellek zamanlama hatası TOR tarafında)."
@@ -959,6 +1114,7 @@
     en: "TOR spell-cast crash from the RTS / free camera — guarded by Crash Doctor"
     ru: "Краш TOR при касте из RTS / свободной камеры — перехвачено Crash Doctor"
     zh: "TOR 在 RTS／自由镜头下施法崩溃——已被 Crash Doctor 拦截"
+    zht: "TOR 在 RTS／自由鏡頭下施法崩潰——已被 Crash Doctor 攔截"
     tr: "RTS / serbest kameradan TOR büyü-yapma çökmesi — Crash Doctor tarafından korunuyor"
   description:
     en: |
@@ -998,6 +1154,17 @@
       （CalculateAICastMatrixFrame），该分支立即读取只有 AI 法师才有的
       WizardAIComponent——你的英雄没有，因此为 null，施法对 null 解引用而崩溃。这是
       TOR + RTS Camera 的交互 bug，不是着色器／驱动问题。
+    zht: |
+      在戰鬥中施法時，從 TOR_Core
+      Ability.CalculateAICastMatrixFrame ← Ability.GetSpawnFrame ← ActivateAbility /
+      DoCast ← AgentExtensions.TryCastCurrentAbility ←
+      AbilityManagerMissionLogic.HandleInput 擲出 System.NullReferenceException。
+
+      觸發條件：在 RTS／自由（指揮）鏡頭下施放 TOR 法術。RTS Camera 會分離對你英雄的
+      控制，引擎不再將其報告為玩家控制。於是 TOR 的 GetSpawnFrame 把施法導向其 AI 分支
+      （CalculateAICastMatrixFrame），該分支立即讀取只有 AI 法師才有的
+      WizardAIComponent——你的英雄沒有，因此為 null，施法對 null 解引用而崩潰。這是
+      TOR + RTS Camera 的互動 bug，不是著色器／驅動問題。
     tr: |
       Savaşta büyü yaparken TOR_Core
       Ability.CalculateAICastMatrixFrame ← Ability.GetSpawnFrame ← ActivateAbility /
@@ -1028,6 +1195,11 @@
       - "变通方法：在施法前退出 RTS／自由镜头并直接控制你的英雄——在分离状态下施法正是触发条件。"
       - "不要为此重建着色器或更换驱动——这是代码交互 bug，没用。"
       - "向 RTS Camera / TOR 作者报告，以便从源头修复。"
+    zht:
+      - "Crash Doctor 已經攔截了它——安全網會把施法重新導向到你的英雄，戰鬥繼續。保持「施法崩潰防護——RTS／自由鏡頭」修復為開（崩潰修復標籤頁）。"
+      - "變通方法：在施法前退出 RTS／自由鏡頭並直接控制你的英雄——在分離狀態下施法正是觸發條件。"
+      - "不要為此重建著色器或更換驅動——這是程式碼互動 bug，沒用。"
+      - "向 RTS Camera / TOR 作者報告，以便從源頭修復。"
     tr:
       - "Crash Doctor bunu zaten koruyor — güvenlik ağı büyüyü kahramanına yönlendirir ve savaş devam eder. «Büyü çökme koruması — RTS/serbest kamera» düzeltmesini AÇIK tut (Çökme Düzeltmeleri sekmesi)."
       - "Geçici çözüm: büyü yapmadan önce RTS / serbest kameradan çık ve kahramanının doğrudan kontrolünü al — ayrık durumdayken büyü yapmak tetikleyicidir."

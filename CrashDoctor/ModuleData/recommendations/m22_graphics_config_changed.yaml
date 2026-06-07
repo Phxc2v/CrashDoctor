@@ -3,6 +3,7 @@
     en: "Graphics settings changed — clear shader cache before next launch"
     ru: "Графика изменилась — очисти кэш шейдеров перед следующим запуском"
     zh: "图形设置已更改 — 下次启动前请清理着色器缓存"
+    zht: "圖形設定已變更 — 下次啟動前請清理著色器快取"
     tr: "Grafik ayarları değişti — bir sonraki açılıştan önce gölgelendirici önbelleğini temizle"
   description:
     en: |
@@ -73,6 +74,27 @@
 
       首次运行说明：如果还没有快照，Crash Doctor 会静默记录基线并保持 Healthy。
       只有当图形项在两次会话之间确实发生变化时，卡片才会触发。
+    zht: |
+      針對使用者操作場景的自動偵測：你開啟了遊戲內的 選項 → 圖形，
+      降低了 Texture / Shader / Shadow / Terrain Quality（或任何其他圖形項目），
+      儲存並退出。新數值現在已寫入 engine_config.txt，但預先編譯的著色器快取
+      仍然是基於舊數值建構的。下次啟動會嘗試載入它、遇到不相符，並在
+      帝國士兵啟動畫面上當機 —— 這正是我們建議「降低 Texture
+      Quality」之後使用者一直反映的那種當機。
+
+      Crash Doctor 在每次執行時都會把圖形相關的項目儲存一份快照到它的狀態資料夾裡。
+      當快照與即時的 engine_config 出現分歧時，這張卡片就會出現，並提供一個
+      一鍵修復：清理著色器快取 + 同步快照。請在重新啟動電腦並從主選單重建快取
+      之前套用它。
+
+      套用後的強制步驟（跳過 → 啟動畫面當機）：
+        1. 重新啟動電腦。
+        2. 啟動 Bannerlord。
+        3. 主選單 → 'Build Shader Cache' → 等待 20–60 分鐘。
+        4. 編譯期間不要關閉遊戲，不要開啟 Chrome / Discord。
+
+      首次執行說明：如果還沒有快照，Crash Doctor 會靜默記錄基準並保持 Healthy。
+      只有當圖形項目在兩次工作階段之間確實發生變化時，卡片才會觸發。
     tr: |
       Kullanıcı kaynaklı durum için otomatik dedektör: oyun içi Seçenekler → Grafik'i açtın,
       Texture / Shader / Shadow / Terrain Quality'yi (ya da başka herhangi bir grafik anahtarını)
@@ -116,6 +138,12 @@
       - "应用后快照会更新为当前数值 —— 下次检测返回 Healthy。"
       - "追踪的项：texture / shader / terrain / shadow / particle / postfx / DLSS / antialiasing / 分辨率。声音、鼠标、gamma 项不会被追踪。"
       - "不可撤销：着色器缓存在回收站里，如果确实需要可以从那里还原；否则游戏会自行重建。"
+    zht:
+      - "快照檔案：<Documents>/Mount and Blade II Bannerlord/CrashDoctor/state/engine_config_snapshot.txt"
+      - "套用會清理：ProgramData/Shaders + game/Shaders/D3D11/compressed_shaders_cache.sack + 各模組的 .sack 檔案（全部移到資源回收筒）。"
+      - "套用後快照會更新為目前數值 —— 下次偵測返回 Healthy。"
+      - "追蹤的項目：texture / shader / terrain / shadow / particle / postfx / DLSS / antialiasing / 解析度。聲音、滑鼠、gamma 項目不會被追蹤。"
+      - "不可復原：著色器快取在資源回收筒裡，如果確實需要可以從那裡還原；否則遊戲會自行重建。"
     tr:
       - "Anlık görüntü dosyası: <Documents>/Mount and Blade II Bannerlord/CrashDoctor/state/engine_config_snapshot.txt"
       - "Uygula şunları temizler: ProgramData/Shaders + game/Shaders/D3D11/compressed_shaders_cache.sack + modül başına .sack dosyaları (hepsi Geri Dönüşüm Kutusu'na)."

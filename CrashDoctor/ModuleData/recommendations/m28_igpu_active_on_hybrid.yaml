@@ -3,6 +3,7 @@
     en: "Pin Bannerlord to the high-performance GPU (hybrid laptop)"
     ru: "Привязать Bannerlord к мощной видеокарте (гибридный лэптоп)"
     zh: "将 Bannerlord 绑定到高性能显卡（混合显卡笔记本）"
+    zht: "將 Bannerlord 繫結到高效能顯示卡（混合顯示卡筆記型電腦）"
     tr: "Bannerlord'u yüksek performanslı ekran kartına sabitle (hibrit dizüstü)"
   description:
     en: |
@@ -107,6 +108,38 @@
       Graphics 页面。
 
       可撤销：回退会还原之前的注册表值（如果之前没有该项则删除它）。
+    zht: |
+      混合顯示卡筆記型電腦配有兩塊顯示卡：一塊低功耗的內顯
+      （Intel UHD / Iris、AMD Vega / Radeon Graphics）和一塊獨立顯示卡
+      （NVIDIA GeForce / RTX / GTX、AMD Radeon RX / Pro、Intel Arc）。
+      顯示器輸出常常接在內顯上，在沒有明確的逐應用程式偏好時，Windows
+      會在內顯上執行 Bannerlord —— 即便旁邊就有一塊強大的獨立顯示卡
+      閒置著。內顯無法處理 The Old Realms 的地形著色器；在第一場大型
+      戰鬥或攻城戰中，你會在 Bake Terrain 時當機（0xC0000005），而且
+      當機發生在遊戲寫存檔的中途，導致存檔也被損壞。
+
+      這張卡片在以下條件全部滿足時出現：
+        1. 這台電腦同時擁有內顯和獨立顯示卡。
+        2. 高效能偏好尚未在
+           HKCU\Software\Microsoft\DirectX\UserGpuPreferences 中繫結。
+        3. 近期當機記錄證明遊戲執行在內顯上：
+           要麼 crash_tags 顯示內顯有作用中的 Current Mode 而獨顯
+           Current Mode=Unknown，要麼 rgl_log 大量出現
+           "Missing shader from sack: pbr_terrain" 超過閾值。
+
+      套用會寫入一個逐使用者的登錄值：
+        HKCU\Software\Microsoft\DirectX\UserGpuPreferences\<Bannerlord.exe>
+          = "GpuPreference=2;"
+      等同於 設定 → 系統 → 顯示 → 圖形 → Bannerlord →
+      高效能，只是你不必自己去找那個 exe。
+      不需要系統管理員權限，不需要重新啟動 Windows。重新啟動 Bannerlord 後新顯示卡
+      才會生效。
+
+      如果套用後獨立顯示卡仍然沒有啟用，筆記型電腦 BIOS 可能有一個硬體 MUX
+      開關或「僅獨顯」模式覆蓋了 Windows 的偏好 —— 檢查 BIOS 的
+      Graphics 頁面。
+
+      可復原：回退會還原之前的登錄值（如果之前沒有該項則刪除它）。
     tr: |
       Hibrit grafikli dizüstü bilgisayarlar iki ekran kartıyla gelir: düşük güçlü bir
       tümleşik ekran kartı (Intel UHD / Iris, AMD Vega / Radeon Graphics) ve bir ayrık
@@ -166,6 +199,14 @@
       - "可撤销：回退会写回之前的值（或删除该项）。"
       - "在单显卡台式机上、在独显已经活跃的笔记本上、以及当高性能偏好已绑定时，卡片会隐藏。"
       - "如果 BIOS 有 MUX 开关或「仅独显」模式，它会覆盖 Windows 的偏好。"
+    zht:
+      - "來源：HKCU\\Software\\Microsoft\\DirectX\\UserGpuPreferences\\<Bannerlord.exe 路徑>"
+      - "目標：\"GpuPreference=2;\"（高效能顯示卡）"
+      - "僅針對使用者：不需要系統管理員權限，沒有 UAC 提示，不做系統範圍的更改。"
+      - "無需重新啟動：重新啟動 Bannerlord，下次啟動即使用新顯示卡。"
+      - "可復原：回退會寫回之前的值（或刪除該項）。"
+      - "在單顯示卡桌上型電腦上、在獨顯已經作用中的筆記型電腦上、以及當高效能偏好已繫結時，卡片會隱藏。"
+      - "如果 BIOS 有 MUX 開關或「僅獨顯」模式，它會覆蓋 Windows 的偏好。"
     tr:
       - "Kaynak: HKCU\\Software\\Microsoft\\DirectX\\UserGpuPreferences\\<Bannerlord.exe yolu>"
       - "Hedef: \"GpuPreference=2;\" (yüksek performanslı ekran kartı)"

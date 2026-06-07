@@ -3,6 +3,7 @@
     en: "Raise GPU timeout (TdrDelay) for TOR shader compile"
     ru: "Поднять GPU-таймаут (TdrDelay) для компиляции шейдеров TOR"
     zh: "为 TOR 着色器编译提高显卡超时（TdrDelay）"
+    zht: "為 TOR 著色器編譯提高顯示卡逾時（TdrDelay）"
     tr: "TOR gölgelendirici derlemesi için ekran kartı zaman aşımını (TdrDelay) yükselt"
   description:
     en: |
@@ -34,6 +35,15 @@
 
       本模块把 TdrDelay 和 TdrDdiDelay 提高到 60 秒，给编译器足够的时间完成每个
       变体。这是微软推荐的安全变通方法；可撤销。
+    zht: |
+      Windows 會終止任何在 2 秒內沒有返回的 GPU 命令（TDR —— Timeout
+      Detection and Recovery）。TOR 的 pbr_metallic.rs / faceshader_high.rs 在單個著色器
+      變體上經常每次分派需要 5–15 秒，於是系統以為顯示卡卡死並將其終止 —— 導致
+      "out of memory during compilation" 級聯錯誤，以及在 "Build Shader Cache" 期間
+      出現 DXGI device-removed 當機。
+
+      本模組把 TdrDelay 和 TdrDdiDelay 提高到 60 秒，給編譯器足夠的時間完成每個
+      變體。這是微軟建議的安全變通方法；可復原。
     tr: |
       Windows, 2 saniye içinde geri dönmeyen herhangi bir GPU komutunu sonlandırır (TDR —
       Timeout Detection and Recovery). TOR'un pbr_metallic.rs / faceshader_high.rs dosyaları
@@ -61,6 +71,11 @@
       - "需要重启 —— Windows 只在开机时读取 TDR 设置。"
       - "可在历史标签页中撤销。"
       - "设置 TdrDelay = TdrDdiDelay = 60（秒）。默认值为 2 / 5。"
+    zht:
+      - "點擊套用：Windows 會顯示一個 UAC 同意對話方塊 —— 點擊「是」。"
+      - "需要重新啟動 —— Windows 只在開機時讀取 TDR 設定。"
+      - "可在歷史標籤頁中復原。"
+      - "設定 TdrDelay = TdrDdiDelay = 60（秒）。預設值為 2 / 5。"
     tr:
       - "Uygula'ya tıklayın: Windows tek bir UAC onay penceresi gösterir — Evet'e tıklayın."
       - "Yeniden başlatma gerektirir — Windows TDR ayarlarını yalnızca açılışta okur."

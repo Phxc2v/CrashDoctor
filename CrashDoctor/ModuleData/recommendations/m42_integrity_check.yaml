@@ -3,6 +3,7 @@
     en: "SHA-256 integrity check against shipped manifest"
     ru: "Проверка целостности SHA-256 по shipped-манифесту"
     zh: "根据随附清单进行 SHA-256 完整性检查"
+    zht: "根據隨附資訊清單進行 SHA-256 完整性檢查"
     tr: "Birlikte gelen manifestoya karşı SHA-256 bütünlük denetimi"
   description:
     en: |
@@ -43,6 +44,17 @@
 
       「应用」不会触碰文件；它只是打开 Steam 创意工坊页面，让用户重新订阅
       受影响的模组（创意工坊损坏的标准修复方法）。
+    zht: |
+      可捕捉：創意工坊的部分下載（Steam 顯示「已訂閱」，但某個檔案比預期短）、
+      被防毒軟體隔離後變成零位元組的 DLL、使用者對模組檔案的手動編輯，以及竄改 /
+      「premium fix」惡意軟體 DLL 覆蓋在合法模組之上的情況。
+
+      資訊清單位於 `ModuleData/integrity_manifest.json`。預設情況下它是空的——
+      只有在我們擁有經過驗證的乾淨參考安裝可供雜湊比對時才會填充。在此之前，
+      這張卡片保持 NotApplicable 並隱藏，因此在全新安裝上不會出現誤報。
+
+      「套用」不會觸碰檔案；它只是開啟 Steam 創意工坊頁面，讓使用者重新訂閱
+      受影響的模組（創意工坊損壞的標準修復方法）。
     tr: |
       Şunları yakalar: kısmi Atölye indirmeleri (Steam "abone olundu" der ama bir dosya
       beklenenden kısadır), geri döndüğünde sıfır bayt olan AV karantinasındaki DLL'ler,
@@ -72,6 +84,11 @@
       - "空清单 = NotApplicable（卡片隐藏）。"
       - "「应用」会打开 steam://url/CommunityFilePage/261550。"
       - "不可撤销（只读）。"
+    zht:
+      - "唯讀檢查。雜湊演算法：SHA-256。"
+      - "空資訊清單 = NotApplicable（卡片隱藏）。"
+      - "「套用」會開啟 steam://url/CommunityFilePage/261550。"
+      - "不可復原（唯讀）。"
     tr:
       - "Salt okunur kontrol. Karma algoritması: SHA-256."
       - "Boş manifesto = NotApplicable (kart gizli)."

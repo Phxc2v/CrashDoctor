@@ -3,6 +3,7 @@
     en: "Visual C++ 2015-2022 x64 Redistributable check"
     ru: "Проверка Visual C++ 2015-2022 x64 Redistributable"
     zh: "检查 Visual C++ 2015-2022 x64 Redistributable"
+    zht: "檢查 Visual C++ 2015-2022 x64 Redistributable"
     tr: "Visual C++ 2015-2022 x64 Redistributable kontrolü"
   description:
     en: |
@@ -31,6 +32,14 @@
 
       这张卡片只在缺失 x64 redist 或版本低于 14.30（Bannerlord 1.3.x 所基于的 VS2022
       基准）时才出现。
+    zht: |
+      Bannerlord 附帶了原生 DLL（TaleWorlds.Native.dll、FMOD、libcrypto），它們連結到
+      Visual C++ 2015-2022 x64 執行階段程式庫中的 vcruntime140.dll 和 msvcp140.dll。如果系統
+      只裝了 x86 redist 或完全沒有，啟動器載入 TaleWorlds.MountAndBlade.dll 時會以
+      BadImageFormatException 失敗——玩家會以為是模組衝突，於是開始隨機解除安裝東西。
+
+      這張卡片只在缺失 x64 redist 或版本低於 14.30（Bannerlord 1.3.x 所基於的 VS2022
+      基準）時才出現。
     tr: |
       Bannerlord, Visual C++ 2015-2022 x64 çalışma zamanından vcruntime140.dll ve
       msvcp140.dll'ye bağlanan yerel DLL'lerle (TaleWorlds.Native.dll, FMOD, libcrypto)
@@ -56,6 +65,11 @@
       - "Crash Doctor 绝不会自行下载或安装软件。"
       - "来源：HKLM\\SOFTWARE\\Microsoft\\VisualStudio\\14.0\\VC\\Runtimes\\x64。"
       - "不可撤销。"
+    zht:
+      - "唯讀。「套用」會在瀏覽器中開啟 https://aka.ms/vs/17/release/vc_redist.x64.exe。"
+      - "Crash Doctor 絕不會自行下載或安裝軟體。"
+      - "來源：HKLM\\SOFTWARE\\Microsoft\\VisualStudio\\14.0\\VC\\Runtimes\\x64。"
+      - "不可復原。"
     tr:
       - "Salt okunur. «Uygula» tarayıcınızda https://aka.ms/vs/17/release/vc_redist.x64.exe adresini açar."
       - "Crash Doctor kendisi asla yazılım indirmez veya kurmaz."

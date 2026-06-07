@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" type="string">
+  <tags>
+    <tag language="繁體中文" />
+  </tags>
+  <strings>
+    <string id="cd_open" text="Crash Doctor" />
+    <string id="cd_window_title" text="Crash Doctor" />
+    <string id="cd_no_crashes" text="未偵測到崩潰，可以安心遊玩。" />
+    <string id="cd_selftest_fail" text="Crash Doctor 自我測試失敗：{REASON}。請查看 Modules/CrashDoctor/crashdoctor.log。" />
+    <string id="cd_internal_error" text="Crash Doctor 發生內部錯誤，請查看 crashdoctor.log。" />
+    <string id="cd_status_scanning" text="掃描中..." />
+    <string id="cd_status_count" text="{COUNT}次崩潰" />
+    <string id="cd_btn_refresh" text="重新整理" />
+    <string id="cd_btn_clear" text="清除..." />
+    <string id="cd_btn_open_folder" text="開啟資料夾" />
+    <string id="cd_btn_open_log_folder" text="開啟日誌資料夾" />
+    <string id="cd_btn_copy" text="複製" />
+    <string id="cd_btn_export" text="匯出" />
+    <string id="cd_btn_close" text="關閉" />
+    <string id="cd_btn_force_crash" text="強制崩潰（測試用）" />
+    <string id="cd_section_crashes" text="崩潰紀錄" />
+    <string id="cd_section_fix" text="修復步驟：" />
+    <string id="cd_section_evidence" text="匹配行：" />
+    <string id="cd_section_diagnoses" text="診斷結果" />
+    <string id="cd_severity_critical" text="嚴重" />
+    <string id="cd_severity_warning" text="警告" />
+    <string id="cd_severity_info" text="資訊" />
+    <string id="cd_severity_unknown" text="未知" />
+    <string id="cd_confidence_high" text="高度確信" />
+    <string id="cd_confidence_medium" text="中度確信" />
+    <string id="cd_confidence_low" text="低度確信" />
+    <string id="cd_unrecognized_title" text="無法識別的崩潰" />
+    <string id="cd_unrecognized_desc" text="目前沒有對應的規則。請點擊「匯出」，並將 .txt 檔案傳送至我們的 Telegram 頻道：https://t.me/CodeRickTg — 我們會為此崩潰新增規則。" />
+    <string id="cd_clear_dialog_title" text="刪除崩潰日誌？" />
+    <string id="cd_clear_dialog_keep" text="保留最近3次崩潰紀錄（建議）" />
+    <string id="cd_clear_dialog_delete_dump" text="同時刪除 .dmp 記憶體傾印檔" />
+    <string id="cd_clear_dialog_confirm" text="刪除" />
+    <string id="cd_clear_dialog_cancel" text="取消" />
+    <string id="cd_clear_dialog_recycle_note" text="檔案將移至 Windows 資源回收筒，可供還原。" />
+    <string id="cd_clear_done" text="已移除{COUNT}個檔案。如需還原，請至 Windows 資源回收筒。" />
+    <string id="cd_clear_preview" text="將刪除：{TOTAL}個崩潰資料夾中的{DEL}個" />
+    <string id="cd_checkbox_on" text="[X]" />
+    <string id="cd_checkbox_off" text="[ ]" />
+
+    <!-- v1.1.0 — 分頁 / 系統調校 / 歷史紀錄 -->
+    <string id="cd_tab_crashes" text="崩潰診斷" />
+    <string id="cd_tab_tuneup" text="系統調校" />
+    <string id="cd_tab_history" text="歷史紀錄" />
+    <string id="cd_tab_saves" text="存檔" />
+    <string id="cd_tab_mods" text="模組" />
+    <string id="cd_saves_btn_rescan" text="重新掃描" />
+    <string id="cd_saves_btn_open_folder" text="開啟遊戲存檔資料夾" />
+    <string id="cd_saves_no_saves" text="於遊戲存檔資料夾中找不到任何存檔。" />
+    <string id="cd_saves_summary" text="存檔總數：{TOTAL},其中模組不符的：{MISMATCH}。" />
+
+    <string id="cd_tuneup_scanning" text="正在檢查系統..." />
+    <string id="cd_tuneup_summary" text="發現{ISSUES}項問題,{HEALTHY}項檢查通過" />
+    <string id="cd_tuneup_summary_actionable" text="發現{COUNT}項需要處理的問題。" />
+    <string id="cd_tuneup_all_good" text="未發現問題。若仍發生崩潰,請開啟「崩潰診斷」分頁。" />
+    <string id="cd_tuneup_scan_failed" text="掃描失敗,請查看 crashdoctor.log。" />
+    <string id="cd_tuneup_evidence_header" text="佐證:" />
+    <string id="cd_tuneup_btn_rescan" text="重新掃描" />
+    <string id="cd_tuneup_btn_apply" text="套用" />
+    <string id="cd_tuneup_btn_ignore" text="忽略" />
+    <string id="cd_tuneup_btn_details_show" text="詳細資訊" />
+    <string id="cd_tuneup_btn_details_hide" text="隱藏詳細資訊" />
+    <string id="cd_tuneup_btn_open_uac" text="開啟 UAC 設定" />
+    <string id="cd_details_btn_close" text="關閉" />
+    <string id="cd_details_header" text="更多詳細資訊:" />
+    <string id="cd_tuneup_badge_admin" text="需要管理員權限" />
+    <string id="cd_tuneup_badge_reboot" text="需要重啟" />
+    <string id="cd_tuneup_badge_reversible" text="可還原" />
+    <string id="cd_tuneup_badge_no_undo" text="無法復原" />
+    <string id="cd_tuneup_reboot_pending" text="設定已套用 — 請重啟電腦以使設定生效。" />
+    <string id="cd_apply_reboot_title" text="需要重啟" />
+    <string id="cd_apply_reboot_default" text="設定已套用。請重啟電腦以使設定生效。" />
+    <string id="cd_apply_done_title" text="已套用" />
+    <string id="cd_apply_done_default" text="設定已套用。" />
+    <string id="cd_apply_failed_title" text="套用失敗" />
+    <string id="cd_apply_failed_default" text="套用失敗,請查看 crashdoctor.log。" />
+    <string id="cd_btn_ok" text="確定" />
+    <string id="cd_tuneup_btn_show_all" text="顯示全部" />
+    <string id="cd_tuneup_btn_force_shader_cleanup" text="清除著色器快取" />
+    <string id="cd_tuneup_btn_show_actionable" text="僅顯示可處理項目" />
+    <string id="cd_tuneup_summary_show_all" text="顯示全部{TOTAL}個模組（{ACTIONABLE}項可處理、{HEALTHY}項正常、{SKIPPED}項不適用）。" />
+
+    <string id="cd_history_count" text="{COUNT}筆紀錄" />
+    <string id="cd_history_empty" text="尚無修復歷史紀錄。" />
+    <string id="cd_history_load_failed" text="載入歷史紀錄失敗,請查看 crashdoctor.log。" />
+    <string id="cd_history_btn_refresh" text="重新整理" />
+    <string id="cd_history_btn_clear_all" text="清除歷史紀錄" />
+    <string id="cd_history_result_ok" text="已套用" />
+    <string id="cd_history_result_fail" text="失敗" />
+    <string id="cd_history_items_count" text="影響{COUNT}個項目" />
+    <string id="cd_history_reboot_pending" text="待重啟" />
+    <string id="cd_history_rolled_back_at" text="已於{WHEN}還原" />
+    <string id="cd_history_btn_rollback" text="還原" />
+
+    <!-- 新增（2026-05-14）緊急存檔服務相關字串。
+	用於設定介面與崩潰後的橫幅提示，告知玩家最近一次自動存檔的檔名位置。 -->
+    <string id="cd_new_badge" text="新功能" />
+    <string id="cd_emergency_save_title" text="崩潰前緊急存檔" />
+    <string id="cd_emergency_save_hint" text="當遊戲即將崩潰時,Crash Doctor 會嘗試最後一次「另存新檔」,避免你損失數小時尚未存檔的進度。預設:開啟。僅在與其他存檔相關模組衝突時才需停用。" />
+    <string id="cd_emergency_save_made" text="已建立緊急存檔:{NAME}" />
+    <string id="cd_emergency_save_failed" text="緊急存檔未執行:{REASON}" />
+    <string id="cd_emergency_save_disabled" text="緊急存檔已於設定中停用。" />
+    <string id="cd_new_banner_emergency_save_on" text="崩潰前緊急存檔已啟用 — 你的遊戲進度受到保護。" />
+    <string id="cd_new_banner_emergency_save_off" text="新功能可用:崩潰前緊急存檔(目前於 CrashDoctorSettings.xml 中為停用狀態)。" />
+    <string id="cd_status_on" text="開啟" />
+    <string id="cd_status_off" text="關閉" />
+    <string id="cd_toggle_on_prefix" text="● 開啟" />
+    <string id="cd_toggle_off_prefix" text="○ 關閉" />
+    <string id="cd_toggle_emergency_save" text="崩潰前緊急存檔" />
+    <string id="cd_toggle_native_crash_log" text="原生崩潰記錄" />
+    <string id="cd_native_crash_log_title" text="原生崩潰記錄" />
+    <string id="cd_native_crash_log_hint" text="開啟時,當發生原生崩潰(存取違規、堆疊溢位、堆積損毀)時,會於 crashdoctor.log 中寫入一行摘要。僅作觀察用途 — 不會改變崩潰本身的行為,TaleWorlds 原本的傾印檔仍會正常產生。預設為關閉 — 若需要這項額外的日誌記錄,請自行啟用。" />
+    <string id="cd_patch_conflicts_badge" text="有 {COUNT} 個方法被多個模組同時修補 — 點擊查看 crashdoctor.log" />
+    <string id="cd_tab_settings" text="設定 ★" />
+    <string id="cd_toggle_ui_error_patching" text="UI 錯誤吞噬" />
+    <string id="cd_settings_title" text="Crash Doctor 設定" />
+    <string id="cd_hint_emergency_save" text="當遊戲即將因 .NET 錯誤而崩潰時,Crash Doctor 會嘗試最後一次「另存新檔」,避免你損失數小時的進度。存檔將以「CrashDoctor_Emergency_&lt;時間戳記&gt;」格式儲存。" />
+    <string id="cd_hint_native_crash_log" text="當發生原生崩潰(存取違規、堆疊溢位、堆積損毀)時,於 crashdoctor.log 中寫入一行摘要。崩潰本身不受影響 — TaleWorlds 原本的傾印檔仍會正常產生。" />
+    <string id="cd_hint_ui_error_patching" text="對精選的一系列 UI 刷新方法進行包裝(百科全書、物品欄、部隊、家族、王國、任務)。僅涵蓋 UI 範圍 — 戰鬥、AI、每日刻、任務系統皆未受保護。" />
+    <string id="cd_toggle_nre_safety_patches" text="NRE 保護機制（薪資 / 糧食 / AI 刻）" />
+    <string id="cd_hint_nre_safety_patches" text="攔截 TOR_Core 薪資與糧食消耗模型，以及每次 AI 每小時刻運算中的空參考崩潰。當其他模組在某支部隊的兵員清單中留下「懸空」兵員（已被移除但未徹底清除的單位）時，即會引發此類崩潰。啟用後，出問題的部隊會直接跳過該次刻運算，遊戲繼續執行。[ 預設：開啟 ]" />
+    <string id="cd_toggle_dangling_roster_cleanup" text="載入時清除懸空兵員" />
+    <string id="cd_hint_dangling_roster_cleanup" text="載入存檔時，掃描每支部隊與每個定居點，移除損壞的兵員條目（已不存在的角色）。若未啟用，下一次 AI 刻運算便會因這些條目而崩潰。未發現損壞條目時，掃描過程安靜完成，不產生任何提示。[ 預設：開啟 ]" />
+
+  </strings>
+</base>

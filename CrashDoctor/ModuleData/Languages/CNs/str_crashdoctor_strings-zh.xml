@@ -118,11 +118,9 @@
     <string id="cd_tab_settings" text="设置  ★" />
     <string id="cd_toggle_ui_error_patching" text="界面错误吞噬" />
     <string id="cd_settings_title" text="Crash Doctor 设置" />
-    <string id="cd_settings_per_mod_title" text="按模组吞噬错误" />
     <string id="cd_hint_emergency_save" text="当游戏即将因 .NET 错误崩溃时，Crash Doctor 会尝试最后进行一次另存为，以免你丢失数小时进度。保存为 “CrashDoctor_Emergency_&lt;timestamp&gt;”。" />
     <string id="cd_hint_native_crash_log" text="当发生原生崩溃（访问冲突、堆栈溢出、堆损坏）时，向 crashdoctor.log 写入一行摘要。崩溃本身不受影响 —— TaleWorlds 的转储仍会发生。" />
-    <string id="cd_hint_ui_error_patching" text="包裹一组精选的界面刷新方法（百科、物品栏、队伍、家族、王国、任务）。仅覆盖界面 —— 战斗、AI、每日刷新、任务场景不受保护。若还要包裹某个模组的游戏逻辑，请在下方勾选该模组。" />
-    <string id="cd_hint_per_mod_section" text="勾选某个模组，用同样的出错吞噬保护包裹其任务回调（OnAgentHit、OnMissionTick 等）。当某个模组明显损坏但你想边等修复边继续游戏时使用。" />
+    <string id="cd_hint_ui_error_patching" text="包裹一组精选的界面刷新方法（百科、物品栏、队伍、家族、王国、任务）。仅覆盖界面 —— 战斗、AI、每日刷新、任务场景不受保护。" />
     <string id="cd_toggle_nre_safety_patches" text="空引用安全网（工资 / 食物 / AI 刷新）" />
     <string id="cd_hint_nre_safety_patches" text="捕获 TOR_Core 工资与食物消耗模型，以及每次 AI 每小时刷新中的空引用崩溃。这类崩溃发生在其他模组在队伍名册中留下“悬空”士兵时（已被移除却未清理的单位）。开启安全网后，出问题的队伍只会跳过该次刷新，游戏继续。默认开启。" />
     <string id="cd_toggle_dangling_roster_cleanup" text="加载时清理悬空士兵" />

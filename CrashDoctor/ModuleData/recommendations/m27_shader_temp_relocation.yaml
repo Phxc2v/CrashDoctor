@@ -3,6 +3,7 @@
     en: "Move Windows TEMP to a bigger drive"
     ru: "Перенести Windows TEMP на свободный диск"
     zh: "将 Windows TEMP 移到更大的磁盘"
+    zht: "將 Windows TEMP 移到更大的磁碟"
     tr: "Windows TEMP'i daha büyük bir sürücüye taşı"
   description:
     en: |
@@ -79,6 +80,30 @@
       Bannerlord 是不够的。
 
       可撤销：回退会还原之前的 TMP/TEMP 值。
+    zht: |
+      Windows TEMP（C:\Users\<你>\AppData\Local\Temp）位於系統磁碟上。
+      Bannerlord 的著色器編譯器在 'Build Shader Cache' 期間以及執行階段
+      著色器重新編譯期間會把中間檔案寫到那裡。在容量緊張的系統磁碟上，
+      這會因磁碟空間不足而失敗，表現為 'pdb append failed' /
+      'debug info append failed' / 著色器 OOM 當機 —— 看起來像著色器
+      bug，實際上意味著 TEMP 已滿。
+
+      這張卡片在以下情況出現：
+        1. 存放 %TEMP% 的磁碟可用空間 < 40 GB。
+        2. 另一個固定磁碟可用空間 100+ GB（自動選取最大的）。
+
+      套用會：
+        1. 建立 <更大的磁碟>:\Temp\<你的使用者名稱>。
+        2. 把 HKCU\Environment 中的 TMP 和 TEMP 更新為新路徑。
+           僅針對目前使用者的更改 —— 系統範圍的 TEMP（HKLM）不會被觸碰，
+           不需要系統管理員權限。
+        3. 舊的 %TEMP% 資料夾保持不動（由 Windows 管理）。
+
+      套用後必做：登出 Windows（或重新啟動）。該更改只對新的登入工作階段生效。
+      在目前工作階段中啟動的 Bannerlord 仍然使用舊的 TEMP —— 僅關閉
+      Bannerlord 是不夠的。
+
+      可復原：回退會還原之前的 TMP/TEMP 值。
     tr: |
       Windows TEMP (C:\Users\<sen>\AppData\Local\Temp) sistem sürücüsünde bulunur.
       Bannerlord'un gölgelendirici derleyicisi 'Build Shader Cache' sırasında ve
@@ -127,6 +152,13 @@
       - "可撤销：回退会写回之前的值。"
       - "应用后：需要注销 Windows（或重启）才能使新的 TEMP 生效。"
       - "当 TEMP 所在磁盘有 40+ GB 可用空间，或没有其他磁盘有 100+ GB 可用空间时，卡片会隐藏。"
+    zht:
+      - "來源：HKCU\\Environment\\TEMP（若未設定則為 %USERPROFILE%\\AppData\\Local\\Temp）"
+      - "目標：<大磁碟>:\\Temp\\<使用者名稱>"
+      - "僅針對使用者：HKLM（系統範圍的 TEMP）不會被觸碰。不需要系統管理員權限。"
+      - "可復原：回退會寫回之前的值。"
+      - "套用後：需要登出 Windows（或重新啟動）才能使新的 TEMP 生效。"
+      - "當 TEMP 所在磁碟有 40+ GB 可用空間，或沒有其他磁碟有 100+ GB 可用空間時，卡片會隱藏。"
     tr:
       - "Kaynak: HKCU\\Environment\\TEMP (ayarlı değilse %USERPROFILE%\\AppData\\Local\\Temp)"
       - "Hedef: <BüyükSürücü>:\\Temp\\<kullanıcı adı>"

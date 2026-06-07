@@ -8,6 +8,7 @@
     en: "Windows page file is almost exhausted"
     ru: "Файл подкачки Windows почти исчерпан"
     zh: "Windows 页面文件几乎耗尽"
+    zht: "Windows 分頁檔幾乎耗盡"
     tr: "Windows sayfa dosyası neredeyse tükendi"
   description:
     en: |
@@ -24,6 +25,10 @@
       游戏可用的虚拟内存已不足 1 GB。带着重型模组的长时间游戏（尤其是用
       /continuegame 读取的 TOR 存档）会不断累积内存占用，直到 Windows 再也无法
       分配页面——随后进程因访问冲突而崩溃。
+    zht: |
+      遊戲可用的虛擬記憶體已不足 1 GB。帶著重型模組的長時間遊戲（尤其是用
+      /continuegame 載入的 TOR 存檔）會不斷累積記憶體佔用，直到 Windows 再也無法
+      分配分頁——隨後行程因存取違規而崩潰。
     tr: |
       Oyun için 1 GB'den az sanal bellek kaldı. Ağır modlarla yapılan uzun
       oturumlar (özellikle /continuegame ile yüklenen TOR kaydı) Windows artık
@@ -45,6 +50,11 @@
       - "长时间游戏后不要用 /continuegame 读档——退回主菜单，再从那里点 Continue。"
       - "增大页面文件：系统 → 高级系统设置 → 性能 → 设置 → 高级 → 虚拟内存 → 在 SSD 上设自定义大小 32–64 GB。"
       - "启动前关闭后台应用（Chrome、Discord、浏览器）。"
+    zht:
+      - "重新啟動電腦——冷開機時分頁檔會被重設。"
+      - "長時間遊戲後不要用 /continuegame 讀檔——退回主選單，再從那裡點 Continue。"
+      - "增大分頁檔：系統 → 進階系統設定 → 效能 → 設定 → 進階 → 虛擬記憶體 → 在 SSD 上設自訂大小 32–64 GB。"
+      - "啟動前關閉背景應用程式（Chrome、Discord、瀏覽器）。"
     tr:
       - "Bilgisayarı yeniden başlat — sayfa dosyası soğuk açılışta sıfırlanır."
       - "Uzun bir oturumdan sonra kayıtları /continuegame ile yükleme — ana menüye çık ve oradan Continue'ya bas."
@@ -66,6 +76,7 @@
     en: "Out of memory (bad_alloc)"
     ru: "Закончилась память (bad_alloc)"
     zh: "内存不足（bad_alloc）"
+    zht: "記憶體不足（bad_alloc）"
     tr: "Bellek yetersiz (bad_alloc)"
   description:
     en: |
@@ -77,6 +88,9 @@
     zh: |
       原生分配器无法获取一块内存。要么页面文件太小，要么长时间游戏后内存碎片化，
       要么某个模组存在内存泄漏。
+    zht: |
+      原生配置器無法取得一塊記憶體。要麼分頁檔太小，要麼長時間遊戲後記憶體碎片化，
+      要麼某個模組存在記憶體洩漏。
     tr: |
       Yerel ayırıcı bir bellek parçası alamadı. Ya sayfa dosyası çok küçük, ya
       uzun bir oturumdan sonra RAM parçalanmış ya da bir modda sızıntı var.
@@ -96,6 +110,11 @@
       - "在选项 → 图形中，把 Texture Quality 和 Texture Budget 各降低一档。"
       - "增大 Windows 页面文件（见 mem.pagefile_low 的处理办法）。"
       - "启动前退出所有后台应用。"
+    zht:
+      - "重新啟動電腦。"
+      - "在選項 → 圖形中，把 Texture Quality 和 Texture Budget 各降低一檔。"
+      - "增大 Windows 分頁檔（見 mem.pagefile_low 的處理辦法）。"
+      - "啟動前退出所有背景應用程式。"
     tr:
       - "Bilgisayarı yeniden başlat."
       - "Seçenekler → Grafikler'de Texture Quality ve Texture Budget'ı birer kademe düşür."
@@ -116,6 +135,7 @@
     en: "Access violation in TaleWorlds.MountAndBlade native code"
     ru: "Access violation в нативе TaleWorlds.MountAndBlade"
     zh: "TaleWorlds.MountAndBlade 原生代码中的访问冲突"
+    zht: "TaleWorlds.MountAndBlade 原生程式碼中的存取違規"
     tr: "TaleWorlds.MountAndBlade yerel kodunda erişim ihlali"
   description:
     en: |
@@ -130,6 +150,10 @@
       System.AccessViolationException，Source=TaleWorlds.MountAndBlade——Bannerlord
       1.2.10 / 1.2.11 中的原生引擎损坏。这是有记录的 TaleWorlds 回归缺陷。崩溃是
       随机的，与模组无关。
+    zht: |
+      System.AccessViolationException，Source=TaleWorlds.MountAndBlade——Bannerlord
+      1.2.10 / 1.2.11 中的原生引擎損壞。這是有記錄的 TaleWorlds 回歸缺陷。崩潰是
+      隨機的，與模組無關。
     tr: |
       Source=TaleWorlds.MountAndBlade ile System.AccessViolationException —
       Bannerlord 1.2.10 / 1.2.11'deki yerel motor bozulması. Belgelenmiş bir
@@ -147,6 +171,10 @@
       - "把 Bannerlord 更新到 1.2.12+，或通过 Steam beta 分支降级到 1.2.9。"
       - "把显卡频率重置为默认（不超频 / 不降压）。"
       - "在 Steam 中验证游戏文件完整性。"
+    zht:
+      - "把 Bannerlord 更新到 1.2.12+，或透過 Steam beta 分支降級到 1.2.9。"
+      - "把顯示卡頻率重設為預設（不超頻 / 不降壓）。"
+      - "在 Steam 中驗證遊戲檔案完整性。"
     tr:
       - "Bannerlord'u 1.2.12+ sürümüne güncelle veya Steam beta dalı üzerinden 1.2.9'a düşür."
       - "GPU saat hızlarını varsayılana sıfırla (overclock / undervolt yok)."
@@ -168,6 +196,7 @@
     en: "Stack overflow (0xC00000FD) — recursive AI loop"
     ru: "Stack overflow (0xC00000FD) — рекурсивный AI loop"
     zh: "栈溢出（0xC00000FD）——递归 AI 循环"
+    zht: "堆疊溢位（0xC00000FD）——遞迴 AI 迴圈"
     tr: "Yığın taşması (0xC00000FD) — özyinelemeli AI döngüsü"
   description:
     en: |
@@ -184,6 +213,10 @@
       进程以 STATUS_STACK_OVERFLOW 退出（退出码 0xC00000FD）。原版 Bannerlord 的
       根源：一个递归 AI 循环（旗手搜索、部队升级循环）。已知并在 1.1.0 中修复——
       几乎总是意味着这个战役存档是在更旧的有缺陷版本上开始的。
+    zht: |
+      行程以 STATUS_STACK_OVERFLOW 退出（退出碼 0xC00000FD）。原版 Bannerlord 的
+      根源：一個遞迴 AI 迴圈（旗手搜尋、部隊升級迴圈）。已知並在 1.1.0 中修復——
+      幾乎總是意味著這個戰役存檔是在更舊的有缺陷版本上開始的。
     tr: |
       Süreç STATUS_STACK_OVERFLOW ile çıktı (çıkış kodu 0xC00000FD). Orijinal
       Bannerlord nedeni: özyinelemeli bir AI döngüsü (BannerBearer araması, birlik
@@ -203,6 +236,10 @@
       - "把 Bannerlord 更新到最新补丁。"
       - "如果存档是在 1.0.x 上开始的——开一局新战役。"
       - "如果在某场特定战斗中能复现——逐个禁用 AI 模组（RBM、AI 大改）。"
+    zht:
+      - "把 Bannerlord 更新到最新修補程式。"
+      - "如果存檔是在 1.0.x 上開始的——開一局新戰役。"
+      - "如果在某場特定戰鬥中能重現——逐個停用 AI 模組（RBM、AI 大改）。"
     tr:
       - "Bannerlord'u en son yamaya güncelle."
       - "Kayıt 1.0.x'te başlatıldıysa — yeni bir sefer başlat."
@@ -224,6 +261,7 @@
     en: "Lord's Hall fight DivideByZeroException"
     ru: "DivideByZeroException на бое в Lord's Hall"
     zh: "领主大厅战斗的 DivideByZeroException"
+    zht: "領主大廳戰鬥的 DivideByZeroException"
     tr: "Lord's Hall savaşında DivideByZeroException"
   description:
     en: |
@@ -237,6 +275,9 @@
     zh: |
       LordsHallFightMissionController+MissionSide.SpawnTroops 发生除以零，因为该
       场景的出生点数量为零。这是某些封地上特定的领主大厅攻城阶段才有的问题。
+    zht: |
+      LordsHallFightMissionController+MissionSide.SpawnTroops 發生除以零，因為該
+      場景的出生點數量為零。這是某些封地上特定的領主大廳攻城階段才有的問題。
     tr: |
       LordsHallFightMissionController+MissionSide.SpawnTroops sıfıra bölünüyor,
       çünkü sahnenin doğuş noktası sayısı sıfır. Belirli tımarlardaki özel bir
@@ -254,6 +295,10 @@
       - "避开这场特定攻城战的领主大厅阶段——出击 / 投降 / 换一个封地。"
       - "读取攻城前的存档，试试另一个定居点。"
       - "如果该缺陷在某个特定封地上能复现——把场景名称发到 TaleWorlds 论坛反馈。"
+    zht:
+      - "避開這場特定攻城戰的領主大廳階段——出擊 / 投降 / 換一個封地。"
+      - "讀取攻城前的存檔，試試另一個聚落。"
+      - "如果該缺陷在某個特定封地上能重現——把場景名稱發到 TaleWorlds 論壇回報。"
     tr:
       - "Bu belirli kuşatmanın Lord's Hall aşamasından kaçın — çıkış yap / teslim ol / başka bir tımar seç."
       - "Kuşatma öncesi kayda dön ve farklı bir yerleşim dene."

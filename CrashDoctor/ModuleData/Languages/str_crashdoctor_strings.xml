@@ -119,11 +119,9 @@
     <string id="cd_tab_settings" text="Settings  ★" />
     <string id="cd_toggle_ui_error_patching" text="UI error swallowing" />
     <string id="cd_settings_title" text="Crash Doctor settings" />
-    <string id="cd_settings_per_mod_title" text="Per-mod error swallowing" />
     <string id="cd_hint_emergency_save" text="When the game is about to crash with a .NET error, Crash Doctor tries one last SaveAs so you don't lose hours of progress. Saves under 'CrashDoctor_Emergency_&lt;timestamp&gt;'." />
     <string id="cd_hint_native_crash_log" text="Writes a one-line summary to crashdoctor.log when a native crash occurs (access violation, stack overflow, heap corruption). The crash itself is not affected — TaleWorlds' dump still happens." />
-    <string id="cd_hint_ui_error_patching" text="Wraps a hand-picked list of UI refresh methods (Encyclopedia, Inventory, Party, Clan, Kingdom, Quests). Covers UI ONLY — battles, AI, daily tick, missions stay unprotected. To also wrap a specific mod's game logic, tick that mod in the section below." />
-    <string id="cd_hint_per_mod_section" text="Tick a mod to wrap its mission callbacks (OnAgentHit, OnMissionTick, etc.) with the same swallow-on-error guard. Use when one specific mod is clearly broken but you want to keep playing while waiting on a fix." />
+    <string id="cd_hint_ui_error_patching" text="Wraps a hand-picked list of UI refresh methods (Encyclopedia, Inventory, Party, Clan, Kingdom, Quests). Covers UI ONLY — battles, AI, daily tick, missions stay unprotected." />
     <string id="cd_toggle_nre_safety_patches" text="NRE safety nets (wage / food / AI tick)" />
     <string id="cd_hint_nre_safety_patches" text="Catches null-reference crashes in TOR_Core's wage and food-consumption models, and in every AI hourly tick. These crashes happen when another mod leaves a 'dangling' troop in a party's roster (a unit that was removed but never scrubbed). With the safety net on, the offending party simply skips that tick and the game continues. Default ON." />
     <string id="cd_toggle_dangling_roster_cleanup" text="Dangling troop cleanup on load" />

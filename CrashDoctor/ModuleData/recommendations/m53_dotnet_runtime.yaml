@@ -3,6 +3,7 @@
     en: ".NET Framework 4.7.2+ check"
     ru: "Проверка .NET Framework 4.7.2+"
     zh: ".NET Framework 4.7.2+ 检查"
+    zht: ".NET Framework 4.7.2+ 檢查"
     tr: ".NET Framework 4.7.2+ kontrolü"
   description:
     en: |
@@ -29,6 +30,14 @@
 
       我们不使用 `dotnet --list-runtimes`——那是针对 .NET Core / .NET 5+ 的，
       不会列出经典 Framework。注册表才是权威来源。
+    zht: |
+      Bannerlord 1.3.x 和 BUTR 系列模組（BLSE、ButterLib、MCM）都以 net472 為目標。
+      經典 .NET Framework 登錄機碼（HKLM\SOFTWARE\Microsoft\NET Framework Setup\NDP\v4\Full）
+      會告訴我們機器上實際安裝的版本。低於 4.7.2 時，模組載入階段就會出現
+      BadImageFormatException。
+
+      我們不使用 `dotnet --list-runtimes`——那是針對 .NET Core / .NET 5+ 的，
+      不會列出經典 Framework。登錄才是權威來源。
     tr: |
       Bannerlord 1.3.x ve BUTR ailesi modları (BLSE, ButterLib, MCM) net472'yi hedefler.
       Klasik .NET Framework kayıt defteri anahtarı (HKLM\SOFTWARE\Microsoft\NET Framework
@@ -53,6 +62,11 @@
       - "来源：HKLM 的 Release DWORD 值，映射为易读的版本名称。"
       - "阈值：461808（.NET 4.7.2）。"
       - "不可撤销。"
+    zht:
+      - "「套用」會開啟 Microsoft 的 .NET 4.8 下載頁面（Win10 上支援的最新版本，完全向後相容）。"
+      - "來源：HKLM 的 Release DWORD 值，對應為易讀的版本名稱。"
+      - "閾值：461808（.NET 4.7.2）。"
+      - "不可復原。"
     tr:
       - "«Uygula» Microsoft'un .NET 4.8 indirme sayfasını açar (Win10'da desteklenen en son sürüm, tamamen geriye dönük uyumlu)."
       - "Kaynak: HKLM Release DWORD değeri, okunabilir sürüm adına eşlenir."

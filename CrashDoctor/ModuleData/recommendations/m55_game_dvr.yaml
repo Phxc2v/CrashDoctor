@@ -3,6 +3,7 @@
     en: "Disable Game DVR / Xbox Game Bar"
     ru: "Отключить Game DVR / Xbox Game Bar"
     zh: "禁用 Game DVR / Xbox Game Bar"
+    zht: "停用 Game DVR / Xbox Game Bar"
     tr: "Game DVR / Xbox Game Bar'ı devre dışı bırak"
   description:
     en: |
@@ -19,6 +20,10 @@
       Windows 的后台录制（Game DVR / Xbox Game Bar）会挂钩 DXGI 来录制游戏画面，
       在 Bannerlord 中偷走 5–15% 的 FPS。它也是 TOR 长时间战斗中「GPU device removed」
       崩溃的一个有记录的诱因。Microsoft 自己的性能指南也建议为任何高负载游戏关闭它。
+    zht: |
+      Windows 的背景錄製（Game DVR / Xbox Game Bar）會掛鉤 DXGI 來錄製遊戲畫面，
+      在 Bannerlord 中偷走 5–15% 的 FPS。它也是 TOR 長時間戰鬥中「GPU device removed」
+      當機的一個有記錄的誘因。Microsoft 自己的效能指南也建議為任何高負載遊戲關閉它。
     tr: |
       Windows'un arka plan kaydı (Game DVR / Xbox Game Bar), oyunu kaydetmek için
       DXGI'ye kanca takar ve Bannerlord'da %5-15 FPS çalar. Ayrıca uzun TOR savaşları
@@ -41,6 +46,11 @@
       - "立即生效——无需重启。"
       - "设置 HKLM Policies AllowGameDVR=0、HKCU GameDVR_Enabled=0、AppCaptureEnabled=0。"
       - "可从「历史」选项卡撤销。"
+    zht:
+      - "點擊「套用」：Windows 會彈出一個 UAC 同意對話方塊——點擊「是」。"
+      - "立即生效——無需重新啟動。"
+      - "設定 HKLM Policies AllowGameDVR=0、HKCU GameDVR_Enabled=0、AppCaptureEnabled=0。"
+      - "可從「歷史」索引標籤復原。"
     tr:
       - "Uygula'ya tıklayın: Windows tek bir UAC onay iletişim kutusu gösterir — Evet'e tıklayın."
       - "Anında etkili olur — yeniden başlatma gerekmez."

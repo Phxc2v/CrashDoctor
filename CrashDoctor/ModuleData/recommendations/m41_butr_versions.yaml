@@ -3,6 +3,7 @@
     en: "Check BUTR / BLSE versions"
     ru: "Проверить версии BUTR / BLSE"
     zh: "检查 BUTR / BLSE 版本"
+    zht: "檢查 BUTR / BLSE 版本"
     tr: "BUTR / BLSE sürümlerini kontrol et"
   description:
     en: |
@@ -17,6 +18,10 @@
       BLSE 1.6.3 和 1.6.4 存在一个已知的退化问题，会导致游戏在启动时崩溃，
       并在 TaleWorlds.GauntletUI.PrefabSystem.ConstantDefinition 中抛出 FormatException。
       修复方法是降级到 BLSE 1.6.2。
+    zht: |
+      BLSE 1.6.3 和 1.6.4 存在一個已知的退化問題，會導致遊戲在啟動時當機，
+      並在 TaleWorlds.GauntletUI.PrefabSystem.ConstantDefinition 中擲出 FormatException。
+      修復方法是降級到 BLSE 1.6.2。
     tr: |
       BLSE 1.6.3 ve 1.6.4, oyunu başlangıçta TaleWorlds.GauntletUI.PrefabSystem.ConstantDefinition
       içinde bir FormatException ile çökerten bilinen bir gerilemeyle gelir.
@@ -34,6 +39,10 @@
       - "Crash Doctor 无法自行安装/卸载 BLSE。"
       - "点击「应用」会在浏览器中打开 BLSE 的 NexusMods 页面——请手动下载 1.6.2。"
       - "安装 1.6.2 后，重新启动 Bannerlord。"
+    zht:
+      - "Crash Doctor 無法自行安裝/解除安裝 BLSE。"
+      - "點擊「套用」會在瀏覽器中開啟 BLSE 的 NexusMods 頁面——請手動下載 1.6.2。"
+      - "安裝 1.6.2 後，重新啟動 Bannerlord。"
     tr:
       - "Crash Doctor BLSE'yi kendi başına kuramaz/kaldıramaz."
       - "«Uygula» tarayıcınızda BLSE NexusMods sayfasını açar — 1.6.2'yi manuel olarak indirin."

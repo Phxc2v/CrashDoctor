@@ -3,6 +3,7 @@
     en: "Unblock module DLLs (Windows SmartScreen)"
     ru: "Разблокировать DLL модулей (Windows SmartScreen)"
     zh: "解除模块 DLL 的锁定（Windows SmartScreen）"
+    zht: "解除模組 DLL 的封鎖（Windows SmartScreen）"
     tr: "Modül DLL'lerinin engelini kaldır (Windows SmartScreen)"
   description:
     en: |
@@ -17,6 +18,10 @@
       从下载的压缩包中解压模组后，Windows SmartScreen 会锁定其中的 DLL。
       Bannerlord 无法加载被锁定的 DLL，会在启动时以「Cannot load ...」崩溃。
       这是针对 Bannerlord 和 TOR 模组问题首要推荐的修复方法。
+    zht: |
+      從下載的壓縮檔中解壓模組後，Windows SmartScreen 會封鎖其中的 DLL。
+      Bannerlord 無法載入被封鎖的 DLL，會在啟動時以「Cannot load ...」當機。
+      這是針對 Bannerlord 和 TOR 模組問題首要推薦的修復方法。
     tr: |
       İndirilen bir arşivden mod çıkarıldıktan sonra Windows SmartScreen DLL'leri engeller.
       Bannerlord engellenen DLL'leri yükleyemez ve başlangıçta "Cannot load ..." ile çöker.
@@ -34,6 +39,10 @@
       - "我们会移除每个 DLL 上的 NTFS Zone.Identifier 备用数据流。"
       - "DLL 文件本身不会被修改——只移除「来自互联网下载」的标记。"
       - "无需重启。重新启动 Bannerlord 即可生效。"
+    zht:
+      - "我們會移除每個 DLL 上的 NTFS Zone.Identifier 替代資料流。"
+      - "DLL 檔案本身不會被修改——只移除「來自網際網路下載」的標記。"
+      - "無需重新啟動。重新啟動 Bannerlord 即可生效。"
     tr:
       - "Her DLL'den NTFS Zone.Identifier alternatif veri akışını kaldırıyoruz."
       - "DLL dosyasının kendisi değiştirilmez — yalnızca 'internetten indirildi' işareti kaldırılır."

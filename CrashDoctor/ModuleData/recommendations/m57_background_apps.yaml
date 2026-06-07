@@ -3,6 +3,7 @@
     en: "Close known-problematic background apps"
     ru: "Закрыть проблемные фоновые приложения"
     zh: "关闭已知有问题的后台应用程序"
+    zht: "關閉已知有問題的背景應用程式"
     tr: "Bilinen sorunlu arka plan uygulamalarını kapat"
   description:
     en: |
@@ -21,6 +22,11 @@
       状态同步。它们有记录会破坏 Bannerlord 的着色器状态或触发 DXGI device-removed 崩溃。
       Crash Doctor 会从一份精选列表中列出所有正在运行的违规程序——在启动前用任务管理器
       关闭它们。
+    zht: |
+      一些流行的工具會掛鉤到 D3D11 / DXGI 上去繪製覆蓋層、擷取影格，或將 RGB 燈光與遊戲
+      狀態同步。它們有記錄會破壞 Bannerlord 的著色器狀態或觸發 DXGI device-removed 當機。
+      Crash Doctor 會從一份精選清單中列出所有正在執行的違規程式——在啟動前用工作管理員
+      關閉它們。
     tr: |
       Bazı popüler yardımcı programlar, kaplama çizmek, kare yakalamak veya RGB
       aydınlatmayı oyun durumuyla eşitlemek için D3D11 / DXGI'ye kanca takar. Bunların
@@ -43,6 +49,11 @@
       - "被结束的进程可在 Bannerlord 退出后从开始菜单重新启动。"
       - "列表包括 RTSS、MSI Afterburner OSD、Discord 叠加层、Nahimic、SignalRGB、iCUE、OBS Game Capture、XSplit。"
       - "结束后——重新扫描 Crash Doctor。"
+    zht:
+      - "「套用」會開啟工作管理員。Crash Doctor 不會自動結束處理程序——有些是音訊/RGB 驅動的一部分。"
+      - "被結束的處理程序可在 Bannerlord 結束後從開始功能表重新啟動。"
+      - "清單包括 RTSS、MSI Afterburner OSD、Discord 覆蓋層、Nahimic、SignalRGB、iCUE、OBS Game Capture、XSplit。"
+      - "結束後——重新掃描 Crash Doctor。"
     tr:
       - "«Uygula» Görev Yöneticisi'ni açar. Crash Doctor işlemleri otomatik olarak sonlandırmaz — bazıları ses/RGB sürücülerinin bir parçasıdır."
       - "Sonlandırılan işlemler, Bannerlord çıktıktan sonra Başlat Menüsü'nden yeniden başlatılabilir."

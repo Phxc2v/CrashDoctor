@@ -8,6 +8,7 @@
     en: "Late-game crash at x8 speed (native access violation)"
     ru: "Краш в поздней игре на ускорении x8 (нативная ошибка)"
     zh: "后期 x8 速度下崩溃（原生访问冲突）"
+    zht: "後期 x8 速度下崩潰（原生存取違規）"
     tr: "Geç oyunda x8 hızında çökme (yerel erişim ihlali)"
   description:
     en: |
@@ -34,6 +35,13 @@
       而在 x8、有 800+ 个队伍时，它会稳定地落进去，于是进程在非托管代码中以 0xC0000005
       崩溃。清理孤立对象解决不了这个问题——根源是队伍数量，不是孤立对象。当战役达到
       这种规模时，Crash Doctor 会自动限制速度。
+    zht: |
+      戰役已經膨脹到這樣一個規模：TaleWorlds 的原生 HourlyTick 在
+      UnstoppableFastForward（x8）下與自己產生競爭。世界狀態各階段之間有一個短暫的
+      視窗，其中存在一個瞬時空指標——在 x1..x4 時，下一個 tick 幾乎從不落在那個視窗裡；
+      而在 x8、有 800+ 個隊伍時，它會穩定地落進去，於是行程在非託管程式碼中以 0xC0000005
+      崩潰。清理孤立物件解決不了這個問題——根源是隊伍數量，不是孤立物件。當戰役達到
+      這種規模時，Crash Doctor 會自動限制速度。
     tr: |
       Sefer, TaleWorlds'ün yerel HourlyTick'inin UnstoppableFastForward (x8)
       altında kendisiyle yarıştığı bir boyuta ulaştı. Dünya-durumu aşamaları
@@ -59,6 +67,11 @@
       - "Crash Doctor 的后期速度限制已经生效——当队伍数量 ≥ 800 或本次会话首次发生原生访问冲突后，Campaign.TimeControlMode 的 setter 被修补为把 x8 降为 x4。"
       - "可选：在重新启用 x8 之前，用游戏内作弊指令削减队伍（Ctrl+Alt+~ → campaign.kill_random_clan）。"
       - "在那个肇事模组的设置里降低队伍生成速率（LoreHardcore 这类模组里的兽人 / 巨魔 / 哥布林生成上限）。"
+    zht:
+      - "在戰役地圖上最多保持 x4（不要按 x8 快捷鍵）。"
+      - "Crash Doctor 的後期速度限制已經生效——當隊伍數量 ≥ 800 或本次工作階段首次發生原生存取違規後，Campaign.TimeControlMode 的 setter 被修補為把 x8 降為 x4。"
+      - "可選：在重新啟用 x8 之前，用遊戲內作弊指令削減隊伍（Ctrl+Alt+~ → campaign.kill_random_clan）。"
+      - "在那個肇事模組的設定裡降低隊伍生成速率（LoreHardcore 這類模組裡的獸人 / 巨魔 / 哥布林生成上限）。"
     tr:
       - "Sefer haritasında en fazla x4'te kal (x8 kısayoluna basma)."
       - "Crash Doctor'ın geç oyun hız sınırı zaten etkin — grup sayısı ≥ 800 olduğunda veya bu oturumda ilk yerel erişim ihlalinden sonra Campaign.TimeControlMode setter'ı x8'i x4'e düşürecek şekilde yamalanır."
