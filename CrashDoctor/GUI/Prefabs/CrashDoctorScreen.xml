@@ -852,10 +852,42 @@
                         Brush.FontSize="14" Brush.FontColor="#EEBB66FF"
                         Brush.TextHorizontalAlignment="Center" Text="@CrashFixesNote" />
 
+            <!-- Download buttons (shown with the note): grab the right Harmony build for this
+                 game version. Steam = steam:// deep link to the Workshop page; Nexus = browser. -->
+            <ListPanel IsVisible="@ShowHarmonyDownload"
+                       WidthSizePolicy="CoverChildren" HeightSizePolicy="Fixed" SuggestedHeight="40"
+                       VerticalAlignment="Top" HorizontalAlignment="Center" MarginTop="74"
+                       StackLayout.LayoutMethod="HorizontalLeftToRight">
+              <Children>
+                <ButtonWidget DoNotPassEventsToChildren="true" Command.Click="ExecuteDownloadHarmonySteam"
+                              Brush="Popup.Cancel.Button"
+                              WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="280" SuggestedHeight="40"
+                              MarginLeft="6" MarginRight="6">
+                  <Children>
+                    <TextWidget DoNotAcceptEvents="true"
+                                WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
+                                Brush="Popup.Button.Text" Brush.FontSize="14" Brush.TextHorizontalAlignment="Center"
+                                Text="@LabelHarmonyDownloadSteam" />
+                  </Children>
+                </ButtonWidget>
+                <ButtonWidget DoNotPassEventsToChildren="true" Command.Click="ExecuteDownloadHarmonyNexus"
+                              Brush="Popup.Cancel.Button"
+                              WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="280" SuggestedHeight="40"
+                              MarginLeft="6" MarginRight="6">
+                  <Children>
+                    <TextWidget DoNotAcceptEvents="true"
+                                WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
+                                Brush="Popup.Button.Text" Brush.FontSize="14" Brush.TextHorizontalAlignment="Center"
+                                Text="@LabelHarmonyDownloadNexus" />
+                  </Children>
+                </ButtonWidget>
+              </Children>
+            </ListPanel>
+
             <!-- Scrollable list of patches -->
             <Widget Id="CrashFixesScrollWrap"
                     WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
-                    VerticalAlignment="Top" MarginTop="80" MarginBottom="24" MarginLeft="32" MarginRight="56">
+                    VerticalAlignment="Top" MarginTop="118" MarginBottom="24" MarginLeft="32" MarginRight="56">
               <Children>
                 <ScrollablePanel Id="CrashFixesScroll"
                                  WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
@@ -870,7 +902,7 @@
                       <Children>
                         <ListPanel Id="CrashFixesList" DataSource="{CrashFixesList}"
                                    WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren"
-                                   StackLayout.LayoutMethod="VerticalBottomToTop">
+                                   StackLayout.LayoutMethod="VerticalTopToBottom">
                           <ItemTemplate>
                             <!-- Whole row is the click target (toggles the fix). Children carry the
                                  visuals and don't accept events so the click reaches the button. -->
@@ -878,8 +910,8 @@
                                           WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="78"
                                           MarginTop="2" MarginBottom="2">
                               <Children>
-                                <!-- Checkbox square (green = on, grey = off) -->
-                                <Widget DoNotAcceptEvents="true"
+                                <!-- Checkbox square (green = on, grey = off). Hidden on a section-header row. -->
+                                <Widget DoNotAcceptEvents="true" IsVisible="@IsNormalRow"
                                         WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="18" SuggestedHeight="18"
                                         HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="16" MarginTop="12"
                                         Sprite="BlankWhiteSquare_9" Color="@ToggleIndicatorColor" />
@@ -887,16 +919,16 @@
                                 <TextWidget DoNotAcceptEvents="true"
                                             WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="760" SuggestedHeight="26"
                                             HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="48" MarginTop="9"
-                                            Brush.FontSize="16" Brush.FontColor="#F4E1C4FF"
+                                            Brush.FontSize="16" Brush.FontColor="@NameColor"
                                             Brush.TextHorizontalAlignment="Left" Text="@Name" />
-                                <!-- Plain-language description (wraps) -->
-                                <TextWidget DoNotAcceptEvents="true"
+                                <!-- Plain-language description (wraps). Hidden on a section-header row. -->
+                                <TextWidget DoNotAcceptEvents="true" IsVisible="@IsNormalRow"
                                             WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="980" SuggestedHeight="40"
                                             HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="48" MarginTop="36"
-                                            Brush.FontSize="13" Brush.FontColor="#C8B898CC"
+                                            Brush.FontSize="13" Brush.FontColor="@DescriptionColor"
                                             Brush.TextHorizontalAlignment="Left" Text="@Description" />
-                                <!-- Status badge (colour by status) -->
-                                <TextWidget DoNotAcceptEvents="true"
+                                <!-- Status badge (colour by status). Hidden on a section-header row. -->
+                                <TextWidget DoNotAcceptEvents="true" IsVisible="@IsNormalRow"
                                             WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="240"
                                             HorizontalAlignment="Right" VerticalAlignment="Top" MarginRight="24" MarginTop="9"
                                             Brush.FontSize="14" Brush.FontColor="@StatusColor"
@@ -1184,7 +1216,6 @@
                  Disabled (greyed, non-clickable) when the Bannerlord.Harmony module is off: the
                  whole tab manages live Harmony patches, which can't run without the module. -->
             <ButtonWidget DoNotPassEventsToChildren="true" Command.Click="ExecuteShowCrashFixesTab"
-                          IsEnabled="@ShowHarmonyFeatures"
                           Brush="Popup.Done.Button"
                           WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="188" SuggestedHeight="66"
                           MarginRight="6">
@@ -1449,9 +1480,22 @@
                   </Children>
                 </ButtonWidget>
 
+                <!-- Card / SBP payment (Tribute) — right after the USDT addresses; Russian users only -->
+                <ButtonWidget IsVisible="@ShowCardPaymentButton" DoNotPassEventsToChildren="true" Command.Click="ExecuteOpenCardPayment"
+                              Brush="Popup.Done.Button"
+                              WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="360" SuggestedHeight="48"
+                              HorizontalAlignment="Center" VerticalAlignment="Top" MarginTop="160">
+                  <Children>
+                    <TextWidget DoNotAcceptEvents="true"
+                                WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
+                                Brush="Popup.Button.Text" Brush.FontSize="17" Brush.TextHorizontalAlignment="Center"
+                                Text="@LabelSupportCard" />
+                  </Children>
+                </ButtonWidget>
+
                 <!-- Disclaimer + thanks (multiline, scrollable not needed at this length) -->
                 <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="780" SuggestedHeight="280"
-                            HorizontalAlignment="Center" VerticalAlignment="Top" MarginTop="170"
+                            HorizontalAlignment="Center" VerticalAlignment="Top" MarginTop="224"
                             Brush.FontSize="15" Brush.FontColor="#C8B898FF" Brush.TextHorizontalAlignment="Left"
                             Text="@LabelSupportBody" />
 

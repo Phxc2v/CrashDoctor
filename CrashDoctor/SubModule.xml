@@ -2,28 +2,53 @@
 <Module>
   <Id value="CrashDoctor" />
   <Name value="Crash Doctor" />
-  <Version value="v1.4.0" />
+  <Version value="v1.7.0.0" />
   <DefaultModule value="false" />
   <ModuleCategory value="Singleplayer" />
   <ModuleType value="Community" />
-  <!-- Dependencies are intentionally EMPTY, for two reasons:
-       1) The native launcher's "CAUTION ... depends on Native(vX), current is Native(vY) ...
-          Are you sure?" dialog is produced ONLY by <DependedModules> entries carrying a
-          version. A <DependedModule DependentVersion="v1.3.0"> here also HID the mod entirely
-          on game versions older than 1.3 (e.g. early-access e1.7, and 1.2) because the hard
-          minimum wasn't met — that is exactly why the mod "wasn't in the launcher" on 1.7.
-       2) <DependedModuleMetadatas> is only understood by newer launchers; older ones may
-          choke on it. Leaving it out keeps the SubModule.xml parseable on EVERY version.
-       We ship our own 0Harmony.dll (+ MonoMod/Cecil) so we don't depend on the Harmony
-       module loading first, and our own Harmony patches are applied at game start (OnGameStart
-       / OnAfterGameInitializationFinished) once every module is loaded — so no load-order
-       constraint is needed. Community modules already load after the official ones by default. -->
+  <!-- HARD dependencies stay EMPTY on purpose: the native launcher's "CAUTION ... depends on
+       Native(vX), current is Native(vY) ... Are you sure?" dialog is produced ONLY by
+       <DependedModules> entries carrying a DependentVersion. A <DependedModule
+       DependentVersion="v1.3.0"> here also HID the mod entirely on game versions older than 1.3
+       (early-access e1.7, and 1.2) because the hard minimum wasn't met — that is why the mod
+       "wasn't in the launcher" on 1.7. So no hard deps. We ship our own 0Harmony.dll
+       (+ MonoMod/Cecil) and apply patches at game start, so we never NEED a load-order constraint
+       to function. -->
   <DependedModules />
+
+  <!-- SOFT load-order ONLY (DependedModuleMetadatas): pins Crash Doctor to the BOTTOM of the
+       list. order="LoadBeforeThis" with id="X" means "X loads BEFORE this module", i.e. Crash
+       Doctor loads AFTER every listed module — base game, BUTR stack, the whole TOR stack,
+       LoreHardcore and the Russian translation. CD's diagnostics then observe the FINAL,
+       fully-applied state. Every entry is optional="true": a non-Steam / partial install missing
+       any of them is silently ignored (no missing-dependency error, no CAUTION dialog — these
+       carry NO version). Understood by the 1.2–1.4.5 launchers we target.
+       NOTE: for CD to sit BELOW LoreHardcore, LoreHardcore's own SubModule.xml must NOT also
+       declare CrashDoctor as LoadBeforeThis (that would be the opposite edge → a load cycle). -->
+  <DependedModuleMetadatas>
+    <DependedModuleMetadata id="Native" order="LoadBeforeThis" optional="true" />
+    <DependedModuleMetadata id="SandBoxCore" order="LoadBeforeThis" optional="true" />
+    <DependedModuleMetadata id="CustomBattle" order="LoadBeforeThis" optional="true" />
+    <DependedModuleMetadata id="SandBox" order="LoadBeforeThis" optional="true" />
+    <DependedModuleMetadata id="StoryMode" order="LoadBeforeThis" optional="true" />
+    <DependedModuleMetadata id="BirthAndDeath" order="LoadBeforeThis" optional="true" />
+    <DependedModuleMetadata id="Bannerlord.Harmony" order="LoadBeforeThis" optional="true" />
+    <DependedModuleMetadata id="Bannerlord.ButterLib" order="LoadBeforeThis" optional="true" />
+    <DependedModuleMetadata id="Bannerlord.UIExtenderEx" order="LoadBeforeThis" optional="true" />
+    <DependedModuleMetadata id="Bannerlord.MBOptionScreen" order="LoadBeforeThis" optional="true" />
+    <DependedModuleMetadata id="TOR_Core" order="LoadBeforeThis" optional="true" />
+    <DependedModuleMetadata id="TOR_Environment" order="LoadBeforeThis" optional="true" />
+    <DependedModuleMetadata id="TOR_Armory" order="LoadBeforeThis" optional="true" />
+    <DependedModuleMetadata id="TOR_AssimilationFix" order="LoadBeforeThis" optional="true" />
+    <DependedModuleMetadata id="TOR_DSFix" order="LoadBeforeThis" optional="true" />
+    <DependedModuleMetadata id="LoreHardcore" order="LoadBeforeThis" optional="true" />
+    <DependedModuleMetadata id="TOR_RU_Translation" order="LoadBeforeThis" optional="true" />
+  </DependedModuleMetadatas>
   <SubModules>
     <SubModule>
       <Name value="CrashDoctor SubModule" />
       <DLLName value="CrashDoctor.dll" />
-      <SubModuleClassType value="CrashDoctor.SubModule" />
+      <SubModuleClassType value="CrashDoctor.Loader" />
       <Tags>
         <Tag key="DedicatedServerType" value="none" />
         <Tag key="IsNoRenderModeElement" value="false" />

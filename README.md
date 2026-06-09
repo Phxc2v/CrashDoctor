@@ -9,8 +9,11 @@ Calradia Expanded, RBM, Banner Kings, anything. No internet, no telemetry,
 no dependencies.
 
 > **Steam Workshop:** [3717685432](https://steamcommunity.com/sharedfiles/filedetails/?id=3717685432)
-> **Compatibility:** Bannerlord v1.3.x – v1.4.x (Steam build only — Game Pass /
-> MS Store not supported). The Bannerlord.Harmony module is needed for the live
+> **Compatibility:** Bannerlord **v1.2.x – v1.4.x** — one install carries a
+> version-dispatching loader that detects your game version at startup and loads the
+> matching build, so the same subscription works on 1.2.x, 1.3.15 and 1.4.5. Works on
+> Steam **and** non-Steam / manual installs (Game Pass / MS Store still unsupported —
+> different game binaries). The Bannerlord.Harmony module is needed for the live
 > protections; the core crash analysis loads and works even with it off.
 
 ---
@@ -30,7 +33,7 @@ your setup, without touching the rest.
 
 ### 🔬 Crash diagnosis
 Scans `C:\ProgramData\Mount and Blade II Bannerlord\crashes\` and the BUTR HTML
-crash reports if you have BLSE/ButterLib. Matches every crash against **79 YAML
+crash reports if you have BLSE/ButterLib. Matches every crash against **84 YAML
 rules** covering:
 
 - **GPU / DirectX:** integrated-GPU misroute, DXGI device removed/hung, shader
@@ -167,8 +170,8 @@ sent-troops lists** (typical pattern: another mod creates a temporary hero,
 drops it into a foreign party, then deletes the hero without scrubbing the
 roster — the next AI hourly tick or daily issue-completion crashes on the null
 reference), plus save-load, end-of-battle, inventory and prisoner-sell crashes.
-Each catch shows an in-game toast (EN / RU / 简体中文 / Türkçe based on game
-locale, rate-limited per category) so the player sees Crash Doctor actively
+Each catch shows an in-game toast (EN / RU / 简体中文 / 繁體中文 / Türkçe based on
+game locale, rate-limited per category) so the player sees Crash Doctor actively
 saved them from a crash.
 
 **Every one of these is listed on the Crash Fixes tab** with its own on/off
@@ -193,8 +196,9 @@ never drift.
 | **`TorAbilityAiCastNRESafetyPatch`** (TOR) | Guard on TOR's ability AI-cast path (`CalculateAICastMatrixFrame`): when RTS/free (commander) camera detaches the hero, a spell cast is routed through the AI path that expects data the hero doesn't have; the spell is cast as the hero instead of crashing the battle. |
 | **`SellPrisonersUnderflowSafetyPatch`** | Finalizer on `SellPrisonersAction.ApplyInternal` — swallows the `MBUnderFlowException` when a desynced prison roster goes below zero during a town auto-sell; the party skips that one sale. |
 | **`EncounterMenuInitSafetyPatch`** | Prefix + finalizer on `EncounterGameMenuBehavior.game_menu_encounter_on_init`. When a save made mid-encounter loads without a restored `PlayerEncounter` (`Current` and `MainParty.MapEvent` both null), vanilla init dereferences the null encounter (`StartBattle`/`Update`) and crashes the load; instead the player is returned to the campaign map via `GameMenu.ExitToLast()`. |
+| **`TorAudioRegisterSoundSafetyPatch`** (TOR) | Finalizer on `TOR_Core.Audio.TORAudioManager.RegisterSound`, which builds NAudio.Vorbis with no try/catch. When a .NET library NAudio needs (`System.Memory`, normally provided by the game runtime or ButterLib) can't load on the player's setup, the OGG ctor throws `FileNotFoundException` and crashes the campaign — e.g. a TOR music event on the hourly tick while walking the map. The guard swallows it and returns failure, so the sound is skipped (`CreateSoundInstance` returns null, which `PlayMusic` already null-checks) and the game continues. The matching rule `tor.audio_dependency_missing` explains the missing-library root cause and the fix (verify game files / install ButterLib). |
 | **`DanglingTroopCleanerBehavior`** | `OnSessionLaunched` scan: drops roster elements with `Character == null` / `Character.Culture == null` across every party, settlement and active issue, and **removes orphaned garrison parties** (`IsGarrison && CurrentSettlement == null`) so a re-save heals the campaign. Listed on the Crash Fixes tab as **"Fix broken troops on save load"**. |
-| **`SafetyNetMessenger`** | Four-language toast helper used by the guards above. Picks EN/RU/ZH/TR by `BannerlordConfig.Language`, amber (catch) or green (cleanup), one toast per category per 60 s. (Always on — infrastructure.) |
+| **`SafetyNetMessenger`** | Five-language toast helper used by the guards above. Picks EN/RU/ZH/ZHT/TR by `BannerlordConfig.Language` (Traditional Chinese falls back to Simplified, then English), amber (catch) or green (cleanup), one toast per category per 60 s. (Always on — infrastructure.) |
 
 These guards are generic — TOR-specific ones (marked **TOR**) self-skip via
 `AccessTools.TypeByName` when TOR isn't loaded (shown as *Skipped* on the tab),
@@ -240,8 +244,43 @@ a rule.
 2. Bannerlord launcher → enable **Crash Doctor** → Play.
 3. Main menu → **Crash Doctor** button.
 
+Crash Doctor places itself at the **bottom** of the mod list automatically, so its
+checks observe the final, fully-applied state of every other mod — no need to drag
+it down by hand. One install also auto-detects your game version and runs on **1.2.x,
+1.3.x and 1.4.x** from the same subscription.
+
 **No dependencies.** Does not require Harmony, ButterLib, BLSE, or MCM.
 Designed to run even when other mods are broken.
+
+---
+
+## Harmony module by game version
+
+Crash Doctor itself loads with **no extra mods** — it ships its own Harmony
+runtime, so the crash analysis and the System Tune-Up work even on a bare
+install. The **live anti-crash protections** (the Crash Fixes tab) are the only
+part that needs the separate **Bannerlord.Harmony** module enabled. When it's off,
+the Crash Fixes tab shows one-click **Download Harmony** buttons (Steam + Nexus)
+that point at the build matching your game version.
+
+Harmony comes in **two builds split by game version** — install the one that
+matches YOUR Bannerlord:
+
+| Your Bannerlord | Which Harmony | Steam Workshop | Nexus (no Steam needed) |
+|---|---|---|---|
+| **1.2.x** (1.2.12 and older) | Harmony **v1.0.0 – v1.2.12** | [Workshop 3613449471](https://steamcommunity.com/workshop/filedetails/?id=3613449471) | [Harmony, mod 2006](https://www.nexusmods.com/mountandblade2bannerlord/mods/2006?tab=files) → **Optional files** |
+| **1.3.x** (e.g. 1.3.15) | Harmony (current) | [Workshop 2859188632](https://steamcommunity.com/workshop/filedetails/?id=2859188632) | [Harmony, mod 2006](https://www.nexusmods.com/mountandblade2bannerlord/mods/2006?tab=files) → main file |
+| **1.4.x** (e.g. 1.4.5) | Harmony (current) | [Workshop 2859188632](https://steamcommunity.com/workshop/filedetails/?id=2859188632) | [Harmony, mod 2006](https://www.nexusmods.com/mountandblade2bannerlord/mods/2006?tab=files) → main file |
+
+> The **current** Harmony (Workshop 2859188632 / Nexus main file) supports game
+> **v1.3.4 and newer only** — it does **not** run on 1.2.x. On 1.2.x you must use
+> the separate **"v1.0.0 – v1.2.12"** build. Nexus downloads need a free Nexus
+> account.
+
+**Manual install (without Steam):** unpack the download so you end up with
+`<Bannerlord>\Modules\Bannerlord.Harmony\SubModule.xml` (and
+`bin\Win64_Shipping_Client\0Harmony.dll` inside it). Then in the launcher tick
+**Bannerlord.Harmony** and move it **above** Crash Doctor in the list.
 
 ---
 
@@ -266,24 +305,7 @@ settings need a fresh build. Crash Doctor's M2.2 module catches this
 automatically when you next open the menu, but if the game won't even start
 the in-game UI is unreachable.
 
-### Recovery script (one-line PowerShell)
-
-The mod ships a standalone PowerShell rescue tool — `recovery.ps1` — that
-runs without admin rights, sends everything to the Recycle Bin (so you can
-undo), and offers a menu: reset graphics config, clear shader caches, full
-reset, disable third-party mods, diagnostic info.
-
-Open PowerShell (Win+R → `powershell` → Enter) and run **one line**:
-
-```
-irm https://phxc2v.github.io/CrashDoctor/r.ps1 | iex
-```
-
-Full documentation of what the script does, every menu option, and the safety
-guarantees: [`docs/RECOVERY.md`](docs/RECOVERY.md) (also browsable at
-[phxc2v.github.io/CrashDoctor/RECOVERY](https://phxc2v.github.io/CrashDoctor/RECOVERY)).
-
-### Manual steps (if you don't want to run the script)
+### Recovery steps
 
 Follow [`docs/Recovery_If_Game_Wont_Start_EN.md`](docs/Recovery_If_Game_Wont_Start_EN.md):
 
@@ -408,9 +430,12 @@ Calradia Expanded, RBM, Banner Kings и т.д. Без интернета, без
 без Harmony-патчей, без зависимостей.
 
 > **Steam Workshop:** [3717685432](https://steamcommunity.com/sharedfiles/filedetails/?id=3717685432)
-> **Совместимость:** Bannerlord v1.3.x – v1.4.x (только Steam-версия). Модуль
-> Bannerlord.Harmony нужен для «живых» защит; ядро (анализ крашей) грузится и
-> работает и без него.
+> **Совместимость:** Bannerlord **v1.2.x – v1.4.x** — в одной установке есть
+> загрузчик, который при запуске определяет версию игры и подгружает подходящую
+> сборку, поэтому одна и та же подписка работает на 1.2.x, 1.3.15 и 1.4.5. Работает
+> и со Steam, **и** с ручной (не-Steam) установкой (Game Pass / MS Store по-прежнему
+> не поддерживаются — у них другие бинарники игры). Модуль Bannerlord.Harmony нужен
+> для «живых» защит; ядро (анализ крашей) грузится и работает и без него.
 
 ## Что делает
 
@@ -424,7 +449,7 @@ Calradia Expanded, RBM, Banner Kings и т.д. Без интернета, без
 Выключен / Пропущен — нет нужного мода / Ошибка). Все включены по умолчанию;
 любой фикс можно отключить по отдельности, если он мешает.
 
-- **Диагностика крашей** — **79 YAML-правил** под GPU/DirectX (включая авторитетный
+- **Диагностика крашей** — **84 YAML-правила** под GPU/DirectX (включая авторитетный
   детект iGPU из rgl_log + whitelist карт где DxDiag врёт VRAM), native runtime,
   повреждённые `.tpac` ассеты, save / late-game, mission / engine (NRE в диалогах,
   team-index шторм), TOR (включая Naval DLC + TOR conflict, Assimilation
@@ -467,6 +492,32 @@ Calradia Expanded, RBM, Banner Kings и т.д. Без интернета, без
 2. Лаунчер Bannerlord → включи **Crash Doctor** → Play.
 3. Главное меню → кнопка **Crash Doctor**.
 
+## Какой Harmony нужен для вашей версии игры
+
+Сам Crash Doctor запускается **без дополнительных модов** — он несёт свой
+Harmony внутри, поэтому анализ крашей и настройка системы (Tune-Up) работают
+даже на чистой установке. Отдельный модуль **Bannerlord.Harmony** нужен только
+для «живых» защит от вылетов (вкладка «Фиксы крашей»).
+
+У Harmony **две сборки, разделённые по версии игры** — ставьте ту, что
+соответствует ВАШЕМУ Bannerlord:
+
+| Ваш Bannerlord | Какой Harmony | Steam Workshop | Nexus (без Steam) |
+|---|---|---|---|
+| **1.2.x** (1.2.12 и старше) | Harmony **v1.0.0 – v1.2.12** | [Workshop 3613449471](https://steamcommunity.com/workshop/filedetails/?id=3613449471) | [Harmony, мод 2006](https://www.nexusmods.com/mountandblade2bannerlord/mods/2006?tab=files) → раздел **Optional files** |
+| **1.3.x** (например 1.3.15) | Harmony (текущий) | [Workshop 2859188632](https://steamcommunity.com/workshop/filedetails/?id=2859188632) | [Harmony, мод 2006](https://www.nexusmods.com/mountandblade2bannerlord/mods/2006?tab=files) → основной файл |
+| **1.4.x** (например 1.4.5) | Harmony (текущий) | [Workshop 2859188632](https://steamcommunity.com/workshop/filedetails/?id=2859188632) | [Harmony, мод 2006](https://www.nexusmods.com/mountandblade2bannerlord/mods/2006?tab=files) → основной файл |
+
+> **Текущий** Harmony (Workshop 2859188632 / основной файл на Nexus) работает
+> только на игре **v1.3.4 и новее** — на 1.2.x он **не запустится**. Для 1.2.x
+> нужна отдельная сборка **«v1.0.0 – v1.2.12»**. Для скачивания с Nexus нужен
+> бесплатный аккаунт.
+
+**Ручная установка (без Steam):** распакуйте так, чтобы получилось
+`<Bannerlord>\Modules\Bannerlord.Harmony\SubModule.xml` (и внутри
+`bin\Win64_Shipping_Client\0Harmony.dll`). Затем в лаунчере включите
+**Bannerlord.Harmony** и поднимите его **выше** Crash Doctor в списке.
+
 ## Если игра не запускается
 
 После понижения Texture/Shader Quality (через Crash Doctor или вручную в
@@ -474,24 +525,7 @@ Options → Graphics) игра может упасть на splash-screen — к
 старые настройки. M2.2 ловит это автоматически в игре, но если игра уже
 не стартует — внутриигровой UI недоступен.
 
-### Скрипт восстановления (одна строка PowerShell)
-
-Мод поставляется со standalone PS-скриптом `recovery.ps1` — без прав
-администратора, всё удаляет в Корзину (можно восстановить), показывает меню:
-сброс настроек графики, очистка кэшей шейдеров, полный сброс, отключение
-сторонних модов, диагностика.
-
-Открой PowerShell (Win+R → `powershell` → Enter) и запусти **одну строку**:
-
-```
-irm https://phxc2v.github.io/CrashDoctor/r.ps1 | iex
-```
-
-Полное описание: что делает каждый пункт меню и какие гарантии безопасности —
-в [`docs/RECOVERY.md`](docs/RECOVERY.md) (или открыть в браузере:
-[phxc2v.github.io/CrashDoctor/RECOVERY](https://phxc2v.github.io/CrashDoctor/RECOVERY)).
-
-### Ручной откат (если не хочешь запускать скрипт)
+### Восстановление вручную
 
 См. [`docs/Recovery_If_Game_Wont_Start_RU.md`](docs/Recovery_If_Game_Wont_Start_RU.md).
 
