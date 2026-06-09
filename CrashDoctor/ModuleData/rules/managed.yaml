@@ -99,6 +99,100 @@
           - all:
               - managed_exception: { frame_contains: "game_menu_encounter_on_init" }
               - managed_exception: { type_contains: "NullReference" }
+          - all:
+              - managed_exception: { frame_contains: "NAudio" }
+              - managed_exception: { type_contains: "FileNotFoundException" }
+
+- id: tor.audio_dependency_missing
+  category: managed
+  severity: critical
+  confidence: high
+  evidence_source: "Client crash 2026-06-09 report(3).txt — System.IO.FileNotFoundException 'System.Memory 4.0.1.1' via NAudio.Vorbis.VorbisSampleProvider..ctor <- TOR_Core.Audio.CachedSound <- TORAudioManager.RegisterSound <- InkStory.PlayMusic (hourly-tick custom Ink event, world map). Captured by Crash Doctor managed capture."
+  requires_sources: [managed_exception]
+  title:
+    en: "TOR audio crash — a required .NET library (System.Memory) couldn't load"
+    ru: "Вылет аудио TOR — не загрузилась нужная .NET-библиотека (System.Memory)"
+    zh: "TOR 音频崩溃——所需的 .NET 库（System.Memory）无法加载"
+    zht: "TOR 音訊崩潰——所需的 .NET 函式庫（System.Memory）無法載入"
+    tr: "TOR ses çökmesi — gerekli bir .NET kütüphanesi (System.Memory) yüklenemedi"
+  description:
+    en: |
+      A TOR narrative event tried to play OGG music (NAudio.Vorbis) and the game crashed
+      because a required .NET library — System.Memory (or a sibling System.* helper) — could
+      not be loaded. This is NOT a shader, driver or Crash Doctor problem, and not a code bug
+      in TOR — the library is simply missing or unresolvable on this install. It usually fires
+      while you are just walking the campaign map (a scripted music event runs on the hourly
+      tick), so it looks random. System.Memory normally ships with the game's own .NET runtime;
+      some mods (e.g. ButterLib) also provide it.
+    ru: |
+      Сюжетное событие TOR попыталось проиграть OGG-музыку (NAudio.Vorbis), и игра упала,
+      потому что не удалось загрузить нужную .NET-библиотеку — System.Memory (или соседний
+      System.*-помощник). Это НЕ проблема шейдеров, драйвера или Crash Doctor и не баг кода
+      TOR — библиотека просто отсутствует или не находится на этой установке. Обычно вылетает,
+      когда ты просто идёшь по карте кампании (скриптовое музыкальное событие срабатывает на
+      часовом тике), поэтому выглядит случайным. System.Memory обычно идёт с .NET-рантаймом
+      самой игры; её также приносит ButterLib.
+    zh: |
+      一个 TOR 剧情事件尝试播放 OGG 音乐（NAudio.Vorbis），而游戏崩溃，因为无法加载
+      所需的 .NET 库——System.Memory（或同类 System.* 辅助库）。这不是着色器、驱动或
+      Crash Doctor 的问题，也不是 TOR 的代码 bug——该库只是在此安装中缺失或无法解析。
+      它通常在你只是走在战役大地图上时触发（脚本音乐事件在每小时 tick 运行），所以看起来
+      很随机。System.Memory 通常随游戏自带的 .NET 运行时一起提供；ButterLib 等模组也会提供它。
+    zht: |
+      一個 TOR 劇情事件嘗試播放 OGG 音樂（NAudio.Vorbis），而遊戲崩潰，因為無法載入
+      所需的 .NET 函式庫——System.Memory（或同類 System.* 輔助函式庫）。這不是著色器、驅動或
+      Crash Doctor 的問題，也不是 TOR 的程式碼 bug——該函式庫只是在此安裝中缺失或無法解析。
+      它通常在你只是走在戰役大地圖上時觸發（指令稿音樂事件在每小時 tick 執行），所以看起來
+      很隨機。System.Memory 通常隨遊戲自帶的 .NET 執行階段一起提供；ButterLib 等模組也會提供它。
+    tr: |
+      Bir TOR anlatı olayı OGG müzik (NAudio.Vorbis) çalmaya çalıştı ve oyun çöktü çünkü
+      gerekli bir .NET kütüphanesi — System.Memory (veya kardeş bir System.* yardımcı
+      kütüphanesi) — yüklenemedi. Bu bir gölgelendirici, sürücü ya da Crash Doctor sorunu
+      DEĞİL ve TOR'da bir kod hatası da değil — kütüphane bu kurulumda eksik ya da çözümlenemiyor.
+      Genelde sadece sefer haritasında gezerken tetiklenir (betikli bir müzik olayı saatlik
+      tick'te çalışır), bu yüzden rastgele görünür. System.Memory normalde oyunun kendi .NET
+      çalışma zamanıyla gelir; ButterLib gibi modlar da onu sağlar.
+  fix:
+    en:
+      - "Steam → Bannerlord → Properties → Installed Files → Verify integrity of game files. This restores the game's bundled .NET runtime (where System.Memory lives) — the most common fix."
+      - "Then reboot and launch the game once before loading the save."
+      - "Not on Steam, or it still crashes? Reinstall/repair the Microsoft .NET Desktop Runtime, then reboot."
+      - "Reliable fallback: install «Bannerlord.ButterLib» (Steam Workshop 2859232415, or Nexus) and enable it — it ships System.Memory.dll and the related System.* libraries NAudio needs. Most TOR setups run it anyway."
+      - "Make sure the DLLs aren't blocked by Windows: Crash Doctor → System Tune-Up → «Unblock DLLs», or right-click the file → Properties → Unblock. A blocked System.Memory.dll can't load either."
+      - "Do NOT rebuild shaders or change drivers — this is a missing-library issue, that won't help."
+    ru:
+      - "Steam → Bannerlord → Свойства → Установленные файлы → Проверить целостность файлов игры. Это восстановит встроенный в игру .NET-рантайм (где лежит System.Memory) — самый частый фикс."
+      - "Затем перезагрузи ПК и один раз запусти игру до загрузки сейва."
+      - "Игра не из Steam или вылет остаётся? Переустанови/почини Microsoft .NET Desktop Runtime, затем перезагрузись."
+      - "Надёжный запасной вариант: поставь «Bannerlord.ButterLib» (Steam Workshop 2859232415 или Nexus) и включи — он приносит System.Memory.dll и сопутствующие System.*-библиотеки, нужные NAudio. Почти все сборки TOR его и так используют."
+      - "Проверь, что DLL не заблокированы Windows: Crash Doctor → Настройка системы → «Разблокировать DLL», или ПКМ по файлу → Свойства → Разблокировать. Заблокированная System.Memory.dll тоже не загрузится."
+      - "НЕ пересобирай шейдеры и не меняй драйвер — это проблема отсутствующей библиотеки, не поможет."
+    zh:
+      - "Steam → 骑马与砍杀2 → 属性 → 已安装文件 → 验证游戏文件完整性。这会恢复游戏自带的 .NET 运行时（System.Memory 所在处）——最常见的修复。"
+      - "然后重启电脑，并在读取存档前先启动一次游戏。"
+      - "不是 Steam 版，或仍然崩溃？重新安装/修复 Microsoft .NET 桌面运行时，然后重启。"
+      - "可靠的备选：安装「Bannerlord.ButterLib」（Steam 创意工坊 2859232415，或 Nexus）并启用——它附带 System.Memory.dll 及 NAudio 所需的相关 System.* 库。大多数 TOR 配置本来就用它。"
+      - "确认 DLL 未被 Windows 阻止：Crash Doctor → 系统调优 →「解锁 DLL」，或右键文件 → 属性 → 解除锁定。被阻止的 System.Memory.dll 同样无法加载。"
+      - "不要重建着色器或更换驱动——这是库缺失问题，没用。"
+    zht:
+      - "Steam → 騎馬與砍殺2 → 內容 → 已安裝檔案 → 驗證遊戲檔案完整性。這會還原遊戲自帶的 .NET 執行階段（System.Memory 所在處）——最常見的修復。"
+      - "然後重新啟動電腦，並在讀取存檔前先啟動一次遊戲。"
+      - "不是 Steam 版，或仍然崩潰？重新安裝/修復 Microsoft .NET 桌面執行階段，然後重新啟動。"
+      - "可靠的備選：安裝「Bannerlord.ButterLib」（Steam 創意工坊 2859232415，或 Nexus）並啟用——它附帶 System.Memory.dll 及 NAudio 所需的相關 System.* 函式庫。大多數 TOR 配置本來就用它。"
+      - "確認 DLL 未被 Windows 阻擋：Crash Doctor → 系統調校 →「解鎖 DLL」，或右鍵檔案 → 內容 → 解除鎖定。被阻擋的 System.Memory.dll 同樣無法載入。"
+      - "不要重建著色器或更換驅動——這是函式庫缺失問題，沒用。"
+    tr:
+      - "Steam → Bannerlord → Özellikler → Yüklü Dosyalar → Oyun dosyalarının bütünlüğünü doğrula. Bu, oyunun paketlenmiş .NET çalışma zamanını (System.Memory'nin bulunduğu yer) geri yükler — en sık çözüm."
+      - "Sonra bilgisayarı yeniden başlat ve kaydı yüklemeden önce oyunu bir kez aç."
+      - "Steam'de değil misin ya da hâlâ çöküyor mu? Microsoft .NET Desktop Runtime'ı yeniden kur/onar, sonra yeniden başlat."
+      - "Güvenilir yedek: «Bannerlord.ButterLib» kur (Steam Atölyesi 2859232415 veya Nexus) ve etkinleştir — System.Memory.dll ve NAudio'nun ihtiyaç duyduğu ilgili System.* kütüphanelerini içerir. Çoğu TOR kurulumu zaten onu kullanır."
+      - "DLL'lerin Windows tarafından engellenmediğinden emin ol: Crash Doctor → Sistem İnce Ayar → «DLL engelini kaldır», ya da dosyaya sağ tık → Özellikler → Engeli kaldır. Engellenmiş bir System.Memory.dll de yüklenemez."
+      - "Gölgelendiricileri yeniden oluşturma veya sürücü değiştirme — bu eksik kütüphane sorunu, yardımcı olmaz."
+  match:
+    all:
+      - managed_exception: { type_contains: "FileNotFoundException" }
+      - managed_exception: { frame_contains: "NAudio" }
+      - managed_exception: { frame_contains: "TOR_Core.Audio" }
 
 - id: campaign.sell_prisoners_underflow
   category: managed

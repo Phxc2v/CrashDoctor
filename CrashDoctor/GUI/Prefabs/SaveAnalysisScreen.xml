@@ -238,6 +238,16 @@
                                         Brush.TextHorizontalAlignment="Center" Text="@LabelBtnWipe" />
                           </Children>
                         </ButtonWidget>
+                        <ButtonWidget IsVisible="@ShowDevBreakSave" DoNotPassEventsToChildren="true" Command.Click="ExecuteDevBreakSave"
+                                      Brush="Popup.Cancel.Button"
+                                      WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="240" SuggestedHeight="52"
+                                      MarginRight="10">
+                          <Children>
+                            <TextWidget DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
+                                        Brush="Popup.Button.Text" Brush.FontSize="17"
+                                        Brush.TextHorizontalAlignment="Center" Text="@LabelBtnDevBreakSave" />
+                          </Children>
+                        </ButtonWidget>
                         <ButtonWidget DoNotPassEventsToChildren="true" Command.Click="ExecuteClose"
                                       Brush="Popup.Cancel.Button"
                                       WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="180" SuggestedHeight="52">

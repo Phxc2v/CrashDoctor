@@ -186,6 +186,78 @@
       - log_line:
           contains: "TaleWorlds.MountAndBlade"
 
+- id: native.dotnet_finalizer_av
+  category: native
+  severity: critical
+  confidence: high
+  evidence_source: "Client crash 3973dcff (2026-06-03 / 2026-06-08, new-game start)"
+  requires_sources: [log_line]
+  title:
+    en: "Access violation in TaleWorlds.DotNet native finalizer"
+    ru: "Access violation в нативном финализаторе TaleWorlds.DotNet"
+    zh: "TaleWorlds.DotNet 原生终结器中的访问冲突"
+    zht: "TaleWorlds.DotNet 原生終結器中的存取違規"
+    tr: "TaleWorlds.DotNet yerel sonlandırıcısında erişim ihlali"
+  description:
+    en: |
+      System.AccessViolationException in TaleWorlds.DotNet.NativeObject.Finalize() —
+      the .NET garbage collector tried to release a native engine object that the
+      engine had already destroyed (use-after-free). A random base-game native fault,
+      most often surfacing at new-game start and scene transitions, where native
+      allocation/finalization peaks. Not caused by mods — no mod frames are in the
+      stack. Unrelated to the shader cache; rebuilding shaders will NOT help.
+    ru: |
+      System.AccessViolationException в TaleWorlds.DotNet.NativeObject.Finalize() —
+      сборщик мусора .NET попытался освободить нативный объект движка, который движок
+      уже уничтожил (обращение к освобождённой памяти). Случайный нативный сбой самой
+      игры, чаще всего вылезает при старте новой игры и смене сцен, где пик нативных
+      выделений и очистки памяти. Не вина модов — их кода в стеке нет. К кэшу шейдеров
+      отношения не имеет, пересобирать шейдеры НЕ нужно.
+    zh: |
+      TaleWorlds.DotNet.NativeObject.Finalize() 中的 System.AccessViolationException——
+      .NET 垃圾回收器试图释放引擎已经销毁的原生对象（释放后使用）。这是基础游戏的随机
+      原生故障，多在开始新游戏和场景切换时出现，此时原生内存分配/回收达到高峰。与模组
+      无关——堆栈中没有任何模组代码。与着色器缓存无关，重建着色器没有帮助。
+    zht: |
+      TaleWorlds.DotNet.NativeObject.Finalize() 中的 System.AccessViolationException——
+      .NET 垃圾回收器試圖釋放引擎已經銷毀的原生物件（釋放後使用）。這是基礎遊戲的隨機
+      原生故障，多在開始新遊戲和場景切換時出現，此時原生記憶體配置/回收達到高峰。與模組
+      無關——堆疊中沒有任何模組程式碼。與著色器快取無關，重建著色器沒有幫助。
+    tr: |
+      TaleWorlds.DotNet.NativeObject.Finalize() içinde System.AccessViolationException —
+      .NET çöp toplayıcı, motorun zaten yok ettiği bir yerel motor nesnesini serbest
+      bırakmaya çalıştı (serbest bırakıldıktan sonra kullanım). Yeni oyun başlangıcında
+      ve sahne geçişlerinde sıkça beliren, temel oyuna ait rastgele bir yerel hata.
+      Modlardan kaynaklanmaz — yığında mod karesi yok. Shader önbelleğiyle ilgisi yok;
+      shader'ları yeniden derlemek YARDIMCI OLMAZ.
+  fix:
+    en:
+      - "Just restart and start the new game again — the fault is random and usually clears on the next attempt."
+      - "Steam → Verify integrity of game files (in case of a genuinely broken native asset)."
+      - "Reset GPU/CPU overclock or undervolt to default; with 16 GB RAM, close background apps before launching."
+    ru:
+      - "Просто перезапусти игру и снова начни новую — сбой случайный, обычно проходит со следующей попытки."
+      - "Steam → Проверить целостность файлов игры (на случай реально битого нативного ресурса)."
+      - "Сбрось разгон/андервольт GPU и процессора на стандарт; при 16 ГБ ОЗУ закрой фоновые программы перед запуском."
+    zh:
+      - "直接重启并重新开始新游戏——故障是随机的，通常下次尝试就能通过。"
+      - "Steam → 验证游戏文件完整性（以防真的有损坏的原生资源）。"
+      - "把 GPU/CPU 的超频或降压重置为默认；16 GB 内存下，启动前关闭后台程序。"
+    zht:
+      - "直接重啟並重新開始新遊戲——故障是隨機的，通常下次嘗試就能通過。"
+      - "Steam → 驗證遊戲檔案完整性（以防真的有損壞的原生資源）。"
+      - "把 GPU/CPU 的超頻或降壓重設為預設；16 GB 記憶體下，啟動前關閉背景程式。"
+    tr:
+      - "Sadece yeniden başlat ve yeni oyunu tekrar başlat — hata rastgeledir, genelde bir sonraki denemede geçer."
+      - "Steam → Oyun dosyalarının bütünlüğünü doğrula (gerçekten bozuk bir yerel varlık ihtimaline karşı)."
+      - "GPU/CPU overclock veya undervolt'u varsayılana sıfırla; 16 GB RAM ile başlatmadan önce arka plan uygulamalarını kapat."
+  match:
+    all:
+      - log_line:
+          contains: "AccessViolationException"
+      - log_line:
+          contains: "NativeObject.Finalize"
+
 - id: native.stack_overflow
   category: native
   severity: critical

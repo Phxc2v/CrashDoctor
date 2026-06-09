@@ -6,6 +6,24 @@ Change history, by version.
 
 ---
 
+## 2026-06-10 — One install runs on game 1.2 / 1.3 / 1.4; works without Steam; Crash Doctor loads last; fewer false alarms; "Download Harmony" buttons
+
+- **One install — three game versions (1.2.x, 1.3.x, 1.4.x).** Crash Doctor now detects your Bannerlord version at startup and loads the matching build. The mod works on the older 1.2.x as well as 1.3.15 and 1.4.5 — from the same subscription, with no version-specific downloads. Previously the single build wouldn't start on 1.2.
+- **Works without Steam.** If your game or mods were installed manually (not via the Steam Workshop), the false "duplicate mod (game + workshop)" warnings are gone: a manual install used to make the mod wrongly count every module twice and show a long "duplicates" list. Non-Steam installs are now recognised correctly.
+- **Crash Doctor places itself at the very bottom of the mod list.** The mod declares that it loads after everything else (including LoreHardcore and the Russian translation), so its checks see the final state of your whole setup. No more dragging it down by hand in the launcher.
+- **In-mod "Download Harmony" buttons.** On the "Crash Fixes" tab, where there used to be only a "you need the Bannerlord.Harmony module" note, there are now two buttons — **Download Harmony (Steam)** and **Download Harmony (Nexus)**. The Steam button opens the module's page right in Steam (one-click Subscribe); the Nexus button opens it in your browser (handy if your game isn't the Steam build). The link is picked for your game version automatically: Harmony comes in two builds (a separate one for 1.2.x and the current one for 1.3/1.4, which won't run on 1.2) and the mod sends the button to the matching one.
+- **Crash Fixes tab: same layout on every game version.** The "only for mods you don't have" section now always sits at the bottom. On game 1.2 it used to jump to the top and confuse people — the tab layout is now identical on 1.2, 1.3 and 1.4.
+- **New fix: TOR audio crash (missing library).** If you don't have ButterLib installed (or your game's .NET runtime is damaged), a TOR music event could crash the game right on the map — the sound library (`System.Memory`) couldn't load, and TOR doesn't ship it itself. Crash Doctor now catches this: the sound is simply skipped and the game continues. And if such a crash already happened, the analyzer explains the real cause (a missing library) and how to fix it: verify the game files on Steam, reinstall the .NET runtime, or install ButterLib. New row "Audio-load crash guard (TOR)" on the Crash Fixes tab (on by default).
+- **Recognises the .NET-finalizer crash on starting a new game.** If a new game crashes with a memory-access error in the engine's finalizer (TaleWorlds.DotNet), the analyzer now explains it's a random native glitch in the base game — not shaders, not a specific mod — and suggests simply retrying.
+- **Fewer false alarms in System Tune-Up.** The Game DVR card, the "orphaned heroes" check and the "hero-template bloat" check no longer light up as "needs action" on healthy setups. The free-space check now looks at the Windows system drive instead of hard-coding C:.
+- **Shader-cache cleanup no longer freezes the window.** The one-click forced cleanup now runs in the background with a progress indicator — the game no longer appears frozen while it works.
+- **Safety-net pop-ups in Traditional Chinese.** For 繁體中文 players, the "Crash Doctor prevented a crash" pop-ups now show in Traditional Chinese (these messages previously stayed Simplified).
+- **The mod writes no temporary scripts to disk.** All administrator-level actions now run inline, without creating temporary `.ps1` files (some antivirus tools reacted to that). Plus a set of internal reliability fixes from a code review.
+- **Card / SBP payment in the "Support the author" window (Russian locale).** Alongside the USDT wallets there's now a **"Card / SBP"** button that opens a payment page in the browser. Shown only when the game is set to Russian.
+- **Mod version bumped to 1.7.0.0.** On saves made with the previous version the game will ask once "Crash Doctor changed version, load anyway?" — click yes, it's safe: the mod stores nothing in the save, so no data can be lost.
+
+---
+
 ## 2026-06-07 — New fix: save-load crash from a broken encounter; removed the "swallow a specific mod's errors" option
 
 - **New fix: save-load crash from a broken encounter.** If a save was made during a battle / siege / settlement entry and that "encounter" state didn't restore on load, the game crashed right on loading — the save wouldn't open at all. Crash Doctor now catches this and gently returns you to the campaign map instead of crashing. New row "Save-load crash guard (broken encounter)" on the "Crash Fixes" tab (on by default), plus a clear analyzer verdict advising "load an earlier save".
