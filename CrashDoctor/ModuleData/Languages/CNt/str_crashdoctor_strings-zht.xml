@@ -79,6 +79,12 @@
     <string id="cd_apply_done_default" text="設定已套用。" />
     <string id="cd_apply_failed_title" text="套用失敗" />
     <string id="cd_apply_failed_default" text="套用失敗,請查看 crashdoctor.log。" />
+    <string id="cd_rollback_reboot_title" text="需要重啟" />
+    <string id="cd_rollback_reboot_default" text="還原已套用。請重啟電腦以使其生效。" />
+    <string id="cd_rollback_done_title" text="已還原" />
+    <string id="cd_rollback_done_default" text="還原已套用。" />
+    <string id="cd_rollback_failed_title" text="還原失敗" />
+    <string id="cd_rollback_failed_default" text="還原失敗,請查看 crashdoctor.log。" />
     <string id="cd_btn_ok" text="確定" />
     <string id="cd_tuneup_btn_show_all" text="顯示全部" />
     <string id="cd_tuneup_btn_force_shader_cleanup" text="清除著色器快取" />

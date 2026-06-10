@@ -79,6 +79,12 @@
     <string id="cd_apply_done_default" text="Ayarlar uygulandı." />
     <string id="cd_apply_failed_title" text="Uygulama başarısız" />
     <string id="cd_apply_failed_default" text="Uygulama başarısız. crashdoctor.log dosyasına bakın." />
+    <string id="cd_rollback_reboot_title" text="Yeniden başlatma gerekli" />
+    <string id="cd_rollback_reboot_default" text="Geri alma uygulandı. Etkili olması için bilgisayarı yeniden başlatın." />
+    <string id="cd_rollback_done_title" text="Geri alındı" />
+    <string id="cd_rollback_done_default" text="Geri alma uygulandı." />
+    <string id="cd_rollback_failed_title" text="Geri alma başarısız" />
+    <string id="cd_rollback_failed_default" text="Geri alma başarısız. crashdoctor.log dosyasına bakın." />
     <string id="cd_btn_ok" text="Tamam" />
     <string id="cd_tuneup_btn_show_all" text="Tümünü göster" />
     <string id="cd_tuneup_btn_force_shader_cleanup" text="Gölgelendirici önbelleğini temizle" />

@@ -6,6 +6,25 @@ Change history, by version.
 
 ---
 
+## 2026-06-10 (reliability update, v1.7.0.1) — System Tune-Up rollbacks fixed; UI-screen crash guard now works at full strength; more accurate save tools; fewer false alarms
+
+- **System Tune-Up rollbacks fixed.** Three serious bugs: rolling back the pagefile change without a surviving backup could leave Windows with **no pagefile at all** — it now correctly restores "Windows-managed size"; the "TDR delay" and "Game DVR" rollbacks, when run after a game restart, used to *delete* your previous registry values instead of restoring them; and a failed rollback made the Rollback button disappear forever — the entry now stays, so you can retry.
+- **The UI-screen crash guard now actually works.** The "don't crash the game because of another mod's UI error" protection was, due to an internal bug, really wrapping only the inventory screen. It now covers every intended screen: encyclopedia (list and pages), inventory, party, clan, kingdom, quest log and recruit panel — identically on every supported game version.
+- **Saves: Russian and Chinese mod names read correctly.** Reading a save's header used to blank out all non-Latin characters — on game 1.2 (where the save stores mod *names*, not IDs) this broke mismatch checks and mod-wiping for mods with Russian/Chinese names. Names are now read as-is. Also: the save's creation date is no longer shifted by your timezone, and unusual header values no longer cut the header read short.
+- **Victory-cheer protection reworked.** Catching this failure "after the fact" is impossible on the game's modern runtime — the mod now checks each soldier BEFORE the animation and simply skips the cheer for a broken (already-removed-from-battle) one. The game continues; everyone else cheers as usual.
+- **The Mods tab no longer comes up empty.** If the game doesn't return its installed-module list (seen on 1.4.5), the mod now scans the Modules folder itself.
+- **Shader-cache cleanup is quieter and safer.** No more hidden "file in use" system dialogs behind the fullscreen game (it looked like the Apply button froze). And if the shader folder is a junction link (multi-version launch setups), only its contents are deleted — the link itself is preserved.
+- **Save cleaning: status messages in all five languages + anti-freeze.** Save Cleaner progress and errors used to show in Russian only. Backup and the built-in clean now have a 90-second watchdog — the window can no longer get stuck "working" forever.
+- **The rollback-result pop-up speaks your language.** Six strings ("Rollback done", "Reboot needed", etc.) were missing from the translations and always showed in English.
+- **Fewer false alarms.** Folders like `C:\Obsidian` are no longer mistaken for an OBS overlay; optional mod dependencies no longer count as "missing"; the same crash (spell cast from the RTS camera) no longer gets two verdicts at once; and the Load Order card no longer proposes moving unknown mods above TOR_Core.
+- **Scheduled reboot — 5 minutes instead of 60 seconds.** The "reboot required" card now gives you time to save and plainly says how to cancel the reboot (`shutdown /a`).
+- **Check marks and statuses render correctly.** The "✓/✗" marks in History and the wipe list were replaced with symbols the game font can draw (they used to show as "?"). System Tune-Up history titles are now translated into Chinese/Turkish too.
+- **Clipboard copying is now reliable** (a save's mod list, wallet addresses) — and the mod honestly tells you when a copy didn't go through.
+- **Internal reliability fixes:** thread races in the save-cleaning window, crash-date parsing on non-Latin Windows locales, time limits on rule regular expressions, the "max crashes shown" setting now actually applies, and more — the result of a full code audit.
+- **Mod version bumped to 1.7.0.1.**
+
+---
+
 ## 2026-06-10 — One install runs on game 1.2 / 1.3 / 1.4; works without Steam; Crash Doctor loads last; fewer false alarms; "Download Harmony" buttons
 
 - **One install — three game versions (1.2.x, 1.3.x, 1.4.x).** Crash Doctor now detects your Bannerlord version at startup and loads the matching build. The mod works on the older 1.2.x as well as 1.3.15 and 1.4.5 — from the same subscription, with no version-specific downloads. Previously the single build wouldn't start on 1.2. On load the mod confirms, in one short line, which version it detected and that it loaded successfully.

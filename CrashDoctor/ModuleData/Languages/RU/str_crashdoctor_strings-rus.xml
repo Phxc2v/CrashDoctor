@@ -79,6 +79,12 @@
     <string id="cd_apply_done_default" text="Настройки применены." />
     <string id="cd_apply_failed_title" text="Не удалось применить" />
     <string id="cd_apply_failed_default" text="Не удалось применить. См. crashdoctor.log." />
+    <string id="cd_rollback_reboot_title" text="Нужна перезагрузка" />
+    <string id="cd_rollback_reboot_default" text="Откат выполнен. ПЕРЕЗАГРУЗИ ПК, чтобы он вступил в силу." />
+    <string id="cd_rollback_done_title" text="Откат выполнен" />
+    <string id="cd_rollback_done_default" text="Откат выполнен." />
+    <string id="cd_rollback_failed_title" text="Не удалось откатить" />
+    <string id="cd_rollback_failed_default" text="Не удалось откатить. См. crashdoctor.log." />
     <string id="cd_btn_ok" text="ОК" />
     <string id="cd_tuneup_btn_show_all" text="Показать все" />
     <string id="cd_tuneup_btn_force_shader_cleanup" text="Очистить shader cache" />

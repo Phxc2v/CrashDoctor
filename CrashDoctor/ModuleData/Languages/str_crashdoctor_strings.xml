@@ -79,6 +79,12 @@
     <string id="cd_apply_done_default" text="Settings applied." />
     <string id="cd_apply_failed_title" text="Apply failed" />
     <string id="cd_apply_failed_default" text="Apply failed. See crashdoctor.log." />
+    <string id="cd_rollback_reboot_title" text="Reboot required" />
+    <string id="cd_rollback_reboot_default" text="Rollback applied. REBOOT the PC for it to take effect." />
+    <string id="cd_rollback_done_title" text="Rolled back" />
+    <string id="cd_rollback_done_default" text="Rollback applied." />
+    <string id="cd_rollback_failed_title" text="Rollback failed" />
+    <string id="cd_rollback_failed_default" text="Rollback failed. See crashdoctor.log." />
     <string id="cd_btn_ok" text="OK" />
     <string id="cd_tuneup_btn_show_all" text="Show all" />
     <string id="cd_tuneup_btn_force_shader_cleanup" text="Clean shader cache" />
