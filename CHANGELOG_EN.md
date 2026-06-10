@@ -6,7 +6,7 @@ Change history, by version.
 
 ---
 
-## 2026-06-10 (reliability update, v1.7.0.1) — System Tune-Up rollbacks fixed; UI-screen crash guard now works at full strength; more accurate save tools; fewer false alarms
+## 2026-06-10 (reliability update) — System Tune-Up rollbacks fixed; UI-screen crash guard now works at full strength; more accurate save tools; fewer false alarms
 
 - **System Tune-Up rollbacks fixed.** Three serious bugs: rolling back the pagefile change without a surviving backup could leave Windows with **no pagefile at all** — it now correctly restores "Windows-managed size"; the "TDR delay" and "Game DVR" rollbacks, when run after a game restart, used to *delete* your previous registry values instead of restoring them; and a failed rollback made the Rollback button disappear forever — the entry now stays, so you can retry.
 - **The UI-screen crash guard now actually works.** The "don't crash the game because of another mod's UI error" protection was, due to an internal bug, really wrapping only the inventory screen. It now covers every intended screen: encyclopedia (list and pages), inventory, party, clan, kingdom, quest log and recruit panel — identically on every supported game version.
@@ -21,7 +21,7 @@ Change history, by version.
 - **Check marks and statuses render correctly.** The "✓/✗" marks in History and the wipe list were replaced with symbols the game font can draw (they used to show as "?"). System Tune-Up history titles are now translated into Chinese/Turkish too.
 - **Clipboard copying is now reliable** (a save's mod list, wallet addresses) — and the mod honestly tells you when a copy didn't go through.
 - **Internal reliability fixes:** thread races in the save-cleaning window, crash-date parsing on non-Latin Windows locales, time limits on rule regular expressions, the "max crashes shown" setting now actually applies, and more — the result of a full code audit.
-- **Mod version bumped to 1.7.0.1.**
+- **The mod version stays 1.7.0.0** — the update raises no save-compatibility questions from the game.
 
 ---
 
