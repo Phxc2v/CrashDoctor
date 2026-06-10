@@ -102,6 +102,9 @@
           - all:
               - managed_exception: { frame_contains: "NAudio" }
               - managed_exception: { type_contains: "FileNotFoundException" }
+          - all:
+              - managed_exception: { frame_contains: "CalculateAICastMatrixFrame" }
+              - managed_exception: { type_contains: "NullReferenceException" }
 
 - id: tor.audio_dependency_missing
   category: managed
