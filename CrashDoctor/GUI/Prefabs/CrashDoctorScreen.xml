@@ -376,8 +376,9 @@
                 <!-- NEW: force-open shader cache cleanup form even if the M21 detector
                      says no cleanup is needed. Click → confirmation popup with the
                      30-90 min rebuild warning, then opens the same details panel
-                     M21 normally shows. -->
-                <ButtonWidget DoNotPassEventsToChildren="true" Command.Click="ExecuteForceShaderCleanup" Brush="Popup.Cancel.Button"
+                     M21 normally shows. Hidden when The Old Realms is not installed —
+                     shader-cache maintenance only exists for TOR. -->
+                <ButtonWidget IsVisible="@IsShaderCleanupVisible" DoNotPassEventsToChildren="true" Command.Click="ExecuteForceShaderCleanup" Brush="Popup.Cancel.Button"
                               WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="300" SuggestedHeight="48"
                               HorizontalAlignment="Left" VerticalAlignment="Bottom" MarginLeft="284" MarginBottom="20">
                   <Children>

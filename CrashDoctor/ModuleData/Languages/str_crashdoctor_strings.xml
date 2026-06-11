@@ -13,7 +13,7 @@
     <string id="cd_status_count" text="{COUNT} crashes" />
     <string id="cd_btn_refresh" text="Refresh" />
     <string id="cd_btn_clear" text="Clear..." />
-    <string id="cd_btn_open_folder" text="Open folder" />
+    <string id="cd_btn_open_folder" text="Crash report" />
     <string id="cd_btn_open_log_folder" text="Open log folder" />
     <string id="cd_btn_copy" text="Copy" />
     <string id="cd_btn_export" text="Export" />

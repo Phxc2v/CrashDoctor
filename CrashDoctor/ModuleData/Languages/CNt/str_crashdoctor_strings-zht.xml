@@ -13,7 +13,7 @@
     <string id="cd_status_count" text="{COUNT}次崩潰" />
     <string id="cd_btn_refresh" text="重新整理" />
     <string id="cd_btn_clear" text="清除..." />
-    <string id="cd_btn_open_folder" text="開啟資料夾" />
+    <string id="cd_btn_open_folder" text="崩潰報告" />
     <string id="cd_btn_open_log_folder" text="開啟日誌資料夾" />
     <string id="cd_btn_copy" text="複製" />
     <string id="cd_btn_export" text="匯出" />

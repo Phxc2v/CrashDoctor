@@ -520,3 +520,102 @@
     all:
       - managed_exception: { frame_contains: "NavalMobilePartyVisual" }
       - managed_exception: { type_contains: "AccessViolation" }
+
+# Battle crash at reinforcement spawn: vanilla ColumnFormation.GetLocalPositionOfUnit builds the
+# list of agent positions on the column's vanguard (head) file, Insert(0, OrderPosition)s into it
+# and then unconditionally reads element [1]. When the column has no units left at its vanguard
+# file (formation wiped out / vanguard dead while the arrangement is still a column), the list has
+# one element and [1] throws ArgumentOutOfRangeException, killing the whole mission tick. Battle
+# formations end up in column order via mods: Immersive Battlefields (reinforcements march in,
+# in columns) or RTS Camera command system's column order. Verified in the 1.3.15 decompile;
+# client hit it on 1.4.6. Guarded by ColumnFormationSpawnSafetyPatch (column_formation_spawn).
+- id: battle.column_formation_reinforcement_aoore
+  category: managed
+  severity: critical
+  confidence: high
+  evidence_source: "Client crash 2026-06-11 report (6).txt — ArgumentOutOfRangeException(index) at ColumnFormation.GetLocalPositionOfUnit ← GetLocalPositionOfUnitOrDefault(Int32) ← Formation.GetUnitPositionWithIndexAccordingToNewOrder ← Mission.GetTroopSpawnFrameWithIndex ← Mission.SpawnAgent ← MissionBattleSideSpawnContext.TryReinforcementSpawn ← DefaultBattleMissionAgentSpawnLogic.OnMissionTick. Game 1.4.6, mod list includes ImmersiveBattlefields 3.6.1 and RTSCamera.CommandSystem 5.3.25. User: 'happening frequently during battles when reinforcements spawn'."
+  requires_sources: [managed_exception]
+  title:
+    en: "Battle crash when reinforcements spawn — empty column formation — guarded by Crash Doctor"
+    ru: "Вылет в бою при спавне подкреплений — опустевший строй «колонна» — перехвачено Crash Doctor"
+    zh: "援军生成时的战斗崩溃——已空的纵队队形——已被 Crash Doctor 拦截"
+    zht: "援軍生成時的戰鬥崩潰——已空的縱隊隊形——已被 Crash Doctor 攔截"
+    tr: "Takviye doğarken savaş çökmesi — boşalmış kol düzeni — Crash Doctor tarafından korunuyor"
+  description:
+    en: |
+      ArgumentOutOfRangeException ("index") thrown from ColumnFormation.GetLocalPositionOfUnit
+      while the game was placing newly spawned reinforcements
+      (TryReinforcementSpawn → SpawnAgent → GetTroopSpawnFrameWithIndex). The game computes spawn
+      positions against the formation's current arrangement; when that arrangement is a COLUMN
+      whose head file has no soldiers left (the formation was wiped out or its lead unit died),
+      vanilla code still reads the second element of a one-element position list and crashes the
+      whole battle tick. Plain battles almost never use column order — it comes from mods:
+      Immersive Battlefields makes reinforcements march in from the map edge in columns, and RTS
+      Camera's command system offers a column order. This is a code/state bug, NOT a shader or
+      driver problem — rebuilding shaders won't help.
+    ru: |
+      ArgumentOutOfRangeException («index») из ColumnFormation.GetLocalPositionOfUnit в момент,
+      когда игра расставляла свежезаспавненные подкрепления
+      (TryReinforcementSpawn → SpawnAgent → GetTroopSpawnFrameWithIndex). Позиции спавна
+      считаются по текущему строю формации; если это «колонна», в голове которой не осталось
+      бойцов (формацию выбили или погиб ведущий), ванильный код всё равно читает второй элемент
+      списка из одного элемента — и роняет весь тик боя. В обычном бою строй «колонна» почти не
+      встречается — его создают моды: Immersive Battlefields заставляет подкрепления маршировать
+      от края карты колоннами, а командная система RTS Camera даёт приказ «колонна». Это баг
+      кода/состояния, НЕ проблема шейдеров или драйвера — пересборка шейдеров не поможет.
+    zh: |
+      游戏在放置新生成的援军时（TryReinforcementSpawn → SpawnAgent →
+      GetTroopSpawnFrameWithIndex），ColumnFormation.GetLocalPositionOfUnit 抛出了
+      ArgumentOutOfRangeException（“index”）。生成位置按队形当前的阵型计算；当该阵型是
+      纵队、且队首已没有士兵（队伍被打光或领头单位阵亡）时，原版代码仍会读取只有一个元素的
+      位置列表的第二个元素——导致整个战斗 tick 崩溃。普通战斗几乎不会用纵队阵型——它来自
+      模组：Immersive Battlefields 让援军从地图边缘列队行进入场，RTS Camera 的指挥系统提供
+      纵队命令。这是代码/状态 bug，不是着色器或驱动问题——重建着色器没用。
+    zht: |
+      遊戲在放置新生成的援軍時（TryReinforcementSpawn → SpawnAgent →
+      GetTroopSpawnFrameWithIndex），ColumnFormation.GetLocalPositionOfUnit 擲出了
+      ArgumentOutOfRangeException（「index」）。生成位置按隊形當前的陣型計算；當該陣型是
+      縱隊、且隊首已沒有士兵（隊伍被打光或領頭單位陣亡）時，原版程式碼仍會讀取只有一個元素的
+      位置清單的第二個元素——導致整個戰鬥 tick 崩潰。普通戰鬥幾乎不會用縱隊陣型——它來自
+      模組：Immersive Battlefields 讓援軍從地圖邊緣列隊行進入場，RTS Camera 的指揮系統提供
+      縱隊命令。這是程式碼/狀態 bug，不是著色器或驅動問題——重建著色器沒用。
+    tr: |
+      Oyun yeni doğan takviyeleri yerleştirirken (TryReinforcementSpawn → SpawnAgent →
+      GetTroopSpawnFrameWithIndex) ColumnFormation.GetLocalPositionOfUnit'ten
+      ArgumentOutOfRangeException ("index") fırlatıldı. Doğma konumları birliğin mevcut düzenine
+      göre hesaplanır; bu düzen, başında asker kalmamış bir KOL ise (birlik kırıldı veya öncü
+      öldü), orijinal kod yine de tek elemanlı konum listesinin ikinci elemanını okur ve tüm savaş
+      tick'ini düşürür. Sıradan savaşlarda kol düzeni neredeyse hiç kullanılmaz — onu modlar
+      getirir: Immersive Battlefields takviyeleri harita kenarından kollar hâlinde yürüterek
+      getirir, RTS Camera'nın komut sistemi de kol emri sunar. Bu bir kod/durum hatasıdır,
+      gölgelendirici veya sürücü sorunu DEĞİL — gölgelendirici yeniden oluşturmak yardımcı olmaz.
+  fix:
+    en:
+      - "Update Crash Doctor: starting with the next update it guards this crash — the «Reinforcement-spawn crash guard (column formation)» fix on the Crash Fixes tab. Keep it ON; reinforcements then use the default spawn position instead of crashing."
+      - "To remove the trigger itself: in Immersive Battlefields settings disable marching/column reinforcements (or disable the mod for a test battle) — it is the usual source of column formations during reinforcement waves."
+      - "If you use RTS Camera's command system: avoid leaving a formation under a column order when it is nearly wiped out — reinforcements spawning into that emptied column hit this bug."
+      - "Do NOT rebuild shaders or change drivers — this is a formation/state bug, that won't help."
+    ru:
+      - "Обнови Crash Doctor: со следующего обновления этот вылет перехватывается — фикс «Защита от вылета при спавне подкреплений (строй «колонна»)» на вкладке «Фиксы крашей». Держи его ВКЛ — подкрепления появятся на стандартной позиции вместо вылета."
+      - "Чтобы убрать сам триггер: в настройках Immersive Battlefields отключи марширующие/колонные подкрепления (или отключи мод на тестовый бой) — обычно именно он создаёт колонны в волнах подкреплений."
+      - "Если пользуешься командной системой RTS Camera — не оставляй почти выбитую формацию под приказом «колонна»: подкрепления, спавнящиеся в эту опустевшую колонну, ловят этот баг."
+      - "НЕ пересобирай шейдеры и не меняй драйвер — это баг формаций/состояния, не поможет."
+    zh:
+      - "更新 Crash Doctor：从下一个更新起会拦截此崩溃——「崩溃修复」页的「援军生成崩溃防护（纵队队形）」。保持开启；援军将改用默认生成位置而不是崩溃。"
+      - "要消除触发源本身：在 Immersive Battlefields 设置中关闭行军/纵队援军（或临时禁用该模组打一场测试战斗）——援军波次中的纵队通常来自它。"
+      - "如果你使用 RTS Camera 的指挥系统：不要让几乎被打光的队伍保持纵队命令——援军生成到这个已空的纵队时会触发此 bug。"
+      - "不要重建着色器或更换驱动——这是阵型/状态 bug，没用。"
+    zht:
+      - "更新 Crash Doctor：從下一個更新起會攔截此崩潰——「崩潰修復」頁的「援軍生成崩潰防護（縱隊隊形）」。保持開啟；援軍將改用預設生成位置而不是崩潰。"
+      - "要消除觸發源本身：在 Immersive Battlefields 設定中關閉行軍/縱隊援軍（或暫時停用該模組打一場測試戰鬥）——援軍波次中的縱隊通常來自它。"
+      - "如果你使用 RTS Camera 的指揮系統：不要讓幾乎被打光的隊伍保持縱隊命令——援軍生成到這個已空的縱隊時會觸發此 bug。"
+      - "不要重建著色器或更換驅動——這是陣型/狀態 bug，沒用。"
+    tr:
+      - "Crash Doctor'u güncelle: bir sonraki güncellemeden itibaren bu çökme korunuyor — Çökme Düzeltmeleri sekmesindeki «Takviye doğuşu çökme koruması (kol düzeni)» düzeltmesi. AÇIK tut; takviyeler çökmek yerine varsayılan doğma konumunu kullanır."
+      - "Tetikleyiciyi tamamen kaldırmak için: Immersive Battlefields ayarlarında yürüyen/kol takviyelerini kapat (veya bir test savaşı için modu devre dışı bırak) — takviye dalgalarındaki kol düzenleri genellikle ondan gelir."
+      - "RTS Camera'nın komut sistemini kullanıyorsan: neredeyse kırılmış bir birliği kol emri altında bırakma — o boşalmış kola doğan takviyeler bu hataya çarpar."
+      - "Gölgelendiricileri yeniden oluşturma veya sürücü değiştirme — bu bir düzen/durum hatası, yardımcı olmaz."
+  match:
+    all:
+      - managed_exception: { frame_contains: "ColumnFormation.GetLocalPositionOfUnit" }
+      - managed_exception: { type_contains: "ArgumentOutOfRange" }
