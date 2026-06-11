@@ -13,7 +13,7 @@
     <string id="cd_status_count" text="Крашей: {COUNT}" />
     <string id="cd_btn_refresh" text="Обновить" />
     <string id="cd_btn_clear" text="Очистить..." />
-    <string id="cd_btn_open_folder" text="Открыть папку" />
+    <string id="cd_btn_open_folder" text="Отчёт о краше" />
     <string id="cd_btn_open_log_folder" text="Папка логов" />
     <string id="cd_btn_copy" text="Скопировать" />
     <string id="cd_btn_export" text="Экспорт" />

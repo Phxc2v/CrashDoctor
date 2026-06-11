@@ -33,7 +33,7 @@ your setup, without touching the rest.
 
 ### 🔬 Crash diagnosis
 Scans `C:\ProgramData\Mount and Blade II Bannerlord\crashes\` and the BUTR HTML
-crash reports if you have BLSE/ButterLib. Matches every crash against **84 YAML
+crash reports if you have BLSE/ButterLib. Matches every crash against **85 YAML
 rules** covering:
 
 - **GPU / DirectX:** integrated-GPU misroute, DXGI device removed/hung, shader
@@ -124,6 +124,16 @@ module so a new state surfaces on its merits.
 | **M6.1** | DirectX 11 runtime + feature level probe (D3D11CreateDevice) | no | no | — |
 | **M6.2** | HwSchMode (Hardware-Accelerated GPU Scheduling) state — TOR-risky combo flag | no | yes | — |
 
+Note: the shader / pagefile / GPU-timeout cards — **M1.1** (pagefile), **M2.1**
+(shader cache), **M2.2** (graphics-change → rebuild), **M2.5** (TdrDelay), **M2.7**
+(`%TEMP%` relocation) and **M3.3** (`engine_config.txt` TOR-incompatible values) —
+only appear when **The Old Realms** is installed.
+They exist for TOR's huge custom shader set (multi-GB compiles, large pagefile,
+raised GPU timeout); vanilla and other modpacks don't need them, so they stay
+hidden there instead of nagging. The manual **"Clean shader cache"** button is the
+one exception — it stays available to everyone (it's still useful after a GPU
+driver change or DX-preset switch).
+
 Note: Crash Doctor does **not** touch Windows Defender or antivirus exclusions
 in any way — it never adds, removes, or reads AV exclusion lists. Antivirus
 configuration is left entirely to the user.
@@ -155,6 +165,13 @@ campaign. Each card shows day, hero, gold, party size, and surfaces:
 - known not-safe-to-add-mid-campaign mods (CalradianClans, BannerKings),
 - late-game heuristic — day ≥ 700 + size ≥ 25 MB warns about orphan-clan
   KingdomDecision crashes that hit long campaigns.
+
+Verdict severity is proportionate, not panic: a save only turns **red** ("load
+will very likely crash") when a mod that actually persists campaign data is
+missing (the known save-breaking list above). Every other difference — a missing
+cosmetic/utility/translation mod, an extra mod, a version drift — is an **amber**
+warning ("the game will warn about missing modules, but the save should load —
+back it up first"), because removing those doesn't crash the load.
 
 Per-save action buttons: enable missing mods, disable extra mods, copy IDs to
 clipboard, open Save System Fix on Nexus (#1925), open Save Cleaner on Nexus
@@ -195,9 +212,10 @@ never drift.
 | **`TorMountStatusEffectSafetyPatch`** (TOR) | Signature-aware guard on `AgentDrivenPropertiesExtensions.SetDynamicMountMovementProperties` — re-syncs the mount base values (older TOR) or just swallows the `ArgumentException` (newer TOR) so a mounted unit doesn't crash the battle every frame. Inert on TOR builds that already fixed the root cause. |
 | **`TorAbilityAiCastNRESafetyPatch`** (TOR) | Guard on TOR's ability AI-cast path (`CalculateAICastMatrixFrame`): when RTS/free (commander) camera detaches the hero, a spell cast is routed through the AI path that expects data the hero doesn't have; the spell is cast as the hero instead of crashing the battle. |
 | **`SellPrisonersUnderflowSafetyPatch`** | Finalizer on `SellPrisonersAction.ApplyInternal` — swallows the `MBUnderFlowException` when a desynced prison roster goes below zero during a town auto-sell; the party skips that one sale. |
-| **`EncounterMenuInitSafetyPatch`** | Prefix + finalizer on `EncounterGameMenuBehavior.game_menu_encounter_on_init`. When a save made mid-encounter loads without a restored `PlayerEncounter` (`Current` and `MainParty.MapEvent` both null), vanilla init dereferences the null encounter (`StartBattle`/`Update`) and crashes the load; instead the player is returned to the campaign map via `GameMenu.ExitToLast()`. |
+| **`EncounterMenuInitSafetyPatch`** | Prefix + finalizer on `EncounterGameMenuBehavior.game_menu_encounter_on_init`. When a save made mid-encounter loads without a restored `PlayerEncounter` (`Current` and `MainParty.MapEvent` both null), vanilla init dereferences the null encounter (`StartBattle`/`Update`) and crashes the load; instead the player is returned to the campaign map via `GameMenu.ExitToLast()`. *Deferred to game start* — the target type's static init reads `GameTexts`, so patching it at the main menu would poison it (see note below the table). |
+| **`ColumnFormationSpawnSafetyPatch`** | Prefix on `ColumnFormation.GetLocalPositionOfUnitOrDefault(int)`. Vanilla reads element `[1]` of the column's vanguard-file position list unconditionally — an `ArgumentOutOfRangeException` that kills the whole battle tick when reinforcements spawn into a column formation with no soldiers left at its head (common with marching-reinforcement mods like Immersive Battlefields or RTS Camera's column order). The guard returns `null` instead, so the caller falls back to the default spawn frame. |
 | **`TorAudioRegisterSoundSafetyPatch`** (TOR) | Finalizer on `TOR_Core.Audio.TORAudioManager.RegisterSound`, which builds NAudio.Vorbis with no try/catch. When a .NET library NAudio needs (`System.Memory`, normally provided by the game runtime or ButterLib) can't load on the player's setup, the OGG ctor throws `FileNotFoundException` and crashes the campaign — e.g. a TOR music event on the hourly tick while walking the map. The guard swallows it and returns failure, so the sound is skipped (`CreateSoundInstance` returns null, which `PlayMusic` already null-checks) and the game continues. The matching rule `tor.audio_dependency_missing` explains the missing-library root cause and the fix (verify game files / install ButterLib). |
-| **`DanglingTroopCleanerBehavior`** | `OnSessionLaunched` scan: drops roster elements with `Character == null` / `Character.Culture == null` across every party, settlement and active issue, and **removes orphaned garrison parties** (`IsGarrison && CurrentSettlement == null`) so a re-save heals the campaign. Listed on the Crash Fixes tab as **"Fix broken troops on save load"**. |
+| **`DanglingTroopCleanerBehavior`** | `OnSessionLaunched` scan: drops roster elements whose `Character` is null or **no longer registered in `MBObjectManager`** (a mod unregistered it without scrubbing rosters) across every party, settlement and active issue, and **removes orphaned garrison parties** (`IsGarrison && CurrentSettlement == null`) so a re-save heals the campaign. Live modded troops that merely lack a culture are NOT touched; every removal is logged by `StringId`. Listed on the Crash Fixes tab as **"Fix broken troops on save load"**. |
 | **`SafetyNetMessenger`** | Five-language toast helper used by the guards above. Picks EN/RU/ZH/ZHT/TR by `BannerlordConfig.Language` (Traditional Chinese falls back to Simplified, then English), amber (catch) or green (cleanup), one toast per category per 60 s. (Always on — infrastructure.) |
 
 These guards are generic — TOR-specific ones (marked **TOR**) self-skip via
@@ -206,6 +224,15 @@ and the rest trigger regardless of which third-party mod caused the dangling
 reference. All of them need the Bannerlord.Harmony module to run; with it off
 they're hidden and the core crash analysis still works. (The whole group sits
 under the Crash Fixes tab; there is no separate "master" toggle in Settings.)
+
+> **Deferred install (important).** Some targets (the UI-screen guard's view
+> models, `EncounterGameMenuBehavior`) have a static initializer that reads
+> `GameTexts` — which doesn't exist yet at the main menu. Patching them there
+> would let the JIT run that initializer early, throw an NRE, and have .NET cache
+> a `TypeInitializationException` for the whole process — poisoning every later
+> campaign load. So those patches **defer** until a game session exists
+> (`OnGameStart` / `OnAfterGameInitializationFinished`), when the text manager is
+> live. `SafetyNetCoordinator.RetryPending()` applies anything that deferred.
 
 ---
 
@@ -449,7 +476,7 @@ Calradia Expanded, RBM, Banner Kings и т.д. Без интернета, без
 Выключен / Пропущен — нет нужного мода / Ошибка). Все включены по умолчанию;
 любой фикс можно отключить по отдельности, если он мешает.
 
-- **Диагностика крашей** — **84 YAML-правила** под GPU/DirectX (включая авторитетный
+- **Диагностика крашей** — **85 YAML-правил** под GPU/DirectX (включая авторитетный
   детект iGPU из rgl_log + whitelist карт где DxDiag врёт VRAM), native runtime,
   повреждённые `.tpac` ассеты, save / late-game, mission / engine (NRE в диалогах,
   team-index шторм), TOR (включая Naval DLC + TOR conflict, Assimilation
@@ -460,7 +487,12 @@ Calradia Expanded, RBM, Banner Kings и т.д. Без интернета, без
 - **Настройка системы (Tune-Up)** — **26 модулей** полу-автоматической ремедиации.
   Каждый: Detect → Preview → Apply / Игнорировать / Rollback. Реестровые записи
   сохраняются в `.reg`-бэкапы в Documents до изменения. Кнопка **Игнорировать**
-  скрывает карточку до тех пор пока её состояние реально не изменится.
+  скрывает карточку до тех пор пока её состояние реально не изменится. Карточки про
+  шейдеры и файл подкачки (M1.1 подкачка, M2.1 кэш шейдеров, M2.2 пересборка после
+  смены графики, M2.5 TdrDelay, M2.7 перенос `%TEMP%`, M3.3 TOR-несовместимые
+  значения `engine_config.txt`) показываются **только если установлен The Old Realms** — они нужны из-за огромного набора шейдеров TOR; на
+  ванили и других сборках не отвлекают. Ручная кнопка **«Очистить кэш шейдеров»** —
+  исключение, доступна всем (полезна и после смены драйвера).
 - **Журнал** — каждое Apply/Rollback с таймстампом и откатом.
 - **Сейвы** — читает JSON-заголовок каждого `.sav` в папке Game Saves и сверяет
   список модов с текущим `LauncherData.xml`, **не загружая кампанию**. На
@@ -476,7 +508,11 @@ Calradia Expanded, RBM, Banner Kings и т.д. Без интернета, без
   эвристика: день ≥ 700 + размер ≥ 25 МБ предупреждает о crash'ах от мёртвых
   ссылок на кланы (KingdomDecision NRE) в долгих кампаниях. Кнопки: включить/
   выключить моды, открыть Save System Fix #1925, открыть Save Cleaner #7763,
-  `.bak`, проводник, удалить (Корзина).
+  `.bak`, проводник, удалить (Корзина). Вердикт соразмерен, без паники: **красное**
+  «загрузка почти наверняка упадёт» — только когда отсутствует мод, реально
+  хранящий данные в сейве (список выше: BannerKings, PlayerSettlement и т.п.); все
+  прочие расхождения (косметика, перевод, лишний мод, разница версий) — **жёлтое**
+  предупреждение «игра предупредит, но сейв должен загрузиться — сделай копию».
 
 ## Экспорт нераспознанного краша
 

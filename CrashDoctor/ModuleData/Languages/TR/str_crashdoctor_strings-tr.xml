@@ -13,7 +13,7 @@
     <string id="cd_status_count" text="{COUNT} çökme" />
     <string id="cd_btn_refresh" text="Yenile" />
     <string id="cd_btn_clear" text="Temizle..." />
-    <string id="cd_btn_open_folder" text="Klasörü aç" />
+    <string id="cd_btn_open_folder" text="Çökme raporu" />
     <string id="cd_btn_open_log_folder" text="Günlük klasörünü aç" />
     <string id="cd_btn_copy" text="Kopyala" />
     <string id="cd_btn_export" text="Dışa aktar" />

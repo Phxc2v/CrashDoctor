@@ -143,6 +143,8 @@
 
 - id: gpu.shader_compile_x3004_tbn
   category: gpu
+  # Shader-cache rebuild advice — the 'Build Shader Cache' button only exists in TOR.
+  tor_only: true
   severity: critical
   confidence: high
   evidence_source: "BL-001/002 catalog 2026-05-02"
@@ -225,6 +227,8 @@
 
 - id: gpu.create_shader_resource_view_fail
   category: gpu
+  # TOR tessellation overflow scenario; fix steps lean on TOR shader tooling.
+  tor_only: true
   severity: critical
   confidence: high
   evidence_source: "TOR-007 catalog 2026-05-02"
@@ -296,6 +300,8 @@
 
 - id: gpu.terrain_shader_cache_missing
   category: gpu
+  # "Cache never built" only happens where building it is a manual step — i.e. TOR.
+  tor_only: true
   severity: critical
   confidence: high
   evidence_source: "Real client crash 2026-05-10 — save loads, MapScreen opens, hideout_place location enters → 'Bake Terrain' triggers shader load → 'Missing shader from sack: pbr_terrain' ×30+ in a single Bake → access violation 0xC0000005 in D3D11. This branch fires when the shipped shader cache package was never read (no read_compressed_shader_cache_package line in the log) — i.e. the user never ran 'Build Shader Cache' or ran it on a different GPU."
@@ -402,6 +408,8 @@
 
 - id: gpu.amd_rdna4_driver_regression
   category: gpu
+  # Driver regression surfaces during TOR's mass shader compile; steps revolve around 'Build Shader Cache'.
+  tor_only: true
   severity: critical
   confidence: high
   evidence_source: "Real client crash 2026-05-20 — RX 9070 XT on AMD Adrenalin 26.5.2 (driver build 32.0.31007.5012, dated 2026-05-12). Game falls into 0xC0000005 inside D3D11 with 60+ 'Missing shader from sack: pbr_terrain' lines in a single frame after Bake Terrain. Reinstalling the game twice did not help; Build Shader Cache did not help. AMD's own 26.5.x release notes list multiple unresolved D3D rendering regressions on RX 9000 series (God of War corruption, RoadCraft crashes, Satisfactory corruption, multi-monitor FreeSync crashes). The same shader-compiler family is what builds Bannerlord's terrain shaders, and the failure mode lands as missing pbr_terrain entries in the sack."
@@ -585,6 +593,8 @@
 
 - id: gpu.shader_sack_corrupted
   category: gpu
+  # Fix flow = Steam Verify + TOR re-subscribe + 'Build Shader Cache' — meaningless without TOR.
+  tor_only: true
   severity: critical
   confidence: high
   evidence_source: "Real client crash 2026-05-20 — TOR + LoreHardcore + CrashDoctor on RX 9070 XT. Log shows rglShader_manager::read_compressed_shader_cache_package at startup (cache was read), but later Bake Terrain triggers Missing shader from sack: pbr_terrain × 60+ in a single frame and the game falls into access violation 0xC0000005. The user reported that 'Build Shader Cache' was run multiple times without effect. The shipped sack file is being read but does not contain the requested shader entries — i.e. the sack itself is corrupt or incomplete, not the user-built cache."
@@ -738,6 +748,8 @@
 
 - id: gpu.shader_cache_corrupt
   category: gpu
+  # Clear-cache + 'Build Shader Cache' advice — TOR-only tooling.
+  tor_only: true
   severity: warning
   confidence: high
   evidence_source: "https://forums.taleworlds.com/threads/missing-shader-from-sack.444678/"
@@ -1282,6 +1294,8 @@
 
 - id: gpu.shader_compile_oom
   category: gpu
+  # TOR pbr_metallic OOM-during-D3DCompile family; cure is the TOR shader rebuild flow.
+  tor_only: true
   severity: critical
   confidence: high
   evidence_source: "https://steamcommunity.com/workshop/filedetails/discussion/3025574678/800093831719686553/"
