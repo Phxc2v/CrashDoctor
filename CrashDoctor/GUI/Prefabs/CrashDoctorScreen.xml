@@ -58,39 +58,69 @@
                     <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="36"
                                 VerticalAlignment="Top" MarginTop="12" MarginLeft="16"
                                 Brush.FontSize="22" Brush.FontColor="#F4E1C4FF" Text="@LabelCrashes" />
-                    <ScrollablePanel WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
-                                     MarginTop="50" MarginBottom="10" MarginLeft="6" MarginRight="6"
-                                     ClipContents="true" AutoHideScrollBars="true">
+                    <!-- Wired scrollbar (ClipRect+InnerPanel+VerticalScrollbar), same pattern as
+                         every other tab. The old bare ScrollablePanel clipped the list but never
+                         scrolled, so with 10+ crashes the lower entries were unreachable. -->
+                    <Widget Id="CrashesListScrollWrap" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
+                            MarginTop="50" MarginBottom="10" MarginLeft="6" MarginRight="6">
                       <Children>
-                        <ListPanel DataSource="{Crashes}" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren"
-                                   StackLayout.LayoutMethod="VerticalBottomToTop">
-                          <ItemTemplate>
-                            <ButtonWidget DoNotPassEventsToChildren="true" Command.Click="ExecuteSelect"
-                                          WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="86"
-                                          MarginTop="4" MarginLeft="2" MarginRight="2"
-                                          Brush="ButtonBrush1">
+                        <ScrollablePanel Id="CrashesListScroll" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
+                                         AutoHideScrollBars="true"
+                                         ClipRect="CrashesListClipRect" InnerPanel="CrashesListClipRect\CrashesItemsList"
+                                         VerticalScrollbar="..\CrashesListScrollbar">
+                          <Children>
+                            <Widget Id="CrashesListClipRect" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
+                                    MarginRight="18" ClipContents="true">
                               <Children>
-                                <TextWidget DoNotAcceptEvents="true"
-                                            WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="28"
-                                            HorizontalAlignment="Left" VerticalAlignment="Top"
-                                            MarginLeft="12" MarginTop="4"
-                                            Brush.FontSize="22" Brush.FontColor="#F4E1C4FF" Text="@Title" />
-                                <TextWidget DoNotAcceptEvents="true"
-                                            WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="22"
-                                            HorizontalAlignment="Left" VerticalAlignment="Top"
-                                            MarginLeft="12" MarginTop="34"
-                                            Brush.FontSize="18" Brush.FontColor="#C8B898FF" Text="@Timestamp" />
-                                <TextWidget DoNotAcceptEvents="true"
-                                            WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="22"
-                                            HorizontalAlignment="Left" VerticalAlignment="Top"
-                                            MarginLeft="12" MarginTop="56"
-                                            Brush.FontSize="16" Brush.FontColor="#988673FF" Text="@ModulesLine" />
+                                <ListPanel Id="CrashesItemsList" DataSource="{Crashes}" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren"
+                                           StackLayout.LayoutMethod="VerticalBottomToTop">
+                                  <ItemTemplate>
+                                    <ButtonWidget DoNotPassEventsToChildren="true" Command.Click="ExecuteSelect"
+                                                  WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="86"
+                                                  MarginTop="4" MarginLeft="2" MarginRight="2"
+                                                  Brush="ButtonBrush1">
+                                      <Children>
+                                        <TextWidget DoNotAcceptEvents="true"
+                                                    WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="28"
+                                                    HorizontalAlignment="Left" VerticalAlignment="Top"
+                                                    MarginLeft="12" MarginTop="4"
+                                                    Brush.FontSize="22" Brush.FontColor="#F4E1C4FF" Text="@Title" />
+                                        <TextWidget DoNotAcceptEvents="true"
+                                                    WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="22"
+                                                    HorizontalAlignment="Left" VerticalAlignment="Top"
+                                                    MarginLeft="12" MarginTop="34"
+                                                    Brush.FontSize="18" Brush.FontColor="#C8B898FF" Text="@Timestamp" />
+                                        <TextWidget DoNotAcceptEvents="true"
+                                                    WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="22"
+                                                    HorizontalAlignment="Left" VerticalAlignment="Top"
+                                                    MarginLeft="12" MarginTop="56"
+                                                    Brush.FontSize="16" Brush.FontColor="#988673FF" Text="@ModulesLine" />
+                                      </Children>
+                                    </ButtonWidget>
+                                  </ItemTemplate>
+                                </ListPanel>
                               </Children>
-                            </ButtonWidget>
-                          </ItemTemplate>
-                        </ListPanel>
+                            </Widget>
+                          </Children>
+                        </ScrollablePanel>
+                        <ScrollbarWidget Id="CrashesListScrollbar"
+                                         WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent"
+                                         SuggestedWidth="10" HorizontalAlignment="Right" VerticalAlignment="Top"
+                                         MarginTop="6" MarginBottom="6" MarginRight="2"
+                                         AlignmentAxis="Vertical" Handle="CrashesListScrollbarHandle"
+                                         MaxValue="100" MinValue="0">
+                          <Children>
+                            <Widget WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="4"
+                                    HorizontalAlignment="Center"
+                                    Sprite="BlankWhiteSquare_9" Color="#5a4033FF" AlphaFactor="0.4" />
+                            <ImageWidget Id="CrashesListScrollbarHandle"
+                                         WidthSizePolicy="Fixed" HeightSizePolicy="Fixed"
+                                         SuggestedHeight="40" SuggestedWidth="10"
+                                         HorizontalAlignment="Center" Brush="FaceGen.Scrollbar.Handle" />
+                          </Children>
+                        </ScrollbarWidget>
                       </Children>
-                    </ScrollablePanel>
+                    </Widget>
                   </Children>
                 </Widget>
 
@@ -1248,26 +1278,13 @@
                 HorizontalAlignment="Center" VerticalAlignment="Top" MarginTop="162"
                 Brush.Color="#3A2E1FAA" />
 
-        <!-- ===================== Version label + Support button (right-bottom) =====================
-             Version stays as the bottom-most line on the right edge. Support button sits
-             directly above it so both bottom-right elements are visually grouped. -->
+        <!-- ===================== Version label (right-bottom) =====================
+             Bottom-most line on the right edge. The Support button moved into the centered
+             bottom button bar (so the whole row stays aligned), leaving just the version here. -->
         <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="700" SuggestedHeight="22"
                     HorizontalAlignment="Right" VerticalAlignment="Bottom" MarginRight="20" MarginBottom="6"
                     Brush.FontSize="14" Brush.FontColor="#988673AA" Brush.TextHorizontalAlignment="Right"
                     Text="@VersionLabel" />
-
-        <!-- Support button — bigger so the label fits, sits above the version line. -->
-        <ButtonWidget DoNotPassEventsToChildren="true" Command.Click="ExecuteShowSupportDialog"
-                      Brush="Popup.Done.Button"
-                      WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="300" SuggestedHeight="46"
-                      HorizontalAlignment="Right" VerticalAlignment="Bottom" MarginRight="20" MarginBottom="34">
-          <Children>
-            <TextWidget DoNotAcceptEvents="true"
-                        WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
-                        Brush="Popup.Button.Text" Brush.TextHorizontalAlignment="Center"
-                        Text="@LabelSupportButton" />
-          </Children>
-        </ButtonWidget>
 
         <!-- ===================== Author credit / Telegram link (bottom-left) =====================
              Borderless clickable text — opens t.me/CodeRickTg. The Support button moved
@@ -1349,7 +1366,8 @@
               </Children>
             </ButtonWidget>
             <ButtonWidget DoNotPassEventsToChildren="true" Command.Click="ExecuteClose" Brush="Popup.Cancel.Button"
-                          WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="160" SuggestedHeight="66">
+                          WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="160" SuggestedHeight="66"
+                          MarginRight="8">
               <Children>
                 <TextWidget DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
                             Brush="Popup.Button.Text" Brush.TextHorizontalAlignment="Center" Text="@LabelBtnClose" />
@@ -1357,6 +1375,18 @@
             </ButtonWidget>
           </Children>
         </ListPanel>
+
+        <!-- Support author — pinned to the far bottom-right corner, OUTSIDE the centered action
+             cluster, so it never crowds the other buttons and stays out of the way. (It used to
+             sit at the end of the centered row, right next to Close.) -->
+        <ButtonWidget DoNotPassEventsToChildren="true" Command.Click="ExecuteShowSupportDialog" Brush="Popup.Done.Button"
+                      WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="280" SuggestedHeight="66"
+                      HorizontalAlignment="Right" VerticalAlignment="Bottom" MarginBottom="30" MarginRight="30">
+          <Children>
+            <TextWidget DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
+                        Brush="Popup.Button.Text" Brush.TextHorizontalAlignment="Center" Text="@LabelSupportButton" />
+          </Children>
+        </ButtonWidget>
 
         <!-- Clear confirmation dialog overlay — same Bannerlord popup pattern as the details popup -->
         <Widget IsVisible="@IsClearDialogVisible"

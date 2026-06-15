@@ -31,7 +31,7 @@
     <string id="cd_confidence_medium" text="中度確信" />
     <string id="cd_confidence_low" text="低度確信" />
     <string id="cd_unrecognized_title" text="無法識別的崩潰" />
-    <string id="cd_unrecognized_desc" text="目前沒有對應的規則。請點擊「匯出」，並將 .txt 檔案傳送至我們的 Telegram 頻道：https://t.me/CodeRickTg — 我們會為此崩潰新增規則。" />
+    <string id="cd_unrecognized_desc" text="此當機尚未收錄。點擊「匯出」——Crash Doctor 會儲存 report.txt（以及含完整日誌的 .zip）並開啟已選取 report.txt 的資料夾。請將 report.txt 傳送至 https://t.me/CodeRickTg，我們會為此當機新增規則。" />
     <string id="cd_clear_dialog_title" text="刪除崩潰日誌？" />
     <string id="cd_clear_dialog_keep" text="保留最近3次崩潰紀錄（建議）" />
     <string id="cd_clear_dialog_delete_dump" text="同時刪除 .dmp 記憶體傾印檔" />

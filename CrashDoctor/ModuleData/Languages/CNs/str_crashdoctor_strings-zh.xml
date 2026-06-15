@@ -31,7 +31,7 @@
     <string id="cd_confidence_medium" text="中等可信度" />
     <string id="cd_confidence_low" text="低可信度" />
     <string id="cd_unrecognized_title" text="无法识别的崩溃" />
-    <string id="cd_unrecognized_desc" text="暂时没有规则匹配。请点击“导出”，并将 .txt 文件发送到我们的 Telegram 频道：https://t.me/CodeRickTg —— 我们会为此崩溃添加规则。" />
+    <string id="cd_unrecognized_desc" text="此崩溃尚未收录。点击“导出”——Crash Doctor 会保存 report.txt（以及含完整日志的 .zip）并打开已选中 report.txt 的文件夹。请将 report.txt 发送到 https://t.me/CodeRickTg，我们会为此崩溃添加规则。" />
     <string id="cd_clear_dialog_title" text="删除崩溃日志？" />
     <string id="cd_clear_dialog_keep" text="保留最近 3 个崩溃（推荐）" />
     <string id="cd_clear_dialog_delete_dump" text="同时删除 .dmp 内存转储文件" />
