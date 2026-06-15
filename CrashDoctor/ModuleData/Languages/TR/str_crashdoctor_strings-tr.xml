@@ -31,7 +31,7 @@
     <string id="cd_confidence_medium" text="orta güven" />
     <string id="cd_confidence_low" text="düşük güven" />
     <string id="cd_unrecognized_title" text="Tanınmayan çökme" />
-    <string id="cd_unrecognized_desc" text="Henüz hiçbir kural eşleşmedi. Lütfen 'Dışa aktar'a tıklayın ve .txt dosyasını Telegram kanalımıza gönderin: https://t.me/CodeRickTg — bu çökme için bir kural ekleyeceğiz." />
+    <string id="cd_unrecognized_desc" text="Bu çökme henüz kataloğumuzda yok. 'Dışa aktar'a tıkla — Crash Doctor report.txt'yi (ve tüm günlükleri içeren bir .zip) kaydeder ve report.txt seçili olarak klasörü açar. report.txt dosyasını https://t.me/CodeRickTg adresine gönder, bu çökme için bir kural ekleyeceğiz." />
     <string id="cd_clear_dialog_title" text="Çökme günlükleri silinsin mi?" />
     <string id="cd_clear_dialog_keep" text="Son 3 çökmeyi sakla (önerilir)" />
     <string id="cd_clear_dialog_delete_dump" text=".dmp bellek dökümlerini de sil" />

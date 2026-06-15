@@ -105,6 +105,9 @@
           - all:
               - managed_exception: { frame_contains: "CalculateAICastMatrixFrame" }
               - managed_exception: { type_contains: "NullReferenceException" }
+          - all:
+              - managed_exception: { frame_contains: "BesiegerCamp.AddSiegePartyInternal" }
+              - managed_exception: { type_contains: "NullReference" }
 
 - id: tor.audio_dependency_missing
   category: managed
@@ -384,6 +387,200 @@
       - managed_exception: { frame_contains: "game_menu_encounter_on_init" }
       - managed_exception: { type_contains: "NullReference" }
 
+# Campaign-map siege crash: a party WITHOUT a leader hero starts a siege. NullReferenceException
+# from BesiegerCamp.AddSiegePartyInternal ← MobileParty.OnPartyJoinedSiegeInternal ←
+# set_BesiegerCamp ← SiegeEvent..ctor ← SiegeEventManager.StartSiegeEvent ←
+# EncounterManager.StartSettlementEncounter. The default EncounterModel.GetLeaderOfSiegeEvent
+# returns the besieger's LeaderHero; when that party has no leader (autonomous bandit/militia
+# party from a BanditMilitias-class mod) it returns null and `.PartyBelongedTo` NREs. NOT a
+# shader/driver problem, not a TOR bug — a mod let a leaderless party besiege a fortification.
+- id: campaign.siege_leaderless_party_nre
+  category: managed
+  severity: critical
+  confidence: high
+  evidence_source: "Client crash 2026-06-12 report(9).txt — NullReferenceException TaleWorlds.CampaignSystem.Siege.BesiegerCamp.AddSiegePartyInternal ← MobileParty.OnPartyJoinedSiegeInternal ← set_BesiegerCamp ← SiegeEvent..ctor ← SiegeEventManager.StartSiegeEvent ← EncounterManager.StartSettlementEncounter ← Campaign.Tick. Modlist included BanditMilitias v4.4.8.0. Captured by Crash Doctor managed capture."
+  requires_sources: [managed_exception]
+  title:
+    en: "Siege crash — a leaderless party started a siege — guarded by Crash Doctor"
+    ru: "Вылет в осаде — осаду начал безглавый отряд — перехвачено Crash Doctor"
+    zh: "围城崩溃——无首领队伍发起了围城——已被 Crash Doctor 拦截"
+    zht: "圍城崩潰——無首領隊伍發起了圍城——已被 Crash Doctor 攔截"
+    tr: "Kuşatma çökmesi — lidersiz bir grup kuşatma başlattı — Crash Doctor tarafından korunuyor"
+  description:
+    en: |
+      NullReferenceException from TaleWorlds.CampaignSystem.Siege.BesiegerCamp.AddSiegePartyInternal
+      on the campaign-map tick, while a party started besieging a settlement
+      (StartSettlementEncounter → StartSiegeEvent → new SiegeEvent → set_BesiegerCamp). The base
+      game resolves the siege leader as the besieger party's LeaderHero; here the besieging party
+      has NO leader hero, so GetLeaderOfSiegeEvent returns null and the engine dereferences it.
+      This is an autonomous, leaderless party (typically spawned by a BanditMilitias-class mod)
+      being allowed to besiege a fortification — something vanilla never expects. It is a mod/state
+      bug, NOT a shader or driver problem, and not a TOR bug (TOR's EncounterModel just delegates
+      to vanilla here).
+    ru: |
+      NullReferenceException из TaleWorlds.CampaignSystem.Siege.BesiegerCamp.AddSiegePartyInternal
+      на тике карты, когда отряд начал осаду поселения
+      (StartSettlementEncounter → StartSiegeEvent → new SiegeEvent → set_BesiegerCamp). Базовая
+      игра берёт лидером осады героя-командира осаждающего отряда; здесь у отряда героя-лидера НЕТ,
+      поэтому GetLeaderOfSiegeEvent возвращает null, и движок разыменовывает его. Это
+      самостоятельный безглавый отряд (обычно их плодят моды класса BanditMilitias), которому дали
+      осадить крепость — ваниль такого не ждёт. Это баг мода/состояния, а НЕ проблема шейдеров или
+      драйвера, и не баг TOR (EncounterModel у TOR здесь просто вызывает ваниль).
+    zh: |
+      战役地图刻 tick 期间，当一支队伍开始围攻据点时
+      （StartSettlementEncounter → StartSiegeEvent → new SiegeEvent → set_BesiegerCamp），
+      TaleWorlds.CampaignSystem.Siege.BesiegerCamp.AddSiegePartyInternal 抛出空引用异常。原版以
+      围城方队伍的英雄首领作为围城指挥；而这里该围城队伍没有英雄首领，于是
+      GetLeaderOfSiegeEvent 返回 null，引擎对其取引用。这是一支自治的无首领队伍（通常由
+      BanditMilitias 类模组生成）被允许围攻要塞——原版从不预期这种情况。这是模组／状态 bug，不是
+      着色器或驱动问题，也不是 TOR 的错（TOR 的 EncounterModel 在此处只是转交给原版）。
+    zht: |
+      戰役地圖刻 tick 期間，當一支隊伍開始圍攻據點時
+      （StartSettlementEncounter → StartSiegeEvent → new SiegeEvent → set_BesiegerCamp），
+      TaleWorlds.CampaignSystem.Siege.BesiegerCamp.AddSiegePartyInternal 擲出空參考例外。原版以
+      圍城方隊伍的英雄首領作為圍城指揮；而這裡該圍城隊伍沒有英雄首領，於是
+      GetLeaderOfSiegeEvent 回傳 null，引擎對其取參考。這是一支自治的無首領隊伍（通常由
+      BanditMilitias 類模組生成）被允許圍攻要塞——原版從不預期這種情況。這是模組／狀態 bug，不是
+      著色器或驅動問題，也不是 TOR 的錯（TOR 的 EncounterModel 在此處只是轉交給原版）。
+    tr: |
+      Sefer haritası tick'inde, bir grup bir yerleşimi kuşatmaya başlarken
+      (StartSettlementEncounter → StartSiegeEvent → new SiegeEvent → set_BesiegerCamp)
+      TaleWorlds.CampaignSystem.Siege.BesiegerCamp.AddSiegePartyInternal'dan
+      NullReferenceException fırlatıldı. Oyun, kuşatma liderini kuşatan grubun LeaderHero'su olarak
+      belirler; burada kuşatan grubun lider kahramanı YOK, bu yüzden GetLeaderOfSiegeEvent null
+      döndürür ve motor ona başvurur. Bu, bir kaleyi kuşatmasına izin verilen özerk, lidersiz bir
+      gruptur (genelde BanditMilitias türü bir mod tarafından oluşturulur) — orijinal oyun bunu
+      asla beklemez. Bu bir mod/durum hatasıdır, gölgelendirici veya sürücü sorunu DEĞİL ve TOR
+      hatası değil (TOR'un EncounterModel'i burada sadece orijinale devreder).
+  fix:
+    en:
+      - "Crash Doctor already guards this — its safety net blocks the leaderless siege before it starts, so the game keeps running. Keep the «Siege crash guard (leaderless party)» fix ON (Crash Fixes tab)."
+      - "Root cause is a mod that lets a leaderless party besiege a settlement. Your modlist includes BanditMilitias — update it to the latest version, or disable it, and check whether the crash stops."
+      - "Other suspects that spawn autonomous parties: BrigandBands, BanditBlackHole, IdleMinorFactions. Disable them one at a time to confirm."
+      - "Do NOT rebuild shaders or change drivers — this is a mod/state bug, that won't help."
+    ru:
+      - "Crash Doctor уже это перехватывает — safety net блокирует осаду безглавого отряда до её начала, и игра продолжает работать. Держи фикс «Защита от вылета в осаде (безглавый отряд)» ВКЛ (вкладка «Фиксы крашей»)."
+      - "Корень — мод, позволяющий безглавому отряду осаждать поселение. В твоём списке есть BanditMilitias — обнови его до свежей версии или отключи и проверь, пропал ли вылет."
+      - "Другие подозреваемые, плодящие самостоятельные отряды: BrigandBands, BanditBlackHole, IdleMinorFactions. Отключай по одному, чтобы убедиться."
+      - "НЕ пересобирай шейдеры и не меняй драйвер — это баг мода/состояния, не поможет."
+    zh:
+      - "Crash Doctor 已经拦截了它——安全网会在无首领围城开始前将其阻止，游戏继续运行。在「崩溃修复」页保持「围城崩溃防护（无首领队伍）」为开。"
+      - "根源是某个允许无首领队伍围攻据点的模组。你的模组列表含 BanditMilitias——把它更新到最新版本，或禁用它，看崩溃是否停止。"
+      - "其他生成自治队伍的可疑者：BrigandBands、BanditBlackHole、IdleMinorFactions。逐一禁用以确认。"
+      - "不要重建着色器或更换驱动——这是模组／状态 bug，没用。"
+    zht:
+      - "Crash Doctor 已經攔截了它——安全網會在無首領圍城開始前將其阻止，遊戲繼續執行。在「崩潰修復」頁保持「圍城崩潰防護（無首領隊伍）」為開。"
+      - "根源是某個允許無首領隊伍圍攻據點的模組。你的模組列表含 BanditMilitias——把它更新到最新版本，或停用它，看崩潰是否停止。"
+      - "其他生成自治隊伍的可疑者：BrigandBands、BanditBlackHole、IdleMinorFactions。逐一停用以確認。"
+      - "不要重建著色器或更換驅動——這是模組／狀態 bug，沒用。"
+    tr:
+      - "Crash Doctor bunu zaten koruyor — güvenlik ağı lidersiz kuşatmayı başlamadan engeller, böylece oyun çalışmaya devam eder. «Kuşatma çökme koruması (lidersiz grup)» düzeltmesini AÇIK tut (Çökme Düzeltmeleri sekmesi)."
+      - "Kök neden, lidersiz bir grubun bir yerleşimi kuşatmasına izin veren bir moddur. Mod listende BanditMilitias var — onu en son sürüme güncelle ya da devre dışı bırak ve çökmenin durup durmadığını kontrol et."
+      - "Özerk grup oluşturan diğer şüpheliler: BrigandBands, BanditBlackHole, IdleMinorFactions. Doğrulamak için tek tek devre dışı bırak."
+      - "Gölgelendiricileri yeniden oluşturma veya sürücü değiştirme — bu bir mod/durum hatası, yardımcı olmaz."
+  match:
+    all:
+      - managed_exception: { frame_contains: "BesiegerCamp.AddSiegePartyInternal" }
+      - managed_exception: { type_contains: "NullReference" }
+
+# Campaign-map DAILY-tick crash inside TOR's auto-upgrader. NullReferenceException from
+# TOR_Core.CampaignMechanics.TORPartyUpgraderCampaignBehavior.GetTroopUpgradeList's filter lambda
+# (<>c.<GetTroopUpgradeList>b__9_0) ← GetTroopUpgradeList ← UpgradeReadyTroops ← DailyTickParty ←
+# CampaignEvents.DailyTickParty ← Campaign.Tick. TOR auto-upgrades AI lord parties once a day and
+# filters the roster with `t => !t.Character.IsHero && t.Character.UpgradeTargets.Length != 0`;
+# a roster element whose Character is null (a dangling troop left by another mod that unregistered a
+# CharacterObject without removing it from the roster, or a save referencing a troop that no longer
+# exists) makes `t.Character.IsHero` NRE and the whole daily tick dies. Same "broken soldier" class
+# as the wage/food guards, different TOR method. NOT a shader/driver problem, not really a TOR bug —
+# broken party state introduced by another mod.
+- id: campaign.tor_party_upgrade_nre
+  category: managed
+  severity: critical
+  confidence: high
+  evidence_source: "Client crash 2026-06-12 report(11).txt — NullReferenceException TOR_Core.CampaignMechanics.TORPartyUpgraderCampaignBehavior.<>c.<GetTroopUpgradeList>b__9_0 ← GetTroopUpgradeList ← UpgradeReadyTroops ← DailyTickParty ← CampaignEvents.DailyTickParty ← Campaign.Tick. TORPartyUpgraderCampaignBehavior.cs line 136 (t.Character null in roster filter). Modlist: TOR_Core + LoreHardcore. Captured by Crash Doctor managed capture."
+  requires_sources: [managed_exception]
+  title:
+    en: "Daily-tick crash — TOR troop auto-upgrade hit a broken troop — guarded by Crash Doctor"
+    ru: "Вылет на дневном тике — авто-улучшение войск TOR наткнулось на битого бойца — перехвачено Crash Doctor"
+    zh: "每日结算崩溃——TOR 部队自动升级遇到损坏士兵——已被 Crash Doctor 拦截"
+    zht: "每日結算崩潰——TOR 部隊自動升級遇到損壞士兵——已被 Crash Doctor 攔截"
+    tr: "Günlük tick çökmesi — TOR birlik otomatik yükseltmesi bozuk birliğe çarptı — Crash Doctor tarafından korunuyor"
+  description:
+    en: |
+      NullReferenceException on the campaign-map DAILY tick, thrown from TOR's troop auto-upgrader
+      (TORPartyUpgraderCampaignBehavior.GetTroopUpgradeList → UpgradeReadyTroops → DailyTickParty).
+      Once a day TOR upgrades every AI lord party's troops to match its culture template; to do that
+      it filters the party's member roster, reading each entry's Character. One entry's Character is
+      null — a dangling/broken troop reference left in the roster by another mod (it unregistered a
+      troop type without removing the soldiers using it), or a save referencing a troop that no longer
+      exists. Reading the null troop's data NREs and the whole daily tick dies, taking the campaign
+      with it. This is broken party state, NOT a shader or driver problem, and not really a TOR bug.
+    ru: |
+      NullReferenceException на ДНЕВНОМ тике карты, из авто-улучшения войск TOR
+      (TORPartyUpgraderCampaignBehavior.GetTroopUpgradeList → UpgradeReadyTroops → DailyTickParty).
+      Раз в день TOR улучшает войска каждого ИИ-отряда лорда под шаблон его культуры; для этого он
+      фильтрует ростер отряда, читая Character каждой записи. У одной записи Character равен null —
+      это зависшая/битая ссылка на бойца, оставленная в ростере другим модом (он снял регистрацию
+      типа войск, не убрав использующих его солдат), либо сейв ссылается на войско, которого больше
+      нет. Чтение данных пустого бойца даёт NRE, и весь дневной тик падает вместе с кампанией. Это
+      битое состояние отряда, а НЕ проблема шейдеров или драйвера, и не баг TOR как таковой.
+    zh: |
+      战役地图每日 tick 时抛出空引用异常，来自 TOR 的部队自动升级器
+      （TORPartyUpgraderCampaignBehavior.GetTroopUpgradeList → UpgradeReadyTroops → DailyTickParty）。
+      TOR 每天会按文化模板升级每支 AI 领主队伍的部队；为此它会过滤队伍名册并读取每个条目的
+      Character。其中一个条目的 Character 为 null——这是其他模组在名册中遗留的悬空／损坏部队引用
+      （它注销了某部队类型却未移除仍在使用它的士兵），或存档引用了已不存在的部队。读取该空部队数据
+      触发 NRE，整个每日 tick 连同战役一起崩溃。这是损坏的队伍状态，不是着色器或驱动问题，也不
+      算 TOR 本身的 bug。
+    zht: |
+      戰役地圖每日 tick 時擲出空參考例外，來自 TOR 的部隊自動升級器
+      （TORPartyUpgraderCampaignBehavior.GetTroopUpgradeList → UpgradeReadyTroops → DailyTickParty）。
+      TOR 每天會按文化範本升級每支 AI 領主隊伍的部隊；為此它會過濾隊伍名冊並讀取每個條目的
+      Character。其中一個條目的 Character 為 null——這是其他模組在名冊中遺留的懸空／損壞部隊參考
+      （它登出了某部隊類型卻未移除仍在使用它的士兵），或存檔參考了已不存在的部隊。讀取該空部隊資料
+      觸發 NRE，整個每日 tick 連同戰役一起崩潰。這是損壞的隊伍狀態，不是著色器或驅動問題，也不
+      算 TOR 本身的 bug。
+    tr: |
+      Sefer haritası GÜNLÜK tick'inde, TOR'un birlik otomatik yükseltici sisteminden bir
+      NullReferenceException (TORPartyUpgraderCampaignBehavior.GetTroopUpgradeList →
+      UpgradeReadyTroops → DailyTickParty). TOR günde bir kez her AI lort grubunun birliklerini
+      kültür şablonuna göre yükseltir; bunun için grubun kadrosunu filtreleyip her kaydın
+      Character'ını okur. Bir kaydın Character'ı null — kadroda başka bir modun bıraktığı sarkan/bozuk
+      bir birlik referansı (bir birlik türünün kaydını silmiş ama onu kullanan askerleri kaldırmamış)
+      ya da artık var olmayan bir birliğe başvuran bir kayıt. Null birliğin verisini okumak NRE verir
+      ve tüm günlük tick seferle birlikte çöker. Bu bozuk grup durumudur; gölgelendirici veya sürücü
+      sorunu DEĞİL ve aslında bir TOR hatası değil.
+  fix:
+    en:
+      - "Crash Doctor already guards this — its safety net skips the auto-upgrade for the one broken party and keeps the game running. Keep the «Troop auto-upgrade crash guard (TOR)» fix ON (Crash Fixes tab)."
+      - "Also keep «Fix broken troops on save load» ON — on the next save load it scans every party and removes the broken/dangling troop entries that cause this, fixing the save itself."
+      - "Root cause is broken party state from another mod that removed a troop type while soldiers of that type still existed. If it keeps happening, recall which troop-adding/overhaul mod you recently changed or removed."
+      - "Do NOT rebuild shaders or change drivers — this is broken save/party state, that won't help."
+    ru:
+      - "Crash Doctor уже это перехватывает — safety net пропускает авто-улучшение для одного битого отряда и не даёт игре упасть. Держи фикс «Защита от вылета при авто-улучшении отрядов (TOR)» ВКЛ (вкладка «Фиксы крашей»)."
+      - "Держи также ВКЛ «Чинить сломанные отряды при загрузке» — при следующей загрузке сейва он просканирует все отряды и уберёт битые/зависшие записи бойцов, вызывающие это, починив сам сейв."
+      - "Корень — битое состояние отряда из-за другого мода, который убрал тип войск, пока солдаты этого типа ещё были в игре. Если повторяется, вспомни, какой мод на войска/оверхол ты недавно менял или удалял."
+      - "НЕ пересобирай шейдеры и не меняй драйвер — это битое состояние сейва/отряда, не поможет."
+    zh:
+      - "Crash Doctor 已经拦截了它——安全网会跳过那一支损坏队伍的自动升级并让游戏继续运行。在「崩溃修复」页保持「部队自动升级崩溃防护（TOR）」为开。"
+      - "同时保持「读档时修复损坏的部队」为开——下次读档时它会扫描所有队伍并移除导致此问题的损坏／悬空部队条目，从而修复存档本身。"
+      - "根源是其他模组在该类型士兵仍存在时移除了某部队类型，造成损坏的队伍状态。若反复出现，回想你最近更改或移除了哪个加兵／大改模组。"
+      - "不要重建着色器或更换驱动——这是损坏的存档／队伍状态，没用。"
+    zht:
+      - "Crash Doctor 已經攔截了它——安全網會跳過那一支損壞隊伍的自動升級並讓遊戲繼續執行。在「崩潰修復」頁保持「部隊自動升級崩潰防護（TOR）」為開。"
+      - "同時保持「讀檔時修復損壞的部隊」為開——下次讀檔時它會掃描所有隊伍並移除導致此問題的損壞／懸空部隊條目，從而修復存檔本身。"
+      - "根源是其他模組在該類型士兵仍存在時移除了某部隊類型，造成損壞的隊伍狀態。若反覆出現，回想你最近更改或移除了哪個加兵／大改模組。"
+      - "不要重建著色器或更換驅動——這是損壞的存檔／隊伍狀態，沒用。"
+    tr:
+      - "Crash Doctor bunu zaten koruyor — güvenlik ağı o tek bozuk grubun otomatik yükseltmesini atlar ve oyunu çalışır tutar. «Birlik otomatik yükseltme çökme koruması (TOR)» düzeltmesini AÇIK tut (Çökme Düzeltmeleri sekmesi)."
+      - "«Kayıt yüklenirken bozuk birlikleri onar» seçeneğini de AÇIK tut — sonraki kayıt yüklemesinde tüm grupları tarar ve buna yol açan bozuk/sarkan birlik kayıtlarını kaldırarak kaydın kendisini onarır."
+      - "Kök neden, o türden askerler hâlâ varken bir birlik türünü kaldıran başka bir moddan gelen bozuk grup durumudur. Tekrarlıyorsa, son zamanlarda hangi birlik ekleyen/elden geçiren modu değiştirdiğini veya kaldırdığını hatırla."
+      - "Gölgelendiricileri yeniden oluşturma veya sürücü değiştirme — bu bozuk kayıt/grup durumudur, yardımcı olmaz."
+  match:
+    all:
+      - managed_exception: { frame_contains: "TORPartyUpgraderCampaignBehavior" }
+      - managed_exception: { type_contains: "NullReference" }
+
 # War Sails (official naval DLC, module id "NavalDLC") world-map ship-visual crash, caused by a
 # BROKEN third-party "Faster Ships" mod. AccessViolationException (0xC0000005) thrown from
 # NavalMobilePartyVisual.UpdateEntityPosition inside NavalMobilePartyVisualManager.OnTick →
@@ -619,3 +816,285 @@
     all:
       - managed_exception: { frame_contains: "ColumnFormation.GetLocalPositionOfUnit" }
       - managed_exception: { type_contains: "ArgumentOutOfRange" }
+
+# End-of-battle mission-tick crash inside vanilla victory reactions. NullReferenceException from
+# AgentVictoryLogic+<>c__DisplayClass30_0.<SetTimersOfVictoryReactionsOnRetreat>b__0 (the Where
+# filter lambda) ← Enumerable.Where().ToList() ← AgentVictoryLogic.SetTimersOfVictoryReactionsOnRetreat
+# ← BattleEndLogic.OnMissionTick ← Mission.OnTick. When one side retreats the engine filters agents
+# with `agent.IsHuman && agent.IsAIControlled && agent.Team.Side == side`; an AI-controlled human
+# agent whose Team is null makes `agent.Team.Side` NRE and the whole mission tick dies. A teamless
+# human agent is produced by mods that spawn/summon units mid-battle without assigning a Team
+# (TOR summons / raised dead are the common trigger). NOT a shader/driver problem and not really a
+# TOR bug — vanilla engine fragility around victory cheers.
+- id: mission.victory_reaction_retreat_nre
+  category: managed
+  severity: critical
+  confidence: high
+  evidence_source: "Client crash 2026-06-14 report(17).txt — NullReferenceException AgentVictoryLogic+<>c__DisplayClass30_0.<SetTimersOfVictoryReactionsOnRetreat>b__0 ← Enumerable.Where().ToList() ← AgentVictoryLogic.SetTimersOfVictoryReactionsOnRetreat ← BattleEndLogic.OnMissionTick ← Mission.OnTick. Modlist included TOR_Core. Captured by Crash Doctor managed capture."
+  requires_sources: [managed_exception]
+  title:
+    en: "End-of-battle crash — a teamless soldier in victory reactions — guarded by Crash Doctor"
+    ru: "Вылет в конце боя — боец без команды в победных реакциях — перехвачено Crash Doctor"
+    zh: "战斗结束崩溃——胜利反应中有无队伍的士兵——已被 Crash Doctor 拦截"
+    zht: "戰鬥結束崩潰——勝利反應中有無隊伍的士兵——已被 Crash Doctor 攔截"
+    tr: "Savaş sonu çökmesi — zafer tepkilerinde takımsız bir asker — Crash Doctor tarafından korunuyor"
+  description:
+    en: |
+      NullReferenceException from AgentVictoryLogic.SetTimersOfVictoryReactionsOnRetreat on the
+      mission tick, when one side retreats and the engine picks which AI soldiers play a victory
+      reaction (BattleEndLogic.OnMissionTick → SetTimersOfVictoryReactionsOnRetreat → Where().ToList()).
+      The filter reads `agent.IsHuman && agent.IsAIControlled && agent.Team.Side == side`; one
+      AI-controlled human agent has a null Team, so `agent.Team.Side` dereferences null and the
+      whole mission tick crashes. A teamless human agent is never produced by the base game — it
+      comes from a mod that spawns/summons a unit mid-battle without assigning it a Team (TOR
+      summons / raised dead are the usual source). This is vanilla engine fragility, NOT a shader
+      or driver problem and not really a TOR bug.
+    ru: |
+      NullReferenceException из AgentVictoryLogic.SetTimersOfVictoryReactionsOnRetreat на тике
+      боя, когда одна сторона отступает и движок выбирает, кто из ИИ-бойцов отыграет победную
+      реакцию (BattleEndLogic.OnMissionTick → SetTimersOfVictoryReactionsOnRetreat → Where().ToList()).
+      Фильтр читает `agent.IsHuman && agent.IsAIControlled && agent.Team.Side == side`; у одного
+      ИИ-бойца-человека команда (Team) равна null, поэтому `agent.Team.Side` разыменовывает null,
+      и весь тик боя падает. Боец-человек без команды не появляется в базовой игре — он приходит
+      от мода, который спавнит/призывает юнита в бою, не назначив ему Team (обычно это призывы /
+      поднятие нежити TOR). Это хрупкость движка ваниль, а НЕ проблема шейдеров или драйвера, и
+      не баг TOR.
+    zh: |
+      任务刻 tick 期间，当一方撤退、引擎挑选哪些 AI 士兵播放胜利反应时
+      （BattleEndLogic.OnMissionTick → SetTimersOfVictoryReactionsOnRetreat → Where().ToList()），
+      AgentVictoryLogic.SetTimersOfVictoryReactionsOnRetreat 抛出空引用异常。过滤器读取
+      `agent.IsHuman && agent.IsAIControlled && agent.Team.Side == side`；某个 AI 控制的人类士兵
+      的 Team 为 null，于是 `agent.Team.Side` 对空取引用，整个任务 tick 崩溃。没有队伍的人类士兵
+      绝不会由原版生成——它来自某个在战斗中生成/召唤单位却未为其分配 Team 的模组（通常是 TOR
+      的召唤/亡灵）。这是原版引擎的脆弱性，不是着色器或驱动问题，也不是 TOR 的错。
+    zht: |
+      任務刻 tick 期間，當一方撤退、引擎挑選哪些 AI 士兵播放勝利反應時
+      （BattleEndLogic.OnMissionTick → SetTimersOfVictoryReactionsOnRetreat → Where().ToList()），
+      AgentVictoryLogic.SetTimersOfVictoryReactionsOnRetreat 擲出空參考例外。過濾器讀取
+      `agent.IsHuman && agent.IsAIControlled && agent.Team.Side == side`；某個 AI 控制的人類士兵
+      的 Team 為 null，於是 `agent.Team.Side` 對空取參考，整個任務 tick 崩潰。沒有隊伍的人類士兵
+      絕不會由原版生成——它來自某個在戰鬥中生成/召喚單位卻未為其分配 Team 的模組（通常是 TOR
+      的召喚/亡靈）。這是原版引擎的脆弱性，不是著色器或驅動問題，也不是 TOR 的錯。
+    tr: |
+      Görev tick'inde, bir taraf geri çekilirken motor hangi AI askerlerinin zafer tepkisi
+      oynayacağını seçerken (BattleEndLogic.OnMissionTick → SetTimersOfVictoryReactionsOnRetreat →
+      Where().ToList()) AgentVictoryLogic.SetTimersOfVictoryReactionsOnRetreat'tan
+      NullReferenceException fırlatıldı. Filtre `agent.IsHuman && agent.IsAIControlled &&
+      agent.Team.Side == side` okur; AI kontrollü bir insan ajanın Team'i null olduğundan
+      `agent.Team.Side` null'a başvurur ve tüm görev tick'i çöker. Takımsız bir insan ajan asla
+      temel oyun tarafından üretilmez — savaş ortasında bir birimi Team atamadan doğuran/çağıran
+      bir moddan gelir (genelde TOR çağırma / ölü diriltme). Bu, motorun orijinal kırılganlığıdır,
+      gölgelendirici veya sürücü sorunu DEĞİL ve gerçekten bir TOR hatası değil.
+  fix:
+    en:
+      - "Crash Doctor already guards this — its safety net swallows the crash and skips one cosmetic retreat cheer, so the battle keeps running. Keep the «End-of-battle retreat-cheer crash guard» fix ON (Crash Fixes tab)."
+      - "Root cause is a mod that spawns/summons a soldier without a team. If you use summon / raise-dead abilities (TOR) or a mod that adds reinforcements mid-fight, that is the source — it is cosmetic, no action needed while the guard is on."
+      - "Do NOT rebuild shaders or change drivers — this is a battle-state bug, that won't help."
+    ru:
+      - "Crash Doctor уже это перехватывает — safety net гасит вылет и пропускает один косметический клич при отступлении, бой продолжается. Держи фикс «Защита от вылета в конце боя (клич при отступлении)» ВКЛ (вкладка «Фиксы крашей»)."
+      - "Корень — мод, спавнящий/призывающий бойца без команды. Если пользуешься призывом / поднятием нежити (TOR) или модом, добавляющим подкрепления прямо в бою — это источник; эффект косметический, пока защита включена, делать ничего не нужно."
+      - "НЕ пересобирай шейдеры и не меняй драйвер — это баг состояния боя, не поможет."
+    zh:
+      - "Crash Doctor 已经拦截了它——安全网会吞掉崩溃并跳过一次纯装饰性的撤退欢呼，战斗继续运行。在「崩溃修复」页保持「战斗结束撤退欢呼崩溃防护」为开。"
+      - "根源是某个生成/召唤无队伍士兵的模组。如果你使用召唤／亡灵能力（TOR）或在战斗中添加援军的模组，那就是来源；效果纯装饰性，只要防护开启就无需处理。"
+      - "不要重建着色器或更换驱动——这是战斗状态 bug，没用。"
+    zht:
+      - "Crash Doctor 已經攔截了它——安全網會吞掉崩潰並跳過一次純裝飾性的撤退歡呼，戰鬥繼續執行。在「崩潰修復」頁保持「戰鬥結束撤退歡呼崩潰防護」為開。"
+      - "根源是某個生成/召喚無隊伍士兵的模組。如果你使用召喚／亡靈能力（TOR）或在戰鬥中加入援軍的模組，那就是來源；效果純裝飾性，只要防護開啟就無需處理。"
+      - "不要重建著色器或更換驅動——這是戰鬥狀態 bug，沒用。"
+    tr:
+      - "Crash Doctor bunu zaten koruyor — güvenlik ağı çökmeyi yutar ve kozmetik bir geri çekilme tezahüratını atlar, böylece savaş çalışmaya devam eder. «Savaş sonu geri çekilme tezahüratı çökme koruması» düzeltmesini AÇIK tut (Çökme Düzeltmeleri sekmesi)."
+      - "Kök neden, takımı olmayan bir askeri doğuran/çağıran bir moddur. Çağırma / ölü diriltme yetenekleri (TOR) ya da savaş ortasında takviye ekleyen bir mod kullanıyorsan kaynak odur; etki kozmetiktir, koruma açıkken bir şey yapmana gerek yok."
+      - "Gölgelendiricileri yeniden oluşturma veya sürücü değiştirme — bu bir savaş durumu hatası, yardımcı olmaz."
+  match:
+    all:
+      - managed_exception: { frame_contains: "SetTimersOfVictoryReactionsOnRetreat" }
+      - managed_exception: { type_contains: "NullReference" }
+
+# Campaign-map DAILY-tick crash inside the troop-training XP model. NullReferenceException from
+# DefaultPartyTrainingModel.GetEffectiveDailyExperience ← TOR_Core.Models.TORPartyTrainingModel.
+# GetEffectiveDailyExperience (base-call override) ← MobilePartyTrainingBehavior.OnDailyTickParty ←
+# CampaignEvents.DailyTickParty ← Campaign.Tick. The model walks a party's roster and dereferences
+# each troop's CharacterObject; a LIVE troop with a null Culture (e.g. tor_gs_trolls, whose
+# `culture="Culture.aserai"` attribute was dropped at runtime by another data mod's XSLT transform)
+# makes the model NRE and the whole daily tick dies. Same "broken soldier" class as the wage/food/
+# auto-upgrade guards, different method. The troop is NOT dangling (it is a valid registered object),
+# so roster cleanup doesn't remove it — Crash Doctor instead repairs the null Culture on load AND
+# guards this method. NOT a shader/driver problem, not really a TOR bug — broken character data from
+# another mod.
+- id: campaign.party_training_nre
+  category: managed
+  severity: critical
+  confidence: high
+  evidence_source: "Local repro 2026-06-15 report fdcfe16e — NullReferenceException DefaultPartyTrainingModel.GetEffectiveDailyExperience ← TOR_Core.Models.TORPartyTrainingModel.GetEffectiveDailyExperience ← MobilePartyTrainingBehavior.OnDailyTickParty ← Campaign.Tick. crashdoctor.log showed 'null Culture on tor_gs_trolls' (same troop earlier caught by wage/food/upgrade guards). Modlist: TOR_Core + LoreHardcore. Captured by Crash Doctor managed capture."
+  requires_sources: [managed_exception]
+  title:
+    en: "Daily-tick crash — troop training hit a soldier with no culture — guarded by Crash Doctor"
+    ru: "Вылет на дневном тике — тренировка наткнулась на бойца без культуры — перехвачено Crash Doctor"
+    zh: "每日结算崩溃——训练遇到无文化的士兵——已被 Crash Doctor 拦截"
+    zht: "每日結算崩潰——訓練遇到無文化的士兵——已被 Crash Doctor 攔截"
+    tr: "Günlük tick çökmesi — eğitim kültürsüz bir askere rastladı — Crash Doctor tarafından korunuyor"
+  description:
+    en: |
+      NullReferenceException from DefaultPartyTrainingModel.GetEffectiveDailyExperience (called via
+      TOR's TORPartyTrainingModel override) on the daily tick, while the game grants training XP to a
+      party's troops (MobilePartyTrainingBehavior.OnDailyTickParty → Campaign.Tick). The model walks
+      the roster and reads each troop's CharacterObject; one live troop has a null Culture, so a
+      culture-dependent read dereferences null and the whole daily tick crashes. The classic case is
+      the TOR monster troop tor_gs_trolls: TOR's XML gives it culture="Culture.aserai", but the
+      runtime CharacterObject lost its culture (another data mod's XSLT transform dropped the
+      attribute). The troop is valid and registered — it is NOT a dangling/removed troop — so it can
+      be repaired rather than deleted. This is broken character DATA from a mod, NOT a shader or
+      driver problem and not a core TOR bug.
+    ru: |
+      NullReferenceException из DefaultPartyTrainingModel.GetEffectiveDailyExperience (через оверрайд
+      TOR TORPartyTrainingModel) на дневном тике, когда игра начисляет опыт тренировки войскам отряда
+      (MobilePartyTrainingBehavior.OnDailyTickParty → Campaign.Tick). Модель идёт по ростеру и читает
+      CharacterObject каждого бойца; у одного живого бойца культура (Culture) равна null, и обращение,
+      зависящее от культуры, разыменовывает null — весь дневной тик падает. Классический случай —
+      монстр-войско TOR tor_gs_trolls: в XML у TOR прописано culture="Culture.aserai", но рантайм-
+      объект потерял культуру (XSLT-преобразование другого мода данных убрало атрибут). Боец валиден и
+      зарегистрирован — это НЕ висящее/удалённое войско — поэтому его можно починить, а не удалять. Это
+      битые ДАННЫЕ персонажа из мода, а НЕ проблема шейдеров/драйвера и не баг ядра TOR.
+    zh: |
+      每日结算时，游戏为某队伍的部队发放训练经验
+      （MobilePartyTrainingBehavior.OnDailyTickParty → Campaign.Tick）时，
+      DefaultPartyTrainingModel.GetEffectiveDailyExperience（经 TOR 的 TORPartyTrainingModel 覆写调用）
+      抛出空引用异常。模型遍历名册并读取每个部队的 CharacterObject；某个有效部队的 Culture 为 null，
+      于是依赖文化的读取对空取引用，整个每日结算崩溃。典型案例是 TOR 怪物部队 tor_gs_trolls：TOR 的 XML
+      给它 culture="Culture.aserai"，但运行时对象丢失了文化（另一数据模组的 XSLT 转换删除了该属性）。
+      该部队有效且已注册——并非悬空／已移除部队——因此可以修复而非删除。这是来自模组的损坏角色数据，
+      不是着色器或驱动问题，也不是 TOR 核心 bug。
+    zht: |
+      每日結算時，遊戲為某隊伍的部隊發放訓練經驗
+      （MobilePartyTrainingBehavior.OnDailyTickParty → Campaign.Tick）時，
+      DefaultPartyTrainingModel.GetEffectiveDailyExperience（經 TOR 的 TORPartyTrainingModel 覆寫呼叫）
+      擲出空參考例外。模型走訪名冊並讀取每個部隊的 CharacterObject；某個有效部隊的 Culture 為 null，
+      於是依賴文化的讀取對空取參考，整個每日結算崩潰。典型案例是 TOR 怪物部隊 tor_gs_trolls：TOR 的 XML
+      給它 culture="Culture.aserai"，但執行階段物件遺失了文化（另一資料模組的 XSLT 轉換移除了該屬性）。
+      該部隊有效且已註冊——並非懸空／已移除部隊——因此可以修復而非刪除。這是來自模組的損壞角色資料，
+      不是著色器或驅動問題，也不是 TOR 核心 bug。
+    tr: |
+      Günlük tick'te, oyun bir grubun birliklerine eğitim XP'si verirken
+      (MobilePartyTrainingBehavior.OnDailyTickParty → Campaign.Tick)
+      DefaultPartyTrainingModel.GetEffectiveDailyExperience'tan (TOR'un TORPartyTrainingModel geçersiz
+      kılması üzerinden çağrılır) NullReferenceException fırlatıldı. Model kadroyu dolaşır ve her
+      birliğin CharacterObject'ini okur; canlı bir birliğin Culture'ı null olduğundan kültüre bağlı
+      bir okuma null'a başvurur ve tüm günlük tick çöker. Klasik örnek TOR canavar birliği
+      tor_gs_trolls'tur: TOR'un XML'i ona culture="Culture.aserai" verir, ama çalışma zamanı nesnesi
+      kültürünü kaybetmiştir (başka bir veri modunun XSLT dönüşümü özniteliği düşürmüş). Birlik
+      geçerli ve kayıtlıdır — asılı/kaldırılmış bir birlik DEĞİLDİR — bu yüzden silinmek yerine
+      onarılabilir. Bu, bir moddan gelen bozuk karakter VERİSİdir, gölgelendirici/sürücü sorunu değil
+      ve bir TOR çekirdek hatası değil.
+  fix:
+    en:
+      - "Crash Doctor already guards this — on load it repairs troop types whose culture went missing (so wage/food/upgrade/training all stop crashing), and a backstop guard skips one party's training if anything still throws. Keep «Fix broken troops on save load» and «Troop-training crash guard» ON (Crash Fixes tab)."
+      - "Root cause is a data mod whose XSLT transform drops the `culture` attribute from a TOR troop (here tor_gs_trolls). If you maintain that mod, make the transform preserve the culture attribute (identity-copy attributes). TOR's own XML is correct."
+      - "Do NOT rebuild shaders or change drivers — this is broken character data, that won't help."
+    ru:
+      - "Crash Doctor уже это перехватывает — при загрузке он восстанавливает культуру у типов войск, где она пропала (и тогда жалованье/еда/улучшение/тренировка перестают падать), а страховочный guard пропускает тренировку одного отряда, если что-то всё же бросает исключение. Держи «Чинить сломанные отряды при загрузке» и «Защита от вылета при тренировке войск» ВКЛ (вкладка «Фиксы крашей»)."
+      - "Корень — мод данных, чьё XSLT-преобразование убирает атрибут `culture` у войска TOR (здесь tor_gs_trolls). Если это твой мод — сделай, чтобы преобразование сохраняло атрибут культуры (identity-копирование атрибутов). У самого TOR в XML всё правильно."
+      - "НЕ пересобирай шейдеры и не меняй драйвер — это битые данные персонажа, не поможет."
+    zh:
+      - "Crash Doctor 已经拦截了它——读档时它会修复丢失文化的部队类型（于是军饷／粮食／升级／训练都不再崩溃），并有兜底防护在仍抛异常时跳过某队伍的训练。在「崩溃修复」页保持「读档时修复损坏的部队」和「部队训练崩溃防护」为开。"
+      - "根源是某数据模组，其 XSLT 转换删除了 TOR 部队（此处为 tor_gs_trolls）的 `culture` 属性。如果该模组由你维护，请让转换保留文化属性（按属性做恒等复制）。TOR 自身的 XML 是正确的。"
+      - "不要重建着色器或更换驱动——这是损坏的角色数据，没用。"
+    zht:
+      - "Crash Doctor 已經攔截了它——讀檔時它會修復遺失文化的部隊類型（於是軍餉／糧食／升級／訓練都不再崩潰），並有兜底防護在仍拋例外時跳過某隊伍的訓練。在「崩潰修復」頁保持「讀檔時修復損壞的部隊」和「部隊訓練崩潰防護」為開。"
+      - "根源是某資料模組，其 XSLT 轉換移除了 TOR 部隊（此處為 tor_gs_trolls）的 `culture` 屬性。如果該模組由你維護，請讓轉換保留文化屬性（按屬性做恆等複製）。TOR 自身的 XML 是正確的。"
+      - "不要重建著色器或更換驅動——這是損壞的角色資料，沒用。"
+    tr:
+      - "Crash Doctor bunu zaten koruyor — yüklemede kültürü kaybolan birlik türlerini onarır (böylece maaş/yiyecek/yükseltme/eğitim hepsi çökmeyi bırakır) ve bir emniyet koruması hâlâ bir hata fırlatılırsa bir grubun eğitimini atlar. «Kayıt yüklenirken bozuk birlikleri onar» ve «Birlik eğitimi çökme koruması» düzeltmelerini AÇIK tut (Çökme Düzeltmeleri sekmesi)."
+      - "Kök neden, XSLT dönüşümü bir TOR birliğinden (burada tor_gs_trolls) `culture` özniteliğini düşüren bir veri modudur. O modu sen yönetiyorsan, dönüşümün kültür özniteliğini koruduğundan emin ol (öznitelikleri kimlik-kopyala). TOR'un kendi XML'i doğrudur."
+      - "Gölgelendiricileri yeniden oluşturma veya sürücü değiştirme — bu bozuk karakter verisidir, yardımcı olmaz."
+  match:
+    all:
+      - managed_exception: { frame_contains: "GetEffectiveDailyExperience" }
+      - managed_exception: { type_contains: "NullReference" }
+
+# Campaign-map DAILY-tick crash inside TOR's troop assimilation. NullReferenceException from
+# AssimilationCampaignBehavior.SwapTroopsIfNeeded (troop.Culture.StringId) ← DailyTickSettlement ←
+# Campaign.Tick. Same null-Culture root as the wage/food/upgrade/training crashes: a live troop
+# (TOR's tor_gs_trolls) has a null Culture at runtime, and SwapTroopsIfNeeded dereferences
+# troop.Culture.StringId. Crash Doctor's single-point fix is the CharacterObject.Culture getter
+# null-fallback (substitutes aserai), which covers this and every other culture consumer. NOT a
+# shader/driver problem; the troop's culture goes null at runtime (TOR/vanilla fragility for the
+# race="troll" unit or a stale save), not a data-mod corruption (verified: LoreHardcore's XSLT
+# preserves the culture attribute).
+- id: campaign.assimilation_null_culture_nre
+  category: managed
+  severity: critical
+  confidence: high
+  evidence_source: "Local repro 2026-06-15 report e1f2190b — NullReferenceException TOR_Core.CampaignMechanics.Assimilation.AssimilationCampaignBehavior.SwapTroopsIfNeeded (line 223, troop.Culture.StringId) ← DailyTickSettlement ← Campaign.Tick. crashdoctor.log showed 'null Culture on tor_gs_trolls'. Modlist TOR_Core + LoreHardcore. Captured by Crash Doctor managed capture."
+  requires_sources: [managed_exception]
+  title:
+    en: "Daily-tick crash — troop assimilation hit a soldier with no culture — guarded by Crash Doctor"
+    ru: "Вылет на дневном тике — ассимиляция наткнулась на бойца без культуры — перехвачено Crash Doctor"
+    zh: "每日结算崩溃——同化遇到无文化的士兵——已被 Crash Doctor 拦截"
+    zht: "每日結算崩潰——同化遇到無文化的士兵——已被 Crash Doctor 攔截"
+    tr: "Günlük tick çökmesi — asimilasyon kültürsüz bir askere rastladı — Crash Doctor tarafından korunuyor"
+  description:
+    en: |
+      NullReferenceException from TOR's AssimilationCampaignBehavior.SwapTroopsIfNeeded on the daily
+      tick (DailyTickSettlement → Campaign.Tick), at `troop.Culture.StringId`. A live troop has a
+      null Culture, so reading its culture id NREs. This is the same null-Culture root behind the
+      wage / food / auto-upgrade / training crashes: the TOR troop tor_gs_trolls (race="troll")
+      loads with culture="Culture.aserai" but its CharacterObject.Culture goes null at runtime. Not a
+      shader/driver problem; not caused by LoreHardcore (its XSLT preserves the culture attribute —
+      verified) — most likely TOR/vanilla fragility for the troll unit or a stale save.
+    ru: |
+      NullReferenceException из AssimilationCampaignBehavior.SwapTroopsIfNeeded у TOR на дневном тике
+      (DailyTickSettlement → Campaign.Tick), в `troop.Culture.StringId`. У живого войска культура
+      (Culture) равна null, и чтение её id падает. Это тот же корень с null-культурой, что и вылеты
+      жалованья / еды / авто-улучшения / тренировки: войско TOR tor_gs_trolls (race="troll")
+      грузится с culture="Culture.aserai", но в рантайме его CharacterObject.Culture становится null.
+      Не проблема шейдеров/драйвера; не из-за LoreHardcore (его XSLT сохраняет атрибут culture —
+      проверено) — скорее хрупкость TOR/ваниль для юнита-тролля либо старый сейв.
+    zh: |
+      每日结算时（DailyTickSettlement → Campaign.Tick），TOR 的
+      AssimilationCampaignBehavior.SwapTroopsIfNeeded 在 `troop.Culture.StringId` 处抛出空引用异常。
+      某个有效部队的 Culture 为 null，读取其文化 id 即崩溃。这与军饷／粮食／自动升级／训练崩溃同根：
+      TOR 部队 tor_gs_trolls（race="troll"）以 culture="Culture.aserai" 加载，但运行时其
+      CharacterObject.Culture 变为 null。不是着色器／驱动问题；也不是 LoreHardcore 导致（其 XSLT
+      保留了文化属性——已验证）——很可能是 TOR／原版对巨魔单位的脆弱性或旧存档。
+    zht: |
+      每日結算時（DailyTickSettlement → Campaign.Tick），TOR 的
+      AssimilationCampaignBehavior.SwapTroopsIfNeeded 在 `troop.Culture.StringId` 處擲出空參考例外。
+      某個有效部隊的 Culture 為 null，讀取其文化 id 即崩潰。這與軍餉／糧食／自動升級／訓練崩潰同根：
+      TOR 部隊 tor_gs_trolls（race="troll"）以 culture="Culture.aserai" 載入，但執行階段其
+      CharacterObject.Culture 變為 null。不是著色器／驅動問題；也不是 LoreHardcore 導致（其 XSLT
+      保留了文化屬性——已驗證）——很可能是 TOR／原版對巨魔單位的脆弱性或舊存檔。
+    tr: |
+      Günlük tick'te (DailyTickSettlement → Campaign.Tick) TOR'un
+      AssimilationCampaignBehavior.SwapTroopsIfNeeded'inden `troop.Culture.StringId` satırında
+      NullReferenceException fırlatıldı. Canlı bir birliğin Culture'ı null olduğundan kültür id'sini
+      okumak çöker. Bu, maaş / yiyecek / otomatik yükseltme / eğitim çökmelerinin ardındaki aynı
+      null-Culture köküdür: TOR birliği tor_gs_trolls (race="troll") culture="Culture.aserai" ile
+      yüklenir ama çalışma zamanında CharacterObject.Culture null olur. Gölgelendirici/sürücü sorunu
+      değil; LoreHardcore kaynaklı değil (XSLT'si kültür özniteliğini korur — doğrulandı) — büyük
+      olasılıkla trol birimi için TOR/orijinal kırılganlığı ya da eski bir kayıt.
+  fix:
+    en:
+      - "Crash Doctor already guards this — the «Missing-culture troop crash guard (TOR)» fix supplies a fallback culture at the single point every system reads it, so assimilation (and wages/food/upgrade/training) stop crashing. Keep it ON (Crash Fixes tab)."
+      - "Root is a troop whose culture becomes null at runtime (TOR's tor_gs_trolls). It is engine/data fragility, not a Crash Doctor or LoreHardcore bug."
+      - "Do NOT rebuild shaders or change drivers — this is a character-data bug, that won't help."
+    ru:
+      - "Crash Doctor уже это перехватывает — фикс «Защита от вылета из-за войск без культуры (TOR)» подставляет запасную культуру в единственной точке чтения, и ассимиляция (а также жалованье/еда/улучшение/тренировка) перестают падать. Держи его ВКЛ (вкладка «Фиксы крашей»)."
+      - "Корень — войско, у которого культура становится null в рантайме (tor_gs_trolls у TOR). Это хрупкость движка/данных, не баг Crash Doctor или LoreHardcore."
+      - "НЕ пересобирай шейдеры и не меняй драйвер — это баг данных персонажа, не поможет."
+    zh:
+      - "Crash Doctor 已经拦截了它——「缺少文化的部队崩溃防护（TOR）」会在所有系统读取文化的唯一入口提供备用文化，于是同化（以及军饷／粮食／升级／训练）不再崩溃。保持开启（「崩溃修复」页）。"
+      - "根源是某部队的文化在运行时变为 null（TOR 的 tor_gs_trolls）。这是引擎／数据脆弱性，不是 Crash Doctor 或 LoreHardcore 的 bug。"
+      - "不要重建着色器或更换驱动——这是角色数据 bug，没用。"
+    zht:
+      - "Crash Doctor 已經攔截了它——「缺少文化的部隊崩潰防護（TOR）」會在所有系統讀取文化的唯一入口提供備用文化，於是同化（以及軍餉／糧食／升級／訓練）不再崩潰。保持開啟（「崩潰修復」頁）。"
+      - "根源是某部隊的文化在執行階段變為 null（TOR 的 tor_gs_trolls）。這是引擎／資料脆弱性，不是 Crash Doctor 或 LoreHardcore 的 bug。"
+      - "不要重建著色器或更換驅動——這是角色資料 bug，沒用。"
+    tr:
+      - "Crash Doctor bunu zaten koruyor — «Kültürsüz birlik çökme koruması (TOR)» düzeltmesi tüm sistemlerin kültürü okuduğu tek noktada bir yedek kültür sağlar, böylece asimilasyon (ve maaş/yiyecek/yükseltme/eğitim) çökmeyi bırakır. AÇIK tut (Çökme Düzeltmeleri sekmesi)."
+      - "Kök, kültürü çalışma zamanında null olan bir birliktir (TOR'un tor_gs_trolls'u). Bu motor/veri kırılganlığıdır, Crash Doctor veya LoreHardcore hatası değil."
+      - "Gölgelendiricileri yeniden oluşturma veya sürücü değiştirme — bu bir karakter verisi hatası, yardımcı olmaz."
+  match:
+    all:
+      - managed_exception: { frame_contains: "SwapTroopsIfNeeded" }
+      - managed_exception: { type_contains: "NullReference" }

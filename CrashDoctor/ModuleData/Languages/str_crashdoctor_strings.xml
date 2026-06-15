@@ -31,7 +31,7 @@
     <string id="cd_confidence_medium" text="medium confidence" />
     <string id="cd_confidence_low" text="low confidence" />
     <string id="cd_unrecognized_title" text="Unrecognized crash" />
-    <string id="cd_unrecognized_desc" text="No rule matched yet. Please click 'Export' and send the .txt file to our Telegram channel: https://t.me/CodeRickTg — we will add a rule for this crash." />
+    <string id="cd_unrecognized_desc" text="This crash isn't in our catalogue yet. Click 'Export' — Crash Doctor saves report.txt (plus a .zip with full logs) and opens the folder with report.txt selected. Send report.txt to https://t.me/CodeRickTg and we'll add a rule for it." />
     <string id="cd_clear_dialog_title" text="Delete crash logs?" />
     <string id="cd_clear_dialog_keep" text="Keep last 3 crashes (recommended)" />
     <string id="cd_clear_dialog_delete_dump" text="Delete .dmp memory dumps too" />

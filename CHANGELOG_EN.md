@@ -6,6 +6,25 @@ Change history, by version.
 
 ---
 
+## 2026-06-15 — New guards: troops with "broken" data (no culture / upgrade list), a troop-training crash, and the retreat victory cheer
+
+- **New guard: troops with corrupted data no longer crash the game (root fix).** In some setups certain troop types (seen on The Old Realms' troll units) "lost" their core data at runtime — their culture, upgrade list and battle equipment became empty. That crashed almost every calculation that reads them: wages, food consumption, auto-upgrade, training, assimilation, garrison XP and **auto-resolve combat** — each in its own place, one after another. The new "Malformed-troop crash guard (TOR)" fix on the Crash Fixes tab (on by default) repairs this at the single point every system reads that data: instead of an empty value it supplies a safe one (a fallback culture / an empty upgrade list / empty equipment). This stops the whole family of crashes at once, current and future. Read-only — your save is not modified.
+- **New guard: a crash while training AI parties' troops.** The daily training-XP calculation crashed (NullReferenceException in the XP model) when it hit a troop with corrupted data. The new "Troop-training crash guard" fix isolates it: the affected party simply skips its training for that day and the game continues. A backstop to the root fix above.
+- **New guard: an end-of-battle crash on retreat (victory cheer).** The game crashed (NullReferenceException in `AgentVictoryLogic`) when, as one side retreated, the engine picked which soldiers play a victory cheer and hit an AI soldier with no team (typically a summoned/raised unit that was never assigned a team). The new "End-of-battle retreat-cheer crash guard" catches this: one soldier just skips its cheer animation and the battle continues.
+- **Plus new diagnostic rules** — all of these crashes are now recognized automatically and point at the root (corrupted troop data) in the report, not at shaders or drivers.
+- **The "Support the author" button moved to the bottom-right corner** — it's now separate from the action buttons and out of the way.
+- **The mod version stays 1.7.0.0** — the update raises no questions from the game about your saves.
+
+---
+
+## 2026-06-12 — New guards: a siege crash by a "leaderless" party, and a daily-tick crash during TOR's troop auto-upgrade
+
+- **New guard: a campaign-map crash when a party with no leader hero starts a siege.** The game crashed (NullReferenceException in `BesiegerCamp.AddSiegePartyInternal`) right on the campaign map when an autonomous party with no commanding hero started besieging a fortification — typically such parties are spawned by Bandit Militias-class mods and similar. The base game never expects a leaderless party to besiege a settlement. The new "Siege crash guard (leaderless party)" fix on the Crash Fixes tab (on by default) catches this before the siege begins: the impossible siege simply doesn't start and the game keeps running. Normal lord sieges are untouched. Plus a new diagnostic rule — this crash is now recognized automatically and points at the culprit mod.
+- **New guard: a daily-tick crash when The Old Realms auto-upgrades AI parties' troops.** The game crashed (NullReferenceException in `TORPartyUpgraderCampaignBehavior`) on the daily campaign-map tick: once a day TOR upgrades AI parties' troops to match their culture template, and if a party contained a "broken"/null soldier (a dangling entry left by another mod, or a save referencing a troop that no longer exists), the whole daily tick died together with the campaign. The new "Troop auto-upgrade crash guard (TOR)" fix on the Crash Fixes tab (on by default) isolates the problem to a single party: that party simply skips its upgrade and the game continues. Combined with the "Fix broken troops on save load" fix, the broken entry itself is removed on the next save load. Plus a new diagnostic rule.
+- **The mod version stays 1.7.0.0** — updating raises no questions from the game about your saves.
+
+---
+
 ## 2026-06-11 — System Tune-Up rollbacks fixed; the UI-screen guard works correctly and no longer conflicts with other mods; shader & pagefile advice only with The Old Realms; more accurate save tools; safer troop auto-cleanup; big-map freezes fixed; new reinforcement-spawn battle guard; fewer false alarms
 
 - **The UI-screen crash guard now works correctly and no longer conflicts with other mods.** This "don't crash the game because of another mod's UI error" protection used to, due to an internal bug, really wrap only the inventory screen. It now covers the game's own screens — encyclopedia (list and pages), inventory, quest log and recruit panel — and only catches errors that originate in the game's own UI code, stepping aside when the error came from another mod (UIExtenderEx-based mods like BetterHUD or BetterCore) so it never masks that mod's half-applied change. It also installs only when you enter a game session, when everything is ready — loads work and the guard keeps full coverage. You can keep it on with no side effects.
