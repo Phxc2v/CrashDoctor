@@ -27,13 +27,15 @@ makes throttle-style FPS optimization non-viable.)
 
 The **Crash Fixes** tab lists every runtime anti-crash guard the mod installs —
 each with an on/off checkbox, a plain-language description and a live status
-badge (Active / Off / Skipped — required mod not loaded / Install error). All
+badge (Active / Off / Not needed here — required mod not loaded / Install error). All
 fixes are on by default; you can disable any single one if it misbehaves on
-your setup, without touching the rest.
+your setup, without touching the rest. Two buttons — **Enable all** / **Disable all** —
+flip every applicable fix at once (fixes for mods you don't have are left untouched,
+shown as "Not needed here"). Your choice is saved immediately.
 
 ### 🔬 Crash diagnosis
 Scans `C:\ProgramData\Mount and Blade II Bannerlord\crashes\` and the BUTR HTML
-crash reports if you have BLSE/ButterLib. Matches every crash against **90 YAML
+crash reports if you have BLSE/ButterLib. Matches every crash against **92 YAML
 rules** covering:
 
 - **GPU / DirectX:** integrated-GPU misroute, DXGI device removed/hung, shader
@@ -219,7 +221,9 @@ never drift.
 | **`TorPartyUpgraderNRESafetyPatch`** (TOR) | Finalizer on `TORPartyUpgraderCampaignBehavior.UpgradeReadyTroops(PartyBase)`. TOR's daily auto-upgrade filters the roster with `!t.Character.IsHero && t.Character.UpgradeTargets.Length != 0`; a broken troop (null `Character`/`UpgradeTargets`) crashes the whole daily tick. The finalizer isolates it to one party, which skips its upgrade; other parties continue. |
 | **`VictoryReactionRetreatNRESafetyPatch`** | Finalizer on `AgentVictoryLogic.SetTimersOfVictoryReactionsOnRetreat(BattleSideEnum)`. The end-of-battle retreat-cheer selection filters agents with `agent.IsHuman && agent.IsAIControlled && agent.Team.Side == side`; an AI human agent with a null `Team` (mid-battle summon/raise-dead with no team assigned) NREs the mission tick. Swallows only the NRE — the load-bearing side effects run before it, so only the cosmetic cheer is skipped. |
 | **`PartyTrainingNRESafetyPatch`** | Finalizer on `MobilePartyTrainingBehavior.OnDailyTickParty(MobileParty)`. The training-XP model (`DefaultPartyTrainingModel.GetEffectiveDailyExperience`, via TOR's override) reads per-troop fields; a troop with invalid data (e.g. null culture) NREs the daily tick. The affected party skips its training; the game continues. Backstop to the root fix below. |
+| **`SimulatedBattleHitNRESafetyPatch`** | Finalizer on the private `MapEvent.SimulateSingleTroopHit(BattleSideEnum, …)`. The engine auto-resolves AI-vs-AI map battles every tick; `MapEventSide.ApplySimulatedHitRewardToSelectedTroop` dereferences the striker troop's `FirstBattleEquipment` as its first statement. A **dangling troop** (a `CharacterObject` that no longer resolves — classic leftover after a custom-troop mod like Special Troops Plus / FireArchers is removed, once AI lords have recruited those units) makes the striker null and NREs the whole campaign-map tick. The finalizer drops just that one simulated hit (`__result = false`); the `SimulateBattleRound` loop resolves the battle from the remaining valid troops. Root fix is `DanglingTroopCleanerBehavior` (below) + a re-save. |
 | **`CharacterDataFallbackPatch`** (TOR) | Single-point root fix for the "malformed troop" cascade: postfixes on the `CharacterObject.Culture`, `CharacterObject.UpgradeTargets` **and `CharacterObject.FirstBattleEquipment`** getters. A live, registered troop (seen: TOR's `tor_gs_trolls`, `race="troll"`) has these fields correct in XML but null at **runtime**, and every consumer that reads them NREs in a different method (wages, food, auto-upgrade, training, assimilation `SwapTroopsIfNeeded`, garrison XP `PartyBase.OnXpChanged`, auto-resolve combat `MapEventSide.ApplySimulatedHitRewardToSelectedTroop`). The postfixes substitute a fallback culture (`aserai`) / an empty upgrade array / an empty `Equipment` at the one place every system reads the field — killing the whole cascade at the source. Read-only; never writes the backing field or save state. Getters resolved with `DeclaredOnly` to avoid the `new`-shadowed `Culture` ambiguity. Also carries a diagnostic that logs the call stack if anything ever *writes* null into these fields, to pin the upstream root (empirically 100% correlated with the LoreHardcore data mod). |
+| **`SaveMetaDataDuplicateKeyGuard`** | Postfix on `SaveHandler.GetSaveMetaData` (the same method `ModListScrubPatch` postfixes; Harmony composes both). `MBSaveLoad.GetSaveMetaData` feeds every `CampaignSaveMetaDataArgs.OtherData` entry — plus `ApplicationVersion`/`CreationTime` — into `Dictionary.Add`, which throws `ArgumentException` ("same key has already been added") on a duplicate. Vanilla supplies 15 distinct keys, so a base game never throws; a third-party mod patching the metadata builder to append its own entry can inject a duplicate (or a key colliding with the reserved `Modules`/`Module_*`/`ApplicationVersion`/`CreationTime`), crashing **every** save (auto/quick/manual). The guard de-duplicates `OtherData` (keep-first, ordinal) and drops reserved-key collisions before the engine's `Add` loop — reproducing the dictionary the engine would have built, so the save's metadata is otherwise unchanged. `__result` is rebuilt only when something is actually removed (zero overhead on normal saves). Does not depend on TOR. |
 | **`DanglingTroopCleanerBehavior`** | `OnSessionLaunched` scan: drops roster elements whose `Character` is null or **no longer registered in `MBObjectManager`** (a mod unregistered it without scrubbing rosters) across every party, settlement and active issue, and **removes orphaned garrison parties** (`IsGarrison && CurrentSettlement == null`) so a re-save heals the campaign. Live modded troops that merely lack a culture are NOT touched; every removal is logged by `StringId`. Listed on the Crash Fixes tab as **"Fix broken troops on save load"**. |
 | **`SafetyNetMessenger`** | Five-language toast helper used by the guards above. Picks EN/RU/ZH/ZHT/TR by `BannerlordConfig.Language` (Traditional Chinese falls back to Simplified, then English), amber (catch) or green (cleanup), one toast per category per 60 s. (Always on — infrastructure.) |
 
@@ -478,10 +482,12 @@ Calradia Expanded, RBM, Banner Kings и т.д. Без интернета, без
 
 Вкладка **«Фиксы крашей»** показывает все «живые» защиты от вылетов, которые
 ставит мод: у каждой галочка вкл/выкл, понятное описание и статус (Активен /
-Выключен / Пропущен — нет нужного мода / Ошибка). Все включены по умолчанию;
-любой фикс можно отключить по отдельности, если он мешает.
+Выключен / Здесь не требуется — нет нужного мода / Ошибка). Все включены по умолчанию;
+любой фикс можно отключить по отдельности, если он мешает. Кнопки **«Включить все»** /
+**«Выключить все»** переключают сразу все применимые фиксы (фиксы для неустановленных
+модов не трогаются — у них статус «Здесь не требуется»). Выбор сразу сохраняется.
 
-- **Диагностика крашей** — **90 YAML-правил** под GPU/DirectX (включая авторитетный
+- **Диагностика крашей** — **92 YAML-правила** под GPU/DirectX (включая авторитетный
   детект iGPU из rgl_log + whitelist карт где DxDiag врёт VRAM), native runtime,
   повреждённые `.tpac` ассеты, save / late-game, mission / engine (NRE в диалогах,
   team-index шторм), TOR (включая Naval DLC + TOR conflict, Assimilation

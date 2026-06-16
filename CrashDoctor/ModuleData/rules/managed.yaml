@@ -1098,3 +1098,212 @@
     all:
       - managed_exception: { frame_contains: "SwapTroopsIfNeeded" }
       - managed_exception: { type_contains: "NullReference" }
+
+# Campaign-map TICK crash inside the AUTO-RESOLVE (simulated) battle path. NullReferenceException from
+# MapEventSide.ApplySimulatedHitRewardToSelectedTroop ← MapEvent.SimulateSingleTroopHit ←
+# MapEvent.SimulateBattleRound ← MapEvent.SimulateBattleSessionForMapEvent ← MapEvent.Update ←
+# MapEventManager.Tick ← Campaign.Tick. Every frame the engine auto-resolves AI-vs-AI map battles;
+# the simulation picks a random troop from each side and ApplySimulatedHitRewardToSelectedTroop
+# dereferences the striker's FirstBattleEquipment first thing. A party roster still carrying a troop
+# whose CharacterObject no longer resolves (a "dangling troop" left after a custom-troop mod was
+# removed) yields a null striker → NRE → the whole map tick dies. NOT a shader/driver problem.
+- id: campaign.simulated_battle_hit_nre
+  category: managed
+  severity: critical
+  confidence: high
+  evidence_source: "Client crash 2026-06-15 report(22).txt — NullReferenceException TaleWorlds.CampaignSystem.MapEvents.MapEventSide.ApplySimulatedHitRewardToSelectedTroop ← MapEvent.SimulateSingleTroopHit ← MapEvent.SimulateBattleRound ← MapEvent.SimulateBattleSessionForMapEvent ← MapEvent.Update ← MapEventManager.Tick ← Campaign.Tick ← MapState.OnMapModeTick. Player had removed custom-troop mods (Special Troops Plus / FireArchers); crashes every ~10 min of map time. Captured by Crash Doctor managed capture."
+  requires_sources: [managed_exception]
+  title:
+    en: "World-map crash — auto-resolving an AI battle hit a broken troop — guarded by Crash Doctor"
+    ru: "Вылет на карте — авто-расчёт боя ИИ наткнулся на битого бойца — перехвачено Crash Doctor"
+    zh: "世界地图崩溃——自动结算 AI 战斗时遇到损坏部队——已被 Crash Doctor 拦截"
+    zht: "世界地圖崩潰——自動結算 AI 戰鬥時遇到損壞部隊——已被 Crash Doctor 攔截"
+    tr: "Dünya haritası çökmesi — AI savaşını otomatik çözerken bozuk bir askere rastlandı — Crash Doctor tarafından korunuyor"
+  description:
+    en: |
+      NullReferenceException from MapEventSide.ApplySimulatedHitRewardToSelectedTroop on the
+      campaign-map tick, while the engine auto-resolves (simulates) a battle that AI parties are
+      fighting on the world map (MapEventManager.Tick → MapEvent.Update → SimulateBattleRound →
+      SimulateSingleTroopHit → ApplySimulatedHitRewardToSelectedTroop). The simulation picks a
+      random troop from each side's roster; the reward method dereferences the striker troop's
+      FirstBattleEquipment as its very first statement. Here the striker is null — a party's roster
+      still carries a troop whose CharacterObject no longer resolves. That is the classic "dangling
+      troop": after a custom-troop mod is removed (the report's player removed Special Troops Plus /
+      FireArchers), the units AI lords had recruited remain referenced in the save but the IDs no
+      longer load, so the lookup returns null. Because AI battles resolve constantly on a long save,
+      this fires every few minutes of active map time. It is a mod/save-data issue, NOT a shader or
+      driver problem, and not a TOR bug.
+    ru: |
+      NullReferenceException из MapEventSide.ApplySimulatedHitRewardToSelectedTroop на тике карты,
+      когда движок авто-рассчитывает (симулирует) бой, который ИИ-партии ведут на глобальной карте
+      (MapEventManager.Tick → MapEvent.Update → SimulateBattleRound → SimulateSingleTroopHit →
+      ApplySimulatedHitRewardToSelectedTroop). Симуляция берёт случайного бойца из ростера каждой
+      стороны; метод награды первым же действием разыменовывает FirstBattleEquipment бойца-атакующего.
+      Здесь атакующий равен null — в ростере отряда остался боец, чей CharacterObject больше не
+      резолвится. Это классический «висячий боец»: после удаления мода с войсками (игрок в репорте
+      убрал Special Troops Plus / FireArchers) юниты, которых успели нанять ИИ-лорды, остаются в
+      сейве по ссылке, но их ID больше не грузятся, и поиск возвращает null. Поскольку на долгом
+      сейве бои ИИ идут постоянно, вылет повторяется каждые несколько минут активного времени на
+      карте. Это проблема мода/данных сейва, а НЕ шейдеров или драйвера, и не баг TOR.
+    zh: |
+      战役地图 tick 期间，当引擎自动结算（模拟）AI 队伍在世界地图上进行的战斗时
+      （MapEventManager.Tick → MapEvent.Update → SimulateBattleRound → SimulateSingleTroopHit →
+      ApplySimulatedHitRewardToSelectedTroop），MapEventSide.ApplySimulatedHitRewardToSelectedTroop
+      抛出空引用异常。模拟从每一方的名册中随机挑选一名部队；奖励方法第一步就对攻击方部队的
+      FirstBattleEquipment 取引用。此处攻击方为 null——某队伍名册中仍带有一名其 CharacterObject
+      已无法解析的部队。这就是典型的“悬空部队”：移除自定义部队模组后（报告中的玩家移除了
+      Special Troops Plus / FireArchers），AI 领主曾招募的单位仍在存档中被引用，但其 ID 已无法加载，
+      于是查找返回 null。由于长存档中 AI 战斗持续发生，此崩溃每隔几分钟的活跃地图时间就会触发。
+      这是模组／存档数据问题，不是着色器或驱动问题，也不是 TOR 的 bug。
+    zht: |
+      戰役地圖 tick 期間，當引擎自動結算（模擬）AI 隊伍在世界地圖上進行的戰鬥時
+      （MapEventManager.Tick → MapEvent.Update → SimulateBattleRound → SimulateSingleTroopHit →
+      ApplySimulatedHitRewardToSelectedTroop），MapEventSide.ApplySimulatedHitRewardToSelectedTroop
+      擲出空參考例外。模擬從每一方的名冊中隨機挑選一名部隊；獎勵方法第一步就對攻擊方部隊的
+      FirstBattleEquipment 取參考。此處攻擊方為 null——某隊伍名冊中仍帶有一名其 CharacterObject
+      已無法解析的部隊。這就是典型的「懸空部隊」：移除自訂部隊模組後（報告中的玩家移除了
+      Special Troops Plus / FireArchers），AI 領主曾招募的單位仍在存檔中被引用，但其 ID 已無法載入，
+      於是查找回傳 null。由於長存檔中 AI 戰鬥持續發生，此崩潰每隔幾分鐘的活躍地圖時間就會觸發。
+      這是模組／存檔資料問題，不是著色器或驅動問題，也不是 TOR 的 bug。
+    tr: |
+      Sefer haritası tick'inde, motor AI gruplarının dünya haritasında verdiği bir savaşı otomatik
+      çözerken (simüle ederken) MapEventSide.ApplySimulatedHitRewardToSelectedTroop'tan
+      NullReferenceException fırlatıldı (MapEventManager.Tick → MapEvent.Update → SimulateBattleRound
+      → SimulateSingleTroopHit → ApplySimulatedHitRewardToSelectedTroop). Simülasyon her tarafın
+      kadrosundan rastgele bir asker seçer; ödül metodu ilk iş olarak vuran askerin
+      FirstBattleEquipment'ına başvurur. Burada vuran asker null — bir grubun kadrosu, CharacterObject'i
+      artık çözülmeyen bir asker taşımaya devam ediyor. Bu klasik "sarkan asker"dir: özel birlik modu
+      kaldırıldıktan sonra (rapordaki oyuncu Special Troops Plus / FireArchers'ı kaldırmış), AI
+      lortlarının topladığı birimler kayıtta referanslı kalır ama ID'ler artık yüklenmez, dolayısıyla
+      arama null döner. Uzun bir kayıtta AI savaşları sürekli çözüldüğü için bu, aktif harita
+      süresinin her birkaç dakikasında tetiklenir. Bu bir mod/kayıt-verisi sorunudur, gölgelendirici
+      veya sürücü sorunu DEĞİL ve bir TOR hatası değil.
+  fix:
+    en:
+      - "Crash Doctor already guards this — its safety net swallows the crash and skips that one auto-resolve hit, so the world map keeps running. Keep the «Auto-resolve battle crash guard (broken troop)» fix ON (Crash Fixes tab)."
+      - "Fix the root: keep «Fix broken troops on save load» ON (Crash Fixes tab), load the save, then RE-SAVE. That scrubs the leftover broken troops out of every party so the crash stops for good."
+      - "These broken troops are leftovers from a removed custom-troop mod (e.g. Special Troops Plus / FireArchers). Re-installing that mod also stops the crash (the troop IDs resolve again), but the cleanup + re-save is the cleaner fix."
+      - "Do NOT rebuild shaders or change drivers — this is a save-data bug, that won't help."
+    ru:
+      - "Crash Doctor уже это перехватывает — safety net гасит вылет и пропускает один удар авто-расчёта, карта продолжает работать. Держи фикс «Защита от вылета при авто-расчёте боя (битый боец)» ВКЛ (вкладка «Фиксы крашей»)."
+      - "Почини корень: держи «Чинить сломанные отряды при загрузке» ВКЛ (вкладка «Фиксы крашей»), загрузи сейв и ПЕРЕСОХРАНИ. Это вычистит оставшихся битых бойцов из всех отрядов, и вылет прекратится навсегда."
+      - "Эти битые бойцы — остатки удалённого мода с войсками (напр. Special Troops Plus / FireArchers). Вернуть этот мод тоже убирает вылет (ID войск снова резолвятся), но чистка + пересохранение — более чистое решение."
+      - "НЕ пересобирай шейдеры и не меняй драйвер — это баг данных сейва, не поможет."
+    zh:
+      - "Crash Doctor 已经拦截了它——安全网会吞掉崩溃并跳过那一次自动结算攻击，世界地图继续运行。在「崩溃修复」页保持「自动结算战斗崩溃防护（损坏部队）」为开。"
+      - "治本：在「崩溃修复」页保持「读档时修复损坏的部队」为开，读取存档后再次保存。这会把残留的损坏部队从所有队伍中清除，崩溃就会彻底停止。"
+      - "这些损坏部队是已移除的自定义部队模组（如 Special Troops Plus / FireArchers）的残留。重新安装该模组也能停止崩溃（部队 ID 重新可解析），但清理＋重新保存是更干净的办法。"
+      - "不要重建着色器或更换驱动——这是存档数据 bug，没用。"
+    zht:
+      - "Crash Doctor 已經攔截了它——安全網會吞掉崩潰並跳過那一次自動結算攻擊，世界地圖繼續執行。在「崩潰修復」頁保持「自動結算戰鬥崩潰防護（損壞部隊）」為開。"
+      - "治本：在「崩潰修復」頁保持「讀檔時修復損壞的部隊」為開，讀取存檔後再次儲存。這會把殘留的損壞部隊從所有隊伍中清除，崩潰就會徹底停止。"
+      - "這些損壞部隊是已移除的自訂部隊模組（如 Special Troops Plus / FireArchers）的殘留。重新安裝該模組也能停止崩潰（部隊 ID 重新可解析），但清理＋重新儲存是更乾淨的辦法。"
+      - "不要重建著色器或更換驅動——這是存檔資料 bug，沒用。"
+    tr:
+      - "Crash Doctor bunu zaten koruyor — güvenlik ağı çökmeyi yutar ve o tek otomatik çözüm vuruşunu atlar, böylece dünya haritası çalışmaya devam eder. «Otomatik savaş çözümü çökme koruması (bozuk asker)» düzeltmesini AÇIK tut (Çökme Düzeltmeleri sekmesi)."
+      - "Kökü düzelt: «Kayıt yüklenirken bozuk birlikleri onar»ı AÇIK tut (Çökme Düzeltmeleri sekmesi), kaydı yükle ve YENİDEN KAYDET. Bu, kalan bozuk askerleri her gruptan temizler ve çökme kalıcı olarak durur."
+      - "Bu bozuk askerler kaldırılan bir özel birlik modunun (örn. Special Troops Plus / FireArchers) kalıntısıdır. O modu yeniden kurmak da çökmeyi durdurur (birlik ID'leri yeniden çözülür), ama temizlik + yeniden kayıt daha temiz çözümdür."
+      - "Gölgelendiricileri yeniden oluşturma veya sürücü değiştirme — bu bir kayıt-verisi hatası, yardımcı olmaz."
+  match:
+    all:
+      - managed_exception: { frame_contains: "ApplySimulatedHitRewardToSelectedTroop" }
+      - managed_exception: { type_contains: "NullReference" }
+
+# SAVE crash: ArgumentException "An item with the same key has already been added." thrown from
+# MBSaveLoad.GetSaveMetaData while writing a save (SaveHandler.SaveTick → SaveAsCurrentGame →
+# OverwriteSaveAux → GetSaveMetaData → Dictionary.Insert(add)). GetSaveMetaData feeds every entry of
+# CampaignSaveMetaDataArgs.OtherData into metaData.Add(...), which throws on a duplicate key. Vanilla
+# SaveHandler supplies 15 distinct keys, none colliding with the reserved engine keys (Modules /
+# Module_* / ApplicationVersion / CreationTime), so the base game never throws. A third-party mod
+# Harmony-patching SaveHandler.GetSaveMetaData to append its own metadata can inject a duplicate or
+# reserved key — and then EVERY save (auto/quick/manual) crashes the game on the tick. Reported on a
+# vanilla 1.4.5 + utility-mods list (no TOR), seen 5×.
+- id: campaign.save_metadata_dupe_key
+  category: managed
+  severity: critical
+  confidence: high
+  evidence_source: "Client report (23) 2026-06-16 crash 1799f5bb — ArgumentException 'An item with the same key has already been added.' at TaleWorlds.Core.MBSaveLoad.GetSaveMetaData ← OverwriteSaveAux ← SaveAsCurrentGame ← SaveHandler.SaveTick ← Module.OnApplicationTick_Patch1. Game 1.4.5, no TOR; modlist BetterCore/BetterHUD/BetterTime/ButterAchievements/TroopTrainingExpanded/etc. Engine MBSaveLoad.GetSaveMetaData verified in decompiled source: OtherData fed into Dictionary.Add."
+  requires_sources: [managed_exception]
+  title:
+    en: "Save crash — a mod added a duplicate save-metadata key — guarded by Crash Doctor"
+    ru: "Вылет при сохранении — мод добавил дубль ключа метаданных сейва — перехвачено Crash Doctor"
+    zh: "保存崩溃——某模组添加了重复的存档元数据键——已被 Crash Doctor 拦截"
+    zht: "存檔當機——某模組加入了重複的存檔中繼資料鍵——已被 Crash Doctor 攔截"
+    tr: "Kayıt çökmesi — bir mod yinelenen bir kayıt meta-veri anahtarı ekledi — Crash Doctor koruyor"
+  description:
+    en: |
+      ArgumentException "An item with the same key has already been added." thrown from
+      TaleWorlds.Core.MBSaveLoad.GetSaveMetaData while the game writes a save (SaveHandler.SaveTick →
+      SaveAsCurrentGame → OverwriteSaveAux → GetSaveMetaData → Dictionary.Insert). GetSaveMetaData
+      builds the save's metadata dictionary and uses Dictionary.Add for "ApplicationVersion",
+      "CreationTime" and every entry of the metadata's OtherData list; Add throws if the key already
+      exists. The base game supplies 15 distinct keys, so vanilla never throws — meaning a third-party
+      mod that patches the metadata builder to append its own entry has injected a duplicate key (or
+      one colliding with a reserved key: Modules / Module_* / ApplicationVersion / CreationTime). Once
+      it does, every save (auto / quick / manual) crashes on the tick. This is a mod conflict, NOT a
+      shader/driver problem, NOT a TOR bug and NOT a Crash Doctor bug.
+    ru: |
+      ArgumentException «An item with the same key has already been added.» из
+      TaleWorlds.Core.MBSaveLoad.GetSaveMetaData в момент записи сейва (SaveHandler.SaveTick →
+      SaveAsCurrentGame → OverwriteSaveAux → GetSaveMetaData → Dictionary.Insert). GetSaveMetaData
+      строит словарь метаданных сейва и кладёт через Dictionary.Add ключи «ApplicationVersion»,
+      «CreationTime» и каждый элемент списка OtherData; Add падает, если ключ уже есть. Базовая игра
+      кладёт 15 уникальных ключей, поэтому ваниль не падает — значит сторонний мод, патчащий сборку
+      метаданных, чтобы дописать своё, добавил дублирующий ключ (или совпавший с зарезервированным:
+      Modules / Module_* / ApplicationVersion / CreationTime). После этого КАЖДОЕ сохранение
+      (авто / быстрое / ручное) роняет игру на тике. Это конфликт модов, а НЕ проблема шейдеров/драйвера,
+      НЕ баг TOR и НЕ баг Crash Doctor.
+    zh: |
+      游戏写入存档时（SaveHandler.SaveTick → SaveAsCurrentGame → OverwriteSaveAux → GetSaveMetaData →
+      Dictionary.Insert），TaleWorlds.Core.MBSaveLoad.GetSaveMetaData 抛出 ArgumentException
+      “An item with the same key has already been added.”。GetSaveMetaData 构建存档的元数据字典，并对
+      “ApplicationVersion”“CreationTime”以及元数据 OtherData 列表的每一项使用 Dictionary.Add；若键已存在，
+      Add 会抛异常。原版提供 15 个不同的键，因此原版从不报错——这意味着某个修改元数据构建过程以追加自身条目的
+      第三方模组注入了重复键（或与保留键冲突：Modules / Module_* / ApplicationVersion / CreationTime）。
+      此后每次保存（自动／快速／手动）都会在 tick 上崩溃。这是模组冲突，不是着色器／驱动问题，不是 TOR 的
+      bug，也不是 Crash Doctor 的 bug。
+    zht: |
+      遊戲寫入存檔時（SaveHandler.SaveTick → SaveAsCurrentGame → OverwriteSaveAux → GetSaveMetaData →
+      Dictionary.Insert），TaleWorlds.Core.MBSaveLoad.GetSaveMetaData 擲出 ArgumentException
+      「An item with the same key has already been added.」。GetSaveMetaData 建構存檔的中繼資料字典，並對
+      「ApplicationVersion」「CreationTime」以及中繼資料 OtherData 清單的每一項使用 Dictionary.Add；若鍵已存在，
+      Add 會擲出例外。原版提供 15 個不同的鍵，因此原版從不報錯——這代表某個修改中繼資料建構過程以附加自身項目的
+      第三方模組注入了重複鍵（或與保留鍵衝突：Modules / Module_* / ApplicationVersion / CreationTime）。
+      此後每次存檔（自動／快速／手動）都會在 tick 上當機。這是模組衝突，不是著色器／驅動問題，不是 TOR 的
+      bug，也不是 Crash Doctor 的 bug。
+    tr: |
+      Oyun bir kaydı yazarken (SaveHandler.SaveTick → SaveAsCurrentGame → OverwriteSaveAux →
+      GetSaveMetaData → Dictionary.Insert) TaleWorlds.Core.MBSaveLoad.GetSaveMetaData'dan
+      ArgumentException "An item with the same key has already been added." fırlatıldı. GetSaveMetaData
+      kaydın meta-veri sözlüğünü kurar ve "ApplicationVersion", "CreationTime" ile meta-verinin OtherData
+      listesindeki her giriş için Dictionary.Add kullanır; anahtar zaten varsa Add hata fırlatır. Temel
+      oyun 15 farklı anahtar sağlar, dolayısıyla orijinal asla hata vermez — yani meta-veri oluşturucuyu
+      kendi girişini eklemek için yamalayan üçüncü taraf bir mod, yinelenen bir anahtar (veya ayrılmış
+      bir anahtarla çakışan: Modules / Module_* / ApplicationVersion / CreationTime) enjekte etmiştir.
+      Bunun ardından her kayıt (otomatik / hızlı / elle) tick'te çöker. Bu bir mod çakışmasıdır;
+      gölgelendirici/sürücü sorunu DEĞİL, TOR hatası DEĞİL ve Crash Doctor hatası DEĞİL.
+  fix:
+    en:
+      - "Crash Doctor already guards this — the «Save crash guard (duplicate mod metadata key)» fix drops the duplicate metadata key before the save is written, so the save completes. Keep it ON (Crash Fixes tab). Update Crash Doctor to the latest version — older builds don't have this guard."
+      - "Root is a mod conflict: another mod adds a save-metadata entry whose key duplicates an existing one. To find it, disable recently-added utility mods (the ones that touch saves/UI) one group at a time and save after each — when the crash stops, the last group disabled contains the culprit; report it to that mod's author."
+      - "Do NOT rebuild shaders or change drivers — this is a save-metadata conflict, that won't help."
+    ru:
+      - "Crash Doctor уже это перехватывает — фикс «Защита от вылета при сохранении (дубль ключа метаданных мода)» убирает дублирующий ключ до записи сейва, и сохранение проходит. Держи его ВКЛ (вкладка «Фиксы крашей»). Обнови Crash Doctor до последней версии — в старых сборках этой защиты нет."
+      - "Корень — конфликт модов: другой мод дописывает в метаданные сейва ключ, совпадающий с уже существующим. Чтобы найти его, отключай недавно добавленные служебные моды (которые трогают сейвы/интерфейс) группами и сохраняйся после каждой — когда вылет прекратится, виновник в последней отключённой группе; сообщи автору того мода."
+      - "НЕ пересобирай шейдеры и не меняй драйвер — это конфликт метаданных сейва, не поможет."
+    zh:
+      - "Crash Doctor 已经拦截了它——「保存崩溃防护（模组元数据键重复）」会在写入存档前移除重复的元数据键，于是保存得以完成。保持开启（「崩溃修复」页）。请将 Crash Doctor 更新到最新版本——旧版本没有此防护。"
+      - "根源是模组冲突：另一个模组向存档元数据写入了与已有键重复的键。要定位它，请按组逐次禁用最近添加的、会触及存档／界面的工具类模组，并在每次之后保存——崩溃停止时，最后禁用的那一组里就有元凶；请向该模组作者反馈。"
+      - "不要重建着色器或更换驱动——这是存档元数据冲突，没用。"
+    zht:
+      - "Crash Doctor 已經攔截了它——「存檔當機防護（模組中繼資料鍵重複）」會在寫入存檔前移除重複的中繼資料鍵，於是存檔得以完成。保持開啟（「崩潰修復」頁）。請將 Crash Doctor 更新到最新版本——舊版本沒有此防護。"
+      - "根源是模組衝突：另一個模組向存檔中繼資料寫入了與既有鍵重複的鍵。要定位它，請按組逐次停用最近加入的、會觸及存檔／介面的工具類模組，並在每次之後存檔——當機停止時，最後停用的那一組裡就有元兇；請向該模組作者回報。"
+      - "不要重建著色器或更換驅動——這是存檔中繼資料衝突，沒用。"
+    tr:
+      - "Crash Doctor bunu zaten koruyor — «Kayıt çökme koruması (yinelenen mod meta-veri anahtarı)» düzeltmesi kayıt yazılmadan önce yinelenen meta-veri anahtarını düşürür, böylece kayıt tamamlanır. AÇIK tut (Çökme Düzeltmeleri sekmesi). Crash Doctor'ı en son sürüme güncelle — eski sürümlerde bu koruma yok."
+      - "Kök bir mod çakışmasıdır: başka bir mod, anahtarı mevcut biriyle aynı olan bir kayıt meta-veri girişi ekler. Bulmak için, son eklenen yardımcı modları (kayıtlara/arayüze dokunanları) grup grup devre dışı bırak ve her seferinde kaydet — çökme durduğunda, son devre dışı bırakılan grupta suçlu vardır; o modun yazarına bildir."
+      - "Gölgelendiricileri yeniden oluşturma veya sürücü değiştirme — bu bir kayıt meta-veri çakışmasıdır, yardımcı olmaz."
+  match:
+    all:
+      - managed_exception: { frame_contains: "GetSaveMetaData" }
+      - managed_exception: { type_contains: "ArgumentException" }
