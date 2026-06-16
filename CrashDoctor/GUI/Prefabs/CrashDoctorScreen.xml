@@ -918,7 +918,7 @@
             <!-- Scrollable list of patches -->
             <Widget Id="CrashFixesScrollWrap"
                     WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
-                    VerticalAlignment="Top" MarginTop="118" MarginBottom="24" MarginLeft="32" MarginRight="56">
+                    VerticalAlignment="Top" MarginTop="118" MarginBottom="70" MarginLeft="32" MarginRight="56">
               <Children>
                 <ScrollablePanel Id="CrashFixesScroll"
                                  WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
@@ -995,6 +995,36 @@
                 </ScrollbarWidget>
               </Children>
             </Widget>
+
+            <!-- Bulk enable/disable all crash fixes (one row, anchored to the bottom of the tab). -->
+            <ListPanel WidthSizePolicy="CoverChildren" HeightSizePolicy="Fixed" SuggestedHeight="40"
+                       VerticalAlignment="Bottom" HorizontalAlignment="Center" MarginBottom="16"
+                       StackLayout.LayoutMethod="HorizontalLeftToRight">
+              <Children>
+                <ButtonWidget DoNotPassEventsToChildren="true" Command.Click="ExecuteEnableAllCrashFixes"
+                              Brush="Popup.Cancel.Button"
+                              WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="220" SuggestedHeight="40"
+                              MarginLeft="6" MarginRight="6">
+                  <Children>
+                    <TextWidget DoNotAcceptEvents="true"
+                                WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
+                                Brush="Popup.Button.Text" Brush.FontSize="14" Brush.TextHorizontalAlignment="Center"
+                                Text="@LabelCrashFixesEnableAll" />
+                  </Children>
+                </ButtonWidget>
+                <ButtonWidget DoNotPassEventsToChildren="true" Command.Click="ExecuteDisableAllCrashFixes"
+                              Brush="Popup.Cancel.Button"
+                              WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="220" SuggestedHeight="40"
+                              MarginLeft="6" MarginRight="6">
+                  <Children>
+                    <TextWidget DoNotAcceptEvents="true"
+                                WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
+                                Brush="Popup.Button.Text" Brush.FontSize="14" Brush.TextHorizontalAlignment="Center"
+                                Text="@LabelCrashFixesDisableAll" />
+                  </Children>
+                </ButtonWidget>
+              </Children>
+            </ListPanel>
           </Children>
         </Widget>
 
