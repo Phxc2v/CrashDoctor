@@ -136,35 +136,93 @@
                                 VerticalAlignment="Top" MarginTop="56" MarginLeft="20"
                                 Brush.FontSize="18" Brush.FontColor="#D8B040FF" Text="@DiagnosisSeverity" />
 
-                    <!-- Description sits inside a ScrollablePanel so long crash explanations get
-                         scrollbars instead of Gauntlet auto-shrinking the font to "fit". The inner
-                         TextWidget uses CoverChildren so word-wrap actually reflows lines. -->
-                    <ScrollablePanel WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="210"
-                                     VerticalAlignment="Top" MarginTop="86" MarginLeft="20" MarginRight="20"
-                                     ClipContents="true" AutoHideScrollBars="true">
+                    <!-- Description sits inside a ScrollablePanel WIRED to a real scrollbar
+                         (ClipRect+InnerPanel+VerticalScrollbar). A bare ScrollablePanel clips but
+                         never scrolls, so a long crash explanation got cut off the bottom with no
+                         way to read the rest. The inner TextWidget uses CoverChildren so word-wrap
+                         reflows lines; the scrollbar auto-hides when the text fits. -->
+                    <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="210"
+                            VerticalAlignment="Top" MarginTop="86" MarginLeft="20" MarginRight="20">
                       <Children>
-                        <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren"
-                                    Brush.FontSize="18" Brush.FontColor="#E8DCC4FF" Text="@DiagnosisDescription" />
+                        <ScrollablePanel WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
+                                         AutoHideScrollBars="true"
+                                         ClipRect="DiagDescClipRect" InnerPanel="DiagDescClipRect\DiagDescText"
+                                         VerticalScrollbar="..\DiagDescScrollbar">
+                          <Children>
+                            <Widget Id="DiagDescClipRect" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
+                                    MarginRight="16" ClipContents="true">
+                              <Children>
+                                <TextWidget Id="DiagDescText" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren"
+                                            Brush.FontSize="18" Brush.FontColor="#E8DCC4FF" Text="@DiagnosisDescription" />
+                              </Children>
+                            </Widget>
+                          </Children>
+                        </ScrollablePanel>
+                        <ScrollbarWidget Id="DiagDescScrollbar"
+                                         WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent"
+                                         SuggestedWidth="10" HorizontalAlignment="Right" VerticalAlignment="Top"
+                                         MarginTop="4" MarginBottom="4"
+                                         AlignmentAxis="Vertical" Handle="DiagDescScrollbarHandle"
+                                         MaxValue="100" MinValue="0">
+                          <Children>
+                            <Widget WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="4"
+                                    HorizontalAlignment="Center"
+                                    Sprite="BlankWhiteSquare_9" Color="#5a4033FF" AlphaFactor="0.4" />
+                            <ImageWidget Id="DiagDescScrollbarHandle"
+                                         WidthSizePolicy="Fixed" HeightSizePolicy="Fixed"
+                                         SuggestedHeight="40" SuggestedWidth="10"
+                                         HorizontalAlignment="Center" Brush="FaceGen.Scrollbar.Handle" />
+                          </Children>
+                        </ScrollbarWidget>
                       </Children>
-                    </ScrollablePanel>
+                    </Widget>
 
-                    <!-- Fix-step rows must wrap, not shrink: long advice strings (~200 chars) used to
-                         render in a smaller font next to short steps, producing a visual zebra. -->
-                    <ScrollablePanel IsVisible="@HasFixSteps"
-                                     WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="240"
-                                     VerticalAlignment="Top" MarginTop="306" MarginLeft="20" MarginRight="20"
-                                     ClipContents="true" AutoHideScrollBars="true">
+                    <!-- Fix-step rows wrap (not shrink) AND scroll: with many steps the lower ones
+                         (the "5." in the screenshot) used to clip off the bottom with no scrollbar.
+                         Wired to a real scrollbar like every other list in this prefab. -->
+                    <Widget IsVisible="@HasFixSteps"
+                            WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="240"
+                            VerticalAlignment="Top" MarginTop="306" MarginLeft="20" MarginRight="20">
                       <Children>
-                        <ListPanel DataSource="{DiagnosisFixSteps}" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren"
-                                   StackLayout.LayoutMethod="VerticalBottomToTop">
-                          <ItemTemplate>
-                            <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren"
-                                        Brush.FontSize="18" Brush.FontColor="#E8DCC4FF" MarginTop="8"
-                                        Text="@Display" />
-                          </ItemTemplate>
-                        </ListPanel>
+                        <ScrollablePanel WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
+                                         AutoHideScrollBars="true"
+                                         ClipRect="DiagStepsClipRect" InnerPanel="DiagStepsClipRect\DiagStepsList"
+                                         VerticalScrollbar="..\DiagStepsScrollbar">
+                          <Children>
+                            <Widget Id="DiagStepsClipRect" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
+                                    MarginRight="16" ClipContents="true">
+                              <Children>
+                                <ListPanel Id="DiagStepsList" DataSource="{DiagnosisFixSteps}"
+                                           WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren"
+                                           StackLayout.LayoutMethod="VerticalTopToBottom">
+                                  <ItemTemplate>
+                                    <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren"
+                                                Brush.FontSize="18" Brush.FontColor="#E8DCC4FF" MarginTop="8"
+                                                Text="@Display" />
+                                  </ItemTemplate>
+                                </ListPanel>
+                              </Children>
+                            </Widget>
+                          </Children>
+                        </ScrollablePanel>
+                        <ScrollbarWidget Id="DiagStepsScrollbar"
+                                         WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent"
+                                         SuggestedWidth="10" HorizontalAlignment="Right" VerticalAlignment="Top"
+                                         MarginTop="4" MarginBottom="4"
+                                         AlignmentAxis="Vertical" Handle="DiagStepsScrollbarHandle"
+                                         MaxValue="100" MinValue="0">
+                          <Children>
+                            <Widget WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="4"
+                                    HorizontalAlignment="Center"
+                                    Sprite="BlankWhiteSquare_9" Color="#5a4033FF" AlphaFactor="0.4" />
+                            <ImageWidget Id="DiagStepsScrollbarHandle"
+                                         WidthSizePolicy="Fixed" HeightSizePolicy="Fixed"
+                                         SuggestedHeight="40" SuggestedWidth="10"
+                                         HorizontalAlignment="Center" Brush="FaceGen.Scrollbar.Handle" />
+                          </Children>
+                        </ScrollbarWidget>
                       </Children>
-                    </ScrollablePanel>
+                    </Widget>
 
                     <!-- Evidence (subsystem / culprit mod / stack frames) can be long, so it lives
                          in its own scrollable popup behind this button instead of overflowing the

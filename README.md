@@ -35,7 +35,7 @@ shown as "Not needed here"). Your choice is saved immediately.
 
 ### 🔬 Crash diagnosis
 Scans `C:\ProgramData\Mount and Blade II Bannerlord\crashes\` and the BUTR HTML
-crash reports if you have BLSE/ButterLib. Matches every crash against **92 YAML
+crash reports if you have BLSE/ButterLib. Matches every crash against **93 YAML
 rules** covering:
 
 - **GPU / DirectX:** integrated-GPU misroute, DXGI device removed/hung, shader
@@ -218,6 +218,7 @@ never drift.
 | **`ColumnFormationSpawnSafetyPatch`** | Prefix on `ColumnFormation.GetLocalPositionOfUnitOrDefault(int)`. Vanilla reads element `[1]` of the column's vanguard-file position list unconditionally — an `ArgumentOutOfRangeException` that kills the whole battle tick when reinforcements spawn into a column formation with no soldiers left at its head (common with marching-reinforcement mods like Immersive Battlefields or RTS Camera's column order). The guard returns `null` instead, so the caller falls back to the default spawn frame. |
 | **`TorAudioRegisterSoundSafetyPatch`** (TOR) | Finalizer on `TOR_Core.Audio.TORAudioManager.RegisterSound`, which builds NAudio.Vorbis with no try/catch. When a .NET library NAudio needs (`System.Memory`, normally provided by the game runtime or ButterLib) can't load on the player's setup, the OGG ctor throws `FileNotFoundException` and crashes the campaign — e.g. a TOR music event on the hourly tick while walking the map. The guard swallows it and returns failure, so the sound is skipped (`CreateSoundInstance` returns null, which `PlayMusic` already null-checks) and the game continues. The matching rule `tor.audio_dependency_missing` explains the missing-library root cause and the fix (verify game files / install ButterLib). |
 | **`SiegeLeaderlessPartyNRESafetyPatch`** | Prefix on `SiegeEventManager.StartSiegeEvent(Settlement, MobileParty)`. When the besieging party has no leader hero (`LeaderHero == null`) the default `EncounterModel.GetLeaderOfSiegeEvent` returns null and `BesiegerCamp.AddSiegePartyInternal` dereferences it. Fires only for a leaderless besieger (autonomous Bandit-Militias-class parties); the impossible siege simply doesn't start, no state is half-built. Normal lord sieges are untouched. |
+| **`MovementOrderIsApplicableNRESafetyPatch`** | Finalizer on vanilla `MovementOrder.IsApplicable(Formation)`. During siege auto-deploy (`SiegeDeploymentHandler.AutoDeployTeamUsingTeamAI` → `Team.Tick` → `FormationAI.FindBestBehavior` → `PrecalculateMovementOrder` → `CreateNewOrderWorldPositionMT`) the AI re-checks each formation's movement order; `IsApplicable` switches on the order kind and dereferences `TargetEntity`/`TargetFormation`/`_targetAgent` with no null guard. A formation carrying an order whose target has gone null (destroyed machine, emptied formation, removed agent between phases) NREs the whole mission tick before the assault starts. Returns `__result = false` on the NRE — exactly what the method returns for a destroyed target, so the caller drops the stale order and falls back to a default world position. Swallows only NRE; self-heals next tick. Does not depend on TOR. |
 | **`TorPartyUpgraderNRESafetyPatch`** (TOR) | Finalizer on `TORPartyUpgraderCampaignBehavior.UpgradeReadyTroops(PartyBase)`. TOR's daily auto-upgrade filters the roster with `!t.Character.IsHero && t.Character.UpgradeTargets.Length != 0`; a broken troop (null `Character`/`UpgradeTargets`) crashes the whole daily tick. The finalizer isolates it to one party, which skips its upgrade; other parties continue. |
 | **`VictoryReactionRetreatNRESafetyPatch`** | Finalizer on `AgentVictoryLogic.SetTimersOfVictoryReactionsOnRetreat(BattleSideEnum)`. The end-of-battle retreat-cheer selection filters agents with `agent.IsHuman && agent.IsAIControlled && agent.Team.Side == side`; an AI human agent with a null `Team` (mid-battle summon/raise-dead with no team assigned) NREs the mission tick. Swallows only the NRE — the load-bearing side effects run before it, so only the cosmetic cheer is skipped. |
 | **`PartyTrainingNRESafetyPatch`** | Finalizer on `MobilePartyTrainingBehavior.OnDailyTickParty(MobileParty)`. The training-XP model (`DefaultPartyTrainingModel.GetEffectiveDailyExperience`, via TOR's override) reads per-troop fields; a troop with invalid data (e.g. null culture) NREs the daily tick. The affected party skips its training; the game continues. Backstop to the root fix below. |
@@ -487,7 +488,7 @@ Calradia Expanded, RBM, Banner Kings и т.д. Без интернета, без
 **«Выключить все»** переключают сразу все применимые фиксы (фиксы для неустановленных
 модов не трогаются — у них статус «Здесь не требуется»). Выбор сразу сохраняется.
 
-- **Диагностика крашей** — **92 YAML-правила** под GPU/DirectX (включая авторитетный
+- **Диагностика крашей** — **93 YAML-правила** под GPU/DirectX (включая авторитетный
   детект iGPU из rgl_log + whitelist карт где DxDiag врёт VRAM), native runtime,
   повреждённые `.tpac` ассеты, save / late-game, mission / engine (NRE в диалогах,
   team-index шторм), TOR (включая Naval DLC + TOR conflict, Assimilation

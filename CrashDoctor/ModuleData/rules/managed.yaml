@@ -1307,3 +1307,120 @@
     all:
       - managed_exception: { frame_contains: "GetSaveMetaData" }
       - managed_exception: { type_contains: "ArgumentException" }
+
+# MISSION-tick crash during SIEGE DEPLOYMENT. NullReferenceException from
+# TaleWorlds.MountAndBlade.MovementOrder.IsApplicable ← MovementOrder.CreateNewOrderWorldPositionMT
+# ← BehaviorComponent.PrecalculateMovementOrder ← FormationAI.FindBestBehavior ← TickOccasionally ←
+# Tick ← Formation.Tick ← Team.Tick ← SiegeDeploymentHandler.AutoDeployTeamUsingTeamAI ←
+# MissionOrderDeploymentControllerVM.DeployFormationsOfPlayer/ExecuteDeployPlayerSide ←
+# Mission.OnBattleSideDeployed ← ... ← DeploymentMissionController.OnMissionTick. The player presses
+# "Deploy" in a siege; the engine auto-deploys the team's formations through the team AI, which
+# re-evaluates each formation's movement order via IsApplicable. IsApplicable switches on the order
+# kind and dereferences its stored target WITHOUT a null guard (AttackEntity/FollowEntity →
+# TargetEntity, ChargeToTarget → TargetFormation, Follow → _targetAgent). A formation carrying an
+# order whose target has gone null (destroyed siege machine, emptied formation, removed agent
+# between phases) NREs and the whole mission tick dies before the assault begins. Endemic vanilla
+# formation-AI fragility around siege deployment; NOT a shader/driver problem and not a TOR bug.
+- id: mission.movement_order_applicable_nre
+  category: managed
+  severity: critical
+  confidence: high
+  evidence_source: "Client crash 2026-06-19 report(25).txt — NullReferenceException TaleWorlds.MountAndBlade.MovementOrder.IsApplicable ← MovementOrder.CreateNewOrderWorldPositionMT ← BehaviorComponent.PrecalculateMovementOrder ← FormationAI.FindBestBehavior ← FormationAI.TickOccasionally ← Formation.Tick_Patch1 ← Team.Tick ← SiegeDeploymentHandler.AutoDeployTeamUsingTeamAI ← MissionOrderDeploymentControllerVM.DeployFormationsOfPlayer ← Mission.OnBattleSideDeployed ← DeploymentMissionController.OnMissionTick. Bannerlord 1.3.15, modlist TOR_Core + RTSCameraUniversal + ReinforcementSystem + BattleSizeResized etc. Engine MovementOrder.IsApplicable verified in decompiled source: switch dereferences TargetEntity/TargetFormation/_targetAgent without null guard. Captured by Crash Doctor managed capture, seen 2×."
+  requires_sources: [managed_exception]
+  title:
+    en: "Siege-deploy crash — a formation had a stale movement order — guarded by Crash Doctor"
+    ru: "Вылет при расстановке в осаде — у построения был устаревший приказ движения — перехвачено Crash Doctor"
+    zh: "围城布阵崩溃——某阵型残留了陈旧的移动命令——已被 Crash Doctor 拦截"
+    zht: "圍城佈陣崩潰——某陣型殘留了陳舊的移動命令——已被 Crash Doctor 攔截"
+    tr: "Kuşatma yerleşimi çökmesi — bir dizilimde eski bir hareket emri vardı — Crash Doctor koruyor"
+  description:
+    en: |
+      NullReferenceException from TaleWorlds.MountAndBlade.MovementOrder.IsApplicable on the mission
+      tick, when you press "Deploy" in a siege and the engine auto-deploys the team's formations
+      through the team AI (SiegeDeploymentHandler.AutoDeployTeamUsingTeamAI → Team.Tick →
+      Formation.Tick → FormationAI.FindBestBehavior → PrecalculateMovementOrder →
+      CreateNewOrderWorldPositionMT → IsApplicable). IsApplicable checks whether a formation's
+      movement order is still valid; it switches on the order kind and dereferences the order's
+      stored target — TargetEntity (attack/follow an object), TargetFormation (charge a formation) or
+      _targetAgent (follow a soldier) — without a null check. A formation can carry an order whose
+      target has since gone null (a destroyed siege machine, an emptied enemy formation, a removed
+      agent between battle phases). When the deploy handler force-ticks the AI to auto-place
+      formations, that dead target dereferences null and the whole mission tick crashes before the
+      assault even starts. This is vanilla engine fragility in the formation AI, NOT a shader or
+      driver problem and not a TOR bug; large mod lists that churn formations/orders make it likelier.
+    ru: |
+      NullReferenceException из TaleWorlds.MountAndBlade.MovementOrder.IsApplicable на тике миссии,
+      когда ты жмёшь «Развернуть» в осаде и движок сам расставляет построения команды через боевой
+      ИИ (SiegeDeploymentHandler.AutoDeployTeamUsingTeamAI → Team.Tick → Formation.Tick →
+      FormationAI.FindBestBehavior → PrecalculateMovementOrder → CreateNewOrderWorldPositionMT →
+      IsApplicable). IsApplicable проверяет, актуален ли ещё приказ движения построения; он смотрит на
+      тип приказа и разыменовывает его цель — TargetEntity (атаковать/следовать за объектом),
+      TargetFormation (идти на построение) или _targetAgent (следовать за бойцом) — без проверки на
+      null. У построения может остаться приказ, чья цель к этому моменту стала null (разрушенная
+      осадная машина, опустевшее вражеское построение, удалённый боец между фазами боя). Когда
+      обработчик расстановки принудительно прогоняет ИИ для авто-размещения построений, эта мёртвая
+      цель разыменовывает null, и весь тик миссии падает ещё до начала штурма. Это хрупкость движка в
+      формейшн-ИИ, а НЕ проблема шейдеров/драйвера и не баг TOR; большие сборки модов, тасующие
+      построения/приказы, повышают шанс.
+    zh: |
+      当你在围城中按下“布阵”、引擎通过队伍 AI 自动布置队伍的阵型时
+      （SiegeDeploymentHandler.AutoDeployTeamUsingTeamAI → Team.Tick → Formation.Tick →
+      FormationAI.FindBestBehavior → PrecalculateMovementOrder → CreateNewOrderWorldPositionMT →
+      IsApplicable），TaleWorlds.MountAndBlade.MovementOrder.IsApplicable 在任务 tick 上抛出空引用异常。
+      IsApplicable 检查某阵型的移动命令是否仍然有效；它根据命令类型对其存储的目标取引用——
+      TargetEntity（攻击／跟随某物）、TargetFormation（冲锋某阵型）或 _targetAgent（跟随某士兵）——
+      却未做空检查。阵型可能残留着一条其目标此时已变为 null 的命令（被摧毁的攻城器械、已清空的敌方
+      阵型、阶段之间被移除的士兵）。当布阵处理器强制运行 AI 自动放置阵型时，这个失效目标对空取引用，
+      整个任务 tick 在攻城开始前就崩溃。这是阵型 AI 中的原版引擎脆弱性，不是着色器或驱动问题，也不是
+      TOR 的 bug；频繁改动阵型／命令的大型模组列表会增加概率。
+    zht: |
+      當你在圍城中按下「佈陣」、引擎透過隊伍 AI 自動佈置隊伍的陣型時
+      （SiegeDeploymentHandler.AutoDeployTeamUsingTeamAI → Team.Tick → Formation.Tick →
+      FormationAI.FindBestBehavior → PrecalculateMovementOrder → CreateNewOrderWorldPositionMT →
+      IsApplicable），TaleWorlds.MountAndBlade.MovementOrder.IsApplicable 在任務 tick 上擲出空參考例外。
+      IsApplicable 檢查某陣型的移動命令是否仍然有效；它根據命令類型對其儲存的目標取參考——
+      TargetEntity（攻擊／跟隨某物）、TargetFormation（衝鋒某陣型）或 _targetAgent（跟隨某士兵）——
+      卻未做空檢查。陣型可能殘留著一條其目標此時已變為 null 的命令（被摧毀的攻城器械、已清空的敵方
+      陣型、階段之間被移除的士兵）。當佈陣處理器強制執行 AI 自動放置陣型時，這個失效目標對空取參考，
+      整個任務 tick 在攻城開始前就崩潰。這是陣型 AI 中的原版引擎脆弱性，不是著色器或驅動問題，也不是
+      TOR 的 bug；頻繁改動陣型／命令的大型模組列表會增加機率。
+    tr: |
+      Bir kuşatmada "Yerleştir"e bastığında ve motor takımın dizilimlerini takım yapay zekâsı üzerinden
+      otomatik yerleştirirken (SiegeDeploymentHandler.AutoDeployTeamUsingTeamAI → Team.Tick →
+      Formation.Tick → FormationAI.FindBestBehavior → PrecalculateMovementOrder →
+      CreateNewOrderWorldPositionMT → IsApplicable) görev tick'inde
+      TaleWorlds.MountAndBlade.MovementOrder.IsApplicable'dan NullReferenceException fırlatıldı.
+      IsApplicable bir dizilimin hareket emrinin hâlâ geçerli olup olmadığını kontrol eder; emir
+      türüne göre saklanan hedefini — TargetEntity (bir nesneye saldır/takip et), TargetFormation (bir
+      dizilime hücum) veya _targetAgent (bir askeri takip et) — null kontrolü yapmadan başvurur. Bir
+      dizilim, hedefi o ana kadar null olmuş bir emir taşıyabilir (yıkılmış bir kuşatma makinesi,
+      boşalmış bir düşman dizilimi, aşamalar arasında kaldırılmış bir asker). Yerleştirme işleyicisi
+      dizilimleri otomatik yerleştirmek için AI'yı zorla işlettiğinde, bu ölü hedef null'a başvurur ve
+      tüm görev tick'i saldırı başlamadan çöker. Bu, dizilim yapay zekâsındaki orijinal motor
+      kırılganlığıdır; gölgelendirici veya sürücü sorunu DEĞİL ve bir TOR hatası değil; dizilimleri/
+      emirleri sık değiştiren büyük mod listeleri olasılığı artırır.
+  fix:
+    en:
+      - "Crash Doctor already guards this — its safety net treats the stale order as no-longer-applicable, so the formation drops it and falls back to a default position; the deploy completes and the assault continues. Keep the «Siege-deploy crash guard (stale formation order)» fix ON (Crash Fixes tab). Update Crash Doctor to the latest version — older builds don't have this guard."
+      - "If you'd rather avoid it entirely while unpatched: in the siege, place your formations manually instead of using auto-deploy (the crash is in the auto-deploy AI path)."
+      - "Do NOT rebuild shaders or change drivers — this is a battle-state bug, that won't help."
+    ru:
+      - "Crash Doctor уже это перехватывает — safety net считает устаревший приказ неактуальным, построение сбрасывает его и встаёт на стандартную позицию; расстановка завершается, штурм продолжается. Держи фикс «Защита от вылета при расстановке в осаде (устаревший приказ строя)» ВКЛ (вкладка «Фиксы крашей»). Обнови Crash Doctor до последней версии — в старых сборках этой защиты нет."
+      - "Если хочешь полностью избежать вылета без патча: в осаде расставляй построения вручную, а не через авто-расстановку (вылет в ветке авто-ИИ)."
+      - "НЕ пересобирай шейдеры и не меняй драйвер — это баг состояния боя, не поможет."
+    zh:
+      - "Crash Doctor 已经拦截了它——安全网将陈旧命令视为不再有效，于是阵型丢弃它并回退到默认位置；布阵完成，攻城继续。在「崩溃修复」页保持「围城布阵崩溃防护（陈旧的阵型命令）」为开。请将 Crash Doctor 更新到最新版本——旧版本没有此防护。"
+      - "若在未打补丁时想完全避免：在围城中手动布置阵型，而非使用自动布阵（崩溃在自动布阵 AI 路径中）。"
+      - "不要重建着色器或更换驱动——这是战斗状态 bug，没用。"
+    zht:
+      - "Crash Doctor 已經攔截了它——安全網將陳舊命令視為不再有效，於是陣型丟棄它並回退到預設位置；佈陣完成，攻城繼續。在「崩潰修復」頁保持「圍城佈陣崩潰防護（陳舊的陣型命令）」為開。請將 Crash Doctor 更新到最新版本——舊版本沒有此防護。"
+      - "若在未打補丁時想完全避免：在圍城中手動佈置陣型，而非使用自動佈陣（崩潰在自動佈陣 AI 路徑中）。"
+      - "不要重建著色器或更換驅動——這是戰鬥狀態 bug，沒用。"
+    tr:
+      - "Crash Doctor bunu zaten koruyor — güvenlik ağı eski emri artık geçerli değil sayar, böylece dizilim onu bırakır ve varsayılan konuma döner; yerleştirme tamamlanır ve saldırı devam eder. «Kuşatma yerleşimi çökme koruması (eski dizilim emri)» düzeltmesini AÇIK tut (Çökme Düzeltmeleri sekmesi). Crash Doctor'ı en son sürüme güncelle — eski sürümlerde bu koruma yok."
+      - "Yama olmadan tamamen kaçınmak istersen: kuşatmada dizilimlerini otomatik yerleştirme yerine elle yerleştir (çökme otomatik yerleştirme AI yolundadır)."
+      - "Gölgelendiricileri yeniden oluşturma veya sürücü değiştirme — bu bir savaş durumu hatası, yardımcı olmaz."
+  match:
+    all:
+      - managed_exception: { frame_contains: "MovementOrder.IsApplicable" }
+      - managed_exception: { type_contains: "NullReference" }
