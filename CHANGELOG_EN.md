@@ -6,6 +6,15 @@ Change history, by version.
 
 ---
 
+## 2026-06-19 — New guard: a crash while deploying troops for a siege
+
+- **New guard: a crash when you press "Deploy" in a siege.** The game crashed (NullReferenceException in `MovementOrder.IsApplicable`) the moment you press "Deploy" for an assault and the game auto-places your formations through the battle AI — before you even enter the fight. The cause is in the game itself: during deployment the AI re-checks each formation's movement order and reads its target (a siege machine, an enemy formation or a soldier) without checking that the target still exists. If a formation is still holding an order pointing at a target that has since gone (a destroyed machine, an emptied formation, a soldier removed between battle phases), the whole mission tick crashed and the assault never started. The new "Siege-deploy crash guard (stale formation order)" fix on the Crash Fixes tab (on by default) catches this: the stale order is simply dropped, the formation falls back to a default position, deployment finishes and the assault continues. Large mod lists that churn formations and reinforcements make this crash more likely. This is fragility in the game engine, not a bug in The Old Realms.
+- **Plus a new diagnostic rule** — this crash is now recognized automatically and points at the root (a stale formation order during siege deployment) in the report, not at shaders or drivers.
+- **Scrollbars on the Crash Diagnosis tab.** Long crash explanations and the fix-step list no longer clip off the bottom: when there's more text than fits on screen, a scrollbar appears on the side so you can read the whole recommendation.
+- **The mod version stays 1.7.0.0** — the update raises no questions from the game about your saves.
+
+---
+
 ## 2026-06-16 — New guards: a world-map auto-resolve crash (from a removed custom-troop mod), and a save crash from a mod conflict
 
 - **New guard: a world-map crash while auto-resolving AI battles, caused by a removed custom-troop mod.** If you installed a mod that adds its own troops (for example Special Troops Plus or FireArchers) and later removed it, the troops AI lords had recruited stay in your save as "dangling" entries (the game no longer knows what that soldier is). The engine constantly auto-resolves AI skirmishes across the map, and such a troop crashed the whole calculation (NullReferenceException) — that's the "every few minutes on the world map" tick crash. The new "Auto-resolve battle crash guard (broken troop)" fix on the Crash Fixes tab (on by default) skips that one strike and the battle resolves normally. Root fix: keep "Fix broken troops on save load" on, load the save and **re-save** — that scrubs the removed mod's leftovers from every party for good.
