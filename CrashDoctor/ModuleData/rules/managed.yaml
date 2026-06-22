@@ -483,6 +483,304 @@
       - managed_exception: { frame_contains: "BesiegerCamp.AddSiegePartyInternal" }
       - managed_exception: { type_contains: "NullReference" }
 
+# Campaign-map HOURLY-tick crash: an army contains a member party with NO leader hero. The army
+# prices its members for a cohesion boost (Army.HourlyTick → ThinkAboutCohesionBoost →
+# CalculateTotalInfluenceCost → CalculatePartyInfluenceCost), which calls
+# armyLeaderParty.LeaderHero.GetRelation(party.LeaderHero) with a null member-leader. The diplomacy
+# model guards its outputs but not its inputs, so DefaultDiplomacyModel.GetHeroesForEffectiveRelation
+# dereferences `hero.Clan` on the null hero → NullReferenceException. Vanilla never puts a leaderless
+# party in an army; a mod that spawns autonomous, hero-less map parties the AI absorbs into armies
+# creates this state (in the reporting modlist: the RealmsForgotten suite / RFMonsters monster
+# parties). NOT a shader/driver problem, not a TOR bug.
+- id: campaign.army_relation_leaderless_party_nre
+  category: managed
+  severity: critical
+  confidence: high
+  evidence_source: "Client crash 2026-06-19 report(26).txt — NullReferenceException TaleWorlds.CampaignSystem.GameComponents.DefaultDiplomacyModel.GetHeroesForEffectiveRelation ← GetEffectiveRelation ← DefaultArmyManagementCalculationModel.CalculatePartyInfluenceCost ← CalculateTotalInfluenceCostInternal ← Army.ThinkAboutCohesionBoost ← Army.HourlyTick ← Campaign.Tick. Bannerlord 1.4.6, modlist included RealmsForgotten suite + RFMonsters. Captured by Crash Doctor managed capture."
+  requires_sources: [managed_exception]
+  title:
+    en: "Army crash — a member party has no leader — guarded by Crash Doctor"
+    ru: "Вылет в армии — у отряда нет лидера — перехвачено Crash Doctor"
+    zh: "军队崩溃——成员队伍没有首领——已被 Crash Doctor 拦截"
+    zht: "軍隊崩潰——成員隊伍沒有首領——已被 Crash Doctor 攔截"
+    tr: "Ordu çökmesi — bir üye grubun lideri yok — Crash Doctor tarafından korunuyor"
+  description:
+    en: |
+      NullReferenceException from TaleWorlds.CampaignSystem.GameComponents.DefaultDiplomacyModel.GetHeroesForEffectiveRelation
+      on the campaign-map hourly tick, while an army priced its member parties for a cohesion boost
+      (Army.HourlyTick → ThinkAboutCohesionBoost → CalculateTotalInfluenceCost →
+      CalculatePartyInfluenceCost → Hero.GetRelation → GetEffectiveRelation). The base game reads the
+      member party's leader hero to compute a relation; here that party has NO leader hero, so the
+      diplomacy model dereferences a null hero (`hero.Clan`). Vanilla never expects a leaderless party
+      inside an army — this is broken party state, typically from a mod that spawns autonomous,
+      hero-less map parties that the AI then absorbs into armies (this modlist includes the
+      RealmsForgotten suite / RFMonsters). It is a mod/state bug, NOT a shader or driver problem, and
+      not a TOR bug.
+    ru: |
+      NullReferenceException из TaleWorlds.CampaignSystem.GameComponents.DefaultDiplomacyModel.GetHeroesForEffectiveRelation
+      на почасовом тике карты, когда армия считала стоимость поднятия сплочённости для отрядов
+      (Army.HourlyTick → ThinkAboutCohesionBoost → CalculateTotalInfluenceCost →
+      CalculatePartyInfluenceCost → Hero.GetRelation → GetEffectiveRelation). Базовая игра берёт
+      героя-лидера отряда, чтобы посчитать отношение; здесь у отряда лидера НЕТ, поэтому модель
+      дипломатии разыменовывает null-героя (`hero.Clan`). Ваниль не ждёт безглавого отряда внутри
+      армии — это битое состояние, обычно от мода, плодящего самостоятельные безгеройные отряды на
+      карте, которых затем ИИ вбирает в армии (в этом списке есть набор RealmsForgotten / RFMonsters).
+      Это баг мода/состояния, а НЕ проблема шейдеров или драйвера, и не баг TOR.
+    zh: |
+      战役地图每小时 tick 期间，当军队为其成员队伍计算凝聚力提升消耗时
+      （Army.HourlyTick → ThinkAboutCohesionBoost → CalculateTotalInfluenceCost →
+      CalculatePartyInfluenceCost → Hero.GetRelation → GetEffectiveRelation），
+      TaleWorlds.CampaignSystem.GameComponents.DefaultDiplomacyModel.GetHeroesForEffectiveRelation
+      抛出空引用异常。原版读取成员队伍的英雄首领来计算关系；而这里该队伍没有英雄首领，于是外交模型对
+      null 英雄取引用（`hero.Clan`）。原版从不预期军队中存在无首领队伍——这是损坏的队伍状态，通常来自
+      生成自治无英雄地图队伍、随后被 AI 吸收进军队的模组（此列表含 RealmsForgotten / RFMonsters）。
+      这是模组／状态 bug，不是着色器或驱动问题，也不是 TOR 的错。
+    zht: |
+      戰役地圖每小時 tick 期間，當軍隊為其成員隊伍計算凝聚力提升消耗時
+      （Army.HourlyTick → ThinkAboutCohesionBoost → CalculateTotalInfluenceCost →
+      CalculatePartyInfluenceCost → Hero.GetRelation → GetEffectiveRelation），
+      TaleWorlds.CampaignSystem.GameComponents.DefaultDiplomacyModel.GetHeroesForEffectiveRelation
+      擲出空參考例外。原版讀取成員隊伍的英雄首領來計算關係；而這裡該隊伍沒有英雄首領，於是外交模型對
+      null 英雄取參考（`hero.Clan`）。原版從不預期軍隊中存在無首領隊伍——這是損壞的隊伍狀態，通常來自
+      生成自治無英雄地圖隊伍、隨後被 AI 吸收進軍隊的模組（此列表含 RealmsForgotten / RFMonsters）。
+      這是模組／狀態 bug，不是著色器或驅動問題，也不是 TOR 的錯。
+    tr: |
+      Sefer haritası saatlik tick'inde, bir ordu üye gruplarına uyum artışı için maliyet biçerken
+      (Army.HourlyTick → ThinkAboutCohesionBoost → CalculateTotalInfluenceCost →
+      CalculatePartyInfluenceCost → Hero.GetRelation → GetEffectiveRelation)
+      TaleWorlds.CampaignSystem.GameComponents.DefaultDiplomacyModel.GetHeroesForEffectiveRelation'dan
+      NullReferenceException fırlatıldı. Oyun, ilişkiyi hesaplamak için üye grubun lider kahramanını
+      okur; burada o grubun lider kahramanı YOK, bu yüzden diplomasi modeli null bir kahramana
+      başvurur (`hero.Clan`). Orijinal oyun bir orduda lidersiz bir grup beklemez — bu, genelde AI'nin
+      ordulara kattığı özerk, kahramansız harita grupları oluşturan bir moddan gelen bozuk grup
+      durumudur (bu listede RealmsForgotten paketi / RFMonsters var). Bu bir mod/durum hatasıdır,
+      gölgelendirici veya sürücü sorunu DEĞİL ve TOR hatası değil.
+  fix:
+    en:
+      - "Crash Doctor already guards this — its safety net returns a neutral relation (0) for the leaderless party so the army keeps running. Keep the «Army cohesion crash guard (leaderless party)» fix ON (Crash Fixes tab)."
+      - "Root cause is a mod that spawns hero-less map parties the AI absorbs into armies. Your modlist includes the RealmsForgotten suite (RealmsForgotten / RFMonsters / RF_Extension) — update it to the latest version, or disable it, and check whether the crash stops."
+      - "Other suspects that spawn autonomous parties: BanditMilitias, BrigandBands, IdleMinorFactions. Disable them one at a time to confirm."
+      - "Do NOT rebuild shaders or change drivers — this is a mod/state bug, that won't help."
+    ru:
+      - "Crash Doctor уже это перехватывает — safety net возвращает нейтральное отношение (0) для безглавого отряда, и армия продолжает работать. Держи фикс «Защита от вылета в армии (безглавый отряд)» ВКЛ (вкладка «Фиксы крашей»)."
+      - "Корень — мод, плодящий безгеройные отряды на карте, которых ИИ вбирает в армии. В твоём списке есть набор RealmsForgotten (RealmsForgotten / RFMonsters / RF_Extension) — обнови его до свежей версии или отключи и проверь, пропал ли вылет."
+      - "Другие подозреваемые, плодящие самостоятельные отряды: BanditMilitias, BrigandBands, IdleMinorFactions. Отключай по одному, чтобы убедиться."
+      - "НЕ пересобирай шейдеры и не меняй драйвер — это баг мода/состояния, не поможет."
+    zh:
+      - "Crash Doctor 已经拦截了它——安全网会为无首领队伍返回中性关系（0），军队继续运行。在「崩溃修复」页保持「军队凝聚力崩溃防护（无首领队伍）」为开。"
+      - "根源是某个生成无英雄地图队伍、被 AI 吸收进军队的模组。你的模组列表含 RealmsForgotten 套件（RealmsForgotten / RFMonsters / RF_Extension）——把它更新到最新版本，或禁用它，看崩溃是否停止。"
+      - "其他生成自治队伍的可疑者：BanditMilitias、BrigandBands、IdleMinorFactions。逐一禁用以确认。"
+      - "不要重建着色器或更换驱动——这是模组／状态 bug，没用。"
+    zht:
+      - "Crash Doctor 已經攔截了它——安全網會為無首領隊伍回傳中性關係（0），軍隊繼續執行。在「崩潰修復」頁保持「軍隊凝聚力崩潰防護（無首領隊伍）」為開。"
+      - "根源是某個生成無英雄地圖隊伍、被 AI 吸收進軍隊的模組。你的模組列表含 RealmsForgotten 套件（RealmsForgotten / RFMonsters / RF_Extension）——把它更新到最新版本，或停用它，看崩潰是否停止。"
+      - "其他生成自治隊伍的可疑者：BanditMilitias、BrigandBands、IdleMinorFactions。逐一停用以確認。"
+      - "不要重建著色器或更換驅動——這是模組／狀態 bug，沒用。"
+    tr:
+      - "Crash Doctor bunu zaten koruyor — güvenlik ağı lidersiz grup için nötr bir ilişki (0) döndürür, böylece ordu çalışmaya devam eder. «Ordu uyum çökme koruması (lidersiz grup)» düzeltmesini AÇIK tut (Çökme Düzeltmeleri sekmesi)."
+      - "Kök neden, AI'nin ordulara kattığı kahramansız harita grupları oluşturan bir moddur. Mod listende RealmsForgotten paketi (RealmsForgotten / RFMonsters / RF_Extension) var — onu en son sürüme güncelle ya da devre dışı bırak ve çökmenin durup durmadığını kontrol et."
+      - "Özerk grup oluşturan diğer şüpheliler: BanditMilitias, BrigandBands, IdleMinorFactions. Doğrulamak için tek tek devre dışı bırak."
+      - "Gölgelendiricileri yeniden oluşturma veya sürücü değiştirme — bu bir mod/durum hatası, yardımcı olmaz."
+  match:
+    all:
+      - managed_exception: { frame_contains: "GetHeroesForEffectiveRelation" }
+      - managed_exception: { type_contains: "NullReference" }
+
+# Campaign-map crash right after a siege/rebellion resolves, inside TOR's companion skill-trainer.
+# NullReferenceException from TOR_Core.CampaignMechanics.SkillTrainerBehavior.LeaveTraining ←
+# SettlementOwnerChanged ← CampaignEvents.OnSettlementOwnerChanged ← ChangeOwnerOfSettlementAction ←
+# KingdomManager.SiegeCompleted ← MapEvent.FinalizeEventAux ← MapEvent.Update ← Campaign.Tick.
+# When a settlement changes hands by siege/rebellion, SettlementOwnerChanged ends training for any
+# companion tracked in _heroesInTraining at that settlement, resolving the hero with
+# Hero.MainHero.Clan.Heroes.FirstOrDefault(x => x.StringId == key). That returns NULL when the
+# companion already left the player's clan (died, captured, dismissed) but his StringId stayed in the
+# dictionary — TOR never prunes the stale entry. LeaveTraining then dereferences hero.CurrentSettlement
+# on the null hero → NRE. A TOR_Core bug, NOT a base-game, shader, or driver problem.
+- id: campaign.skill_trainer_leave_null_hero_nre
+  category: managed
+  severity: critical
+  confidence: high
+  evidence_source: "Client crash 2026-06-21 report(27).txt — NullReferenceException TOR_Core.CampaignMechanics.SkillTrainerBehavior.LeaveTraining ← SettlementOwnerChanged ← CampaignEvents.OnSettlementOwnerChanged ← ChangeOwnerOfSettlementAction.ApplyInternal ← KingdomManager.SiegeCompleted ← MapEvent.FinalizeEventAux ← MapEvent.Update ← Campaign.Tick. Bannerlord 1.3.15, TOR_Core 1.3.15. Seen 2 times. Captured by Crash Doctor managed capture."
+  requires_sources: [managed_exception]
+  title:
+    en: "Companion-training crash after a siege — trained hero left your clan — guarded by Crash Doctor"
+    ru: "Вылет при обучении компаньона после осады — обучаемый покинул клан — перехвачено Crash Doctor"
+    zh: "攻城后随从训练崩溃——受训英雄已离开你的家族——已被 Crash Doctor 拦截"
+    zht: "攻城後隨從訓練崩潰——受訓英雄已離開你的家族——已被 Crash Doctor 攔截"
+    tr: "Kuşatma sonrası yoldaş eğitimi çökmesi — eğitilen kahraman klanından ayrıldı — Crash Doctor tarafından korunuyor"
+  description:
+    en: |
+      NullReferenceException from TOR_Core.CampaignMechanics.SkillTrainerBehavior.LeaveTraining on the
+      campaign map immediately after a siege or rebellion resolves (KingdomManager.SiegeCompleted →
+      ChangeOwnerOfSettlementAction → OnSettlementOwnerChanged → SettlementOwnerChanged → LeaveTraining).
+      When a settlement changes owner, TOR ends companion training for every hero it had tracked as
+      training there, looking the hero up by id in your clan's heroes. That lookup returns NULL when the
+      companion is no longer in your clan — he died, was captured, was dismissed, or otherwise left —
+      yet TOR still had him recorded as in training and never pruned that stale record. LeaveTraining
+      then reads `hero.CurrentSettlement` on the null hero and crashes. This is a TOR_Core bug, NOT a
+      base-game, shader, or driver problem.
+    ru: |
+      NullReferenceException из TOR_Core.CampaignMechanics.SkillTrainerBehavior.LeaveTraining на карте
+      сразу после завершения осады или восстания (KingdomManager.SiegeCompleted →
+      ChangeOwnerOfSettlementAction → OnSettlementOwnerChanged → SettlementOwnerChanged → LeaveTraining).
+      Когда у поселения меняется владелец, TOR завершает обучение для каждого компаньона, который числился
+      обучающимся там, и ищет героя по id среди героев твоего клана. Этот поиск возвращает NULL, когда
+      компаньона уже нет в клане — он погиб, пленён, уволен или иначе ушёл — но TOR всё ещё держал его
+      как обучающегося и не вычистил устаревшую запись. Затем LeaveTraining читает `hero.CurrentSettlement`
+      у null-героя и вылетает. Это баг TOR_Core, а НЕ проблема базовой игры, шейдеров или драйвера.
+    zh: |
+      在攻城或叛乱解决之后，战役地图上 TOR_Core.CampaignMechanics.SkillTrainerBehavior.LeaveTraining
+      抛出空引用异常（KingdomManager.SiegeCompleted → ChangeOwnerOfSettlementAction →
+      OnSettlementOwnerChanged → SettlementOwnerChanged → LeaveTraining）。当聚落更换归属时，TOR 为它
+      记录为在此训练的每个随从结束训练，并按 id 在你家族的英雄中查找该英雄。当该随从已不在你家族中（已死亡、
+      被俘、被遣散或以其他方式离开）时，这个查找返回 NULL，但 TOR 仍把他记为训练中、且从未清除这条过期记录。
+      随后 LeaveTraining 对 null 英雄读取 `hero.CurrentSettlement` 并崩溃。这是 TOR_Core 的 bug，
+      不是基础游戏、着色器或驱动问题。
+    zht: |
+      在攻城或叛亂解決之後，戰役地圖上 TOR_Core.CampaignMechanics.SkillTrainerBehavior.LeaveTraining
+      擲出空參考例外（KingdomManager.SiegeCompleted → ChangeOwnerOfSettlementAction →
+      OnSettlementOwnerChanged → SettlementOwnerChanged → LeaveTraining）。當聚落更換歸屬時，TOR 為它
+      記錄為在此訓練的每個隨從結束訓練，並按 id 在你家族的英雄中查找該英雄。當該隨從已不在你家族中（已死亡、
+      被俘、被遣散或以其他方式離開）時，這個查找回傳 NULL，但 TOR 仍把他記為訓練中、且從未清除這條過期記錄。
+      隨後 LeaveTraining 對 null 英雄讀取 `hero.CurrentSettlement` 並崩潰。這是 TOR_Core 的 bug，
+      不是基礎遊戲、著色器或驅動問題。
+    tr: |
+      Bir kuşatma ya da isyan çözüldükten hemen sonra sefer haritasında
+      TOR_Core.CampaignMechanics.SkillTrainerBehavior.LeaveTraining'den NullReferenceException
+      (KingdomManager.SiegeCompleted → ChangeOwnerOfSettlementAction → OnSettlementOwnerChanged →
+      SettlementOwnerChanged → LeaveTraining). Bir yerleşimin sahibi değiştiğinde TOR, orada eğitimde
+      kayıtlı her yoldaşın eğitimini bitirir ve kahramanı klanının kahramanları arasında id ile arar.
+      Yoldaş artık klanında değilse — öldü, esir alındı, kovuldu ya da başka şekilde ayrıldı — bu arama
+      NULL döner, ama TOR onu hâlâ eğitimde tutuyor ve bu eski kaydı hiç temizlemedi. Ardından
+      LeaveTraining null kahramanda `hero.CurrentSettlement` okur ve çöker. Bu bir TOR_Core hatasıdır,
+      temel oyun, gölgelendirici veya sürücü sorunu DEĞİL.
+  fix:
+    en:
+      - "Crash Doctor already guards this — its safety net skips ending training for the missing hero so the game keeps running. Keep the «Companion-training crash guard (siege, missing hero)» fix ON (Crash Fixes tab)."
+      - "Root cause is in TOR_Core: it does not remove a companion from its training list when that companion dies/leaves your clan. Reporting it to the TOR team would help; nothing you need to do in-game."
+      - "Harmless to keep playing — the affected companion has already left your clan; only the leftover training record triggered the crash."
+      - "Do NOT rebuild shaders or change drivers — this is a mod-state bug, that won't help."
+    ru:
+      - "Crash Doctor уже это перехватывает — safety net пропускает завершение обучения для отсутствующего героя, и игра продолжается. Держи фикс «Защита от вылета при обучении компаньона (осада, потерянный герой)» ВКЛ (вкладка «Фиксы крашей»)."
+      - "Корень — в TOR_Core: мод не убирает компаньона из списка обучения, когда тот погибает/покидает твой клан. Полезно сообщить команде TOR; в игре делать ничего не нужно."
+      - "Можно спокойно играть дальше — затронутый компаньон уже покинул клан; вылет вызывала только оставшаяся запись об обучении."
+      - "НЕ пересобирай шейдеры и не меняй драйвер — это баг состояния мода, не поможет."
+    zh:
+      - "Crash Doctor 已经拦截了它——安全网会跳过为缺失英雄结束训练，游戏继续运行。在「崩溃修复」页保持「随从训练崩溃防护（攻城，缺失英雄）」为开。"
+      - "根源在 TOR_Core：当随从死亡／离开你的家族时，模组没有把他从训练列表中移除。把此问题反馈给 TOR 团队会有帮助；游戏内无需操作。"
+      - "可以放心继续游戏——受影响的随从已经离开你的家族；触发崩溃的只是残留的训练记录。"
+      - "不要重建着色器或更换驱动——这是模组状态 bug，没用。"
+    zht:
+      - "Crash Doctor 已經攔截了它——安全網會跳過為缺失英雄結束訓練，遊戲繼續執行。在「崩潰修復」頁保持「隨從訓練崩潰防護（攻城，缺失英雄）」為開。"
+      - "根源在 TOR_Core：當隨從死亡／離開你的家族時，模組沒有把他從訓練清單中移除。把此問題回報給 TOR 團隊會有幫助；遊戲內無需操作。"
+      - "可以放心繼續遊戲——受影響的隨從已經離開你的家族；觸發崩潰的只是殘留的訓練記錄。"
+      - "不要重建著色器或更換驅動——這是模組狀態 bug，沒用。"
+    tr:
+      - "Crash Doctor bunu zaten koruyor — güvenlik ağı eksik kahraman için eğitimi bitirmeyi atlar, böylece oyun çalışmaya devam eder. «Yoldaş eğitimi çökme koruması (kuşatma, eksik kahraman)» düzeltmesini AÇIK tut (Çökme Düzeltmeleri sekmesi)."
+      - "Kök neden TOR_Core'da: bir yoldaş öldüğünde/klanından ayrıldığında onu eğitim listesinden çıkarmıyor. Bunu TOR ekibine bildirmek faydalı olur; oyun içinde yapman gereken bir şey yok."
+      - "Oynamaya devam etmek zararsız — etkilenen yoldaş zaten klanından ayrılmış; çökmeyi yalnızca artık kalan eğitim kaydı tetikledi."
+      - "Gölgelendiricileri yeniden oluşturma veya sürücü değiştirme — bu bir mod-durum hatası, yardımcı olmaz."
+  match:
+    all:
+      - managed_exception: { frame_contains: "SkillTrainerBehavior.LeaveTraining" }
+      - managed_exception: { type_contains: "NullReference" }
+
+# GENERIC campaign crash: a negative troop count is pushed into a TroopRoster and drives an element's
+# Number below zero. MBUnderFlowException ("The given value is less than the expected value :
+# ItemRosterElement::Character") from TaleWorlds.CampaignSystem.Roster.TroopRosterElement.set_Number ←
+# TroopRoster.AddToCountsAtIndex ← TroopRoster.AddToCounts ← (any caller). AddToCountsAtIndex does
+# `data[index].Number += countChange` with no floor, and the Number setter throws once the result < 0.
+# Vanilla callers always check GetElementNumber(index) > 0 before removing, so a healthy game never
+# underflows; a mod (or mis-ordered path) asking to remove more troops than the element holds does.
+# First seen 2026-06-20: TOR's AddDryadsToPartyOnEnteringSettlement added dryads with an unclamped
+# Math.Min(3, PartySizeLimit - TotalManCount) that went negative — but this rule is NOT TOR-specific:
+# it matches the underflow at the engine choke point regardless of which mod fed the bad count. NOT a
+# base-game, shader, or driver problem.
+- id: campaign.troop_roster_count_underflow
+  category: managed
+  severity: critical
+  confidence: high
+  evidence_source: "Client crash 2026-06-20 occurrences/report.txt — MBUnderFlowException TaleWorlds.CampaignSystem.Roster.TroopRosterElement.set_Number ← TroopRoster.AddToCountsAtIndex ← TroopRoster.AddToCounts ← TOR_Core.CampaignMechanics.TORAIRecruitmentCampaignBehavior.AddDryadsToPartyOnEnteringSettlement (TORAIRecruitmentCampaignBehavior.cs:196, unclamped negative dryad count) ← OnAfterSettlementEntered ← EnterSettlementAction ← EncounterManager.HandleEncounters ← Campaign.Tick. Bannerlord 1.3.15, TOR_Core 1.3.15. Generalised to any caller feeding a negative count into a roster. Captured by Crash Doctor managed capture."
+  requires_sources: [managed_exception]
+  title:
+    en: "Troop-roster underflow — a negative troop count — guarded by Crash Doctor"
+    ru: "Переполнение ростера войск — отрицательное число войск — перехвачено Crash Doctor"
+    zh: "部队名册下溢——负数兵力——已被 Crash Doctor 拦截"
+    zht: "部隊名冊下溢——負數兵力——已被 Crash Doctor 攔截"
+    tr: "Asker kadrosu alt taşması — negatif asker sayısı — Crash Doctor tarafından korunuyor"
+  description:
+    en: |
+      MBUnderFlowException ("The given value is less than the expected value : ItemRosterElement::Character")
+      from TaleWorlds.CampaignSystem.Roster.TroopRosterElement.set_Number on the campaign tick. Something
+      asked a party's troop roster to remove more troops than it holds — TroopRoster.AddToCountsAtIndex
+      added a negative count that drove an element's Number below zero, which the engine refuses. The base
+      game always checks the current count before removing, so this is a buggy caller: in the first known
+      case The Old Realms' Wood Elf (Asrai) dryad recruitment computed an unclamped `PartySizeLimit -
+      TotalManCount` that went negative, but any mod feeding a bad count hits the same spot. NOT a
+      base-game, shader, or driver problem.
+    ru: |
+      MBUnderFlowException («The given value is less than the expected value : ItemRosterElement::Character»)
+      из TaleWorlds.CampaignSystem.Roster.TroopRosterElement.set_Number на тике кампании. Что-то попросило
+      ростер отряда убрать больше войск, чем в нём есть — TroopRoster.AddToCountsAtIndex добавил
+      отрицательное число, уводящее счётчик элемента ниже нуля, чего движок не допускает. Базовая игра
+      всегда проверяет текущее число перед удалением, так что виноват вызывающий код: в первом известном
+      случае набор дриад у лесных эльфов (Asrai) в The Old Realms посчитал неограниченное `лимит партии -
+      текущие войска`, ушедшее в минус, — но в эту же точку попадёт любой мод с плохим числом. Это НЕ
+      проблема базовой игры, шейдеров или драйвера.
+    zh: |
+      战役 tick 期间，TaleWorlds.CampaignSystem.Roster.TroopRosterElement.set_Number 抛出
+      MBUnderFlowException（“给定值小于期望值：ItemRosterElement::Character”）。某些操作要求队伍名册移除
+      多于其实际拥有的部队——TroopRoster.AddToCountsAtIndex 加入了一个负数，使某元素的 Number 降到零以下，
+      引擎拒绝。原版总是在移除前检查当前数量，所以这是调用方的 bug：已知首例中，The Old Realms 的木精灵
+      （Asrai）树妖招募计算了未做下限的「队伍上限减当前兵力」并变为负值，但任何传入错误数量的模组都会触发
+      同一处。这不是基础游戏、着色器或驱动问题。
+    zht: |
+      戰役 tick 期間，TaleWorlds.CampaignSystem.Roster.TroopRosterElement.set_Number 擲出
+      MBUnderFlowException（「給定值小於期望值：ItemRosterElement::Character」）。某些操作要求隊伍名冊移除
+      多於其實際擁有的部隊——TroopRoster.AddToCountsAtIndex 加入了一個負數，使某元素的 Number 降到零以下，
+      引擎拒絕。原版總是在移除前檢查目前數量，所以這是呼叫方的 bug：已知首例中，The Old Realms 的木精靈
+      （Asrai）樹妖招募計算了未做下限的「隊伍上限減目前兵力」並變為負值，但任何傳入錯誤數量的模組都會觸發
+      同一處。這不是基礎遊戲、著色器或驅動問題。
+    tr: |
+      Sefer tick'inde TaleWorlds.CampaignSystem.Roster.TroopRosterElement.set_Number
+      MBUnderFlowException ("verilen değer beklenen değerden küçük : ItemRosterElement::Character")
+      fırlattı. Bir şey bir grubun asker kadrosundan sahip olduğundan fazla asker çıkarmasını istedi —
+      TroopRoster.AddToCountsAtIndex bir elemanın Number'ını sıfırın altına indiren negatif bir sayı ekledi
+      ve motor bunu reddetti. Temel oyun çıkarmadan önce mevcut sayıyı her zaman kontrol eder, yani hatalı
+      olan çağıran koddur: bilinen ilk durumda The Old Realms'in Orman Elfi (Asrai) orman perisi toplaması
+      sınırlandırılmamış `grup üst sınırı - mevcut asker` hesaplayıp negatife düştü, ama hatalı sayı besleyen
+      herhangi bir mod aynı noktaya çarpar. Bu temel oyun, gölgelendirici veya sürücü sorunu DEĞİL.
+  fix:
+    en:
+      - "Crash Doctor already guards this — its safety net floors the troop count at empty (never negative) so the operation completes and the game keeps running. Keep the «Troop-roster underflow crash guard (negative troop count)» fix ON (Crash Fixes tab)."
+      - "Root cause is a mod removing/recruiting with an unclamped negative count. The first known case is The Old Realms' Wood Elf dryad recruitment (TORAIRecruitmentCampaignBehavior.cs:196); if you can identify the mod active when this happened, reporting it helps. Nothing you need to do in-game."
+      - "Harmless to keep playing — the affected roster is simply emptied of that troop instead of going negative; your saves are unaffected."
+      - "Do NOT rebuild shaders or change drivers — this is a mod-logic bug, that won't help."
+    ru:
+      - "Crash Doctor уже это перехватывает — safety net ограничивает число войск нулём (в минус не уходит), операция завершается, игра продолжается. Держи фикс «Защита от вылета ростера войск (отрицательное число войск)» ВКЛ (вкладка «Фиксы крашей»)."
+      - "Корень — мод, удаляющий/набирающий с неограниченным отрицательным числом. Первый известный случай — набор дриад у лесных эльфов в The Old Realms (TORAIRecruitmentCampaignBehavior.cs:196); если сможешь определить активный в момент вылета мод, сообщи о нём. В игре делать ничего не нужно."
+      - "Можно спокойно играть дальше — затронутый ростер просто обнуляется по этому войску вместо ухода в минус; сейвы не затронуты."
+      - "НЕ пересобирай шейдеры и не меняй драйвер — это баг логики мода, не поможет."
+    zh:
+      - "Crash Doctor 已经拦截了它——安全网把部队数量限制为零（绝不为负），操作完成，游戏继续运行。在「崩溃修复」页保持「部队名册下溢崩溃防护（负数兵力）」为开。"
+      - "根源是某模组以未做下限的负数进行移除／招募。已知首例是 The Old Realms 的木精灵树妖招募（TORAIRecruitmentCampaignBehavior.cs:196）；若能确认崩溃时活动的模组，反馈它会有帮助。游戏内无需操作。"
+      - "可以放心继续游戏——受影响的名册只是把该部队清空，而非变为负数；你的存档不受影响。"
+      - "不要重建着色器或更换驱动——这是模组逻辑 bug，没用。"
+    zht:
+      - "Crash Doctor 已經攔截了它——安全網把部隊數量限制為零（絕不為負），操作完成，遊戲繼續執行。在「崩潰修復」頁保持「部隊名冊下溢崩潰防護（負數兵力）」為開。"
+      - "根源是某模組以未做下限的負數進行移除／招募。已知首例是 The Old Realms 的木精靈樹妖招募（TORAIRecruitmentCampaignBehavior.cs:196）；若能確認崩潰時活動的模組，回報它會有幫助。遊戲內無需操作。"
+      - "可以放心繼續遊戲——受影響的名冊只是把該部隊清空，而非變為負數；你的存檔不受影響。"
+      - "不要重建著色器或更換驅動——這是模組邏輯 bug，沒用。"
+    tr:
+      - "Crash Doctor bunu zaten koruyor — güvenlik ağı asker sayısını sıfıra sabitler (asla negatif olmaz), işlem tamamlanır ve oyun çalışmaya devam eder. «Asker kadrosu alt taşma çökme koruması (negatif asker sayısı)» düzeltmesini AÇIK tut (Çökme Düzeltmeleri sekmesi)."
+      - "Kök neden, sınırlandırılmamış negatif bir sayıyla çıkaran/toplayan bir moddur. Bilinen ilk durum The Old Realms'in Orman Elfi orman perisi toplamasıdır (TORAIRecruitmentCampaignBehavior.cs:196); çökme sırasında aktif olan modu belirleyebilirsen bildirmek faydalı olur. Oyun içinde yapman gereken bir şey yok."
+      - "Oynamaya devam etmek zararsız — etkilenen kadro o asker için negatife düşmek yerine yalnızca boşaltılır; kayıtların etkilenmez."
+      - "Gölgelendiricileri yeniden oluşturma veya sürücü değiştirme — bu bir mod-mantık hatası, yardımcı olmaz."
+  match:
+    all:
+      - managed_exception: { type_contains: "UnderFlow" }
+      - managed_exception: { frame_contains: "AddToCountsAtIndex" }
+
 # Campaign-map DAILY-tick crash inside TOR's auto-upgrader. NullReferenceException from
 # TOR_Core.CampaignMechanics.TORPartyUpgraderCampaignBehavior.GetTroopUpgradeList's filter lambda
 # (<>c.<GetTroopUpgradeList>b__9_0) ← GetTroopUpgradeList ← UpgradeReadyTroops ← DailyTickParty ←
