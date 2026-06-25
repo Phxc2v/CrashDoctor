@@ -108,6 +108,21 @@
           - all:
               - managed_exception: { frame_contains: "BesiegerCamp.AddSiegePartyInternal" }
               - managed_exception: { type_contains: "NullReference" }
+          - all:
+              - managed_exception: { frame_contains: "OnPartySkillExercised" }
+              - managed_exception: { type_contains: "NullReference" }
+          - all:
+              - managed_exception: { frame_contains: "OnSurgeryApplied" }
+              - managed_exception: { type_contains: "NullReference" }
+          - all:
+              - managed_exception: { frame_contains: "ApplySimulationDamageToSelectedTroop" }
+              - managed_exception: { type_contains: "NullReference" }
+          - all:
+              - managed_exception: { frame_contains: "GainRenownAction" }
+              - managed_exception: { type_contains: "NullReference" }
+          - all:
+              - managed_exception: { frame_contains: "Clan.UpdateCurrentStrength" }
+              - managed_exception: { type_contains: "NullReference" }
 
 - id: tor.audio_dependency_missing
   category: managed
@@ -1505,6 +1520,322 @@
   match:
     all:
       - managed_exception: { frame_contains: "ApplySimulatedHitRewardToSelectedTroop" }
+      - managed_exception: { type_contains: "NullReference" }
+
+# Campaign-map TICK crash inside the engine's single funnel for granting party skill-XP.
+# NullReferenceException from DefaultSkillLevelingManager.OnPartySkillExercised, most often through the
+# AUTO-RESOLVE (simulated) battle path:
+#   DefaultSkillLevelingManager.OnPartySkillExercised ← MapEventSide.ApplySimulationDamageToSelectedTroop
+#   ← MapEvent.SimulateSingleTroopHit ← SimulateBattleRound ← SimulateBattleSessionForMapEvent
+#   ← MapEvent.Update ← MapEventManager.Tick ← Campaign.Tick ← MapState.OnMapModeTick.
+# OnPartySkillExercised does `party.GetEffectiveRoleHolder(role)` and null-checks the RESULT but not
+# `party` itself. In auto-resolve, surgery XP is granted via OnSurgeryApplied(party.MobileParty, ...);
+# when the struck troop belongs to a PartyBase whose MobileParty is null (settlement/garrison party, or
+# a party left by a removed mod), `party` is null → NRE → the whole map tick dies. The _Patch1 suffix
+# on the frame shows XP-overhaul mods (BetterExperience / BetterCore) also patch this method, so the
+# throw can originate in one of those patches too. This is a mod/save-data issue at an engine choke
+# point, NOT a shader or driver problem, and not a TOR bug.
+- id: campaign.party_skill_exercised_nre
+  category: managed
+  severity: critical
+  confidence: high
+  evidence_source: "Client crash report (Bannerlord 1.3.15, crash id 3f867025, seen 9× first 2026-06-12 last 2026-06-17) — NullReferenceException DefaultSkillLevelingManager.OnPartySkillExercised_Patch1 ← MapEventSide.ApplySimulationDamageToSelectedTroop_Patch1 ← MapEvent.SimulateSingleTroopHit ← SimulateBattleRound ← SimulateBattleSessionForMapEvent ← MapEvent.Update ← MapEventManager.Tick ← Campaign.Tick ← MapState.OnMapModeTick. ~100-mod load order (RBM, AutoResolveRebalanced, BetterExperience/BetterCore). Captured by Crash Doctor managed capture."
+  requires_sources: [managed_exception]
+  title:
+    en: "World-map crash — granting skill XP to a broken/leaderless party — guarded by Crash Doctor"
+    ru: "Вылет на карте — начисление опыта навыка битому/безглавому отряду — перехвачено Crash Doctor"
+    zh: "世界地图崩溃——向损坏／无首领队伍发放技能经验——已被 Crash Doctor 拦截"
+    zht: "世界地圖崩潰——向損壞／無首領隊伍發放技能經驗——已被 Crash Doctor 攔截"
+    tr: "Dünya haritası çökmesi — bozuk/lidersiz bir gruba yetenek XP'si verilirken — Crash Doctor tarafından korunuyor"
+  description:
+    en: |
+      NullReferenceException on the campaign-map tick, inside the engine's single funnel for granting
+      party skill XP (DefaultSkillLevelingManager.OnPartySkillExercised). It fires most often while the
+      engine auto-resolves (simulates) an AI-vs-AI battle on the world map: SimulateSingleTroopHit →
+      ApplySimulationDamageToSelectedTroop awards surgery XP, which calls OnPartySkillExercised. That
+      method dereferences the party (party.GetEffectiveRoleHolder) but only null-checks the resulting
+      role holder, NOT the party — so a struck troop belonging to a leaderless/broken party (a
+      settlement/garrison party, or one left behind by a removed mod) hands it a null party and the
+      whole map tick crashes. The _Patch1 suffix on the frame shows XP-overhaul mods (BetterExperience
+      / BetterCore) also patch this method, so the same crash can originate in one of their patches.
+      It is a mod/save-data issue, NOT a shader or driver problem, and not a TOR bug.
+    ru: |
+      NullReferenceException на тике карты, в единственной воронке движка для начисления партии опыта
+      навыков (DefaultSkillLevelingManager.OnPartySkillExercised). Чаще всего срабатывает, когда движок
+      авто-рассчитывает (симулирует) бой ИИ против ИИ на глобальной карте: SimulateSingleTroopHit →
+      ApplySimulationDamageToSelectedTroop начисляет опыт хирургии и зовёт OnPartySkillExercised. Этот
+      метод разыменовывает отряд (party.GetEffectiveRoleHolder), но проверяет на null только итоговый
+      результат, а НЕ сам отряд — поэтому поражённый боец из безглавого/битого отряда (отряд поселения/
+      гарнизона или оставленный удалённым модом) передаёт null-отряд, и весь тик карты падает. Суффикс
+      _Patch1 на кадре показывает, что метод также патчат моды-оверхолы опыта (BetterExperience /
+      BetterCore), так что тот же вылет может исходить из их патча. Это проблема мода/данных сейва, а НЕ
+      шейдеров или драйвера, и не баг TOR.
+    zh: |
+      战役地图 tick 期间，在引擎为队伍发放技能经验的唯一汇聚点
+      （DefaultSkillLevelingManager.OnPartySkillExercised）抛出空引用异常。最常在引擎自动结算（模拟）
+      世界地图上 AI 对 AI 的战斗时触发：SimulateSingleTroopHit → ApplySimulationDamageToSelectedTroop
+      发放手术经验，进而调用 OnPartySkillExercised。该方法对队伍取引用（party.GetEffectiveRoleHolder），
+      但只对返回的职务担任者做空检查，而不检查队伍本身——因此一名属于无首领／损坏队伍（据点／驻军队伍，
+      或被移除模组遗留的队伍）的被击中部队会传入 null 队伍，整个地图 tick 随即崩溃。帧上的 _Patch1
+      后缀表明经验改版模组（BetterExperience／BetterCore）也修补了此方法，故同样的崩溃可能源自它们的补丁。
+      这是模组／存档数据问题，不是着色器或驱动问题，也不是 TOR 的 bug。
+    zht: |
+      戰役地圖 tick 期間，在引擎為隊伍發放技能經驗的唯一匯聚點
+      （DefaultSkillLevelingManager.OnPartySkillExercised）擲出空參考例外。最常在引擎自動結算（模擬）
+      世界地圖上 AI 對 AI 的戰鬥時觸發：SimulateSingleTroopHit → ApplySimulationDamageToSelectedTroop
+      發放手術經驗，進而呼叫 OnPartySkillExercised。該方法對隊伍取參考（party.GetEffectiveRoleHolder），
+      但只對回傳的職務擔任者做空檢查，而不檢查隊伍本身——因此一名屬於無首領／損壞隊伍（據點／駐軍隊伍，
+      或被移除模組遺留的隊伍）的被擊中部隊會傳入 null 隊伍，整個地圖 tick 隨即崩潰。框架上的 _Patch1
+      後綴表明經驗改版模組（BetterExperience／BetterCore）也修補了此方法，故同樣的崩潰可能源自它們的修補。
+      這是模組／存檔資料問題，不是著色器或驅動問題，也不是 TOR 的 bug。
+    tr: |
+      Sefer haritası tick'inde, motorun gruba yetenek XP'si verme tek darboğazında
+      (DefaultSkillLevelingManager.OnPartySkillExercised) NullReferenceException fırlatıldı. En sık,
+      motor dünya haritasında bir AI'ye karşı AI savaşını otomatik çözerken (simüle ederken) tetiklenir:
+      SimulateSingleTroopHit → ApplySimulationDamageToSelectedTroop cerrahi XP'si verir ve
+      OnPartySkillExercised'ı çağırır. Bu metot grubu başvurur (party.GetEffectiveRoleHolder) ama yalnızca
+      sonuç rol sahibini null kontrol eder, grubun KENDİSİNİ değil — bu yüzden lidersiz/bozuk bir gruba
+      (yerleşim/garnizon grubu veya kaldırılan bir modun bıraktığı grup) ait vurulan bir asker ona null
+      grup verir ve tüm harita tick'i çöker. Çerçevedeki _Patch1 son eki, XP yenileme modlarının
+      (BetterExperience / BetterCore) da bu metodu yamaladığını gösterir, bu yüzden aynı çökme onların
+      yamasından da kaynaklanabilir. Bu bir mod/kayıt-verisi sorunudur, gölgelendirici veya sürücü sorunu
+      DEĞİL ve bir TOR hatası değil.
+  fix:
+    en:
+      - "Crash Doctor already guards this — its safety net swallows the crash and skips that one skill-XP grant, so the world map keeps running. Keep the «Skill-XP crash guard (broken/leaderless party)» fix ON (Crash Fixes tab)."
+      - "Most cases come from broken troops in AI parties (units left by a removed custom-troop mod). Keep «Fix broken troops on save load» ON, load the save, then RE-SAVE to scrub them out for good."
+      - "If it persists, suspect an XP-overhaul mod (BetterExperience / BetterCore) or a mod that spawns leaderless map parties (e.g. RealmsForgotten / RFMonsters); disable them one at a time to find the source."
+      - "Do NOT rebuild shaders or change drivers — this is a mod/save-data bug, that won't help."
+    ru:
+      - "Crash Doctor уже это перехватывает — safety net гасит вылет и пропускает одно начисление опыта навыка, карта продолжает работать. Держи фикс «Защита от вылета при начислении опыта навыков (битый/безглавый отряд)» ВКЛ (вкладка «Фиксы крашей»)."
+      - "Чаще всего причина — битые бойцы в отрядах ИИ (юниты от удалённого мода с войсками). Держи «Чинить сломанные отряды при загрузке» ВКЛ, загрузи сейв и ПЕРЕСОХРАНИ, чтобы вычистить их навсегда."
+      - "Если повторяется — подозревай мод-оверхол опыта (BetterExperience / BetterCore) или мод, плодящий безглавые отряды на карте (напр. RealmsForgotten / RFMonsters); отключай их по одному, чтобы найти источник."
+      - "НЕ пересобирай шейдеры и не меняй драйвер — это баг мода/данных сейва, не поможет."
+    zh:
+      - "Crash Doctor 已经拦截了它——安全网会吞掉崩溃并跳过那一次技能经验发放，世界地图继续运行。在「崩溃修复」页保持「技能经验崩溃防护（损坏／无首领队伍）」为开。"
+      - "多数情况源自 AI 队伍中的损坏部队（已移除的自定义部队模组遗留的单位）。保持「读档时修复损坏的部队」为开，读取存档后再次保存，将其彻底清除。"
+      - "若仍然出现，怀疑经验改版模组（BetterExperience／BetterCore）或生成无首领地图队伍的模组（如 RealmsForgotten／RFMonsters）；逐一禁用以找出来源。"
+      - "不要重建着色器或更换驱动——这是模组／存档数据 bug，没用。"
+    zht:
+      - "Crash Doctor 已經攔截了它——安全網會吞掉崩潰並跳過那一次技能經驗發放，世界地圖繼續執行。在「崩潰修復」頁保持「技能經驗崩潰防護（損壞／無首領隊伍）」為開。"
+      - "多數情況源自 AI 隊伍中的損壞部隊（已移除的自訂部隊模組遺留的單位）。保持「讀檔時修復損壞的部隊」為開，讀取存檔後再次儲存，將其徹底清除。"
+      - "若仍然出現，懷疑經驗改版模組（BetterExperience／BetterCore）或生成無首領地圖隊伍的模組（如 RealmsForgotten／RFMonsters）；逐一停用以找出來源。"
+      - "不要重建著色器或更換驅動——這是模組／存檔資料 bug，沒用。"
+    tr:
+      - "Crash Doctor bunu zaten koruyor — güvenlik ağı çökmeyi yutar ve o tek yetenek-XP vermeyi atlar, böylece dünya haritası çalışmaya devam eder. «Yetenek XP çökme koruması (bozuk/lidersiz grup)» düzeltmesini AÇIK tut (Çökme Düzeltmeleri sekmesi)."
+      - "Çoğu durum AI gruplarındaki bozuk askerlerden kaynaklanır (kaldırılan bir özel birlik modundan kalan birimler). «Kayıt yüklenirken bozuk birlikleri onar»ı AÇIK tut, kaydı yükle ve YENİDEN KAYDET; böylece kalıcı olarak temizlenir."
+      - "Devam ederse bir XP yenileme modundan (BetterExperience / BetterCore) ya da lidersiz harita grupları oluşturan bir moddan (örn. RealmsForgotten / RFMonsters) şüphelen; kaynağı bulmak için birer birer devre dışı bırak."
+      - "Gölgelendiricileri yeniden oluşturma veya sürücü değiştirme — bu bir mod/kayıt-verisi hatası, yardımcı olmaz."
+  match:
+    all:
+      # Same root (null party in the skill-XP funnel) shows up under different top frames depending on
+      # JIT inlining: OnPartySkillExercised when an XP-overhaul mod patches it (so it stays a frame), or
+      # its callers OnSurgeryApplied / ApplySimulationDamageToSelectedTroop when it is inlined away
+      # (no XP-overhaul mod present) — e.g. client report(5) 2026-06-15, auto-resolve surgery XP.
+      - any:
+          - managed_exception: { frame_contains: "OnPartySkillExercised" }
+          - managed_exception: { frame_contains: "OnSurgeryApplied" }
+          - managed_exception: { frame_contains: "ApplySimulationDamageToSelectedTroop" }
+      - managed_exception: { type_contains: "NullReference" }
+
+# Campaign-map TICK crash inside the engine's single funnel for awarding renown.
+# NullReferenceException from GainRenownAction.ApplyInternal, through the AUTO-RESOLVE battle-won path:
+#   GainRenownAction.ApplyInternal ← MapEventParty.CommitRenownChanges ← MapEventSide.CommitRenownChanges
+#   ← MapEvent.CommitCalculatedMapEventResults ← CalculateAndCommitMapEventResults ← OnBattleWon
+#   ← set_BattleState ← CalculateWinner ← SimulateBattleRound ← SimulateBattleSessionForMapEvent
+#   ← MapEvent.Update ← MapEventManager.Tick ← Campaign.Tick ← MapState.OnMapModeTick.
+# ApplyInternal does `hero.Clan.AddRenown(...)` with no null-check on hero or hero.Clan. When an
+# auto-resolved AI-vs-AI battle awards renown to a party led by a clanless hero (a bandit/mod-spawned
+# hero, a leaderless party, or a clanless lord left by a removed mod) — or a null hero — the deref
+# throws and the whole map tick dies. A healthy game never hits this (real lords always have a clan).
+# It is a mod/save-data issue at an engine choke point, NOT a shader or driver problem, and not a TOR bug.
+- id: campaign.gain_renown_null_clan_nre
+  category: managed
+  severity: critical
+  confidence: high
+  evidence_source: "Client crash report (Bannerlord 1.4.6, crash id 4b6e0211, 2026-06-19) — NullReferenceException TaleWorlds.CampaignSystem.Actions.GainRenownAction.ApplyInternal ← MapEventParty.CommitRenownChanges ← MapEventSide.CommitRenownChanges ← MapEvent.CommitCalculatedMapEventResults ← CalculateAndCommitMapEventResults ← OnBattleWon ← set_BattleState ← CalculateWinner ← SimulateBattleRound ← SimulateBattleSessionForMapEvent ← MapEvent.Update ← MapEventManager.Tick ← Campaign.Tick ← MapState.OnMapModeTick. ~100-mod load (many party/hero-spawning mods). Captured by Crash Doctor managed capture."
+  requires_sources: [managed_exception]
+  title:
+    en: "World-map crash — awarding renown to a clanless party after a battle — guarded by Crash Doctor"
+    ru: "Вылет на карте — начисление известности отряду без клана после боя — перехвачено Crash Doctor"
+    zh: "世界地图崩溃——战斗后向无家族队伍发放声望——已被 Crash Doctor 拦截"
+    zht: "世界地圖崩潰——戰鬥後向無家族隊伍發放聲望——已被 Crash Doctor 攔截"
+    tr: "Dünya haritası çökmesi — savaştan sonra klansız bir gruba şöhret verilirken — Crash Doctor tarafından korunuyor"
+  description:
+    en: |
+      NullReferenceException on the campaign-map tick, inside the engine's single funnel for awarding
+      renown (GainRenownAction.ApplyInternal). It fires while the engine commits the result of an
+      auto-resolved (simulated) AI-vs-AI battle on the world map: OnBattleWon → CommitRenownChanges →
+      GainRenownAction.ApplyInternal, which does `hero.Clan.AddRenown(...)` without null-checking the
+      hero or the hero's clan. When the winning party is led by a clanless hero (a bandit/mod-spawned
+      hero, a leaderless party, or a clanless lord left behind by a removed mod) — or no hero at all —
+      that dereference throws and the whole map tick crashes. A healthy game never hits this because real
+      lords always have a clan. It is a mod/save-data issue, NOT a shader or driver problem, and not a
+      TOR bug.
+    ru: |
+      NullReferenceException на тике карты, в единственной воронке движка для начисления известности
+      (GainRenownAction.ApplyInternal). Срабатывает, когда движок фиксирует результат авто-рассчитанного
+      (симулированного) боя ИИ против ИИ на глобальной карте: OnBattleWon → CommitRenownChanges →
+      GainRenownAction.ApplyInternal, который делает `hero.Clan.AddRenown(...)` без проверки на null ни
+      героя, ни его клана. Если победивший отряд ведёт герой без клана (бандитский/мод-герой, безглавый
+      отряд или лорд без клана от удалённого мода) — или героя нет вовсе — это разыменование падает, и
+      весь тик карты крашится. На здоровой игре такого не бывает: у настоящих лордов всегда есть клан.
+      Это проблема мода/данных сейва, а НЕ шейдеров или драйвера, и не баг TOR.
+    zh: |
+      战役地图 tick 期间，在引擎发放声望的唯一汇聚点（GainRenownAction.ApplyInternal）抛出空引用异常。
+      它在引擎结算世界地图上自动结算（模拟）的 AI 对 AI 战斗结果时触发：OnBattleWon →
+      CommitRenownChanges → GainRenownAction.ApplyInternal，该方法执行 `hero.Clan.AddRenown(...)`，
+      却未对英雄或英雄的家族做空检查。当获胜队伍由无家族英雄（土匪／模组英雄、无首领队伍，或被移除
+      模组遗留的无家族领主）率领——或根本没有英雄——时，该次取引用就会抛出异常，整个地图 tick 随即崩溃。
+      正常游戏绝不会触发，因为真正的领主总是有家族。这是模组／存档数据问题，不是着色器或驱动问题，
+      也不是 TOR 的 bug。
+    zht: |
+      戰役地圖 tick 期間，在引擎發放聲望的唯一匯聚點（GainRenownAction.ApplyInternal）擲出空參考例外。
+      它在引擎結算世界地圖上自動結算（模擬）的 AI 對 AI 戰鬥結果時觸發：OnBattleWon →
+      CommitRenownChanges → GainRenownAction.ApplyInternal，該方法執行 `hero.Clan.AddRenown(...)`，
+      卻未對英雄或英雄的家族做空檢查。當獲勝隊伍由無家族英雄（土匪／模組英雄、無首領隊伍，或被移除
+      模組遺留的無家族領主）率領——或根本沒有英雄——時，該次取參考就會擲出例外，整個地圖 tick 隨即崩潰。
+      正常遊戲絕不會觸發，因為真正的領主總是有家族。這是模組／存檔資料問題，不是著色器或驅動問題，
+      也不是 TOR 的 bug。
+    tr: |
+      Sefer haritası tick'inde, motorun şöhret verme tek darboğazında (GainRenownAction.ApplyInternal)
+      NullReferenceException fırlatıldı. Motor, dünya haritasında otomatik çözülen (simüle edilen) bir
+      AI'ye karşı AI savaşının sonucunu işlerken tetiklenir: OnBattleWon → CommitRenownChanges →
+      GainRenownAction.ApplyInternal; bu metot `hero.Clan.AddRenown(...)` çağrısını kahramanı veya
+      kahramanın klanını null kontrol etmeden yapar. Kazanan grup klansız bir kahraman (haydut/mod
+      kahramanı, lidersiz bir grup veya kaldırılan bir modun bıraktığı klansız bir lort) tarafından
+      yönetiliyorsa — ya da hiç kahraman yoksa — bu başvuru hata fırlatır ve tüm harita tick'i çöker.
+      Sağlıklı bir oyunda bu asla olmaz çünkü gerçek lortların her zaman bir klanı vardır. Bu bir
+      mod/kayıt-verisi sorunudur, gölgelendirici veya sürücü sorunu DEĞİL ve bir TOR hatası değil.
+  fix:
+    en:
+      - "Crash Doctor already guards this — its safety net skips that one renown grant, so the world map keeps running. Keep the «Renown-award crash guard (clanless party)» fix ON (Crash Fixes tab)."
+      - "Root cause is a clanless/leaderless party winning an auto-resolved battle, usually spawned by a mod (bandit-band, pirate, deserter, or AI-party mods). If it keeps happening, disable such mods one at a time to find the source."
+      - "Broken troops left by a removed mod can also produce odd parties — keep «Fix broken troops on save load» ON, load the save, then RE-SAVE."
+      - "Do NOT rebuild shaders or change drivers — this is a mod/save-data bug, that won't help."
+    ru:
+      - "Crash Doctor уже это перехватывает — safety net пропускает одно начисление известности, карта продолжает работать. Держи фикс «Защита от вылета при начислении известности (отряд без клана)» ВКЛ (вкладка «Фиксы крашей»)."
+      - "Корень — отряд без клана/лидера, выигравший авто-расчётный бой, обычно созданный модом (банды, пираты, дезертиры или моды на ИИ-отряды). Если повторяется, отключай такие моды по одному, чтобы найти источник."
+      - "Битые войска от удалённого мода тоже дают странные отряды — держи «Чинить сломанные отряды при загрузке» ВКЛ, загрузи сейв и ПЕРЕСОХРАНИ."
+      - "НЕ пересобирай шейдеры и не меняй драйвер — это баг мода/данных сейва, не поможет."
+    zh:
+      - "Crash Doctor 已经拦截了它——安全网会跳过那一次声望发放，世界地图继续运行。在「崩溃修复」页保持「声望发放崩溃防护（无家族队伍）」为开。"
+      - "根源是无家族／无首领的队伍赢得了自动结算的战斗，通常由模组生成（土匪团、海盗、逃兵或 AI 队伍模组）。若持续出现，逐一禁用这类模组以找出来源。"
+      - "已移除模组遗留的损坏部队也会产生异常队伍——保持「读档时修复损坏的部队」为开，读取存档后再次保存。"
+      - "不要重建着色器或更换驱动——这是模组／存档数据 bug，没用。"
+    zht:
+      - "Crash Doctor 已經攔截了它——安全網會跳過那一次聲望發放，世界地圖繼續執行。在「崩潰修復」頁保持「聲望發放崩潰防護（無家族隊伍）」為開。"
+      - "根源是無家族／無首領的隊伍贏得了自動結算的戰鬥，通常由模組生成（土匪團、海盜、逃兵或 AI 隊伍模組）。若持續出現，逐一停用這類模組以找出來源。"
+      - "已移除模組遺留的損壞部隊也會產生異常隊伍——保持「讀檔時修復損壞的部隊」為開，讀取存檔後再次儲存。"
+      - "不要重建著色器或更換驅動——這是模組／存檔資料 bug，沒用。"
+    tr:
+      - "Crash Doctor bunu zaten koruyor — güvenlik ağı o tek şöhret vermeyi atlar, böylece dünya haritası çalışmaya devam eder. «Şöhret verme çökme koruması (klansız grup)» düzeltmesini AÇIK tut (Çökme Düzeltmeleri sekmesi)."
+      - "Kök neden, otomatik çözülen bir savaşı kazanan klansız/lidersiz bir gruptur; genelde bir mod tarafından oluşturulur (haydut çetesi, korsan, asker kaçağı veya AI grup modları). Devam ederse kaynağı bulmak için bu tür modları birer birer devre dışı bırak."
+      - "Kaldırılan bir modun bıraktığı bozuk askerler de tuhaf gruplar üretebilir — «Kayıt yüklenirken bozuk birlikleri onar»ı AÇIK tut, kaydı yükle ve YENİDEN KAYDET."
+      - "Gölgelendiricileri yeniden oluşturma veya sürücü değiştirme — bu bir mod/kayıt-verisi hatası, yardımcı olmaz."
+  match:
+    all:
+      - managed_exception: { frame_contains: "GainRenownAction" }
+      - managed_exception: { type_contains: "NullReference" }
+
+# SAVE-LOAD crash: NullReferenceException that aborts loading a save, inside Clan.UpdateCurrentStrength.
+#   CharacterObject.GetSkillValue ← DefaultPartyMoraleModel.GetMoraleEffectsFromSkill / GetEffectivePartyMorale
+#   ← NavalDLCPartyMoraleModel.GetEffectivePartyMorale ← MobileParty.get_Morale
+#   ← DefaultMilitaryPowerModel.GetPowerOfParty ← ROTMilitaryPowerModel.GetPowerOfParty
+#   ← PartyBase.CalculateEstimatedCurrentStrength ← get_EstimatedStrength ← Clan.UpdateCurrentStrength
+#   ← Clan.AfterLoad ← Campaign.OnGameLoaded ← GameLoadingState.OnTick.
+# Clan.AfterLoad sums each party's EstimatedStrength → party morale → GetEffectivePartyLeaderForSkill,
+# which for a LEADERLESS party returns the first troop's CharacterObject. BasicCharacterObject.GetSkillValue
+# does `DefaultCharacterSkills.Skills.GetPropertyValue(skill)` with no null-check; a malformed troop with
+# null skill data (broken/overhaul troop, or one left by a removed mod) NREs, and because this runs inside
+# AfterLoad the WHOLE save fails to load. NOT a shader/driver problem; a mod/save-data issue at load time.
+- id: campaign.clan_update_strength_nre
+  category: managed
+  severity: critical
+  confidence: high
+  evidence_source: "Client crash report (Bannerlord 1.3.15, ROT 'Realms of Thrones' + NavalDLC, crash id bfb0758b, 2026-06-21) — NullReferenceException CharacterObject.GetSkillValue ← DefaultPartyMoraleModel.GetMoraleEffectsFromSkill ← GetEffectivePartyMorale ← NavalDLCPartyMoraleModel.GetEffectivePartyMorale ← MobileParty.get_Morale ← DefaultMilitaryPowerModel.GetPowerOfParty ← ROTMilitaryPowerModel.GetPowerOfParty ← PartyBase.CalculateEstimatedCurrentStrength ← get_EstimatedStrength ← Clan.UpdateCurrentStrength ← Clan.AfterLoad ← Campaign.OnGameLoaded ← GameLoadingState.OnTick. Captured by Crash Doctor managed capture."
+  requires_sources: [managed_exception]
+  title:
+    en: "Save won't load — a clan's strength hit a broken troop — guarded by Crash Doctor"
+    ru: "Сейв не грузится — сила клана наткнулась на битого бойца — перехвачено Crash Doctor"
+    zh: "存档无法载入——家族实力遇到损坏部队——已被 Crash Doctor 拦截"
+    zht: "存檔無法載入——家族實力遇到損壞部隊——已被 Crash Doctor 攔截"
+    tr: "Kayıt yüklenmiyor — bir klanın gücü bozuk bir askere rastladı — Crash Doctor tarafından korunuyor"
+  description:
+    en: |
+      NullReferenceException while LOADING a save (not on a tick). As each clan is finalized on load,
+      Clan.AfterLoad → Clan.UpdateCurrentStrength sums its parties' estimated strength, which walks party
+      morale → the party leader's Leadership skill. For a leaderless party the game falls back to the
+      FIRST troop's CharacterObject, and reads its skills via
+      BasicCharacterObject.GetSkillValue → DefaultCharacterSkills.Skills.GetPropertyValue with no
+      null-check. A malformed troop whose skill data is null (a broken or large-overhaul troop such as
+      ROT/"Realms of Thrones" units, or a troop left behind by a removed mod) makes that read throw, and
+      because it runs inside the load sequence the WHOLE save fails to open. It is a mod/save-data issue,
+      NOT a shader or driver problem.
+    ru: |
+      NullReferenceException при ЗАГРУЗКЕ сейва (не на тике). Когда на загрузке финализируется каждый
+      клан, Clan.AfterLoad → Clan.UpdateCurrentStrength суммирует примерную силу его отрядов, а это
+      затрагивает мораль отряда → навык лидерства лидера. Для безглавого отряда игра берёт CharacterObject
+      ПЕРВОГО бойца и читает его навыки через
+      BasicCharacterObject.GetSkillValue → DefaultCharacterSkills.Skills.GetPropertyValue без проверки на
+      null. Боец с битыми данными навыков (сломанный или оверхольный троп — напр. юниты ROT/«Realms of
+      Thrones» — либо оставленный удалённым модом) роняет это чтение, и так как оно идёт внутри загрузки,
+      ВЕСЬ сейв не открывается. Это проблема мода/данных сейва, а НЕ шейдеров или драйвера.
+    zh: |
+      读档时（非 tick）抛出空引用异常。载入时每个家族被最终化，Clan.AfterLoad →
+      Clan.UpdateCurrentStrength 累加其各队伍的估计实力，而这会涉及队伍士气 → 队伍首领的领导技能。
+      对于无首领的队伍，游戏会改用第一名部队的 CharacterObject，并通过
+      BasicCharacterObject.GetSkillValue → DefaultCharacterSkills.Skills.GetPropertyValue（无空检查）
+      读取其技能。一名技能数据为空的损坏部队（损坏或大型改版部队，如 ROT／「Realms of Thrones」单位，
+      或被移除模组遗留的部队）会让该读取抛出异常，由于它发生在载入过程中，整个存档无法打开。
+      这是模组／存档数据问题，不是着色器或驱动问题。
+    zht: |
+      讀檔時（非 tick）擲出空參考例外。載入時每個家族被最終化，Clan.AfterLoad →
+      Clan.UpdateCurrentStrength 累加其各隊伍的估計實力，而這會涉及隊伍士氣 → 隊伍首領的領導技能。
+      對於無首領的隊伍，遊戲會改用第一名部隊的 CharacterObject，並透過
+      BasicCharacterObject.GetSkillValue → DefaultCharacterSkills.Skills.GetPropertyValue（無空檢查）
+      讀取其技能。一名技能資料為空的損壞部隊（損壞或大型改版部隊，如 ROT／「Realms of Thrones」單位，
+      或被移除模組遺留的部隊）會讓該讀取擲出例外，由於它發生在載入過程中，整個存檔無法開啟。
+      這是模組／存檔資料問題，不是著色器或驅動問題。
+    tr: |
+      Bir kayıt YÜKLENİRKEN (tick'te değil) NullReferenceException. Yüklemede her klan sonlandırılırken,
+      Clan.AfterLoad → Clan.UpdateCurrentStrength gruplarının tahmini gücünü toplar; bu da grup morali →
+      grup liderinin Liderlik yeteneğini dolaşır. Lidersiz bir grup için oyun İLK askerin
+      CharacterObject'ine başvurur ve yeteneklerini
+      BasicCharacterObject.GetSkillValue → DefaultCharacterSkills.Skills.GetPropertyValue ile null kontrolü
+      olmadan okur. Yetenek verisi null olan bozuk bir asker (bozuk veya büyük yenileme birliği — örn.
+      ROT/"Realms of Thrones" birimleri — ya da kaldırılan bir modun bıraktığı bir asker) bu okumayı hata
+      fırlatır ve yükleme sırasında çalıştığı için TÜM kayıt açılamaz. Bu bir mod/kayıt-verisi sorunudur,
+      gölgelendirici veya sürücü sorunu DEĞİL.
+  fix:
+    en:
+      - "Crash Doctor already guards this — its safety net skips that clan's strength refresh so the save loads; the strength recalculates as you play. Keep the «Save-load crash guard (clan strength, broken troop)» fix ON (Crash Fixes tab)."
+      - "Root cause is a malformed troop (no skill data) in a leaderless party — usually a large-overhaul mod (ROT / Realms of Thrones) or a removed custom-troop mod. Keep «Fix broken troops on save load» ON, load the save, then RE-SAVE."
+      - "If the save still won't open with the guard off, re-installing the overhaul/troop mod that made the save also lets it load (the troop data resolves again)."
+      - "Do NOT rebuild shaders or change drivers — this is a save-data bug, that won't help."
+    ru:
+      - "Crash Doctor уже это перехватывает — safety net пропускает пересчёт силы этого клана, и сейв грузится; сила пересчитается по ходу игры. Держи фикс «Защита от вылета при загрузке (сила клана, битый боец)» ВКЛ (вкладка «Фиксы крашей»)."
+      - "Корень — троп с битыми данными (нет навыков) в безглавом отряде, обычно от крупного оверхола (ROT / Realms of Thrones) или удалённого мода с войсками. Держи «Чинить сломанные отряды при загрузке» ВКЛ, загрузи сейв и ПЕРЕСОХРАНИ."
+      - "Если с выключенной защитой сейв всё равно не открывается — вернуть оверхол/мод войск, на котором делался сейв, тоже даст ему загрузиться (данные тропа снова резолвятся)."
+      - "НЕ пересобирай шейдеры и не меняй драйвер — это баг данных сейва, не поможет."
+    zh:
+      - "Crash Doctor 已经拦截了它——安全网会跳过该家族的实力刷新，存档得以载入；实力在游戏过程中重新计算。在「崩溃修复」页保持「读档崩溃防护（家族实力，损坏部队）」为开。"
+      - "根源是无首领队伍中一名数据损坏（无技能）的部队，通常来自大型改版（ROT／Realms of Thrones）或已移除的自定义部队模组。保持「读档时修复损坏的部队」为开，读取存档后再次保存。"
+      - "若关闭防护后存档仍无法打开，重新安装制作该存档时所用的改版／部队模组也能让它载入（部队数据重新可解析）。"
+      - "不要重建着色器或更换驱动——这是存档数据 bug，没用。"
+    zht:
+      - "Crash Doctor 已經攔截了它——安全網會跳過該家族的實力刷新，存檔得以載入；實力在遊戲過程中重新計算。在「崩潰修復」頁保持「讀檔崩潰防護（家族實力，損壞部隊）」為開。"
+      - "根源是無首領隊伍中一名資料損壞（無技能）的部隊，通常來自大型改版（ROT／Realms of Thrones）或已移除的自訂部隊模組。保持「讀檔時修復損壞的部隊」為開，讀取存檔後再次儲存。"
+      - "若關閉防護後存檔仍無法開啟，重新安裝製作該存檔時所用的改版／部隊模組也能讓它載入（部隊資料重新可解析）。"
+      - "不要重建著色器或更換驅動——這是存檔資料 bug，沒用。"
+    tr:
+      - "Crash Doctor bunu zaten koruyor — güvenlik ağı o klanın güç yenilemesini atlar, böylece kayıt yüklenir; güç oyun sırasında yeniden hesaplanır. «Kayıt yükleme çökme koruması (klan gücü, bozuk asker)» düzeltmesini AÇIK tut (Çökme Düzeltmeleri sekmesi)."
+      - "Kök neden, lidersiz bir gruptaki yetenek verisi olmayan bozuk bir askerdir — genelde büyük bir yenileme modu (ROT / Realms of Thrones) ya da kaldırılan bir özel birlik modu. «Kayıt yüklenirken bozuk birlikleri onar»ı AÇIK tut, kaydı yükle ve YENİDEN KAYDET."
+      - "Koruma kapalıyken kayıt yine de açılmıyorsa, kaydı yapan yenileme/birlik modunu yeniden kurmak da yüklenmesini sağlar (birlik verisi yeniden çözülür)."
+      - "Gölgelendiricileri yeniden oluşturma veya sürücü değiştirme — bu bir kayıt-verisi hatası, yardımcı olmaz."
+  match:
+    all:
+      - managed_exception: { frame_contains: "Clan.UpdateCurrentStrength" }
       - managed_exception: { type_contains: "NullReference" }
 
 # SAVE crash: ArgumentException "An item with the same key has already been added." thrown from
