@@ -31,11 +31,19 @@ badge (Active / Off / Not needed here — required mod not loaded / Install erro
 fixes are on by default; you can disable any single one if it misbehaves on
 your setup, without touching the rest. Two buttons — **Enable all** / **Disable all** —
 flip every applicable fix at once (fixes for mods you don't have are left untouched,
-shown as "Not needed here"). Your choice is saved immediately.
+shown as "Not needed here"). Your choice is saved immediately. Fixes are **grouped
+into labeled sections** — Battle & missions, Campaign map, Saving & loading,
+Interface, and The Old Realms (TOR) — so you can see at a glance what each group
+is for; the **TOR section is hidden entirely when The Old Realms isn't installed**
+(and the "Active: X of Y" counter ignores those hidden fixes).
+
+The **Mods** tab lists installed mods in the **same order as your launcher** (load
+order), with conflict / missing-dependency / load-order badges; problem mods are
+highlighted but no longer reshuffle the list.
 
 ### 🔬 Crash diagnosis
 Scans `C:\ProgramData\Mount and Blade II Bannerlord\crashes\` and the BUTR HTML
-crash reports if you have BLSE/ButterLib. Matches every crash against **96 YAML
+crash reports if you have BLSE/ButterLib. Matches every crash against **99 YAML
 rules** covering:
 
 - **GPU / DirectX:** integrated-GPU misroute, DXGI device removed/hung, shader
@@ -111,7 +119,7 @@ module so a new state surfaces on its merits.
 | **M2.6** | GPU vendor cache cleanup — NVIDIA DXCache/GLCache, AMD DxCache/DXC, Intel ShaderCache | no | no | — |
 | **M3.2** | Detection: Documents on OneDrive (incl. pinned mode that breaks save reads) | no | no | — |
 | **M3.3** | `engine_config.txt` → terrain_quality fix; auto-clears shader cache | no | yes | yes |
-| **M3.6** | SubModule.xml dependency-graph audit — catches missing deps before launch | no | no | — |
+| **M3.6** | Mod-dependency audit — missing deps / version mismatches / duplicates / conflicts, reported in plain "what's wrong → what to do" lines | no | no | — |
 | **M3.7** | Unblock DLLs (NTFS Zone.Identifier ADS) for every installed mod | no | no | — |
 | **M4.1** | BLSE / ButterLib / Harmony / MCM versions display (read-only) | no | no | — |
 | **M4.2** | SHA-256 integrity check (manifest-driven, hidden until populated) | no | no | — |
@@ -228,6 +236,9 @@ never drift.
 | **`EffectiveRelationNullHeroNRESafetyPatch`** | Prefix on `DefaultDiplomacyModel.GetEffectiveRelation(Hero, Hero)`. On the hourly map tick `Army.ThinkAboutCohesionBoost` → `CalculatePartyInfluenceCost` calls `armyLeaderParty.LeaderHero.GetRelation(party.LeaderHero)`; a member party with no leader (`party.LeaderHero == null`) hands a null hero into the diplomacy model, which guards its outputs but not its inputs, so `GetHeroesForEffectiveRelation` dereferences `hero.Clan` and NREs the whole campaign tick. Returns `__result = 0` (no relation) when either hero is null — matching the same-clan branch that already returns 0 — so the leaderless party contributes no influence cost and the army continues. Two valid heroes run vanilla unchanged. Comes from mods that spawn hero-less map parties the AI absorbs into armies (e.g. RealmsForgotten / RFMonsters). Does not depend on TOR. |
 | **`TroopRosterCountUnderflowSafetyPatch`** | Prefix on `TroopRoster.AddToCountsAtIndex(index, ref countChange, ref woundedCountChange, …)` — the single funnel every roster add/remove routes through. It does `data[index].Number += countChange` with no floor, so a caller asking to remove more troops than the element holds drives `Number` below zero and the `set_Number` setter throws `MBUnderFlowException`, killing the campaign tick. The prefix clamps an over-large negative `countChange`/`woundedCountChange` to exactly empty (`-current`); the original then floors the element at 0 and its own `removeDepleted` branch drops the emptied row — the intended "remove all, no more" outcome. **Universal**, not mod-specific: vanilla always checks the count before removing so the clamp is a no-op for healthy calls; it catches the whole class of negative-count crashes (first seen via TOR's unclamped Wood Elf dryad recruitment, `TORAIRecruitmentCampaignBehavior.cs:196`). Does not depend on TOR. |
 | **`SkillTrainerLeaveNullHeroSafetyPatch`** (TOR) | Prefix on `TOR_Core.CampaignMechanics.SkillTrainerBehavior.LeaveTraining(Hero)`. After a settlement is taken by siege/rebellion, `SettlementOwnerChanged` ends training for every companion tracked in `_heroesInTraining` there, resolving the hero via `Hero.MainHero.Clan.Heroes.FirstOrDefault(x => x.StringId == key)`. That returns null once the companion has left the player's clan (died/captured/dismissed) but his id is still in the dictionary — TOR never prunes the stale entry — and `LeaveTraining` dereferences `hero.CurrentSettlement` on the null hero, NREing the campaign tick (and re-firing on every later siege of that town). Returns `false` (skip original) only when `hero == null`; a valid hero runs vanilla unchanged. The dictionary is deliberately left alone (the caller is mid-`foreach` over it). Only active with TOR loaded. |
+| **`PartySkillExercisedNRESafetyPatch`** | Finalizer on the private `DefaultSkillLevelingManager.OnPartySkillExercised(MobileParty, SkillObject, float, PartyRole)` — the single funnel every party skill-XP grant routes through (trade, governing, raids, surgery, training, tactics, scouting, charm, auto-resolve rewards…). It does `party.GetEffectiveRoleHolder(role)` and null-checks the resulting holder but **not `party`**; in auto-resolve, surgery XP is granted via `OnSurgeryApplied(party.MobileParty, …)` and a struck troop belonging to a `PartyBase` with a null `MobileParty` (settlement/garrison party, or one left by a removed mod) hands it a null party → NRE → whole map tick dies. The `_Patch1` frame shows XP-overhaul mods (BetterExperience/BetterCore) also patch it, so a finalizer covers both null-party and a throwing mod patch. The method is void, so a swallow just skips that one XP grant. **Universal**, not mod-specific; no-op for healthy calls. |
+| **`GainRenownNullClanNRESafetyPatch`** | Prefix on the private `GainRenownAction.ApplyInternal(Hero, float, bool)` — the single funnel for all renown awards (battle wins, quests, tournaments, cheats). It does `hero.Clan.AddRenown(…)` with no null-check on `hero` or `hero.Clan`; an auto-resolved battle won by a party led by a clanless/null hero (bandit/mod-spawned hero, leaderless party, clanless lord left by a removed mod) NREs the whole map tick. Returns `false` (skip original) when `hero == null` or `hero.Clan == null` — there is no clan to receive the renown, so skipping is the correct no-op; a valid hero+clan runs vanilla unchanged. **Universal**, not mod-specific. |
+| **`ClanUpdateStrengthNRESafetyPatch`** | Finalizer on `Clan.UpdateCurrentStrength()` — runs inside `Clan.AfterLoad` during **save loading**. It sums each party's `EstimatedStrength` → party morale → `GetEffectivePartyLeaderForSkill`, which for a leaderless party returns the first troop's `CharacterObject`; `BasicCharacterObject.GetSkillValue` then does `DefaultCharacterSkills.Skills.GetPropertyValue(skill)` with no null-check, so a malformed troop with null skill data (broken/overhaul troop e.g. ROT units, or one left by a removed mod) NREs **and the whole save fails to load**. The finalizer swallows it; `CurrentTotalStrength` is just a cache recomputed at runtime, so `AfterLoad` continues and the save opens. Targets the save-load chokepoint rather than the very hot `CharacterObject.GetSkillValue` leaf. **Universal**, not mod-specific; no-op for healthy saves. |
 | **`DanglingTroopCleanerBehavior`** | `OnSessionLaunched` scan: drops roster elements whose `Character` is null or **no longer registered in `MBObjectManager`** (a mod unregistered it without scrubbing rosters) across every party, settlement and active issue, and **removes orphaned garrison parties** (`IsGarrison && CurrentSettlement == null`) so a re-save heals the campaign. Live modded troops that merely lack a culture are NOT touched; every removal is logged by `StringId`. Listed on the Crash Fixes tab as **"Fix broken troops on save load"**. |
 | **`SafetyNetMessenger`** | Five-language toast helper used by the guards above. Picks EN/RU/ZH/ZHT/TR by `BannerlordConfig.Language` (Traditional Chinese falls back to Simplified, then English), amber (catch) or green (cleanup), one toast per category per 60 s. (Always on — infrastructure.) |
 
@@ -490,8 +501,16 @@ Calradia Expanded, RBM, Banner Kings и т.д. Без интернета, без
 любой фикс можно отключить по отдельности, если он мешает. Кнопки **«Включить все»** /
 **«Выключить все»** переключают сразу все применимые фиксы (фиксы для неустановленных
 модов не трогаются — у них статус «Здесь не требуется»). Выбор сразу сохраняется.
+Фиксы **сгруппированы по разделам** — «Бой и миссии», «Карта кампании», «Загрузка и
+сохранение», «Интерфейс» и «The Old Realms (TOR)», — чтобы сразу видеть, за что
+отвечает каждая группа; **раздел TOR полностью скрывается, если The Old Realms не
+установлен** (и счётчик «Активных: X из Y» скрытые TOR-фиксы не считает).
 
-- **Диагностика крашей** — **96 YAML-правил** под GPU/DirectX (включая авторитетный
+Вкладка **«Моды»** показывает установленные моды **в том же порядке, что и в
+лаунчере** (порядок загрузки), с пометками конфликтов / недостающих зависимостей /
+порядка загрузки; проблемные моды подсвечены, но больше не перетасовывают список.
+
+- **Диагностика крашей** — **99 YAML-правил** под GPU/DirectX (включая авторитетный
   детект iGPU из rgl_log + whitelist карт где DxDiag врёт VRAM), native runtime,
   повреждённые `.tpac` ассеты, save / late-game, mission / engine (NRE в диалогах,
   team-index шторм), TOR (включая Naval DLC + TOR conflict, Assimilation

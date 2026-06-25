@@ -991,7 +991,7 @@
                       <Children>
                         <ListPanel Id="CrashFixesList" DataSource="{CrashFixesList}"
                                    WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren"
-                                   StackLayout.LayoutMethod="VerticalTopToBottom">
+                                   StackLayout.LayoutMethod="VerticalBottomToTop">
                           <ItemTemplate>
                             <!-- Whole row is the click target (toggles the fix). Children carry the
                                  visuals and don't accept events so the click reaches the button. -->
@@ -1004,11 +1004,21 @@
                                         WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="18" SuggestedHeight="18"
                                         HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="16" MarginTop="12"
                                         Sprite="BlankWhiteSquare_9" Color="@ToggleIndicatorColor" />
-                                <!-- Patch name -->
-                                <TextWidget DoNotAcceptEvents="true"
+                                <!-- Patch name (normal rows only) — top-aligned next to the checkbox. -->
+                                <TextWidget DoNotAcceptEvents="true" IsVisible="@IsNormalRow"
                                             WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="760" SuggestedHeight="26"
                                             HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="48" MarginTop="9"
                                             Brush.FontSize="16" Brush.FontColor="@NameColor"
+                                            Brush.TextHorizontalAlignment="Left" Text="@Name" />
+                                <!-- Section header label (header rows only). Bottom-aligned so the label
+                                     sits directly ABOVE its own group's first row, while the row's empty
+                                     space is pushed UP — separating this category from the one above.
+                                     (Top-aligning it left ~70px of dead space below, making the header
+                                     read as a footer of the previous group.) -->
+                                <TextWidget DoNotAcceptEvents="true" IsVisible="@IsHeader"
+                                            WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="28"
+                                            HorizontalAlignment="Left" VerticalAlignment="Bottom" MarginLeft="20" MarginBottom="4"
+                                            Brush.FontSize="18" Brush.FontColor="@NameColor"
                                             Brush.TextHorizontalAlignment="Left" Text="@Name" />
                                 <!-- Plain-language description (wraps). Hidden on a section-header row. -->
                                 <TextWidget DoNotAcceptEvents="true" IsVisible="@IsNormalRow"

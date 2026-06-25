@@ -1,105 +1,13 @@
 - id: m36_dependency_graph
   title:
-    en: "SubModule.xml dependency graph audit"
-    ru: "Аудит графа зависимостей SubModule.xml"
-    zh: "SubModule.xml 依赖图审查"
-    zht: "SubModule.xml 相依圖審查"
-    tr: "SubModule.xml bağımlılık grafiği denetimi"
+    en: "Mod dependencies"
+    ru: "Зависимости модов"
+    zh: "模组依赖"
+    zht: "模組相依"
+    tr: "Mod bağımlılıkları"
   description:
-    en: |
-      Catches the most common mod-config crash — "subscribed to mod X but forgot
-      its dependency Y" — BEFORE the player launches and hits a NullReferenceException
-      5 minutes into the campaign. Walks every SubModule.xml in <game>\Modules\
-      and <workshop>\261550\<id>\, builds the dependency graph, and flags:
-
-      - Missing hard dependency (Mod X needs Y, Y isn't installed). Critical.
-      - Version mismatch (Mod X needs Y >= v1.2.3, installed Y is older). Warning.
-      - Duplicate module Id across game+workshop (Bannerlord picks one at random).
-      - Declared incompatibility (Mod X marks itself incompatible with Y, both installed) — a likely crash; disable one of them.
-
-      Optional dependencies (DependedModuleMetadata with optional="true") are
-      respected — missing optionals are silently ignored.
-    ru: |
-      Ловит самый частый mod-config краш — «подписался на мод X, но забыл его
-      зависимость Y» — ДО того как игрок запустится и поймает NullReferenceException
-      через 5 минут кампании. Обходит каждый SubModule.xml в <game>\Modules\ и
-      <workshop>\261550\<id>\, строит граф зависимостей, помечает:
-
-      - Отсутствующая жёсткая зависимость (Мод X требует Y, Y не установлен). Critical.
-      - Несовпадение версий (X требует Y >= v1.2.3, установлен старее). Warning.
-      - Дубликат Id в game+workshop (Bannerlord выбирает один наугад).
-      - Заявленная несовместимость (мод X помечает себя несовместимым с Y, оба установлены) — вероятный краш; отключи один из них.
-
-      Опциональные зависимости (DependedModuleMetadata с optional="true") учитываются —
-      отсутствующие опциональные молча игнорируем.
-    zh: |
-      捕捉最常见的模组配置崩溃——「订阅了模组 X 却忘了它的依赖 Y」——在玩家启动
-      并在战役进行 5 分钟后撞上 NullReferenceException 之前就发现它。会遍历
-      <game>\Modules\ 和 <workshop>\261550\<id>\ 中的每个 SubModule.xml，构建依赖图，
-      并标记：
-
-      - 缺失的硬依赖（模组 X 需要 Y，但 Y 未安装）。Critical。
-      - 版本不匹配（模组 X 需要 Y >= v1.2.3，但已安装的 Y 更旧）。Warning。
-      - game+workshop 中模块 Id 重复（Bannerlord 会随机选择其中一个）。
-      - 声明的不兼容性（模组 X 将自己标记为与 Y 不兼容，且两者都已安装）——很可能崩溃；禁用其中之一。
-
-      可选依赖（带 optional="true" 的 DependedModuleMetadata）会被尊重——
-      缺失的可选依赖会被悄无声息地忽略。
-    zht: |
-      捕捉最常見的模組設定當機——「訂閱了模組 X 卻忘了它的相依項 Y」——在玩家啟動
-      並在戰役進行 5 分鐘後撞上 NullReferenceException 之前就發現它。會遍歷
-      <game>\Modules\ 和 <workshop>\261550\<id>\ 中的每個 SubModule.xml，建構相依圖，
-      並標記：
-
-      - 缺失的硬相依（模組 X 需要 Y，但 Y 未安裝）。Critical。
-      - 版本不匹配（模組 X 需要 Y >= v1.2.3，但已安裝的 Y 更舊）。Warning。
-      - game+workshop 中模組 Id 重複（Bannerlord 會隨機選擇其中一個）。
-      - 宣告的不相容性（模組 X 將自己標記為與 Y 不相容，且兩者都已安裝）——很可能當機；停用其中之一。
-
-      可選相依（帶 optional="true" 的 DependedModuleMetadata）會被尊重——
-      缺失的可選相依會被悄無聲息地忽略。
-    tr: |
-      En yaygın mod yapılandırması çökmesini yakalar — "X moduna abone oldum ama
-      bağımlılığı Y'yi unuttum" — oyuncu başlatıp kampanyanın 5. dakikasında bir
-      NullReferenceException'a çarpmadan ÖNCE. <game>\Modules\ ve
-      <workshop>\261550\<id>\ içindeki her SubModule.xml'i gezer, bağımlılık grafiğini
-      oluşturur ve şunları işaretler:
-
-      - Eksik sıkı bağımlılık (X modu Y'ye ihtiyaç duyar, Y kurulu değil). Critical.
-      - Sürüm uyumsuzluğu (X modu Y >= v1.2.3'e ihtiyaç duyar, kurulu Y daha eski). Warning.
-      - game+workshop genelinde yinelenen modül Id (Bannerlord birini rastgele seçer).
-      - Bildirilen uyumsuzluk (X modu kendini Y ile uyumsuz olarak işaretler, ikisi de kurulu) — olası bir çökme; birini devre dışı bırakın.
-
-      İsteğe bağlı bağımlılıklar (optional="true" ile DependedModuleMetadata) dikkate
-      alınır — eksik isteğe bağlılar sessizce yok sayılır.
-  details:
-    en:
-      - "Read-only XML audit. We never modify SubModule.xml or LauncherData.xml."
-      - "Apply opens Steam Workshop for Bannerlord (subscribe to missing deps yourself)."
-      - "Optional deps with optional=\"true\" are excluded from missing-dep checks."
-      - "Version compare strips 'v'/'e' prefix and splits on '.'/'-'. Unparseable versions skip the check (no false positives)."
-      - "Not reversible (audit only)."
-    ru:
-      - "Только XML-аудит. Мы не меняем SubModule.xml и LauncherData.xml."
-      - "«Применить» откроет Steam Workshop для Bannerlord (на отсутствующие зависимости подписываешься сам)."
-      - "Опциональные зависимости с optional=\"true\" исключаются из проверки missing-dep."
-      - "Сравнение версий убирает префикс 'v'/'e' и сплитит по '.'/'-'. Нечитаемые версии пропускаем (нет false positive)."
-      - "Откат не предусмотрен (только аудит)."
-    zh:
-      - "只读 XML 审查。我们绝不修改 SubModule.xml 或 LauncherData.xml。"
-      - "「应用」会为 Bannerlord 打开 Steam 创意工坊（缺失的依赖请自行订阅）。"
-      - "带 optional=\"true\" 的可选依赖会被排除在缺失依赖检查之外。"
-      - "版本比较会去除 'v'/'e' 前缀并按 '.'/'-' 拆分。无法解析的版本会跳过检查（无误报）。"
-      - "不可撤销（仅审查）。"
-    zht:
-      - "唯讀 XML 審查。我們絕不修改 SubModule.xml 或 LauncherData.xml。"
-      - "「套用」會為 Bannerlord 開啟 Steam 創意工坊（缺失的相依項請自行訂閱）。"
-      - "帶 optional=\"true\" 的可選相依會被排除在缺失相依檢查之外。"
-      - "版本比較會去除 'v'/'e' 前綴並按 '.'/'-' 拆分。無法解析的版本會跳過檢查（無誤報）。"
-      - "不可復原（僅審查）。"
-    tr:
-      - "Salt okunur XML denetimi. SubModule.xml veya LauncherData.xml'i asla değiştirmeyiz."
-      - "«Uygula» Bannerlord için Steam Atölyesi'ni açar (eksik bağımlılıklara kendiniz abone olun)."
-      - "optional=\"true\" olan isteğe bağlı bağımlılıklar eksik bağımlılık kontrollerinden hariç tutulur."
-      - "Sürüm karşılaştırması 'v'/'e' önekini kaldırır ve '.'/'-' üzerinden böler. Ayrıştırılamayan sürümler kontrolü atlar (yanlış pozitif yok)."
-      - "Geri alınamaz (yalnızca denetim)."
+    en: "Checks installed mods for missing dependencies, version mismatches, duplicates and declared conflicts — and tells you, for each one, what to do."
+    ru: "Проверяет установленные моды на недостающие зависимости, несовпадение версий, дубликаты и заявленные конфликты — и по каждому пункту говорит, что сделать."
+    zh: "检查已安装的模组是否缺少依赖、版本不匹配、重复或声明冲突——并针对每一项告诉你该怎么做。"
+    zht: "檢查已安裝的模組是否缺少相依、版本不符、重複或宣告衝突——並針對每一項告訴你該怎麼做。"
+    tr: "Yüklü modları eksik bağımlılık, sürüm uyumsuzluğu, yineleme ve bildirilen çakışmalar için denetler — ve her biri için ne yapmanız gerektiğini söyler."
