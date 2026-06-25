@@ -6,43 +6,25 @@ Change history, by version.
 
 ---
 
-## 2026-06-25 — A clearer UI: mods in launcher order, grouped crash fixes, a plain-language dependency audit
+## 2026-06-25 — Three new crash guards + a clearer interface
 
-This release is purely about clarity and convenience. No new crash guards; nothing in the logic changes — it's just easier to read.
+Everything since the previous Steam release, as one list. The in-game mod version stays 1.7.0.0 — updating raises no questions from the game about your saves.
 
-- **Mods tab: listed in the same order as your launcher.** Mods used to appear in a confusing order (problem ones on top, then alphabetical). Now they follow exactly the order you set in the launcher (load order) — easier to find a given mod and see what loads after what. Problem mods are still highlighted, but they no longer reshuffle the list.
-- **Crash Fixes tab: fixes are grouped by category.** Section headers now split the list — "Battle & missions", "Campaign map", "Saving & loading", "Interface" and "The Old Realms (TOR)" — so you can tell at a glance what each group of fixes is for. The header sits above its group.
-- **TOR fixes are hidden when The Old Realms isn't installed.** They used to show as a greyed block even without TOR, which was confusing. Now that section simply isn't there without TOR, and the "Active crash fixes: X of Y" counter no longer counts hidden TOR fixes — the number honestly reflects what's shown.
-- **Fixed a fix that looked "unavailable" in the main list without TOR.** One TOR fix (the companion-training guard) wasn't tagged "(TOR)" and sat in the main list, greyed as "Not needed here" with no explanation. It now lives in the TOR section (and is hidden when TOR isn't installed).
-- **The mod-dependency audit (System Tune-up tab) is rewritten in plain language.** It used to be a wall of technical text ("missing hard dependencies", "duplicate Id across game+workshop", method lists). Now each finding is one short line shaped as **"what's wrong → what to do"** (e.g. `"Diplomacy" needs "Harmony", not installed → install / subscribe to "Harmony"`). The title and description were shortened too, and the extra technical text removed.
+New crash guards (all on by default, universal — they fire at an engine choke point and don't depend on any specific mod):
+
+- **AI auto-resolve — skill XP.** A world-map crash (NullReferenceException at `DefaultSkillLevelingManager.OnPartySkillExercised`) when the game grants party skill XP and the party is broken/leaderless (a settlement/garrison party, or one left by a removed mod). Most often during background AI-vs-AI auto-resolved battles. That one grant is skipped and the game continues.
+- **Renown to a clanless party.** A world-map crash (NullReferenceException at `GainRenownAction.ApplyInternal`) when renown is awarded to a party led by a clanless hero (a bandit or mod-spawned hero, a leaderless party, a clanless lord left by a removed mod). That one grant is skipped.
+- **Save load — clan strength.** A save that wouldn't open (NullReferenceException at `Clan.UpdateCurrentStrength` during loading) because a leaderless party's first troop had broken skill data (large-overhaul troops such as ROT, or troops left by a removed mod). That clan's strength refresh is skipped; the save loads and the strength recalculates as you play.
+- **Plus new diagnostic rules** — these crashes are now recognized automatically and point at the root in the report, not at shaders or drivers.
+
+Clearer interface:
+
+- **Mods tab** — listed in your launcher's order (load order), not a reshuffle. Problem mods are highlighted but no longer reshuffle the list.
+- **Crash Fixes tab** — grouped into sections (Battle & missions, Campaign map, Saving & loading, Interface, The Old Realms); the TOR section is hidden entirely when The Old Realms isn't installed; the "Active: X of Y" counter is honest; the section header sits above its group. Also fixed a TOR fix that used to sit "unavailable" in the main list.
+- **Mod-dependency audit** (System Tune-up tab) — rewritten in plain language: each finding is one short "what's wrong -> what to do" line.
 - **The mod version stays 1.7.0.0** — updating raises no questions from the game about your saves.
 
 ---
-
-## 2026-06-23 (d) — New guard: a save that won't load because of a broken troop in a clan's strength calc
-
-- **New guard: a crash while LOADING a save, when a clan's strength is computed.** The save would not open at all (NullReferenceException) — the crash happened during the load itself. As each clan is finalized on load, the game sums its parties' estimated strength, which touches party morale and the party leader's Leadership skill. For a party with no leader hero, the game falls back to the first rank-and-file troop and reads its skills — but a troop with broken data (no skill table; common with large-overhaul troops such as ROT / Realms of Thrones, or troops left by a removed mod) made that read crash, and because it all ran inside the load, the entire load aborted and the save wouldn't open. The new "Save-load crash guard (clan strength, broken troop)" fix on the Crash Fixes tab (on by default) catches it: that clan's strength refresh is skipped, the save loads, and the strength recalculates as you play. Healthy saves are untouched. Does not depend on any specific mod.
-- **Plus a new diagnostic rule** — this crash is now recognized automatically and points at the root (a broken troop in a leaderless party during the clan-strength calc on load) in the report, not at shaders or drivers.
-- **The mod version stays 1.7.0.0** — updating raises no questions from the game about your saves.
-
----
-
-## 2026-06-23 (c) — New guard (universal): a crash when awarding renown to a clanless party
-
-- **New guard: a campaign-map crash while awarding renown after a battle.** The game crashed (NullReferenceException) at the engine's single funnel for awarding renown (`GainRenownAction.ApplyInternal`). It happened most often while auto-resolving AI-vs-AI battles: when the winning side awards renown to a party leader, the engine reaches into that hero's clan — but never null-checks the hero or the clan. If the winning party was led by a clanless hero (a bandit or mod-spawned hero, a leaderless party, or a clanless lord left behind by a removed mod), reaching for the missing clan crashed the whole map tick. Rather than patch each path one by one, the new "Renown-award crash guard (clanless party)" fix on the Crash Fixes tab (on by default) catches it at the engine funnel: that one renown grant is skipped (there is no clan to receive it) and the game continues. Normal renown gains are untouched. Does not depend on any specific mod.
-- **Plus a new diagnostic rule** — this crash is now recognized automatically and points at the root (a clanless party while awarding renown) in the report, not at shaders or drivers.
-- **The mod version stays 1.7.0.0** — updating raises no questions from the game about your saves.
-
----
-
-## 2026-06-23 (b) — New guard (universal): a crash when granting skill XP to a broken/leaderless party
-
-- **New guard: a campaign-map crash while the game grants a party skill XP.** The game crashed (NullReferenceException) at the engine's single funnel for granting party skill XP (`DefaultSkillLevelingManager.OnPartySkillExercised`). It happened most often while auto-resolving AI-vs-AI battles on the world map: when a simulated hit is scored, surgery XP is granted and the engine takes the struck troop's party — but it only null-checks the resulting role holder, not the party itself. If the troop belonged to a leaderless/broken party (a settlement or garrison party, or one left behind by a removed mod), a null party reached the calc and the whole map tick crashed. The same crash could also come from an XP-overhaul mod's patch (BetterExperience / BetterCore). Rather than patch each path one by one, the new "Skill-XP crash guard (broken/leaderless party)" fix on the Crash Fixes tab (on by default) catches it at the engine funnel: that one XP grant is skipped and the game continues. Normal XP gains are untouched. Does not depend on any specific mod.
-- **Plus a new diagnostic rule** — this crash is now recognized automatically and points at the root (a broken/leaderless party while granting skill XP) in the report, not at shaders or drivers.
-- **The mod version stays 1.7.0.0** — updating raises no questions from the game about your saves.
-
----
-
 ## 2026-06-23 — New guards: a crash after capturing a town from companion training (TOR), and a universal "negative troop count" roster crash
 
 - **New guard: a campaign-map crash after a town is captured, when The Old Realms ends a companion's training.** The game crashed (NullReferenceException in `SkillTrainerBehavior.LeaveTraining`) right after a settlement was taken by siege or rebellion. When a settlement changes owner, The Old Realms ends the "skill training" for every companion who was training there — and looks that hero up in your clan. If the companion is no longer in your clan by then (died, was captured, or was dismissed) yet the training record was still kept for him, the lookup came back empty, and trying to end training for a hero who no longer exists crashed the whole campaign. Worse, that stale record was never cleared, so every later siege or rebellion of the same town crashed the game again. The new "Companion-training crash guard (siege, missing hero)" fix on the Crash Fixes tab (on by default) catches this: ending training for the missing hero is simply skipped and the game continues. This is a bug in The Old Realms, not the Doctor itself; the guard is only active with TOR installed.
