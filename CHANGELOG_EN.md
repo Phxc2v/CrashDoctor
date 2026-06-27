@@ -6,6 +6,29 @@ Change history, by version.
 
 ---
 
+## 2026-06-27 — Cumulative release since 2026-06-25: two new guards, a fix for the frozen dialog after a mod update, a more accurate save scan + RBM incompatibility detection
+
+Everything done since the 2026-06-25 Steam release, as one update. The in-game mod version stays 1.7.0.0 — updating raises no questions from the game about your saves.
+
+New crash guards:
+
+- **Captivity end — out-of-sync state.** A campaign-map crash (NullReferenceException in `PlayerCaptivity.EndCaptivityInternal`): the game ends the player's captivity but the captivity state is out of sync — the captor party is already gone. Fires most often when the party holding you prisoner loses an auto-resolved battle, or with an enlistment/captivity mod (e.g. Enlistment) that moves you between parties without going through the normal capture path. The new "Captivity-end crash guard (player release)" fix on the Crash Fixes tab (on by default) skips the redundant release (re-activating your party if needed so you're never frozen on the map) and the game continues. Does not depend on any specific mod.
+- **Naval DLC — upgrading a clanless lord's ship.** A daily campaign-map crash (NullReferenceException in `ShipUpgradeCampaignBehavior.GetChanceToUpgradeShipForLord`): the third-party Naval DLC mod auto-upgrades AI ships and computes an upgrade chance from the party leader's clan without checking the leader has a clan. A party led by a clanless hero (TOR special/summoned lords or other mods) crashed the whole daily tick. The new "Ship-upgrade crash guard (Naval DLC)" fix on the Crash Fixes tab (on by default) skips that party's upgrade and the game continues. Only active with Naval DLC installed. This is a Naval DLC bug, not the Doctor itself.
+
+Fixes:
+
+- **Freeze / dialog won't close / visual artifacts after a mod update.** When a mod had updated, the game showed its own "module versions changed — continue?" inquiry on the Continue/Load path, and Crash Doctor could pop one of its startup notices on top of it. Bannerlord allows only one such confirmation dialog at a time — stacking left an orphaned UI layer: the game froze, the dialog wouldn't close, and artifacts appeared. Crash Doctor now never shows its notice over an already-open dialog — it waits until the screen is free. This clears the blocker that made it risky to ship mod updates. Works on Bannerlord 1.2 / 1.3 / 1.4.
+- **The save scan no longer flags ordinary bandit raids as "broken logs".** `VillageStateChangedLogEntry` entries from looter/bandit raids (which have no leader hero) were wrongly treated as corrupted — so the scan kept showing them after every clean and it looked like cleaning didn't work. An entry is now treated as broken only when the village itself (`Village`) is actually gone — which is the real cause of the Encyclopedia/rumor/conversation crashes; ordinary raids are left alone and the scan stays clean.
+- **The Saves tab no longer shows false "modlist mismatch" warnings from mod updates.** A save was flagged yellow when a mod's version number changed (Steam auto-updates mods) even though the mod set was the same and the game itself doesn't warn on load — while the `_Cleaned` copy, written with current versions, read green, which looked like a bug. Version drift now counts only on a **major**-version change (1.x → 2.x, the rare case that can genuinely affect a save); minor/patch/build updates are ignored. Genuine missing/extra mods are still detected as before.
+
+New diagnostic rule:
+
+- **A mod incompatible with your game version at startup (RBM as the observed case).** A crash before the main menu when a mod can't apply its Harmony patches because the target method doesn't exist on your game version ("Undefined target method"). Observed: RBM 4.3.0.0 on Bannerlord 1.3.15 patches `CreateProcessedItemHolstersXMLForNative`, which 1.3.15 doesn't have (the mod is built for a different game version). This crash is now recognized automatically and points at the root — a mod-version mismatch — telling you to install the mod build that matches your game version, not blame shaders/drivers.
+
+- **The mod version stays 1.7.0.0** — updating raises no questions from the game about your saves.
+
+---
+
 ## 2026-06-25 — Three new crash guards + a clearer interface
 
 Everything since the previous Steam release, as one list. The in-game mod version stays 1.7.0.0 — updating raises no questions from the game about your saves.

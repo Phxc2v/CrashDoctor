@@ -123,6 +123,9 @@
           - all:
               - managed_exception: { frame_contains: "Clan.UpdateCurrentStrength" }
               - managed_exception: { type_contains: "NullReference" }
+          - all:
+              - managed_exception: { frame_contains: "EndCaptivityInternal" }
+              - managed_exception: { type_contains: "NullReference" }
 
 - id: tor.audio_dependency_missing
   category: managed
@@ -1738,6 +1741,208 @@
       - managed_exception: { frame_contains: "GainRenownAction" }
       - managed_exception: { type_contains: "NullReference" }
 
+# Campaign-map TICK crash while ENDING THE PLAYER'S CAPTIVITY.
+# NullReferenceException from PlayerCaptivity.EndCaptivityInternal, through the AUTO-RESOLVE battle-won path:
+#   PlayerCaptivity.EndCaptivityInternal ← EndCaptivityAction.ApplyInternal ← MapEvent.LootDefeatedPartyPrisoners
+#   ← MapEvent.CalculateAndCommitMapEventResults ← OnBattleWon ← set_BattleState ← CalculateWinner
+#   ← SimulateBattleRound ← SimulateBattleSessionForMapEvent ← MapEvent.Update ← MapEventManager.Tick
+#   ← Campaign.Tick ← MapState.OnMapModeTick.
+# EndCaptivityInternal does `this._captorParty.IsActive` with no null-check. _captorParty is null exactly
+# when PlayerCaptivity.IsCaptive is false — i.e. the captivity subsystem does not consider the player a
+# prisoner. The defeated-party loot path releases EVERY prisoner of the beaten party (incl. the main hero);
+# if the player's captivity state is out of sync (a double-release, or an enlistment/captivity mod such as
+# Enlistment moving the player in/out of parties without routing through StartCaptivity) the field is already
+# null and the deref throws, killing the whole map tick. A healthy capture always has a non-null captor.
+# It is a mod/save-data issue at an engine choke point, NOT a shader or driver problem, and not a TOR bug.
+- id: campaign.end_captivity_null_captor_nre
+  category: managed
+  severity: critical
+  confidence: high
+  evidence_source: "Client crash report (Bannerlord 1.4.6, crash id beceb2c6, 2026-06-27) — NullReferenceException TaleWorlds.CampaignSystem.PlayerCaptivity.EndCaptivityInternal ← EndCaptivityAction.ApplyInternal ← MapEvent.LootDefeatedPartyPrisoners ← CalculateAndCommitMapEventResults ← OnBattleWon ← set_BattleState ← CalculateWinner ← SimulateBattleRound ← SimulateBattleSessionForMapEvent ← MapEvent.Update ← MapEventManager.Tick ← Campaign.Tick ← MapState.OnMapModeTick. Enlistment mod present in load order. Captured by Crash Doctor managed capture."
+  requires_sources: [managed_exception]
+  title:
+    en: "World-map crash — ending the player's captivity with no captor party — guarded by Crash Doctor"
+    ru: "Вылет на карте — завершение плена игрока без отряда-пленителя — перехвачено Crash Doctor"
+    zh: "世界地图崩溃——结束玩家俘虏状态时没有关押队伍——已被 Crash Doctor 拦截"
+    zht: "世界地圖崩潰——結束玩家俘虜狀態時沒有關押隊伍——已被 Crash Doctor 攔截"
+    tr: "Dünya haritası çökmesi — oyuncunun esareti tutan grup olmadan bitirilirken — Crash Doctor tarafından korunuyor"
+  description:
+    en: |
+      NullReferenceException on the campaign-map tick, inside PlayerCaptivity.EndCaptivityInternal. It fires
+      while the engine commits the result of an auto-resolved (simulated) battle in which the party holding
+      the PLAYER prisoner was defeated: OnBattleWon → LootDefeatedPartyPrisoners → EndCaptivityAction →
+      PlayerCaptivity.EndCaptivity, which dereferences `this._captorParty.IsActive` without a null-check. The
+      captor party is null exactly when the captivity subsystem no longer considers the player a prisoner —
+      a double-release, or a captivity/enlistment mod (e.g. Enlistment) that moved the player in and out of
+      parties without going through the normal capture path. That dereference throws and the whole map tick
+      crashes. A healthy capture always has a non-null captor, so this never happens in a clean game. It is a
+      mod/save-data issue, NOT a shader or driver problem, and not a TOR bug.
+    ru: |
+      NullReferenceException на тике карты, внутри PlayerCaptivity.EndCaptivityInternal. Срабатывает, когда
+      движок фиксирует результат авто-рассчитанного (симулированного) боя, в котором отряд, державший в плену
+      ИГРОКА, был разбит: OnBattleWon → LootDefeatedPartyPrisoners → EndCaptivityAction →
+      PlayerCaptivity.EndCaptivity, который разыменовывает `this._captorParty.IsActive` без проверки на null.
+      Отряд-пленитель равен null ровно тогда, когда подсистема плена больше не считает игрока пленником —
+      двойное освобождение либо мод на плен/службу (напр. Enlistment), который двигал игрока между отрядами в
+      обход штатного захвата. Это разыменование падает, и весь тик карты крашится. У здорового плена пленитель
+      всегда не null, поэтому на чистой игре такого не бывает. Это проблема мода/данных сейва, а НЕ шейдеров
+      или драйвера, и не баг TOR.
+    zh: |
+      战役地图 tick 期间，在 PlayerCaptivity.EndCaptivityInternal 内抛出空引用异常。它在引擎结算一场自动结算
+      （模拟）战斗的结果时触发，而这场战斗中关押玩家的队伍被击败：OnBattleWon → LootDefeatedPartyPrisoners →
+      EndCaptivityAction → PlayerCaptivity.EndCaptivity，该方法未做空检查就对 `this._captorParty.IsActive`
+      取引用。关押队伍恰好在俘虏子系统不再认为玩家是俘虏时为 null——双重释放，或从军／俘虏模组（如 Enlistment）
+      绕过正常俘获流程让玩家在队伍间进出。该次取引用抛出异常，整个地图 tick 随即崩溃。正常的俘获总是有非空的
+      关押者，所以干净的游戏绝不会触发。这是模组／存档数据问题，不是着色器或驱动问题，也不是 TOR 的 bug。
+    zht: |
+      戰役地圖 tick 期間，在 PlayerCaptivity.EndCaptivityInternal 內擲出空參考例外。它在引擎結算一場自動結算
+      （模擬）戰鬥的結果時觸發，而這場戰鬥中關押玩家的隊伍被擊敗：OnBattleWon → LootDefeatedPartyPrisoners →
+      EndCaptivityAction → PlayerCaptivity.EndCaptivity，該方法未做空檢查就對 `this._captorParty.IsActive`
+      取參考。關押隊伍恰好在俘虜子系統不再認為玩家是俘虜時為 null——雙重釋放，或從軍／俘虜模組（如 Enlistment）
+      繞過正常俘獲流程讓玩家在隊伍間進出。該次取參考擲出例外，整個地圖 tick 隨即崩潰。正常的俘獲總是有非空的
+      關押者，所以乾淨的遊戲絕不會觸發。這是模組／存檔資料問題，不是著色器或驅動問題，也不是 TOR 的 bug。
+    tr: |
+      Sefer haritası tick'inde, PlayerCaptivity.EndCaptivityInternal içinde NullReferenceException fırlatıldı.
+      Motor, OYUNCUYU esir tutan grubun yenildiği otomatik çözülen (simüle edilen) bir savaşın sonucunu
+      işlerken tetiklenir: OnBattleWon → LootDefeatedPartyPrisoners → EndCaptivityAction →
+      PlayerCaptivity.EndCaptivity; bu metot `this._captorParty.IsActive` başvurusunu null kontrolü yapmadan
+      yapar. Esir tutan grup, esaret alt sistemi oyuncuyu artık tutsak saymadığında null olur — bir çift
+      salınım ya da oyuncuyu normal esir alma yolundan geçirmeden gruplar arasında taşıyan bir askere
+      yazılma/esaret modu (örn. Enlistment). Bu başvuru hata fırlatır ve tüm harita tick'i çöker. Sağlıklı bir
+      esir almada esir tutan her zaman null değildir, bu yüzden temiz bir oyunda asla olmaz. Bu bir
+      mod/kayıt-verisi sorunudur, gölgelendirici veya sürücü sorunu DEĞİL ve bir TOR hatası değil.
+  fix:
+    en:
+      - "Crash Doctor already guards this — its safety net skips the redundant release (re-activating your party if needed), so the world map keeps running. Keep the «Captivity-end crash guard (player release)» fix ON (Crash Fixes tab)."
+      - "Root cause is usually an enlistment/captivity mod (e.g. Enlistment) leaving the player's captivity state out of sync. If it keeps happening, update or report it to that mod."
+      - "Broken troops left by a removed mod can also produce odd parties — keep «Fix broken troops on save load» ON, load the save, then RE-SAVE."
+      - "Do NOT rebuild shaders or change drivers — this is a mod/save-data bug, that won't help."
+    ru:
+      - "Crash Doctor уже это перехватывает — safety net пропускает лишнее освобождение (при необходимости реактивирует твой отряд), карта продолжает работать. Держи фикс «Защита от вылета при выходе из плена (освобождение игрока)» ВКЛ (вкладка «Фиксы крашей»)."
+      - "Корень обычно — мод на службу/плен (напр. Enlistment), оставивший состояние плена игрока рассинхронизированным. Если повторяется, обнови мод или сообщи его автору."
+      - "Битые войска от удалённого мода тоже дают странные отряды — держи «Чинить сломанные отряды при загрузке» ВКЛ, загрузи сейв и ПЕРЕСОХРАНИ."
+      - "НЕ пересобирай шейдеры и не меняй драйвер — это баг мода/данных сейва, не поможет."
+    zh:
+      - "Crash Doctor 已经拦截了它——安全网会跳过多余的释放（必要时重新激活你的队伍），世界地图继续运行。在「崩溃修复」页保持「脱离俘虏崩溃防护（玩家释放）」为开。"
+      - "根源通常是从军／俘虏模组（如 Enlistment）让玩家的俘虏状态不同步。若持续出现，更新该模组或向其作者反馈。"
+      - "已移除模组遗留的损坏部队也会产生异常队伍——保持「读档时修复损坏的部队」为开，读取存档后再次保存。"
+      - "不要重建着色器或更换驱动——这是模组／存档数据 bug，没用。"
+    zht:
+      - "Crash Doctor 已經攔截了它——安全網會跳過多餘的釋放（必要時重新啟用你的隊伍），世界地圖繼續執行。在「崩潰修復」頁保持「脫離俘虜崩潰防護（玩家釋放）」為開。"
+      - "根源通常是從軍／俘虜模組（如 Enlistment）讓玩家的俘虜狀態不同步。若持續出現，更新該模組或向其作者回報。"
+      - "已移除模組遺留的損壞部隊也會產生異常隊伍——保持「讀檔時修復損壞的部隊」為開，讀取存檔後再次儲存。"
+      - "不要重建著色器或更換驅動——這是模組／存檔資料 bug，沒用。"
+    tr:
+      - "Crash Doctor bunu zaten koruyor — güvenlik ağı gereksiz salınımı atlar (gerekirse grubunu yeniden etkinleştirir), böylece dünya haritası çalışmaya devam eder. «Esaret bitişi çökme koruması (oyuncu salınımı)» düzeltmesini AÇIK tut (Çökme Düzeltmeleri sekmesi)."
+      - "Kök neden genelde oyuncunun esaret durumunu uyumsuz bırakan bir askere yazılma/esaret modudur (örn. Enlistment). Devam ederse modu güncelle veya yazarına bildir."
+      - "Kaldırılan bir modun bıraktığı bozuk askerler de tuhaf gruplar üretebilir — «Kayıt yüklenirken bozuk birlikleri onar»ı AÇIK tut, kaydı yükle ve YENİDEN KAYDET."
+      - "Gölgelendiricileri yeniden oluşturma veya sürücü değiştirme — bu bir mod/kayıt-verisi hatası, yardımcı olmaz."
+  match:
+    all:
+      - managed_exception: { frame_contains: "EndCaptivityInternal" }
+      - managed_exception: { type_contains: "NullReference" }
+
+# DAILY campaign-map TICK crash inside the third-party Naval DLC mod.
+# NullReferenceException from NavalDLC.CampaignBehaviors.ShipUpgradeCampaignBehavior.GetChanceToUpgradeShipForLord
+#   ← ShipUpgradeCampaignBehavior.DailyTickPartyEvent ← CampaignEvents.DailyTickParty
+#   ← CampaignEventDispatcher.DailyTickParty ← PeriodicTicker.PeriodicTickSome ← ... ← Campaign.Tick
+#   ← MapState.OnMapModeTick.
+# Verified against the shipped NavalDLC.dll: GetChanceToUpgradeShipForLord(Hero hero) does
+# `hero.Clan.Tier` with no null-check, while the caller DailyTickPartyEvent only guards
+# `party.LeaderHero == null` — never that the leader has a clan. A party led by a CLANLESS hero
+# (hero.Clan == null — common with TOR special/summoned/undead lords, or other mods that spawn
+# parties under clanless heroes) makes that read throw and the whole daily map tick crashes. A
+# normal lord always has a clan, so this never fires in a clean game. It is a bug in Naval DLC at an
+# engine choke point, NOT a shader or driver problem, and not a TOR bug.
+- id: campaign.naval_ship_upgrade_null_clan_nre
+  category: managed
+  severity: critical
+  confidence: high
+  evidence_source: "Client crash report (crash id 15b467c6, 2026-06-27, seen 5×) — NullReferenceException NavalDLC.CampaignBehaviors.ShipUpgradeCampaignBehavior.GetChanceToUpgradeShipForLord ← ShipUpgradeCampaignBehavior.DailyTickPartyEvent ← CampaignEvents.DailyTickParty ← CampaignEventDispatcher.DailyTickParty ← PeriodicTicker.PeriodicTickSome ← Campaign.Tick ← MapState.OnMapModeTick. Root cause confirmed by decompiling NavalDLC.dll. Captured by Crash Doctor managed capture."
+  requires_sources: [managed_exception]
+  title:
+    en: "World-map crash — Naval DLC upgrading a clanless lord's ship — guarded by Crash Doctor"
+    ru: "Вылет на карте — Naval DLC улучшает корабль безкланового лорда — перехвачено Crash Doctor"
+    zh: "世界地图崩溃——Naval DLC 升级无家族领主的船只——已被 Crash Doctor 拦截"
+    zht: "世界地圖崩潰——Naval DLC 升級無家族領主的船隻——已被 Crash Doctor 攔截"
+    tr: "Dünya haritası çökmesi — Naval DLC klansız bir lordun gemisini yükseltirken — Crash Doctor tarafından korunuyor"
+  description:
+    en: |
+      NullReferenceException on the daily campaign-map tick, inside the third-party Naval DLC mod
+      (NavalDLC.CampaignBehaviors.ShipUpgradeCampaignBehavior.GetChanceToUpgradeShipForLord). Every
+      in-game day the mod auto-upgrades AI ships: DailyTickPartyEvent → GetChanceToUpgradeShipForLord,
+      which reads `hero.Clan.Tier` with no null-check. The caller only guards `party.LeaderHero == null`,
+      never that the leader HAS a clan, so a party led by a clanless hero (common with TOR special /
+      summoned / undead lords, or another mod that spawns parties under clanless heroes) makes that read
+      throw and the whole daily tick crashes. A normal lord always has a clan, so this never happens in a
+      clean game. It is a bug in Naval DLC, NOT a shader or driver problem, and not a TOR bug.
+    ru: |
+      NullReferenceException на дневном тике карты, внутри стороннего мода Naval DLC
+      (NavalDLC.CampaignBehaviors.ShipUpgradeCampaignBehavior.GetChanceToUpgradeShipForLord). Каждый
+      игровой день мод авто-улучшает корабли ИИ: DailyTickPartyEvent → GetChanceToUpgradeShipForLord,
+      который читает `hero.Clan.Tier` без проверки на null. Вызывающий код проверяет только
+      `party.LeaderHero == null`, но не то, что у лидера ЕСТЬ клан, поэтому отряд с бесклановым лидером
+      (частое с особыми / призванными / нежитью-лордами TOR либо с другим модом, плодящим отряды под
+      бесклановыми героями) роняет это чтение, и весь дневной тик крашится. У нормального лорда клан есть
+      всегда, поэтому на чистой игре такого не бывает. Это баг Naval DLC, а НЕ шейдеров или драйвера, и
+      не баг TOR.
+    zh: |
+      每日战役地图 tick 期间，在第三方 Naval DLC 模组内抛出空引用异常
+      （NavalDLC.CampaignBehaviors.ShipUpgradeCampaignBehavior.GetChanceToUpgradeShipForLord）。该模组
+      每个游戏日自动升级 AI 船只：DailyTickPartyEvent → GetChanceToUpgradeShipForLord，该方法未做空检查就读取
+      `hero.Clan.Tier`。调用方只检查 `party.LeaderHero == null`，从不检查首领是否拥有家族，因此由无家族英雄
+      率领的队伍（常见于 TOR 特殊／召唤／亡灵领主，或其他在无家族英雄下生成队伍的模组）会让该读取抛异常，整个
+      每日 tick 崩溃。正常领主总是有家族，所以干净的游戏绝不会触发。这是 Naval DLC 的 bug，不是着色器或驱动
+      问题，也不是 TOR 的 bug。
+    zht: |
+      每日戰役地圖 tick 期間，在第三方 Naval DLC 模組內擲出空參考例外
+      （NavalDLC.CampaignBehaviors.ShipUpgradeCampaignBehavior.GetChanceToUpgradeShipForLord）。該模組
+      每個遊戲日自動升級 AI 船隻：DailyTickPartyEvent → GetChanceToUpgradeShipForLord，該方法未做空檢查就讀取
+      `hero.Clan.Tier`。呼叫方只檢查 `party.LeaderHero == null`，從不檢查首領是否擁有家族，因此由無家族英雄
+      率領的隊伍（常見於 TOR 特殊／召喚／亡靈領主，或其他在無家族英雄下生成隊伍的模組）會讓該讀取擲出例外，整個
+      每日 tick 崩潰。正常領主總是有家族，所以乾淨的遊戲絕不會觸發。這是 Naval DLC 的 bug，不是著色器或驅動
+      問題，也不是 TOR 的 bug。
+    tr: |
+      Günlük sefer haritası tick'inde, üçüncü taraf Naval DLC modu içinde NullReferenceException fırlatıldı
+      (NavalDLC.CampaignBehaviors.ShipUpgradeCampaignBehavior.GetChanceToUpgradeShipForLord). Mod her oyun
+      günü AI gemilerini otomatik yükseltir: DailyTickPartyEvent → GetChanceToUpgradeShipForLord; bu metot
+      `hero.Clan.Tier` değerini null kontrolü yapmadan okur. Çağıran kod yalnızca `party.LeaderHero == null`
+      durumunu korur, liderin bir klanı OLDUĞUNU asla kontrol etmez; bu yüzden klansız bir kahramanın
+      liderlik ettiği bir grup (TOR özel / çağrılmış / ölü lortlarında veya klansız kahramanlar altında grup
+      oluşturan başka bir modda yaygın) bu okumanın hata fırlatmasına ve tüm günlük tick'in çökmesine yol
+      açar. Normal bir lordun her zaman bir klanı vardır, bu yüzden temiz bir oyunda asla olmaz. Bu, Naval
+      DLC'nin bir hatasıdır; gölgelendirici veya sürücü sorunu DEĞİL ve bir TOR hatası değil.
+  fix:
+    en:
+      - "Crash Doctor already guards this — its safety net returns a 0 upgrade chance for the clanless party (it just skips its ship upgrade that day), so the world map keeps running. Keep the «Ship-upgrade crash guard (Naval DLC)» fix ON (Crash Fixes tab)."
+      - "Root cause is a bug in the Naval DLC mod (it doesn't check that a party leader has a clan before reading the clan tier). Report it to the Naval DLC author so it can be fixed at the source."
+      - "The clanless lord usually comes from another mod (TOR special/summoned/undead lords, or a mod that spawns parties under clanless heroes). If you want it gone entirely, identify and update that mod."
+      - "Do NOT rebuild shaders or change drivers — this is a mod bug, that won't help."
+    ru:
+      - "Crash Doctor уже это перехватывает — safety net возвращает шанс улучшения 0 для безкланового отряда (он просто пропускает улучшение корабля в этот день), карта продолжает работать. Держи фикс «Защита от вылета при улучшении кораблей (Naval DLC)» ВКЛ (вкладка «Фиксы крашей»)."
+      - "Корень — баг мода Naval DLC (он не проверяет, что у лидера отряда есть клан, перед чтением тира клана). Сообщи автору Naval DLC, чтобы починили в источнике."
+      - "Бескланновый лорд обычно приходит из другого мода (особые/призванные/нежить-лорды TOR либо мод, плодящий отряды под бесклановыми героями). Если хочешь убрать совсем — найди и обнови этот мод."
+      - "НЕ пересобирай шейдеры и не меняй драйвер — это баг мода, не поможет."
+    zh:
+      - "Crash Doctor 已经拦截了它——安全网会为无家族队伍返回 0 的升级概率（它只是当天跳过船只升级），世界地图继续运行。在「崩溃修复」页保持「船只升级崩溃防护（Naval DLC）」为开。"
+      - "根源是 Naval DLC 模组的 bug（在读取家族等级前不检查队伍首领是否拥有家族）。请向 Naval DLC 作者反馈以便从源头修复。"
+      - "无家族领主通常来自其他模组（TOR 特殊／召唤／亡灵领主，或在无家族英雄下生成队伍的模组）。若想彻底消除，请找出并更新该模组。"
+      - "不要重建着色器或更换驱动——这是模组 bug，没用。"
+    zht:
+      - "Crash Doctor 已經攔截了它——安全網會為無家族隊伍回傳 0 的升級機率（它只是當天跳過船隻升級），世界地圖繼續執行。在「崩潰修復」頁保持「船隻升級崩潰防護（Naval DLC）」為開。"
+      - "根源是 Naval DLC 模組的 bug（在讀取家族等級前不檢查隊伍首領是否擁有家族）。請向 Naval DLC 作者回報以便從源頭修復。"
+      - "無家族領主通常來自其他模組（TOR 特殊／召喚／亡靈領主，或在無家族英雄下生成隊伍的模組）。若想徹底消除，請找出並更新該模組。"
+      - "不要重建著色器或更換驅動——這是模組 bug，沒用。"
+    tr:
+      - "Crash Doctor bunu zaten koruyor — güvenlik ağı klansız grup için 0 yükseltme şansı döndürür (o gün yalnızca gemi yükseltmesini atlar), böylece dünya haritası çalışmaya devam eder. «Gemi yükseltme çökme koruması (Naval DLC)» düzeltmesini AÇIK tut (Çökme Düzeltmeleri sekmesi)."
+      - "Kök neden Naval DLC modundaki bir hatadır (klan kademesini okumadan önce bir grup liderinin klanı olup olmadığını kontrol etmez). Kaynağında düzeltilebilmesi için Naval DLC yazarına bildir."
+      - "Klansız lord genelde başka bir moddan gelir (TOR özel/çağrılmış/ölü lortları ya da klansız kahramanlar altında grup oluşturan bir mod). Tamamen kaldırmak istersen o modu bul ve güncelle."
+      - "Gölgelendiricileri yeniden oluşturma veya sürücü değiştirme — bu bir mod hatası, yardımcı olmaz."
+  match:
+    all:
+      - managed_exception: { frame_contains: "GetChanceToUpgradeShipForLord" }
+      - managed_exception: { type_contains: "NullReference" }
+
 # SAVE-LOAD crash: NullReferenceException that aborts loading a save, inside Clan.UpdateCurrentStrength.
 #   CharacterObject.GetSkillValue ← DefaultPartyMoraleModel.GetMoraleEffectsFromSkill / GetEffectivePartyMorale
 #   ← NavalDLCPartyMoraleModel.GetEffectivePartyMorale ← MobileParty.get_Morale
@@ -2053,3 +2258,114 @@
     all:
       - managed_exception: { frame_contains: "MovementOrder.IsApplicable" }
       - managed_exception: { type_contains: "NullReference" }
+
+# STARTUP crash: a mod fails to apply its Harmony patches because a target method doesn't exist on
+# THIS game version (mod-vs-game version mismatch). HarmonyException thrown from the mod's own
+# ApplyHarmonyPatches → Harmony.PatchAll, which fails fast on the first patch class whose target
+# method can't be bound:
+#   <Mod>.SubModule.ApplyHarmonyPatches → Harmony.PatchAll(assembly)   ← HarmonyException
+#   <Mod>.SubModule.OnBeforeInitialModuleScreenSetAsRoot
+#   Module.SetInitialModuleScreenAsRootScreen_Patch1 → Module.OnApplicationTick_Patch1
+# Observed (client crash 8f0dbe24, 2026-06-26, Bannerlord 1.3.15): RBM (Realistic Battle Mod) v4.3.0.0
+# — inner ArgumentException "Undefined target method for patch method RBM.
+# CreateProcessedItemHolstersXMLForNativePatch::Postfix". RBM patches Module.
+# CreateProcessedItemHolstersXMLForNative, which does NOT exist in 1.3.15: verified against the
+# decompiled TaleWorlds.MountAndBlade.Module — it has the sibling CreateProcessed*XMLForNative methods
+# (Skins, ActionSets, ActionTypes, Animations, VoiceDefinitions, SoundEventData, SoundParams,
+# ModuleData) but NOT ItemHolsters. So RBM 4.3.0.0 is built for a different game version. PatchAll
+# fails on that one class and aborts ALL of the mod's patches → the game crashes at startup before the
+# main menu. It is a mod-version mismatch, NOT a shader/driver problem, not a TOR bug, and not a
+# CrashDoctor bug (Crash Doctor only captured and attributed it).
+- id: startup.mod_harmony_patch_undefined_target
+  category: managed
+  severity: critical
+  confidence: high
+  evidence_source: "Client crash report (crash id 8f0dbe24, 2026-06-26, seen 4×, Bannerlord 1.3.15) — HarmonyLib.HarmonyException 'Patching exception in method null' ← inner ArgumentException 'Undefined target method for patch method RBM.CreateProcessedItemHolstersXMLForNativePatch::Postfix' ← RBM.SubModule.ApplyHarmonyPatches ← Harmony.PatchAll ← OnBeforeInitialModuleScreenSetAsRoot ← Module.OnApplicationTick. Confirmed by decompile: Module.CreateProcessedItemHolstersXMLForNative absent in 1.3.15. Captured by Crash Doctor managed capture."
+  requires_sources: [managed_exception]
+  title:
+    en: "Startup crash — a mod (RBM) can't apply its patches on this game version (version mismatch)"
+    ru: "Вылет на старте — мод (RBM) не может применить патчи на этой версии игры (несовместимость версий)"
+    zh: "启动崩溃——某模组（RBM）无法在此游戏版本上应用其补丁（版本不匹配）"
+    zht: "啟動崩潰——某模組（RBM）無法在此遊戲版本上套用其修補（版本不符）"
+    tr: "Başlangıç çökmesi — bir mod (RBM) bu oyun sürümünde yamalarını uygulayamıyor (sürüm uyumsuzluğu)"
+  description:
+    en: |
+      HarmonyException at startup (before the main menu). A mod fails inside its own
+      ApplyHarmonyPatches → Harmony.PatchAll because one of its patch classes targets a game method
+      that doesn't exist on your installed Bannerlord version — Harmony reports "Undefined target
+      method". PatchAll fails fast on that one class, so the mod's ENTIRE patch set is aborted and the
+      game crashes on load. In this report the mod is RBM (Realistic Battle Mod) v4.3.0.0 on Bannerlord
+      1.3.15: it tries to patch Module.CreateProcessedItemHolstersXMLForNative, which is absent in
+      1.3.15 (the engine has the sibling …Skins/…ActionSets/…Animations/…ModuleData methods but not
+      …ItemHolsters), so RBM 4.3.0.0 is built for a different game version. This is a mod-version
+      mismatch, NOT a shader/driver problem, not a TOR bug, and not a Crash Doctor bug — Crash Doctor
+      only captured and attributed it.
+    ru: |
+      HarmonyException на старте (до главного меню). Мод падает внутри своего ApplyHarmonyPatches →
+      Harmony.PatchAll, потому что один из его патч-классов нацелен на метод игры, которого нет в твоей
+      версии Bannerlord — Harmony сообщает «Undefined target method». PatchAll падает на этом одном
+      классе, поэтому ВЕСЬ набор патчей мода прерывается и игра вылетает на загрузке. В этом отчёте мод
+      — RBM (Realistic Battle Mod) v4.3.0.0 на Bannerlord 1.3.15: он пытается пропатчить
+      Module.CreateProcessedItemHolstersXMLForNative, которого в 1.3.15 нет (в движке есть «братские»
+      методы …Skins/…ActionSets/…Animations/…ModuleData, но нет …ItemHolsters), то есть RBM 4.3.0.0
+      собран под другую версию игры. Это несовместимость версий мода, а НЕ проблема шейдеров/драйвера,
+      не баг TOR и не баг Crash Doctor — он лишь поймал и атрибутировал краш.
+    zh: |
+      启动时（主菜单之前）抛出 HarmonyException。某模组在其自身的 ApplyHarmonyPatches → Harmony.PatchAll
+      中失败，因为它的某个补丁类的目标是你所安装的 Bannerlord 版本中不存在的游戏方法——Harmony 报告
+      “Undefined target method”。PatchAll 在该类上快速失败，于是该模组的整套补丁被中止，游戏在加载时崩溃。
+      本报告中的模组是 Bannerlord 1.3.15 上的 RBM（Realistic Battle Mod）v4.3.0.0：它试图修补
+      Module.CreateProcessedItemHolstersXMLForNative，而该方法在 1.3.15 中不存在（引擎有同类的
+      …Skins/…ActionSets/…Animations/…ModuleData 方法，但没有 …ItemHolsters），因此 RBM 4.3.0.0 是为
+      另一个游戏版本构建的。这是模组版本不匹配，不是着色器/驱动问题，不是 TOR 的 bug，也不是 Crash Doctor
+      的 bug——Crash Doctor 只是捕获并归因了它。
+    zht: |
+      啟動時（主選單之前）擲出 HarmonyException。某模組在其自身的 ApplyHarmonyPatches → Harmony.PatchAll
+      中失敗，因為它的某個修補類別的目標是你所安裝的 Bannerlord 版本中不存在的遊戲方法——Harmony 回報
+      「Undefined target method」。PatchAll 在該類別上快速失敗，於是該模組的整套修補被中止，遊戲在載入時崩潰。
+      本報告中的模組是 Bannerlord 1.3.15 上的 RBM（Realistic Battle Mod）v4.3.0.0：它試圖修補
+      Module.CreateProcessedItemHolstersXMLForNative，而該方法在 1.3.15 中不存在（引擎有同類的
+      …Skins/…ActionSets/…Animations/…ModuleData 方法，但沒有 …ItemHolsters），因此 RBM 4.3.0.0 是為
+      另一個遊戲版本建置的。這是模組版本不符，不是著色器/驅動問題，不是 TOR 的 bug，也不是 Crash Doctor
+      的 bug——Crash Doctor 只是擷取並歸因了它。
+    tr: |
+      Başlangıçta (ana menüden önce) HarmonyException. Bir mod, kendi ApplyHarmonyPatches →
+      Harmony.PatchAll çağrısında başarısız olur çünkü yama sınıflarından biri, kurulu Bannerlord
+      sürümünde var olmayan bir oyun metodunu hedefler — Harmony "Undefined target method" bildirir.
+      PatchAll o tek sınıfta hızlıca başarısız olur, böylece modun TÜM yama seti iptal edilir ve oyun
+      yüklemede çöker. Bu raporda mod, Bannerlord 1.3.15 üzerindeki RBM (Realistic Battle Mod)
+      v4.3.0.0'dır: Module.CreateProcessedItemHolstersXMLForNative metodunu yamalamaya çalışır; bu metot
+      1.3.15'te yoktur (motorda kardeş …Skins/…ActionSets/…Animations/…ModuleData metotları var ama
+      …ItemHolsters yok), yani RBM 4.3.0.0 başka bir oyun sürümü için yapılmıştır. Bu bir mod-sürüm
+      uyumsuzluğudur; gölgelendirici/sürücü sorunu DEĞİL, bir TOR hatası değil ve bir Crash Doctor hatası
+      değil — Crash Doctor yalnızca yakalayıp atfetti.
+  fix:
+    en:
+      - "Install the RBM (Realistic Battle Mod) build that matches your game version, Bannerlord 1.3.15. Your RBM v4.3.0.0 is built for a different version — update or roll it back to the 1.3.15-compatible build (check the RBM Nexus/Workshop page for the version note)."
+      - "Match RBM's add-ons too — especially OpenSourceSaddleryRBM, which depends on RBM. Keep them on the same RBM version."
+      - "If no compatible RBM build is available yet, DISABLE RBM (and OpenSourceSaddleryRBM) in the launcher until one is released — the game will then start normally."
+      - "This is a mod-version mismatch. Rebuilding shaders or changing graphics drivers will NOT help, and it is not a Crash Doctor or TOR problem."
+    ru:
+      - "Поставь сборку RBM (Realistic Battle Mod) под твою версию игры — Bannerlord 1.3.15. Твой RBM v4.3.0.0 собран под другую версию: обнови или откатись до сборки, совместимой с 1.3.15 (см. примечание о версии на странице RBM в Nexus/Workshop)."
+      - "Подгони и дополнения RBM — особенно OpenSourceSaddleryRBM, он зависит от RBM. Держи их на одной версии с RBM."
+      - "Если совместимой сборки RBM пока нет — ОТКЛЮЧИ RBM (и OpenSourceSaddleryRBM) в лаунчере, пока её не выпустят, тогда игра запустится нормально."
+      - "Это несовместимость версий мода. Пересборка шейдеров или смена драйвера НЕ помогут, и это не проблема Crash Doctor или TOR."
+    zh:
+      - "安装与你的游戏版本（Bannerlord 1.3.15）匹配的 RBM（Realistic Battle Mod）版本。你的 RBM v4.3.0.0 是为其他版本构建的——请更新或回退到兼容 1.3.15 的版本（参见 RBM 的 Nexus/创意工坊页面的版本说明）。"
+      - "RBM 的附属模组也要匹配——尤其是依赖 RBM 的 OpenSourceSaddleryRBM。让它们与 RBM 保持同一版本。"
+      - "若暂时没有兼容的 RBM 版本——在启动器中禁用 RBM（及 OpenSourceSaddleryRBM）直到发布为止，游戏即可正常启动。"
+      - "这是模组版本不匹配。重建着色器或更换显卡驱动都无济于事，这也不是 Crash Doctor 或 TOR 的问题。"
+    zht:
+      - "安裝與你的遊戲版本（Bannerlord 1.3.15）相符的 RBM（Realistic Battle Mod）版本。你的 RBM v4.3.0.0 是為其他版本建置的——請更新或回退到相容 1.3.15 的版本（參見 RBM 的 Nexus/創意工坊頁面的版本說明）。"
+      - "RBM 的附屬模組也要相符——尤其是依賴 RBM 的 OpenSourceSaddleryRBM。讓它們與 RBM 保持同一版本。"
+      - "若暫時沒有相容的 RBM 版本——在啟動器中停用 RBM（及 OpenSourceSaddleryRBM）直到發布為止，遊戲即可正常啟動。"
+      - "這是模組版本不符。重建著色器或更換顯示卡驅動都無濟於事，這也不是 Crash Doctor 或 TOR 的問題。"
+    tr:
+      - "Oyun sürümünle (Bannerlord 1.3.15) uyumlu RBM (Realistic Battle Mod) yapısını kur. RBM v4.3.0.0 başka bir sürüm için yapılmış — 1.3.15 ile uyumlu yapıya güncelle veya geri al (sürüm notu için RBM'in Nexus/Workshop sayfasına bak)."
+      - "RBM'in eklentilerini de eşle — özellikle RBM'e bağlı olan OpenSourceSaddleryRBM. Onları RBM ile aynı sürümde tut."
+      - "Henüz uyumlu bir RBM yapısı yoksa, yayınlanana kadar başlatıcıda RBM'i (ve OpenSourceSaddleryRBM'i) DEVRE DIŞI bırak — oyun o zaman normal başlar."
+      - "Bu bir mod-sürüm uyumsuzluğudur. Gölgelendiricileri yeniden oluşturmak veya ekran kartı sürücüsünü değiştirmek YARDIMCI OLMAZ ve bu bir Crash Doctor veya TOR sorunu değildir."
+  match:
+    all:
+      - managed_exception: { type_contains: "HarmonyException" }
+      - managed_exception: { frame_contains: "ApplyHarmonyPatches" }
