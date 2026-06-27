@@ -917,6 +917,67 @@
                             Brush.TextHorizontalAlignment="Center" Text="@LabelModsRescan" />
               </Children>
             </ButtonWidget>
+
+            <!-- Mod-detail overlay: shown when a mod row is clicked (@ShowModDetail). In-screen and
+                 SCROLLABLE (ClipRect+InnerPanel+VerticalScrollbar), so long Harmony-conflict method
+                 lists never clip the way the old fixed-size vanilla inquiry did. -->
+            <Widget IsVisible="@ShowModDetail"
+                    WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent">
+              <Children>
+                <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
+                        Sprite="BlankWhiteSquare_9" Color="#161009FF" AlphaFactor="0.97" />
+                <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="38"
+                            VerticalAlignment="Top" MarginTop="8" MarginLeft="32" MarginRight="32"
+                            Brush.FontSize="20" Brush.FontColor="#D8B040FF"
+                            Brush.TextHorizontalAlignment="Center" Text="@SelectedModName" />
+                <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
+                        VerticalAlignment="Top" MarginTop="54" MarginBottom="84" MarginLeft="32" MarginRight="48">
+                  <Children>
+                    <ScrollablePanel WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
+                                     AutoHideScrollBars="true"
+                                     ClipRect="ModDetailClipRect" InnerPanel="ModDetailClipRect\ModDetailText"
+                                     VerticalScrollbar="..\ModDetailScrollbar">
+                      <Children>
+                        <Widget Id="ModDetailClipRect" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
+                                MarginRight="16" ClipContents="true">
+                          <Children>
+                            <TextWidget Id="ModDetailText" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren"
+                                        Brush.FontSize="16" Brush.FontColor="#E8DCC4FF" Text="@SelectedModDetail" />
+                          </Children>
+                        </Widget>
+                      </Children>
+                    </ScrollablePanel>
+                    <ScrollbarWidget Id="ModDetailScrollbar"
+                                     WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent"
+                                     SuggestedWidth="10" HorizontalAlignment="Right" VerticalAlignment="Top"
+                                     MarginTop="4" MarginBottom="4"
+                                     AlignmentAxis="Vertical" Handle="ModDetailScrollbarHandle"
+                                     MaxValue="100" MinValue="0">
+                      <Children>
+                        <Widget WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="4"
+                                HorizontalAlignment="Center"
+                                Sprite="BlankWhiteSquare_9" Color="#5a4033FF" AlphaFactor="0.4" />
+                        <ImageWidget Id="ModDetailScrollbarHandle"
+                                     WidthSizePolicy="Fixed" HeightSizePolicy="Fixed"
+                                     SuggestedHeight="40" SuggestedWidth="10"
+                                     HorizontalAlignment="Center" Brush="FaceGen.Scrollbar.Handle" />
+                      </Children>
+                    </ScrollbarWidget>
+                  </Children>
+                </Widget>
+                <ButtonWidget DoNotPassEventsToChildren="true" Command.Click="ExecuteCloseModDetail"
+                              Brush="Popup.Done.Button"
+                              WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="240" SuggestedHeight="56"
+                              HorizontalAlignment="Center" VerticalAlignment="Bottom" MarginBottom="16">
+                  <Children>
+                    <TextWidget DoNotAcceptEvents="true"
+                                WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
+                                Brush="Popup.Button.Text" Brush.FontSize="16"
+                                Brush.TextHorizontalAlignment="Center" Text="@LabelModDetailClose" />
+                  </Children>
+                </ButtonWidget>
+              </Children>
+            </Widget>
           </Children>
         </Widget>
 
