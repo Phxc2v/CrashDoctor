@@ -2043,6 +2043,97 @@
       - managed_exception: { frame_contains: "Clan.UpdateCurrentStrength" }
       - managed_exception: { type_contains: "NullReference" }
 
+# SAVE-LOAD crash: NullReferenceException that aborts loading a save, inside Hero.ClearChangedPerks.
+#   Hero.ClearChangedPerks ← Hero.AfterLoad ← CampaignObjectManager.AfterLoad ← Campaign.OnGameLoaded
+#   ← Campaign.DoLoadingForGameType ← GameLoadingState.OnTick.
+# Hero.AfterLoad does `if (this.IsAlive) this.ClearChangedPerks();`, and ClearChangedPerks iterates
+# `this._heroPerks.GetProperties()` with NO null-check. Other readers (IsPerkRegistered) null-check
+# _heroPerks but this one does not. A save holding an ALIVE hero whose _heroPerks is null (a broken/
+# under-initialised hero left by a hero/clan/perk mod — perk overhauls like JackOfAllTrades, or
+# clan/hero-spawning mods like Retinues / RaiseYourBanner / HousesCalradia) NREs the read, and because
+# it runs inside Hero.AfterLoad during the load sequence the WHOLE save fails to load. It is a
+# mod/save-data issue at an engine choke point, NOT a shader or driver problem.
+- id: campaign.hero_clear_perks_nre
+  category: managed
+  severity: critical
+  confidence: high
+  evidence_source: "Client crash report (crash id 3c3b38a8, 2026-06-27, Bannerlord 1.3.15) — NullReferenceException TaleWorlds.CampaignSystem.Hero.ClearChangedPerks ← Hero.AfterLoad ← CampaignObjectManager.AfterLoad ← Campaign.OnGameLoaded ← DoLoadingForGameType ← GameLoadingState.OnTick. Load-time crash with a hero/clan/perk-heavy mod list (Retinues, RaiseYourBanner, HousesCalradia, JackOfAllTrades, BetterCore, Diplomacy, NavalDLC). Root confirmed by decompile: ClearChangedPerks dereferences _heroPerks with no null-check. Captured by Crash Doctor managed capture."
+  requires_sources: [managed_exception]
+  title:
+    en: "Save-load crash — a hero with broken perk data — guarded by Crash Doctor"
+    ru: "Вылет при загрузке — герой с битыми перками — перехвачено Crash Doctor"
+    zh: "读档崩溃——某英雄的技能特长数据损坏——已被 Crash Doctor 拦截"
+    zht: "讀檔崩潰——某英雄的技能特長資料損壞——已被 Crash Doctor 攔截"
+    tr: "Kayıt yükleme çökmesi — yetenek verisi bozuk bir kahraman — Crash Doctor tarafından korunuyor"
+  description:
+    en: |
+      NullReferenceException that aborts LOADING a save, inside Hero.ClearChangedPerks (reached from
+      Hero.AfterLoad during Campaign.OnGameLoaded). AfterLoad runs `if (IsAlive) ClearChangedPerks()`,
+      and ClearChangedPerks iterates `this._heroPerks.GetProperties()` with no null-check. A save holding
+      an ALIVE hero whose perk container is null — a broken/under-initialised hero left by a hero/clan/
+      perk mod (a perk overhaul such as JackOfAllTrades, or clan/hero-spawning mods like Retinues,
+      RaiseYourBanner, HousesCalradia) — makes that read throw, and because it runs inside the load
+      sequence the whole save fails to load. A healthy hero always has a perk container, so a clean game
+      never hits this. It is a mod/save-data issue, NOT a shader or driver problem, and not a TOR bug.
+    ru: |
+      NullReferenceException, прерывающий ЗАГРУЗКУ сейва, внутри Hero.ClearChangedPerks (вызывается из
+      Hero.AfterLoad при Campaign.OnGameLoaded). AfterLoad делает `if (IsAlive) ClearChangedPerks()`, а
+      ClearChangedPerks перебирает `this._heroPerks.GetProperties()` без проверки на null. Сейв с живым
+      героем, у которого контейнер перков равен null — битый/недоинициализированный герой от мода на
+      перки/героев (оверхол перков вроде JackOfAllTrades либо моды, плодящие кланы/героев: Retinues,
+      RaiseYourBanner, HousesCalradia) — роняет это чтение, и так как оно идёт в последовательности
+      загрузки, весь сейв не открывается. У здорового героя контейнер перков всегда есть, поэтому на
+      чистой игре такого не бывает. Это проблема мода/данных сейва, а НЕ шейдеров или драйвера, и не баг TOR.
+    zh: |
+      在读取存档时中止载入的空引用异常，发生在 Hero.ClearChangedPerks（由 Campaign.OnGameLoaded 期间的
+      Hero.AfterLoad 调用）。AfterLoad 执行 `if (IsAlive) ClearChangedPerks()`，而 ClearChangedPerks 未做
+      空检查就遍历 `this._heroPerks.GetProperties()`。若存档中有一个存活英雄、其特长容器为 null（由特长／英雄
+      类模组遗留的损坏英雄——例如 JackOfAllTrades 等特长大改，或 Retinues、RaiseYourBanner、HousesCalradia
+      等生成家族/英雄的模组），该读取会抛异常；由于它处于载入流程中，整个存档无法打开。正常英雄总是有特长容器，
+      所以干净的游戏绝不会触发。这是模组／存档数据问题，不是着色器或驱动问题，也不是 TOR 的 bug。
+    zht: |
+      在讀取存檔時中止載入的空參考例外，發生在 Hero.ClearChangedPerks（由 Campaign.OnGameLoaded 期間的
+      Hero.AfterLoad 呼叫）。AfterLoad 執行 `if (IsAlive) ClearChangedPerks()`，而 ClearChangedPerks 未做
+      空檢查就走訪 `this._heroPerks.GetProperties()`。若存檔中有一個存活英雄、其特長容器為 null（由特長／英雄
+      類模組遺留的損壞英雄——例如 JackOfAllTrades 等特長大改，或 Retinues、RaiseYourBanner、HousesCalradia
+      等生成氏族/英雄的模組），該讀取會擲出例外；由於它處於載入流程中，整個存檔無法開啟。正常英雄總是有特長容器，
+      所以乾淨的遊戲絕不會觸發。這是模組／存檔資料問題，不是著色器或驅動問題，也不是 TOR 的 bug。
+    tr: |
+      Bir kaydı YÜKLERKEN yüklemeyi durduran NullReferenceException, Hero.ClearChangedPerks içinde
+      (Campaign.OnGameLoaded sırasında Hero.AfterLoad'dan çağrılır). AfterLoad `if (IsAlive)
+      ClearChangedPerks()` çalıştırır ve ClearChangedPerks `this._heroPerks.GetProperties()` üzerinde null
+      kontrolü yapmadan döner. Yetenek kabı null olan canlı bir kahramanı içeren bir kayıt — bir yetenek/
+      kahraman modunun bıraktığı bozuk kahraman (JackOfAllTrades gibi bir yetenek yenilemesi ya da
+      Retinues, RaiseYourBanner, HousesCalradia gibi klan/kahraman oluşturan modlar) — bu okumayı hata
+      fırlatır ve yükleme sırasında çalıştığı için tüm kayıt açılmaz. Sağlıklı bir kahramanın her zaman bir
+      yetenek kabı vardır, bu yüzden temiz bir oyunda olmaz. Bu bir mod/kayıt-verisi sorunudur; gölgelendirici
+      veya sürücü sorunu DEĞİL ve bir TOR hatası değil.
+  fix:
+    en:
+      - "Crash Doctor already guards this — its safety net skips the broken hero's perk cleanup so the rest of the load runs and the save opens. Keep the «Save-load crash guard (hero perks)» fix ON (Crash Fixes tab)."
+      - "Root cause is a hero/clan/perk mod leaving a hero with null perk data. After the save opens, keep «Fix broken troops on save load» ON, load the save and RE-SAVE; if it persists, identify the offending mod (perk overhauls and clan/hero-spawning mods are the usual source) and update or remove it."
+      - "Do NOT rebuild shaders or change drivers — this is a mod/save-data bug, that won't help."
+    ru:
+      - "Crash Doctor уже это перехватывает — safety net пропускает чистку перков битого героя, остальная загрузка проходит и сейв открывается. Держи фикс «Защита от вылета при загрузке (перки героя)» ВКЛ (вкладка «Фиксы крашей»)."
+      - "Корень — мод на перки/героев, оставивший героя с обнулёнными перками. После открытия сейва держи «Чинить сломанные отряды при загрузке» ВКЛ, загрузи сейв и ПЕРЕСОХРАНИ; если повторяется — найди виновный мод (обычно оверхолы перков и моды, плодящие кланы/героев) и обнови или удали его."
+      - "НЕ пересобирай шейдеры и не меняй драйвер — это баг мода/данных сейва, не поможет."
+    zh:
+      - "Crash Doctor 已经拦截了它——安全网会跳过损坏英雄的特长清理，其余载入照常进行，存档得以打开。在「崩溃修复」页保持「读档崩溃防护（英雄技能特长）」为开。"
+      - "根源是某个特长／英雄类模组让英雄的特长数据为 null。存档打开后，保持「读档时修复损坏的部队」为开，读取存档并重新保存；若持续出现，找出问题模组（通常是特长大改及生成家族/英雄的模组）并更新或移除。"
+      - "不要重建着色器或更换驱动——这是模组／存档数据 bug，没用。"
+    zht:
+      - "Crash Doctor 已經攔截了它——安全網會跳過損壞英雄的特長清理，其餘載入照常進行，存檔得以開啟。在「崩潰修復」頁保持「讀檔崩潰防護（英雄技能特長）」為開。"
+      - "根源是某個特長／英雄類模組讓英雄的特長資料為 null。存檔開啟後，保持「讀檔時修復損壞的部隊」為開，讀取存檔並重新儲存；若持續出現，找出問題模組（通常是特長大改及生成氏族/英雄的模組）並更新或移除。"
+      - "不要重建著色器或更換驅動——這是模組／存檔資料 bug，沒用。"
+    tr:
+      - "Crash Doctor bunu zaten koruyor — güvenlik ağı bozuk kahramanın yetenek temizliğini atlar, yüklemenin geri kalanı çalışır ve kayıt açılır. «Kayıt yükleme çökme koruması (kahraman yetenekleri)» düzeltmesini AÇIK tut (Çökme Düzeltmeleri sekmesi)."
+      - "Kök neden, bir kahramanı null yetenek verisiyle bırakan bir yetenek/kahraman modudur. Kayıt açıldıktan sonra «Kayıt yüklenirken bozuk birlikleri onar»ı AÇIK tut, kaydı yükle ve YENİDEN KAYDET; devam ederse sorunlu modu (genelde yetenek yenilemeleri ve klan/kahraman oluşturan modlar) bul ve güncelle veya kaldır."
+      - "Gölgelendiricileri yeniden oluşturma veya sürücü değiştirme — bu bir mod/kayıt-verisi hatası, yardımcı olmaz."
+  match:
+    all:
+      - managed_exception: { frame_contains: "ClearChangedPerks" }
+      - managed_exception: { type_contains: "NullReference" }
+
 # SAVE crash: ArgumentException "An item with the same key has already been added." thrown from
 # MBSaveLoad.GetSaveMetaData while writing a save (SaveHandler.SaveTick → SaveAsCurrentGame →
 # OverwriteSaveAux → GetSaveMetaData → Dictionary.Insert(add)). GetSaveMetaData feeds every entry of
