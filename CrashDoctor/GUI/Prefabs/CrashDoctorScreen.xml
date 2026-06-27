@@ -918,14 +918,22 @@
               </Children>
             </ButtonWidget>
 
-            <!-- Mod-detail overlay: shown when a mod row is clicked (@ShowModDetail). In-screen and
-                 SCROLLABLE (ClipRect+InnerPanel+VerticalScrollbar), so long Harmony-conflict method
-                 lists never clip the way the old fixed-size vanilla inquiry did. -->
+            <!-- Mod-detail overlay: shown when a mod row is clicked (@ShowModDetail). A CENTERED,
+                 bounded card (not full-screen) over a dimmed backdrop. SCROLLABLE
+                 (ClipRect+InnerPanel+VerticalScrollbar), so long Harmony-conflict method lists
+                 never clip the way the old fixed-size vanilla inquiry did. -->
             <Widget IsVisible="@ShowModDetail"
                     WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent">
               <Children>
+                <!-- Dimmed full-screen backdrop (closes nothing; just darkens what's behind). -->
                 <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
-                        Sprite="BlankWhiteSquare_9" Color="#161009FF" AlphaFactor="0.97" />
+                        Sprite="BlankWhiteSquare_9" Color="#000000FF" AlphaFactor="0.6" />
+                <!-- The card itself: fixed width, vertically bounded by top/bottom margins, centered. -->
+                <Widget WidthSizePolicy="Fixed" SuggestedWidth="1000" HeightSizePolicy="StretchToParent"
+                        MarginTop="90" MarginBottom="80" HorizontalAlignment="Center">
+                  <Children>
+                <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
+                        Sprite="BlankWhiteSquare_9" Color="#161009FF" AlphaFactor="0.98" />
                 <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="38"
                             VerticalAlignment="Top" MarginTop="8" MarginLeft="32" MarginRight="32"
                             Brush.FontSize="20" Brush.FontColor="#D8B040FF"
@@ -976,6 +984,8 @@
                                 Brush.TextHorizontalAlignment="Center" Text="@LabelModDetailClose" />
                   </Children>
                 </ButtonWidget>
+                  </Children>
+                </Widget>
               </Children>
             </Widget>
           </Children>
