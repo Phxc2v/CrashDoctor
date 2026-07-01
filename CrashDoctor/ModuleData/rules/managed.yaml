@@ -126,6 +126,9 @@
           - all:
               - managed_exception: { frame_contains: "EndCaptivityInternal" }
               - managed_exception: { type_contains: "NullReference" }
+          - all:
+              - managed_exception: { frame_contains: "MissionLocationLogic.OnRemoveBehavior" }
+              - managed_exception: { type_contains: "NullReference" }
 
 - id: tor.audio_dependency_missing
   category: managed
@@ -2348,6 +2351,200 @@
   match:
     all:
       - managed_exception: { frame_contains: "MovementOrder.IsApplicable" }
+      - managed_exception: { type_contains: "NullReference" }
+
+- id: mission.location_logic_remove_nre
+  category: managed
+  severity: critical
+  confidence: high
+  evidence_source: "Client crash 2026-06-30 report(30).txt (id 3b07b6c3) — NullReferenceException SandBox.Missions.MissionLogics.MissionLocationLogic.OnRemoveBehavior ← Mission.RemoveMissionBehavior ← Mission.OnMissionStateFinalize ← MissionState.OnFinalize ← GameState.HandleFinalize ← GameStateManager.OnPopState/DoGameStateJobs/PopState ← MissionState.OnTick ← Game.OnTick ← Module.OnApplicationTick. Bannerlord 1.3.15, bare TOR stack (no extra gameplay mods). Engine source verified in decompiled SandBox + CampaignSystem: OnRemoveBehavior iterates LocationComplex.Current.GetListOfLocations() unguarded, and LocationComplex.Current returns null when PlayerEncounter.LocationEncounter is null. Captured by Crash Doctor managed capture."
+  requires_sources: [managed_exception]
+  title:
+    en: "Leave-settlement crash — the location was torn down during scene finalize — guarded by Crash Doctor"
+    ru: "Вылет при выходе из локации — локация была снесена при финализации сцены — перехвачено Crash Doctor"
+    zh: "离开据点崩溃——场景收尾时该场景已被拆除——已被 Crash Doctor 拦截"
+    zht: "離開據點崩潰——場景收尾時該場景已被拆除——已被 Crash Doctor 攔截"
+    tr: "Yerleşimden çıkış çökmesi — sahne sonlandırılırken mekân kaldırılmıştı — Crash Doctor koruyor"
+  description:
+    en: |
+      NullReferenceException from SandBox.Missions.MissionLogics.MissionLocationLogic.OnRemoveBehavior
+      while the game finalizes a settlement-location mission — you are LEAVING a town/village/castle
+      location and the mission state is being popped (MissionState.OnFinalize → Mission.RemoveMissionBehavior
+      → MissionLocationLogic.OnRemoveBehavior). The teardown's very first statement loops over
+      LocationComplex.Current.GetListOfLocations() with no null check, and LocationComplex.Current returns
+      null whenever the player/location encounter has already been torn down
+      (it is PlayerEncounter.LocationEncounter != null ? …Settlement.LocationComplex : null). On a
+      state-pop ordering race — leaving the settlement while the encounter is ending — that null
+      dereferences and the whole tick that was meant to return you to the campaign map crashes. The loop
+      only removes non-hero characters from the (already-gone) location complex, so it had nothing to do
+      anyway. This is vanilla engine fragility in SandBox, NOT a shader/driver problem and NOT a TOR or
+      third-party mod bug (the report's mod list is the bare TOR stack with no extra gameplay mods).
+    ru: |
+      NullReferenceException из SandBox.Missions.MissionLogics.MissionLocationLogic.OnRemoveBehavior во
+      время финализации миссии-локации поселения — ты ВЫХОДИШЬ из локации города/деревни/замка, и
+      состояние миссии снимается (MissionState.OnFinalize → Mission.RemoveMissionBehavior →
+      MissionLocationLogic.OnRemoveBehavior). Самый первый оператор сноса проходит по
+      LocationComplex.Current.GetListOfLocations() без проверки на null, а LocationComplex.Current
+      возвращает null, когда encounter игрока/локации уже снесён
+      (он = PlayerEncounter.LocationEncounter != null ? …Settlement.LocationComplex : null). При гонке
+      порядка снятия состояния — выход из поселения, пока encounter завершается — это разыменовывает
+      null, и весь тик, который должен был вернуть тебя на карту кампании, падает. Цикл лишь убирает
+      не-героев из (уже исчезнувшего) локационного комплекса, так что делать ему всё равно было нечего.
+      Это хрупкость движка в SandBox, а НЕ проблема шейдеров/драйвера и не баг TOR или стороннего мода
+      (в отчёте чистая сборка TOR без дополнительных геймплейных модов).
+    zh: |
+      在游戏对据点场景任务进行收尾时，SandBox.Missions.MissionLogics.MissionLocationLogic.OnRemoveBehavior
+      抛出空引用异常——你正在离开城镇/村庄/城堡场景，任务状态正被弹出
+      （MissionState.OnFinalize → Mission.RemoveMissionBehavior → MissionLocationLogic.OnRemoveBehavior）。
+      拆除的第一条语句就在没有空检查的情况下遍历 LocationComplex.Current.GetListOfLocations()，而当玩家／
+      场景遭遇已被拆除时 LocationComplex.Current 返回 null
+      （其为 PlayerEncounter.LocationEncounter != null ? …Settlement.LocationComplex : null）。在状态弹出
+      顺序的竞态下——离开据点时遭遇正在结束——这会对空取引用，使本应把你送回战役大地图的整个 tick 崩溃。
+      该循环只是从（已消失的）场景复合体中移除非英雄角色，本来就无事可做。这是 SandBox 的原版引擎脆弱性，
+      不是着色器或驱动问题，也不是 TOR 或第三方模组的 bug（报告中的模组列表是纯 TOR 栈，没有额外的玩法模组）。
+    zht: |
+      在遊戲對據點場景任務進行收尾時，SandBox.Missions.MissionLogics.MissionLocationLogic.OnRemoveBehavior
+      擲出空參考例外——你正在離開城鎮/村莊/城堡場景，任務狀態正被彈出
+      （MissionState.OnFinalize → Mission.RemoveMissionBehavior → MissionLocationLogic.OnRemoveBehavior）。
+      拆除的第一條陳述式就在沒有空檢查的情況下走訪 LocationComplex.Current.GetListOfLocations()，而當玩家／
+      場景遭遇已被拆除時 LocationComplex.Current 回傳 null
+      （其為 PlayerEncounter.LocationEncounter != null ? …Settlement.LocationComplex : null）。在狀態彈出
+      順序的競態下——離開據點時遭遇正在結束——這會對空取參考，使本應把你送回戰役大地圖的整個 tick 崩潰。
+      該迴圈只是從（已消失的）場景複合體中移除非英雄角色，本來就無事可做。這是 SandBox 的原版引擎脆弱性，
+      不是著色器或驅動問題，也不是 TOR 或第三方模組的 bug（報告中的模組列表是純 TOR 堆疊，沒有額外的玩法模組）。
+    tr: |
+      Oyun bir yerleşim mekânı görevini sonlandırırken
+      SandBox.Missions.MissionLogics.MissionLocationLogic.OnRemoveBehavior'dan NullReferenceException
+      fırlatıldı — bir kasaba/köy/kale mekânından ÇIKIYORSUN ve görev durumu çıkarılıyor
+      (MissionState.OnFinalize → Mission.RemoveMissionBehavior → MissionLocationLogic.OnRemoveBehavior).
+      Kaldırma işleminin ilk ifadesi LocationComplex.Current.GetListOfLocations() üzerinde null kontrolü
+      olmadan döner ve oyuncu/mekân karşılaşması çoktan kaldırıldığında LocationComplex.Current null döner
+      (değeri PlayerEncounter.LocationEncounter != null ? …Settlement.LocationComplex : null). Durum
+      çıkarma sıralamasında bir yarış durumunda — karşılaşma biterken yerleşimden çıkmak — bu null'a
+      başvurur ve seni harita ekranına döndürmesi gereken tüm tick çöker. Döngü yalnızca (çoktan yok olmuş)
+      mekân kompleksinden kahraman olmayan karakterleri kaldırır, yani zaten yapacak bir şeyi yoktu. Bu,
+      SandBox'taki orijinal motor kırılganlığıdır; gölgelendirici/sürücü sorunu DEĞİL ve bir TOR ya da
+      üçüncü taraf mod hatası değil (rapordaki mod listesi ek oynanış modu olmayan çıplak TOR yığınıdır).
+  fix:
+    en:
+      - "Crash Doctor already guards this — its safety net removes the location logic's listeners and skips the (empty) cleanup when the location complex is already gone, so the mission finalizes and you land on the campaign map. Keep the «Leave-settlement crash guard (location teardown)» fix ON (Crash Fixes tab). Update Crash Doctor to the latest version — older builds don't have this guard."
+      - "Nothing else to change — this is a vanilla engine race, not a mod fault. If it ever repeats at the same spot, note what you were doing when leaving the settlement and send the report."
+      - "Do NOT rebuild shaders or change drivers — this is a scene-finalize bug, that won't help."
+    ru:
+      - "Crash Doctor уже это перехватывает — safety net снимает слушателей логики локации и пропускает (пустую) очистку, когда локационный комплекс уже снесён, так что миссия финализируется и ты оказываешься на карте кампании. Держи фикс «Защита от вылета при выходе из локации (снос локации)» ВКЛ (вкладка «Фиксы крашей»). Обнови Crash Doctor до последней версии — в старых сборках этой защиты нет."
+      - "Больше ничего менять не нужно — это гонка ванильного движка, не вина мода. Если повторится на том же месте, запомни, что делал при выходе из поселения, и пришли отчёт."
+      - "НЕ пересобирай шейдеры и не меняй драйвер — это баг финализации сцены, не поможет."
+    zh:
+      - "Crash Doctor 已经拦截了它——当场景复合体已消失时，安全网会移除该场景逻辑的监听器并跳过（空的）清理，于是任务收尾完成，你落在战役大地图上。在「崩溃修复」页保持「离开据点崩溃防护（场景拆除）」为开。请将 Crash Doctor 更新到最新版本——旧版本没有此防护。"
+      - "无需更改其他设置——这是原版引擎竞态，不是模组的错。若在同一地点反复出现，请记下离开据点时你在做什么并发送报告。"
+      - "不要重建着色器或更换驱动——这是场景收尾 bug，没用。"
+    zht:
+      - "Crash Doctor 已經攔截了它——當場景複合體已消失時，安全網會移除該場景邏輯的監聽器並跳過（空的）清理，於是任務收尾完成，你落在戰役大地圖上。在「崩潰修復」頁保持「離開據點崩潰防護（場景拆除）」為開。請將 Crash Doctor 更新到最新版本——舊版本沒有此防護。"
+      - "無需變更其他設定——這是原版引擎競態，不是模組的錯。若在同一地點反覆出現，請記下離開據點時你在做什麼並傳送報告。"
+      - "不要重建著色器或更換驅動——這是場景收尾 bug，沒用。"
+    tr:
+      - "Crash Doctor bunu zaten koruyor — mekân kompleksi çoktan gittiğinde güvenlik ağı mekân mantığının dinleyicilerini kaldırır ve (boş) temizliği atlar, böylece görev sonlanır ve kampanya haritasına düşersin. «Yerleşimden çıkış çökme koruması (mekân kaldırma)» düzeltmesini AÇIK tut (Çökme Düzeltmeleri sekmesi). Crash Doctor'ı en son sürüme güncelle — eski sürümlerde bu koruma yok."
+      - "Başka değiştirilecek bir şey yok — bu orijinal motor yarış durumu, mod hatası değil. Aynı noktada tekrarlarsa, yerleşimden çıkarken ne yaptığını not et ve raporu gönder."
+      - "Gölgelendiricileri yeniden oluşturma veya sürücü değiştirme — bu bir sahne sonlandırma hatası, yardımcı olmaz."
+  match:
+    all:
+      - managed_exception: { frame_contains: "MissionLocationLogic.OnRemoveBehavior" }
+      - managed_exception: { type_contains: "NullReference" }
+
+- id: ui.cleanscreens_teardown_nre
+  category: managed
+  severity: critical
+  confidence: high
+  evidence_source: "Client crash 2026-07-01 report(32).txt, crash id c3b604cf (Bannerlord 1.3.15, TOR stack + RTSCameraUniversal). TargetInvocationException → NullReferenceException in ScreenManager.CleanScreens ← GameStateManager.OnCleanStates ← CleanStates ← MBGameManager.EndGame ← SingleThreadedSynchronizationContext.Tick ← Module.OnApplicationTick. Reported after a successful assault on a besieger camp, with the map showing 'besiegers -0' before the freeze + CTD."
+  requires_sources: [managed_exception]
+  title:
+    en: "Session-teardown crash-to-desktop (ScreenManager.CleanScreens) — guarded by Crash Doctor"
+    ru: "Вылет на рабочий стол при завершении сессии (ScreenManager.CleanScreens) — перехвачено Crash Doctor"
+    zh: "结束会话时的桌面崩溃（ScreenManager.CleanScreens）——已被 Crash Doctor 拦截"
+    zht: "結束工作階段時的桌面當機（ScreenManager.CleanScreens）——已被 Crash Doctor 攔截"
+    tr: "Oturum kapanışında masaüstüne çökme (ScreenManager.CleanScreens) — Crash Doctor koruyor"
+  description:
+    en: |
+      NullReferenceException from TaleWorlds.ScreenSystem.ScreenManager.CleanScreens while the game is
+      tearing the whole session DOWN: MBGameManager.EndGame → GameStateManager.CleanStates →
+      OnCleanStates → CleanScreens, on the main sync-context tick. EndGame unloads ALL game states
+      (including the campaign map), so the game was NOT returning to the map after the battle — it was
+      being forced back to the main menu. The trigger seen in the field is a broken siege state right
+      after you take a besieger camp (the map briefly shows "besiegers -0"); that fatal campaign-state
+      error forces EndGame, and while the screen stack is being cleaned a screen that is already null/
+      half-destroyed is dereferenced, so the teardown crashes to desktop instead of just dropping to the
+      menu. This is the SECONDARY crash — the primary fault is the broken siege event, which is not in
+      this stack. It is engine/UI teardown fragility (TOR's own ToMainMenuClearAllFix wraps CleanScreens
+      but re-throws), NOT a shader/driver problem.
+    ru: |
+      NullReferenceException из TaleWorlds.ScreenSystem.ScreenManager.CleanScreens, когда игра сносит
+      всю сессию: MBGameManager.EndGame → GameStateManager.CleanStates → OnCleanStates → CleanScreens,
+      на главном тике sync-context. EndGame выгружает ВСЕ игровые состояния (включая карту кампании),
+      то есть игра НЕ возвращалась на карту после боя — её принудительно выкидывало в главное меню.
+      Триггер с поля — сломанное состояние осады сразу после взятия осадного лагеря (на карте мелькает
+      «осаждающие -0»); эта фатальная ошибка состояния кампании запускает EndGame, и при уборке стека
+      экранов разыменовывается уже null/полууничтоженный экран, поэтому снос вылетает на рабочий стол,
+      а не просто уходит в меню. Это ВТОРИЧНЫЙ вылет — первичная причина, сломанное осадное событие, в
+      этот стек не попала. Это хрупкость сноса движка/UI (собственный TOR-патч ToMainMenuClearAllFix
+      оборачивает CleanScreens, но прокидывает исключение), а НЕ проблема шейдеров/драйвера.
+    zh: |
+      当游戏正在拆除整个会话时，TaleWorlds.ScreenSystem.ScreenManager.CleanScreens 抛出空引用异常：
+      MBGameManager.EndGame → GameStateManager.CleanStates → OnCleanStates → CleanScreens，位于主
+      同步上下文 tick。EndGame 会卸载所有游戏状态（包括战役大地图），因此战斗后游戏并不是要返回大地图，
+      而是被强制退回主菜单。现场触发条件是攻下围城营地后损坏的围城状态（地图上短暂显示「围攻方 -0」）；
+      该致命的战役状态错误触发 EndGame，而在清理画面堆栈时对一个已为 null／半销毁的画面取引用，于是拆除
+      过程崩溃到桌面，而不是仅仅退回菜单。这是次生崩溃——首要故障是损坏的围城事件，不在此堆栈中。这是引擎/
+      UI 拆除的脆弱性（TOR 自己的 ToMainMenuClearAllFix 包裹了 CleanScreens 但会重新抛出），不是着色器/
+      驱动问题。
+    zht: |
+      當遊戲正在拆除整個工作階段時，TaleWorlds.ScreenSystem.ScreenManager.CleanScreens 擲出空參考例外：
+      MBGameManager.EndGame → GameStateManager.CleanStates → OnCleanStates → CleanScreens，位於主
+      同步上下文 tick。EndGame 會卸載所有遊戲狀態（包括戰役大地圖），因此戰鬥後遊戲並不是要返回大地圖，
+      而是被強制退回主選單。現場觸發條件是攻下圍城營地後損壞的圍城狀態（地圖上短暫顯示「圍攻方 -0」）；
+      該致命的戰役狀態錯誤觸發 EndGame，而在清理畫面堆疊時對一個已為 null／半銷毀的畫面取參考，於是拆除
+      過程當機到桌面，而不是僅僅退回選單。這是次生當機——首要故障是損壞的圍城事件，不在此堆疊中。這是引擎/
+      UI 拆除的脆弱性（TOR 自己的 ToMainMenuClearAllFix 包裹了 CleanScreens 但會重新擲出），不是著色器/
+      驅動問題。
+    tr: |
+      Oyun tüm oturumu kaldırırken TaleWorlds.ScreenSystem.ScreenManager.CleanScreens'ten
+      NullReferenceException: MBGameManager.EndGame → GameStateManager.CleanStates → OnCleanStates →
+      CleanScreens, ana sync-context tick'inde. EndGame TÜM oyun durumlarını (kampanya haritası dahil)
+      kaldırır; yani oyun savaştan sonra haritaya dönmüyordu — ana menüye zorlanıyordu. Sahadaki tetik,
+      bir kuşatma kampını aldıktan hemen sonra bozuk bir kuşatma durumudur (harita kısaca "kuşatanlar -0"
+      gösterir); bu ölümcül kampanya-durumu hatası EndGame'i zorlar ve ekran yığını temizlenirken çoktan
+      null/yarı yok edilmiş bir ekrana başvurulur, böylece kaldırma işlemi menüye düşmek yerine masaüstüne
+      çöker. Bu İKİNCİL çökmedir — asıl hata bu yığında olmayan bozuk kuşatma olayıdır. Bu, motor/UI
+      kaldırma kırılganlığıdır (TOR'un kendi ToMainMenuClearAllFix'i CleanScreens'i sarar ama yeniden
+      fırlatır), gölgelendirici/sürücü sorunu DEĞİL.
+  fix:
+    en:
+      - "Crash Doctor already guards this — its safety net swallows the teardown NullReferenceException so the game lands on the main menu instead of crashing to desktop, and shows a note explaining it. Keep the «Session-teardown crash-to-desktop guard (return to menu)» fix ON (Crash Fixes tab). Update Crash Doctor to the latest version — older builds don't have this guard."
+      - "Load your last save and continue — it is NOT damaged. The teardown crash does not corrupt saves."
+      - "This is a symptom guard: the real cause is a broken siege event (\"besiegers -0\") after taking a besieger camp. If the game keeps force-exiting at the same siege, send this report so the root can be guarded too."
+      - "Do NOT rebuild shaders or change drivers — this is a campaign/UI-state bug, that won't help."
+    ru:
+      - "Crash Doctor уже перехватывает это — его защита глотает NullReferenceException при сносе, поэтому игра попадает в главное меню, а не вылетает на рабочий стол, и показывает поясняющую заметку. Держи фикс «Защита от вылета на рабочий стол при завершении сессии (возврат в меню)» ВКЛЮЧЁННЫМ (вкладка «Фиксы крашей»). Обнови Crash Doctor до последней версии — в старых сборках этой защиты нет."
+      - "Загрузи последний сейв и продолжай — он НЕ повреждён. Вылет при сносе сейвы не портит."
+      - "Это защита от симптома: настоящая причина — сломанное осадное событие («осаждающие -0») после взятия осадного лагеря. Если игру продолжает выкидывать на той же осаде — пришли этот отчёт, чтобы прикрыть и корень."
+      - "НЕ пересобирай шейдеры и не меняй драйвер — это баг состояния кампании/UI, не поможет."
+    zh:
+      - "Crash Doctor 已经拦截了它——安全网吞下拆除时的空引用异常，于是游戏落在主菜单而不是崩溃到桌面，并显示一条说明。在「崩溃修复」页保持「会话结束崩溃防护（返回主菜单）」为开。请将 Crash Doctor 更新到最新版本——旧版本没有此防护。"
+      - "读取你的上一个存档并继续——它没有损坏。拆除崩溃不会破坏存档。"
+      - "这是症状防护：真正的原因是攻下围城营地后损坏的围城事件（「围攻方 -0」）。若游戏在同一场围城反复强制退出，请发送此报告，以便也对根因进行防护。"
+      - "不要重建着色器或更换驱动——这是战役/UI 状态 bug，没用。"
+    zht:
+      - "Crash Doctor 已經攔截了它——安全網吞下拆除時的空參考例外，於是遊戲落在主選單而不是當機到桌面，並顯示一條說明。在「崩潰修復」頁保持「工作階段結束當機防護（返回主選單）」為開。請將 Crash Doctor 更新到最新版本——舊版本沒有此防護。"
+      - "讀取你的上一個存檔並繼續——它沒有損壞。拆除當機不會破壞存檔。"
+      - "這是症狀防護：真正的原因是攻下圍城營地後損壞的圍城事件（「圍攻方 -0」）。若遊戲在同一場圍城反覆強制退出，請傳送此報告，以便也對根因進行防護。"
+      - "不要重建著色器或更換驅動——這是戰役/UI 狀態 bug，沒用。"
+    tr:
+      - "Crash Doctor bunu zaten koruyor — güvenlik ağı kaldırma sırasındaki NullReferenceException'ı yutar, böylece oyun masaüstüne çökmek yerine ana menüye düşer ve açıklayan bir not gösterir. «Oturum kapanışı masaüstüne çökme koruması (menüye dön)» düzeltmesini AÇIK tut (Çökme Düzeltmeleri sekmesi). Crash Doctor'ı en son sürüme güncelle — eski sürümlerde bu koruma yok."
+      - "Son kaydını yükle ve devam et — hasar görmedi. Kaldırma çökmesi kayıtları bozmaz."
+      - "Bu bir belirti korumasıdır: asıl neden, bir kuşatma kampını aldıktan sonra bozuk bir kuşatma olayıdır («kuşatanlar -0»). Oyun aynı kuşatmada zorla çıkmaya devam ederse, kökün de korunabilmesi için bu raporu gönder."
+      - "Gölgelendiricileri yeniden oluşturma veya sürücü değiştirme — bu bir kampanya/UI durumu hatası, yardımcı olmaz."
+  match:
+    all:
+      - managed_exception: { frame_contains: "ScreenManager.CleanScreens" }
       - managed_exception: { type_contains: "NullReference" }
 
 # STARTUP crash: a mod fails to apply its Harmony patches because a target method doesn't exist on
