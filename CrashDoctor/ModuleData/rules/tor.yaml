@@ -667,7 +667,7 @@
   requires_sources: [log_line]
   title:
     en: "TOR Winds of Magic / spell-cast access violation"
-    ru: "TOR Winds of Magic / spell-cast access violation"
+    ru: "TOR Winds of Magic / нарушение доступа при касте заклинания"
     zh: "TOR Winds of Magic / 施法访问冲突"
     zht: "TOR Winds of Magic / 施法存取違規"
     tr: "TOR Winds of Magic / büyü-yapma erişim ihlali"

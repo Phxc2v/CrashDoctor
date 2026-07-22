@@ -1,0 +1,21 @@
+Thanks for using Crash Doctor!
+
+WHAT'S NEW
+
+• Eight new crash guards. Among them: a world-map crash the moment a siege starts (an army was gathering at the fortification being besieged), a save that would no longer load because of a hero with no name, a day the campaign could never finish when a kingdom changed ruler, a crash-to-desktop when exiting to the main menu, world-map quest issuance, and auto-battle loot. All are on by default on the "Crash fixes" tab.
+
+• A crash caused by a mod built for a different game build is now explained in full: which mod called, which method or type is missing, whether the game or another mod was supposed to provide it, and which build that mod targets. Previously this was just "read the stack frames".
+
+• The culprit verdict is honest again. A mod that only overrides a game model and calls into the game's own code is no longer blamed for a crash that happened inside the game — those mods are listed separately as call-path context.
+
+• Mod-vs-game-version compatibility check. When you open the Mods tab, every active mod is checked against the Bannerlord build you're running: if it references game types that don't exist in this version, it was built for a different version and will most likely crash — flagged red "Incompatible with this game build", with the missing types listed. Only the mod code actually loaded for the current version is checked, so mods that ship a separate build per version aren't falsely flagged. Multi-version framework libraries (Harmony, ButterLib, MCM, UIExtenderEx, BLSE) are excluded.
+
+• On the Mods tab the mod name is coloured by its worst issue: green — clean, red — incompatible with this game build, yellow — Harmony conflict or load order, orange — missing dependency, grey — disabled. The list reads at a glance. A Harmony conflict is now yellow, not red — mods on one method often coexist, and red is kept for real incompatibility.
+
+• The Crash Fixes tab no longer lists everything back to front: a section name sits above its own fixes again. Three more lists were straightened out too — the fix steps on the diagnosis tab and the system-setup cards were drawn bottom-up.
+
+• The mod audit stopped inventing problems: Steam Workshop mods are no longer reported as not installed, one mod is no longer reported as "installed twice", and disabled mods no longer get complaints.
+
+• Saves tab no longer paints a card yellow over harmless differences. Only a real modlist or version mismatch is a warning.
+
+Report a crash: t.me/CodeRickTg — send the report.txt from the "Open folder" button on the crash card.

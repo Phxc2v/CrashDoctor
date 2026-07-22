@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- "What's new" popup, shown once per mod version at the main menu.
+
+     Why this exists instead of the game's own inquiry dialog: on game 1.2 the native box is
+     shorter than on 1.3 and does NOT scroll, so a full-length change list overflowed it in both
+     directions — the first line was drawn under the title, the last under the buttons (game
+     1.2.10, 2026-07-21). Shortening the text is not a fix: the list grows every release. This
+     prefab owns its geometry and scrolls, so any length renders correctly on every version.
+
+     Scroll wiring follows the pattern proven in CrashDoctorScreen.xml: ScrollablePanel needs
+     ClipRect + InnerPanel + VerticalScrollbar pointing at a sibling ScrollbarWidget. A bare
+     ScrollablePanel clips the text and never scrolls. -->
+<Prefab>
+  <Window>
+    <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent">
+      <Children>
+        <!-- Dimmer: swallows clicks so the menu behind can't be operated while the popup is up. -->
+        <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
+                Sprite="BlankWhiteSquare_9" Color="#000000FF" AlphaFactor="0.65" />
+
+        <!-- Card. Fixed size, centered: the same canvas + frame_9 pair the rest of the mod uses. -->
+        <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="900" SuggestedHeight="700"
+                HorizontalAlignment="Center" VerticalAlignment="Center"
+                Sprite="StdAssets\Popup\canvas">
+          <Children>
+            <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
+                    Sprite="frame_9" ExtendLeft="14" ExtendTop="14" ExtendRight="14" ExtendBottom="14"
+                    IsEnabled="false" />
+
+            <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="44"
+                        VerticalAlignment="Top" MarginTop="26" MarginLeft="40" MarginRight="40"
+                        Brush.FontSize="30" Brush.FontColor="#F4E1C4FF"
+                        Brush.TextHorizontalAlignment="Center" Text="@TitleText" />
+
+            <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="2"
+                    VerticalAlignment="Top" MarginTop="78" MarginLeft="40" MarginRight="40"
+                    Sprite="BlankWhiteSquare_9" Color="#8A6A44FF" />
+
+            <!-- Body: scrolls. HeightSizePolicy="CoverChildren" on the TextWidget lets word-wrap
+                 grow it past the clip rect, which is exactly what gives the scrollbar something
+                 to move. -->
+            <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
+                    MarginTop="94" MarginBottom="96" MarginLeft="40" MarginRight="40">
+              <Children>
+                <ScrollablePanel Id="WhatsNewScroll" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
+                                 AutoHideScrollBars="true"
+                                 ClipRect="WhatsNewClipRect" InnerPanel="WhatsNewClipRect\WhatsNewText"
+                                 VerticalScrollbar="..\WhatsNewScrollbar">
+                  <Children>
+                    <Widget Id="WhatsNewClipRect" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
+                            MarginRight="18" ClipContents="true">
+                      <Children>
+                        <TextWidget Id="WhatsNewText" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren"
+                                    Brush.FontSize="18" Brush.FontColor="#E8DCC4FF" Text="@BodyText" />
+                      </Children>
+                    </Widget>
+                  </Children>
+                </ScrollablePanel>
+
+                <ScrollbarWidget Id="WhatsNewScrollbar"
+                                 WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent"
+                                 SuggestedWidth="10" HorizontalAlignment="Right" VerticalAlignment="Top"
+                                 MarginTop="4" MarginBottom="4"
+                                 AlignmentAxis="Vertical" Handle="WhatsNewScrollbarHandle"
+                                 MaxValue="100" MinValue="0">
+                  <Children>
+                    <Widget WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="4"
+                            HorizontalAlignment="Center"
+                            Sprite="BlankWhiteSquare_9" Color="#5a4033FF" AlphaFactor="0.4" />
+                    <ImageWidget Id="WhatsNewScrollbarHandle"
+                                 WidthSizePolicy="Fixed" HeightSizePolicy="Fixed"
+                                 SuggestedHeight="60" SuggestedWidth="10"
+                                 HorizontalAlignment="Center" Brush="FaceGen.Scrollbar.Handle" />
+                  </Children>
+                </ScrollbarWidget>
+              </Children>
+            </Widget>
+
+            <!-- Buttons: Telegram left, Close right — same geometry as every other dialog here. -->
+            <ButtonWidget DoNotPassEventsToChildren="true" Command.Click="ExecuteWhatsNewTelegram"
+                          Brush="Popup.Cancel.Button"
+                          WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="300" SuggestedHeight="46"
+                          HorizontalAlignment="Left" VerticalAlignment="Bottom" MarginLeft="60" MarginBottom="26">
+              <Children>
+                <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
+                            DoNotAcceptEvents="true"
+                            Brush="Popup.Button.Text" Brush.FontSize="18"
+                            Brush.TextHorizontalAlignment="Center" Text="@LabelBtnWhatsNewTelegram" />
+              </Children>
+            </ButtonWidget>
+
+            <ButtonWidget DoNotPassEventsToChildren="true" Command.Click="ExecuteWhatsNewClose"
+                          Brush="Popup.Done.Button"
+                          WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="300" SuggestedHeight="46"
+                          HorizontalAlignment="Right" VerticalAlignment="Bottom" MarginRight="60" MarginBottom="26">
+              <Children>
+                <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
+                            DoNotAcceptEvents="true"
+                            Brush="Popup.Button.Text" Brush.FontSize="18"
+                            Brush.TextHorizontalAlignment="Center" Text="@LabelBtnWhatsNewClose" />
+              </Children>
+            </ButtonWidget>
+          </Children>
+        </Widget>
+      </Children>
+    </Widget>
+  </Window>
+</Prefab>

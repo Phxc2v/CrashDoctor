@@ -192,9 +192,13 @@
                             <Widget Id="DiagStepsClipRect" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
                                     MarginRight="16" ClipContents="true">
                               <Children>
+                                <!-- BottomToTop = normal reading order in Gauntlet (the enum names are
+                                     inverted, see the CrashFixesList comment). The steps are added
+                                     1..N by CrashDoctorVM, so TopToBottom rendered them N..1 with
+                                     step 1 at the bottom. -->
                                 <ListPanel Id="DiagStepsList" DataSource="{DiagnosisFixSteps}"
                                            WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren"
-                                           StackLayout.LayoutMethod="VerticalTopToBottom">
+                                           StackLayout.LayoutMethod="VerticalBottomToTop">
                                   <ItemTemplate>
                                     <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren"
                                                 Brush.FontSize="18" Brush.FontColor="#E8DCC4FF" MarginTop="8"
@@ -414,7 +418,7 @@
                          for the wait text + live status + progress bar. -->
                     <ListPanel WidthSizePolicy="Fixed" HeightSizePolicy="CoverChildren" SuggestedWidth="700"
                                HorizontalAlignment="Center" VerticalAlignment="Center"
-                               StackLayout.LayoutMethod="VerticalTopToBottom">
+                               StackLayout.LayoutMethod="VerticalBottomToTop">
                       <Children>
                         <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="40"
                                     MarginBottom="10"
@@ -852,12 +856,15 @@
                                           WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="36"
                                           MarginTop="2" MarginBottom="2">
                               <Children>
-                                <!-- Name: fixed-width left, 480 px is enough for long mod names -->
+                                <!-- Name: fixed-width left, 480 px is enough for long mod names.
+                                     Coloured by the mod's worst issue (green ok / red conflict /
+                                     orange missing dep / yellow load order / grey disabled) so the
+                                     problem mods are findable by scanning the name column alone. -->
                                 <TextWidget DoNotAcceptEvents="true"
                                             WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="540"
                                             HorizontalAlignment="Left" VerticalAlignment="Center"
                                             MarginLeft="24"
-                                            Brush.FontSize="15" Brush.FontColor="#E8DCC4FF"
+                                            Brush.FontSize="15" Brush.FontColor="@NameColor"
                                             Brush.TextHorizontalAlignment="Left" Text="@Name" />
                                 <!-- Version: middle, monospace-ish dim grey -->
                                 <TextWidget DoNotAcceptEvents="true"
@@ -918,6 +925,12 @@
               </Children>
             </ButtonWidget>
 
+          </Children>
+        </Widget>
+
+        <!-- Detail overlay — ROOT level on purpose: it is shown from the Mods tab AND from the
+             Crashes tab ("Stack & evidence"). While it lived inside the Mods-tab block it
+             inherited @IsModsTabActive, so the stack button did nothing on the Crashes tab. -->
             <!-- Mod-detail overlay: shown when a mod row is clicked (@ShowModDetail). A CENTERED,
                  bounded card (not full-screen) over a dimmed backdrop. SCROLLABLE
                  (ClipRect+InnerPanel+VerticalScrollbar), so long Harmony-conflict method lists
@@ -928,9 +941,11 @@
                 <!-- Dimmed full-screen backdrop (closes nothing; just darkens what's behind). -->
                 <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
                         Sprite="BlankWhiteSquare_9" Color="#000000FF" AlphaFactor="0.6" />
-                <!-- The card itself: fixed width, vertically bounded by top/bottom margins, centered. -->
+                <!-- The card itself: fixed width, vertically bounded by top/bottom margins, centered.
+                     MarginTop clears the tab-button row (~160px tall) — at 90 the card's title rendered
+                     UNDER the tabs (Phoenix screenshot, 2026-07-22). -->
                 <Widget WidthSizePolicy="Fixed" SuggestedWidth="1000" HeightSizePolicy="StretchToParent"
-                        MarginTop="90" MarginBottom="80" HorizontalAlignment="Center">
+                        MarginTop="180" MarginBottom="80" HorizontalAlignment="Center">
                   <Children>
                 <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
                         Sprite="BlankWhiteSquare_9" Color="#161009FF" AlphaFactor="0.98" />
@@ -988,8 +1003,6 @@
                 </Widget>
               </Children>
             </Widget>
-          </Children>
-        </Widget>
 
         <!-- ===================== TAB: CRASH FIXES (NEW 2026-06-03) =====================
              Per-patch on/off list. Each row = checkbox + name + plain-language description +
@@ -1060,6 +1073,22 @@
                             WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
                             MarginRight="20" ClipContents="true">
                       <Children>
+                        <!-- MUST be VerticalBottomToTop — the Gauntlet enum names are INVERTED
+                             relative to what they read like. In StackLayout.LayoutLinearVertical
+                             (decompiled) the cursor starts at num2 = 0 (the TOP edge) and:
+                               VerticalBottomToTop -> num3 = num2 + h  => item 0 lands at the top,
+                                                      each next item BELOW it (normal reading order);
+                               VerticalTopToBottom -> num2 = num3 - h  => item 0 lands at the BOTTOM,
+                                                      each next item ABOVE it (list rendered reversed).
+                             This is the only list here whose ORDER is visible (it carries section
+                             headers), so switching it to "TopToBottom" on 2026-07-21 to fix the
+                             header-under-its-group look actually REVERSED the whole list and made it
+                             worse: every header then rendered after its own rows for real. The header
+                             glued itself to the group above because of the separator line drawn on
+                             header rows, which is fixed below (normal-rows-only separator + a divider
+                             ABOVE the header label). All the other lists here use BottomToTop and
+                             render in the right order — that is the correct value, not a workaround
+                             for them being flat. -->
                         <ListPanel Id="CrashFixesList" DataSource="{CrashFixesList}"
                                    WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren"
                                    StackLayout.LayoutMethod="VerticalBottomToTop">
@@ -1081,14 +1110,28 @@
                                             HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="48" MarginTop="9"
                                             Brush.FontSize="16" Brush.FontColor="@NameColor"
                                             Brush.TextHorizontalAlignment="Left" Text="@Name" />
-                                <!-- Section header label (header rows only). Bottom-aligned so the label
-                                     sits directly ABOVE its own group's first row, while the row's empty
-                                     space is pushed UP — separating this category from the one above.
-                                     (Top-aligning it left ~70px of dead space below, making the header
-                                     read as a footer of the previous group.) -->
+                                <!-- Section header row.
+                                     The label alone was not enough: the row's bottom separator (below)
+                                     used to be drawn on header rows TOO, so a line landed between the
+                                     header and its own first fix, while ~46px of dead space sat above
+                                     it. The eye then binds the label to the group ABOVE — "the group
+                                     name is printed under its patches" (Phoenix, 2026-07-21, and the
+                                     list order was verified correct in the log, so this was never a
+                                     layout-direction problem).
+                                     Now: a divider ABOVE the label separates it from the previous
+                                     group, the label sits on a tinted strip, and the per-row separator
+                                     below is normal-rows-only. -->
+                                <Widget DoNotAcceptEvents="true" IsVisible="@IsHeader"
+                                        WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="2"
+                                        VerticalAlignment="Top" MarginTop="6"
+                                        Sprite="BlankWhiteSquare_9" Color="#8A6A44FF" AlphaFactor="0.8" />
+                                <Widget DoNotAcceptEvents="true" IsVisible="@IsHeader"
+                                        WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="34"
+                                        VerticalAlignment="Bottom" MarginBottom="0"
+                                        Sprite="BlankWhiteSquare_9" Color="#3A2A1AFF" AlphaFactor="0.85" />
                                 <TextWidget DoNotAcceptEvents="true" IsVisible="@IsHeader"
-                                            WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="28"
-                                            HorizontalAlignment="Left" VerticalAlignment="Bottom" MarginLeft="20" MarginBottom="4"
+                                            WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="30"
+                                            HorizontalAlignment="Left" VerticalAlignment="Bottom" MarginLeft="20" MarginBottom="2"
                                             Brush.FontSize="18" Brush.FontColor="@NameColor"
                                             Brush.TextHorizontalAlignment="Left" Text="@Name" />
                                 <!-- Plain-language description (wraps). Hidden on a section-header row. -->
@@ -1103,8 +1146,11 @@
                                             HorizontalAlignment="Right" VerticalAlignment="Top" MarginRight="24" MarginTop="9"
                                             Brush.FontSize="14" Brush.FontColor="@StatusColor"
                                             Brush.TextHorizontalAlignment="Right" Text="@StatusText" />
-                                <!-- Subtle bottom separator -->
-                                <Widget DoNotAcceptEvents="true"
+                                <!-- Subtle bottom separator. NORMAL ROWS ONLY: on a header row this
+                                     line fell between the section name and the section's own first
+                                     fix, which is what made the header read as a footer of the group
+                                     above it. -->
+                                <Widget DoNotAcceptEvents="true" IsVisible="@IsNormalRow"
                                         WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="1"
                                         VerticalAlignment="Bottom"
                                         Sprite="BlankWhiteSquare_9" Color="#5a4033FF" AlphaFactor="0.3" />
@@ -1205,9 +1251,12 @@
                                 WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
                                 MarginRight="20" ClipContents="true">
                           <Children>
+                            <!-- BottomToTop = normal reading order in Gauntlet (inverted enum names,
+                                 see the CrashFixesList comment): the cards below are authored 1..N,
+                                 TopToBottom rendered them bottom-up. -->
                             <ListPanel Id="SettingsCardList"
                                        WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren"
-                                       StackLayout.LayoutMethod="VerticalTopToBottom">
+                                       StackLayout.LayoutMethod="VerticalBottomToTop">
                               <Children>
 
                                 <!-- ===== CARD 1: Emergency Save ===== -->

@@ -216,10 +216,16 @@
     tr:
       - "TypeLoadException'dan sonraki yığın çerçevelerini okuyun — sorunlu modun adını verirler."
       - "Modu güncelleyin ya da Bannerlord'u hedef sürümüne düşürün."
+  # Defers to mod.api_version_mismatch (managed.yaml) whenever we captured the actual exception:
+  # that card names the mod, the missing type and the target build instead of "read the frames".
+  # A non-applicable matcher evaluates to false, so on log-only crashes this rule still fires.
   match:
-    any:
-      - log_line:
-          contains: "TypeLoadException"
+    all:
+      - any:
+          - log_line:
+              contains: "TypeLoadException"
+      - none:
+          - managed_exception: { type_contains: "TypeLoadException" }
 
 - id: mod.missing_method
   category: modules
@@ -270,10 +276,14 @@
       - "Sonraki yığın çerçevelerini okuyun — sorunlu modu ve yöntemi adlandırırlar."
       - "Modu NexusMods'tan güncelleyin."
       - "Güncelleme yoksa modu devre dışı bırakın."
+  # Same deferral as mod.type_load_exception above.
   match:
-    any:
-      - log_line:
-          contains: "MissingMethodException"
+    all:
+      - any:
+          - log_line:
+              contains: "MissingMethodException"
+      - none:
+          - managed_exception: { type_contains: "MissingMethodException" }
 
 - id: harmony.stray_dll_in_main_bin
   category: harmony
