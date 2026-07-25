@@ -6,6 +6,20 @@ Change history, by version.
 
 ---
 
+## 2026-07-25 — New crash guards and an FDS ShaderCache crash diagnosis
+
+Everything done since the 2026-07-22 release, in one release (version v1.8.3.7). Works on Bannerlord 1.2 / 1.3.15 / 1.4.x.
+
+- **Crash when deploying for battle, recruiting, or opening the Party screen with custom troops.** A crash (`NullReferenceException` in `AgentOriginUtilities.GetDefaultTroopTraits`) when the game reads a troop's weapon slots to set its AI combat traits (thrown / spear / shield / heavy armor). The vanilla code assumes every weapon slot holds a weapon and reads it with no check — so a **non-weapon item in a weapon slot** (armor, a horse, a broken item) crashes it. Custom-troop mods (e.g. My Little Warband) can place any item in any slot with their editor, and it's baked into the save — disabling the mod doesn't help. The same read also crashes the Party screen and the mod's own unit editor. The new "Troop-deploy crash guard (bad item in a weapon slot)" fix on the Crash Fixes tab (on by default) skips that slot: the troop gets default traits and the battle / recruiting / screen continues. The offending troop is written to `crashdoctor.log`. Note: a missing item ID would NOT crash (an empty slot is just skipped) — it takes a resolved non-weapon item in a weapon slot.
+
+- **Load crash caused by the "shader cache" mod FDS_ShaderCache.** FDS_ShaderCache (Nexus) is not a passive cache: its code hooks the game's XML loader and, during its shader-rebuild pass, permanently blacklists any XML that errors even once (`fds_xml_blacklist.txt`), then feeds an empty document in its place. The objects that XML registers silently vanish, and other mods (a confirmed case being The Old Realms) crash on load with a `NullReferenceException`. The skip only runs during the shader rebuild, so a normal game restart usually loads fine. Crash Doctor now recognises this crash and gives a clear verdict, and a new module on the System tune-up tab finds an installed FDS_ShaderCache with a non-empty blacklist and clears it with one click so the needed XMLs load again. Removing the mod outright is the safer fix — it drops game data by design.
+
+- **Crash loading a save made at the "at the gate" town menu.** A crash (`NullReferenceException` in `EncounterGameMenuBehavior.game_menu_town_outside_on_init`) when a save was made at the "at the gate, entry denied" settlement menu but the encounter state didn't restore on load: the game reads the name of a non-existent settlement and **the whole save won't open**. It's the same root as the already-fixed encounter-menu crash, on a sibling menu. The existing "save-load crash guard (broken encounter)" fix now covers **both** menus: with no restored encounter, the player is returned to the map and the save opens. Healthy loads run as normal.
+
+- **Crash placing troops at the start of a battle on some scenes.** A crash (`NullReferenceException` in `MBMath.IntersectRayWithPolygon`) during the deploy phase, when the game projects a spawning troop's position back inside its team's deployment zone. The vanilla geometry helper walks the boundary polygon with no null-check, and the polygon comes back empty on a scene whose deployment-frame origin sits outside its own zones — the whole battle tick dies before it starts. Intermittent and scene-geometry dependent, not tied to any enemy faction. The new "Battle-deploy crash guard (incomplete deployment zone)" fix on the Crash Fixes tab (on by default) returns "no intersection" instead of crashing: the troop deploys near where it started and the battle begins.
+
+---
+
 ## 2026-07-22 — Mod-vs-game-version compatibility check, new crash guards, an honest culprit verdict, and a "What's new" popup
 
 Everything done since the 2026-07-01 release, in one release (version v1.8.3.1). Works on Bannerlord 1.2 / 1.3.15 / 1.4.x. What follows is a single list — not ten separate versions, but everything that went into this one release, grouped by area.

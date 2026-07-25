@@ -1,0 +1,68 @@
+- id: m38_fds_xml_blacklist
+  title:
+    en: "Clear FDS_ShaderCache's XML skip-list"
+    ru: "Очистить чёрный список XML мода FDS_ShaderCache"
+    zh: "清理 FDS_ShaderCache 的 XML 黑名单"
+    zht: "清理 FDS_ShaderCache 的 XML 黑名單"
+    tr: "FDS_ShaderCache'in XML atlama listesini temizle"
+  description:
+    en: |
+      FDS_ShaderCache (Nexus 12195) is not just a shader cache: its DLL patches the game's XML
+      loader. During its shader-rebuild pass, any XML that errors once while loading is written to
+      fds_xml_blacklist.txt and from then on the mod returns an EMPTY document for it — so the
+      objects, items and types that XML defines silently disappear, and other mods that read them at
+      startup can crash (a confirmed case is a The Old Realms crash on campaign load). The skip only
+      runs during the rebuild, so a normal restart usually loads fine, but the file persists.
+    ru: |
+      FDS_ShaderCache (Nexus 12195) — не просто кэш шейдеров: его DLL патчит загрузчик XML игры.
+      Во время пересборки шейдеров любой XML, который хоть раз падает при загрузке, заносится в
+      fds_xml_blacklist.txt, и дальше мод отдаёт вместо него ПУСТОЙ документ — объекты, предметы и
+      типы, которые этот XML определяет, тихо исчезают, и другие моды, читающие их на старте, могут
+      крашиться (подтверждённый случай — вылет The Old Realms при загрузке кампании). Пропуск работает
+      только во время пересборки, поэтому обычный перезапуск обычно грузится нормально, но файл остаётся.
+    zh: |
+      FDS_ShaderCache（Nexus 12195）不只是着色器缓存：其 DLL 修补了游戏的 XML 加载器。在其着色器
+      重建期间，任何加载时出错一次的 XML 都会被写入 fds_xml_blacklist.txt，此后该模组对它返回一个空
+      文档——于是该 XML 定义的对象、物品和类型都会悄然消失，读取它们的其他模组在启动时可能崩溃（已确认
+      的案例是 The Old Realms 在战役读档时崩溃）。该跳过仅在重建期间运行，所以正常重启通常能正常读取，
+      但该文件会保留。
+    zht: |
+      FDS_ShaderCache（Nexus 12195）不只是著色器快取：其 DLL 修補了遊戲的 XML 載入器。在其著色器
+      重建期間，任何載入時出錯一次的 XML 都會被寫入 fds_xml_blacklist.txt，此後該模組對它回傳一個空
+      文件——於是該 XML 定義的物件、物品和型別都會悄然消失，讀取它們的其他模組在啟動時可能當機（已確認
+      的案例是 The Old Realms 在戰役讀檔時當機）。該跳過僅在重建期間執行，所以正常重啟通常能正常讀取，
+      但該檔案會保留。
+    tr: |
+      FDS_ShaderCache (Nexus 12195) yalnızca bir shader önbelleği değildir: DLL'i oyunun XML
+      yükleyicisini yamalar. Shader yeniden-oluşturma geçişi sırasında yüklenirken bir kez hata veren
+      her XML, fds_xml_blacklist.txt'ye yazılır ve mod bundan sonra onun için BOŞ bir belge döndürür —
+      böylece o XML'in tanımladığı nesneler, eşyalar ve tipler sessizce kaybolur ve onları başlangıçta
+      okuyan diğer modlar çökebilir (doğrulanmış bir vaka, The Old Realms'in sefer yüklemesinde
+      çökmesidir). Atlama yalnızca yeniden-oluşturma sırasında çalışır, bu yüzden normal bir yeniden
+      başlatma genellikle düzgün yüklenir, ama dosya kalıcıdır.
+  details:
+    en:
+      - "This deletes fds_xml_blacklist.txt in FDS_ShaderCache's logs folder; the skipped XMLs then load normally again."
+      - "Your save and the mod itself are not touched."
+      - "Safer long-term: remove the FDS_ShaderCache mod — by design it drops any XML that errors even once."
+      - "No reboot required."
+    ru:
+      - "Удаляет fds_xml_blacklist.txt в папке logs мода FDS_ShaderCache; пропущенные XML снова грузятся нормально."
+      - "Сейв и сам мод не трогаются."
+      - "Надёжнее в долгую — снести мод FDS_ShaderCache: он by design теряет любой XML, давший ошибку хоть раз."
+      - "Перезагрузка не нужна."
+    zh:
+      - "删除 FDS_ShaderCache 的 logs 文件夹中的 fds_xml_blacklist.txt；被跳过的 XML 便会恢复正常加载。"
+      - "不会触及你的存档或该模组本身。"
+      - "长期而言更安全：移除 FDS_ShaderCache 模组——它按设计会丢弃任何哪怕出错一次的 XML。"
+      - "无需重启。"
+    zht:
+      - "刪除 FDS_ShaderCache 的 logs 資料夾中的 fds_xml_blacklist.txt；被跳過的 XML 便會恢復正常載入。"
+      - "不會觸及你的存檔或該模組本身。"
+      - "長期而言更安全：移除 FDS_ShaderCache 模組——它按設計會丟棄任何哪怕出錯一次的 XML。"
+      - "無需重新啟動。"
+    tr:
+      - "FDS_ShaderCache'in logs klasöründeki fds_xml_blacklist.txt dosyasını siler; atlanan XML'ler yeniden normal yüklenir."
+      - "Kaydına veya modun kendisine dokunulmaz."
+      - "Uzun vadede daha güvenli: FDS_ShaderCache modunu kaldır — tasarımı gereği bir kez bile hata veren her XML'i düşürür."
+      - "Yeniden başlatma gerekmez."

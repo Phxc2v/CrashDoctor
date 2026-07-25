@@ -100,6 +100,9 @@
               - managed_exception: { frame_contains: "game_menu_encounter_on_init" }
               - managed_exception: { type_contains: "NullReference" }
           - all:
+              - managed_exception: { frame_contains: "game_menu_town_outside_on_init" }
+              - managed_exception: { type_contains: "NullReference" }
+          - all:
               - managed_exception: { frame_contains: "NAudio" }
               - managed_exception: { type_contains: "FileNotFoundException" }
           - all:
@@ -134,6 +137,15 @@
               - managed_exception: { type_contains: "NullReference" }
           - all:
               - managed_exception: { frame_contains: "AssignHeroEquipmentFromEquipment" }
+              - managed_exception: { type_contains: "NullReference" }
+          - all:
+              - managed_exception: { frame_contains: "GetDefaultTroopTraits" }
+              - managed_exception: { type_contains: "NullReference" }
+          - all:
+              - managed_exception: { frame_contains: "TOR_Core.SubModule.OnGameInitializationFinished" }
+              - managed_exception: { type_contains: "NullReference" }
+          - all:
+              - managed_exception: { frame_contains: "IntersectRayWithPolygon" }
               - managed_exception: { type_contains: "NullReference" }
           - all:
               - managed_exception: { frame_contains: "ShipTradeCampaignBehavior.OnShipOwnerChanged" }
@@ -418,7 +430,7 @@
   category: managed
   severity: critical
   confidence: high
-  evidence_source: "Client crash 2026-06-07 report(4).txt — NullReferenceException EncounterGameMenuBehavior.game_menu_encounter_on_init ← GameMenu.RunOnInit ← MenuContext.HandleStates ← MapState.EnterMenuMode ← MapState.OnLoadingFinished. Captured by Crash Doctor managed capture."
+  evidence_source: "Client crash 2026-06-07 report(4).txt — NullReferenceException EncounterGameMenuBehavior.game_menu_encounter_on_init ← GameMenu.RunOnInit ← MenuContext.HandleStates ← MapState.EnterMenuMode ← MapState.OnLoadingFinished. Also client 2026-07-24 report(37).txt (crash 4d02563f, 3×, Bannerlord 1.4.7, ~50 mods, no TOR) — same chain via the sibling EncounterGameMenuBehavior.game_menu_town_outside_on_init (the 'at the gate, entry denied' menu): game_menu_town_outside_on_init reads PlayerEncounter.EncounterSettlement.Name, and the getter returns null when PlayerEncounter.Current didn't restore. Captured by Crash Doctor managed capture."
   requires_sources: [managed_exception]
   title:
     en: "Save-load crash — broken encounter in the save — guarded by Crash Doctor"
@@ -501,7 +513,9 @@
       - "Gölgelendiricileri yeniden oluşturma veya sürücü değiştirme — bu bir kayıt durumu hatası, yardımcı olmaz."
   match:
     all:
-      - managed_exception: { frame_contains: "game_menu_encounter_on_init" }
+      - any:
+          - managed_exception: { frame_contains: "game_menu_encounter_on_init" }
+          - managed_exception: { frame_contains: "game_menu_town_outside_on_init" }
       - managed_exception: { type_contains: "NullReference" }
 
 # Campaign-map siege crash: a party WITHOUT a leader hero starts a siege. NullReferenceException
@@ -598,6 +612,337 @@
   match:
     all:
       - managed_exception: { frame_contains: "BesiegerCamp.AddSiegePartyInternal" }
+      - managed_exception: { type_contains: "NullReference" }
+
+# Deployment / troop-supply crash: the game reads a troop's weapon slots to decide its default AI
+# traits and finds a NON-weapon item in a weapon slot. NullReferenceException from
+# TaleWorlds.Core.AgentOriginUtilities.GetDefaultTroopTraits ← PartyGroupTroopSupplier.SupplyTroops ←
+# DefaultBattleMissionAgentSpawnLogic.CheckDeployment ← BattleDeploymentMissionController. The vanilla
+# loop assumes every non-empty weapon slot (0..4) holds a weapon and dereferences Item.PrimaryWeapon
+# .WeaponClass with no null-check; a non-weapon item there (PrimaryWeapon == null) crashes. Custom-troop
+# mods (e.g. My Little Warband) can place any item in any slot, baked into the save. A missing item id
+# would NOT crash (empty slot is skipped) — it takes a resolved non-weapon item in a weapon slot.
+- id: campaign.default_troop_traits_nre
+  category: managed
+  severity: critical
+  confidence: high
+  evidence_source: "Client report 2026-07-24 (Bannerlord 1.4.7, My Little Warband custom troops) — NullReferenceException TaleWorlds.Core.AgentOriginUtilities.GetDefaultTroopTraits ← TaleWorlds.CampaignSystem.TroopSuppliers.PartyGroupTroopSupplier.SupplyTroops ← TaleWorlds.MountAndBlade.DefaultBattleMissionAgentSpawnLogic.CheckDeployment ← BattleDeploymentMissionController.OnSetupTeamsOfSide ← DeploymentMissionController.SetupTeams. Same trait read also crashes the Party screen and MLW's Unit Editor. Captured by Crash Doctor managed capture."
+  requires_sources: [managed_exception]
+  title:
+    en: "Deploy crash — a non-weapon item in a troop's weapon slot — guarded by Crash Doctor"
+    ru: "Вылет при развёртывании — не-оружейный предмет в слоте оружия бойца — перехвачено Crash Doctor"
+    zh: "部署崩溃——部队武器槽中有非武器物品——已被 Crash Doctor 拦截"
+    zht: "部署崩潰——部隊武器槽中有非武器物品——已被 Crash Doctor 攔截"
+    tr: "Konuşlandırma çökmesi — birliğin silah yuvasında silah olmayan bir eşya — Crash Doctor tarafından korunuyor"
+  description:
+    en: |
+      NullReferenceException from TaleWorlds.Core.AgentOriginUtilities.GetDefaultTroopTraits while the
+      game supplied troops for a battle (PartyGroupTroopSupplier.SupplyTroops → CheckDeployment →
+      BattleDeploymentMissionController). The method reads a troop's five weapon slots to set its default
+      AI traits (thrown weapon / spear / shield / heavy armor). The vanilla loop assumes every non-empty
+      weapon slot holds a weapon and reads Item.PrimaryWeapon.WeaponClass with no null-check; when a
+      NON-weapon item (armor, a horse, or a broken item) sits in a weapon slot its PrimaryWeapon is null
+      and the read crashes. A missing/unresolved item id would NOT crash — that slot reads empty and is
+      skipped; it takes a resolved non-weapon item in a weapon slot. Custom-troop mods (e.g. My Little
+      Warband) can place any item in any slot, and the bad slot is baked into the roster in your save, so
+      disabling the mod does not help. The same trait read runs when you open the Party screen and the
+      mod's own unit editor, so those crash too. This is a VANILLA bug, NOT a shader/driver problem.
+    ru: |
+      NullReferenceException из TaleWorlds.Core.AgentOriginUtilities.GetDefaultTroopTraits, когда игра
+      выдавала войска для боя (PartyGroupTroopSupplier.SupplyTroops → CheckDeployment →
+      BattleDeploymentMissionController). Метод читает пять слотов оружия бойца, чтобы задать его AI-черты
+      (метательное / копьё / щит / тяжёлая броня). Ванильный цикл считает, что в непустом слоте оружия
+      всегда оружие, и читает Item.PrimaryWeapon.WeaponClass без проверки на null; когда в слоте оружия
+      лежит НЕ-оружейный предмет (броня, лошадь или битый предмет), его PrimaryWeapon равен null, и чтение
+      падает. Пропавший/нерезолвящийся id предмета НЕ уронил бы игру — такой слот пуст и пропускается;
+      нужен именно резолвящийся не-оружейный предмет в слоте оружия. Моды на кастомные войска (напр. My
+      Little Warband) могут положить любой предмет в любой слот, и битый слот запечён в ростере сейва —
+      отключение мода не помогает. Та же читалка черт работает при открытии экрана отряда и редактора войск
+      мода, поэтому они тоже крашатся. Это баг ВАНИЛИ, а НЕ проблема шейдеров/драйвера.
+    zh: |
+      游戏为战斗补充部队时（PartyGroupTroopSupplier.SupplyTroops → CheckDeployment →
+      BattleDeploymentMissionController），TaleWorlds.Core.AgentOriginUtilities.GetDefaultTroopTraits
+      抛出空引用异常。该方法读取部队的五个武器槽以设定其默认 AI 特性（投掷／长矛／盾牌／重甲）。原版循环假定
+      非空武器槽中必为武器，读取 Item.PrimaryWeapon.WeaponClass 时不作空检查；当武器槽中放着非武器物品
+      （护甲、马匹或损坏物品）时其 PrimaryWeapon 为空，读取即崩溃。缺失／无法解析的物品 id 不会崩溃——该槽读
+      为空并被跳过；真正的元凶是可解析的非武器物品占据了武器槽。自定义部队模组（如 My Little Warband）可将
+      任意物品放入任意槽位，损坏的槽位已写入存档名册——禁用模组无济于事。打开队伍界面和该模组的单位编辑器时会运
+      行同样的特性读取，因此它们也会崩溃。这是原版 bug，不是着色器／驱动问题。
+    zht: |
+      遊戲為戰鬥補充部隊時（PartyGroupTroopSupplier.SupplyTroops → CheckDeployment →
+      BattleDeploymentMissionController），TaleWorlds.Core.AgentOriginUtilities.GetDefaultTroopTraits
+      擲出空參考例外。該方法讀取部隊的五個武器槽以設定其預設 AI 特性（投擲／長矛／盾牌／重甲）。原版迴圈假定
+      非空武器槽中必為武器，讀取 Item.PrimaryWeapon.WeaponClass 時不作空檢查；當武器槽中放著非武器物品
+      （護甲、馬匹或損壞物品）時其 PrimaryWeapon 為空，讀取即崩潰。缺失／無法解析的物品 id 不會崩潰——該槽讀
+      為空並被跳過；真正的元兇是可解析的非武器物品佔據了武器槽。自訂部隊模組（如 My Little Warband）可將
+      任意物品放入任意槽位，損壞的槽位已寫入存檔名冊——停用模組無濟於事。打開隊伍介面和該模組的單位編輯器時會運
+      行同樣的特性讀取，因此它們也會崩潰。這是原版 bug，不是著色器／驅動問題。
+    tr: |
+      Oyun bir savaş için birlik sağlarken (PartyGroupTroopSupplier.SupplyTroops → CheckDeployment →
+      BattleDeploymentMissionController) TaleWorlds.Core.AgentOriginUtilities.GetDefaultTroopTraits'ten
+      NullReferenceException fırlatıldı. Yöntem, bir birliğin varsayılan AI özelliklerini (fırlatma /
+      mızrak / kalkan / ağır zırh) belirlemek için beş silah yuvasını okur. Orijinal döngü her boş
+      olmayan silah yuvasında bir silah olduğunu varsayar ve Item.PrimaryWeapon.WeaponClass'ı null
+      kontrolü olmadan okur; bir silah yuvasında silah OLMAYAN bir eşya (zırh, at veya bozuk bir eşya)
+      olduğunda PrimaryWeapon null olur ve okuma çöker. Eksik/çözülemeyen bir eşya kimliği çökmeye YOL
+      AÇMAZ — o yuva boş okunur ve atlanır; asıl neden, çözülen bir silah-olmayan eşyanın bir silah
+      yuvasında bulunmasıdır. Özel-birlik modları (örn. My Little Warband) herhangi bir eşyayı herhangi
+      bir yuvaya koyabilir ve bozuk yuva kaydındaki kadroya işlenmiştir, bu yüzden modu devre dışı
+      bırakmak yardımcı olmaz. Aynı özellik okuması Grup ekranını ve modun birim düzenleyicisini açarken
+      de çalışır, bu yüzden onlar da çöker. Bu bir ORİJİNAL oyun hatasıdır, gölgelendirici/sürücü sorunu
+      DEĞİL.
+  fix:
+    en:
+      - "Crash Doctor already guards this — its safety net skips the bad weapon slot so the troop deploys with default AI traits and the game keeps running. Keep the «Troop-deploy crash guard (bad item in a weapon slot)» fix ON (Crash Fixes tab)."
+      - "Root cause is one custom troop with a non-weapon item in a weapon slot, baked into your save (typically from a custom-troop mod like My Little Warband). crashdoctor.log names the offending troop id."
+      - "To clean it permanently: roll back to a save from before that troop was created/edited, or use a developer-console mod to remove that specific troop from your roster (the Party screen crashes, but a console remove does not go through this trait read). Re-opening the troop in the mod's unit editor triggers the same null."
+      - "Do NOT rebuild shaders or change drivers — this is a save/data bug, that won't help."
+    ru:
+      - "Crash Doctor уже это перехватывает — safety net пропускает битый слот оружия, боец развёртывается с чертами по умолчанию, игра продолжает работать. Держи фикс «Защита от вылета при развёртывании войск (битый предмет в слоте оружия)» ВКЛ (вкладка «Фиксы крашей»)."
+      - "Корень — один кастомный боец с не-оружейным предметом в слоте оружия, запечённый в сейве (обычно от мода на кастомные войска вроде My Little Warband). id проблемного бойца — в crashdoctor.log."
+      - "Чтобы вычистить насовсем: откатись на сейв до создания/правки этого бойца, или удали конкретного бойца из состава модом с консолью разработчика (экран отряда крашится, но консольное удаление не идёт через это чтение черт). Повторное открытие бойца в редакторе войск мода даёт тот же null."
+      - "НЕ пересобирай шейдеры и не меняй драйвер — это баг сейва/данных, не поможет."
+    zh:
+      - "Crash Doctor 已经拦截了它——安全网会跳过损坏的武器槽，部队以默认 AI 特性部署，游戏继续运行。在「崩溃修复」页保持「部队部署崩溃防护（武器槽中的损坏物品）」为开。"
+      - "根源是一个自定义部队的武器槽中放着非武器物品，已写入存档（通常来自 My Little Warband 之类的自定义部队模组）。crashdoctor.log 会给出问题部队的 id。"
+      - "要彻底清除：回退到创建／编辑该部队之前的存档，或用开发者控制台模组把该部队从名册中移除（队伍界面会崩溃，但控制台移除不经过此特性读取）。在该模组的单位编辑器中重新打开该部队会触发同样的空引用。"
+      - "不要重建着色器或更换驱动——这是存档／数据 bug，没用。"
+    zht:
+      - "Crash Doctor 已經攔截了它——安全網會跳過損壞的武器槽，部隊以預設 AI 特性部署，遊戲繼續執行。在「崩潰修復」頁保持「部隊部署崩潰防護（武器槽中的損壞物品）」為開。"
+      - "根源是一個自訂部隊的武器槽中放著非武器物品，已寫入存檔（通常來自 My Little Warband 之類的自訂部隊模組）。crashdoctor.log 會給出問題部隊的 id。"
+      - "要徹底清除：回退到建立／編輯該部隊之前的存檔，或用開發者主控台模組把該部隊從名冊中移除（隊伍介面會崩潰，但主控台移除不經過此特性讀取）。在該模組的單位編輯器中重新打開該部隊會觸發同樣的空參考。"
+      - "不要重建著色器或更換驅動——這是存檔／資料 bug，沒用。"
+    tr:
+      - "Crash Doctor bunu zaten koruyor — güvenlik ağı bozuk silah yuvasını atlar, böylece birlik varsayılan AI özellikleriyle konuşlanır ve oyun çalışmaya devam eder. «Birlik konuşlandırma çökme koruması (silah yuvasında bozuk eşya)» düzeltmesini AÇIK tut (Çökme Düzeltmeleri sekmesi)."
+      - "Kök neden, silah yuvasında silah olmayan bir eşya bulunan ve kaydına işlenmiş tek bir özel birliktir (genelde My Little Warband gibi bir özel-birlik modundan). Sorunlu birlik kimliği crashdoctor.log dosyasındadır."
+      - "Kalıcı temizlemek için: o birlik oluşturulmadan/düzenlenmeden önceki bir kayda geri dön ya da bir geliştirici-konsol moduyla o belirli birliği kadrondan çıkar (Grup ekranı çöker ama konsol çıkarması bu özellik okumasından geçmez). Birliği modun birim düzenleyicisinde yeniden açmak aynı null'ı tetikler."
+      - "Gölgelendiricileri yeniden oluşturma veya sürücü değiştirme — bu bir kayıt/veri hatasıdır, yardımcı olmaz."
+  match:
+    all:
+      - managed_exception: { frame_contains: "GetDefaultTroopTraits" }
+      - managed_exception: { type_contains: "NullReference" }
+
+# Battle-deployment crash: during the pre-battle deploy phase, a spawning troop's position is
+# projected back inside its team's deployment zone, and the vanilla geometry helper NREs on a null
+# boundary polygon. NullReferenceException from TaleWorlds.Library.MBMath.IntersectRayWithPolygon ←
+# DefaultTeamDeploymentPlan.GetPathDeploymentBoundaryIntersection ←
+# DefaultMissionDeploymentPlan.ProjectPositionToDeploymentBoundaries ←
+# HumanAIComponent.ParallelUpdateFormationMovement ← Agent.set_Formation ← Agent.Build ←
+# Mission.SpawnTroop ← MissionAgentSpawnLogic.CheckDeployment ← BattleDeploymentMissionController.
+# IntersectRayWithPolygon does `for (…; j < polygon.Count; …)` with no null-check; the caller passes
+# IsPositionInsideDeploymentBoundaries's stub tuple ("", null) when the path start is inside no
+# boundary. Intermittent / scene-geometry dependent (deployment-frame origin outside its own zones),
+# not faction-specific. A vanilla bug — not a shader/driver problem.
+- id: campaign.deployment_boundary_polygon_nre
+  category: managed
+  severity: critical
+  confidence: high
+  evidence_source: "Client report 2026-07-24 report(38).txt (crash 13711264, Bannerlord 1.3.15, TOR beastmen battle; player had fought beastmen many times before without issue) — NullReferenceException TaleWorlds.Library.MBMath.IntersectRayWithPolygon ← DefaultTeamDeploymentPlan.GetPathDeploymentBoundaryIntersection ← DefaultMissionDeploymentPlan.ProjectPositionToDeploymentBoundaries ← HumanAIComponent.ParallelUpdateFormationMovement ← Agent.set_Formation ← Agent.Build ← Mission.SpawnTroop ← MissionAgentSpawnLogic.CheckDeployment ← BattleDeploymentMissionController.OnSetupTeamsOfSide ← DeploymentMissionController.SetupTeams. Root: DefaultTeamDeploymentPlan.cs passes valueTuple2.Item2 (null when the path start is inside no deployment boundary) to IntersectRayWithPolygon, which reads polygon.Count with no null-check. Captured by Crash Doctor managed capture."
+  requires_sources: [managed_exception]
+  title:
+    en: "Battle-deploy crash — an incomplete deployment zone on this scene — guarded by Crash Doctor"
+    ru: "Вылет при расстановке боя — неполная зона развёртывания на сцене — перехвачено Crash Doctor"
+    zh: "战斗部署崩溃——该场景部署区域不完整——已被 Crash Doctor 拦截"
+    zht: "戰鬥部署崩潰——該場景部署區域不完整——已被 Crash Doctor 攔截"
+    tr: "Savaş konuşlandırma çökmesi — bu sahnede eksik bir konuşlandırma bölgesi — Crash Doctor tarafından korunuyor"
+  description:
+    en: |
+      NullReferenceException from TaleWorlds.Library.MBMath.IntersectRayWithPolygon during the
+      pre-battle DEPLOYMENT phase, as each troop spawns and its position is projected back inside the
+      team's deployment zone (SpawnTroop → Agent.set_Formation → ProjectPositionToDeploymentBoundaries
+      → GetPathDeploymentBoundaryIntersection). The helper walks a polygon's edges with no null-check;
+      the deployment code hands it a null boundary polygon when the path start point is inside no
+      deployment boundary — which happens on a scene whose deployment-frame origin sits just outside
+      its own deployment zones. The whole mission tick dies before the battle starts. It is
+      intermittent and depends on the scene geometry plus the random spawn positions, NOT on the enemy
+      faction — the same fight can be fine many times and then crash on one scene. This is a vanilla
+      bug (a missing null-check), not a shader/driver problem and not a mod bug.
+    ru: |
+      NullReferenceException из TaleWorlds.Library.MBMath.IntersectRayWithPolygon на этапе РАССТАНОВКИ
+      перед боем, когда каждый боец спавнится и его позиция проецируется обратно внутрь зоны
+      развёртывания команды (SpawnTroop → Agent.set_Formation → ProjectPositionToDeploymentBoundaries
+      → GetPathDeploymentBoundaryIntersection). Помощник обходит рёбра полигона без проверки на null;
+      код развёртывания передаёт ему null-полигон границы, когда стартовая точка пути не внутри ни
+      одной зоны — а это бывает на сцене, где origin рамки развёртывания оказался чуть вне её же зон.
+      Весь тик боя умирает до старта. Это разово и зависит от геометрии сцены и случайных позиций
+      спавна, а НЕ от фракции врага — тот же бой может быть нормальным много раз, а потом упасть на
+      одной сцене. Это баг ванили (нет проверки на null), а НЕ проблема шейдеров/драйвера и не баг мода.
+    zh: |
+      在战前部署阶段，当每个部队生成、其位置被投影回队伍的部署区域内时
+      （SpawnTroop → Agent.set_Formation → ProjectPositionToDeploymentBoundaries →
+      GetPathDeploymentBoundaryIntersection），TaleWorlds.Library.MBMath.IntersectRayWithPolygon 抛出
+      空引用异常。该辅助函数遍历多边形的边而不作空检查；当路径起点不在任何部署边界内时，部署代码会把一个
+      空的边界多边形交给它——这发生在部署框架原点恰好位于其自身部署区域之外的场景。整个战斗刻在战斗开始前
+      死亡。此问题偶发，取决于场景几何与随机生成位置，而非敌方阵营——同一场战斗可能多次正常，然后在某个场景
+      崩溃。这是原版 bug（缺少空检查），而非着色器／驱动问题，也不是模组 bug。
+    zht: |
+      在戰前部署階段，當每個部隊生成、其位置被投影回隊伍的部署區域內時
+      （SpawnTroop → Agent.set_Formation → ProjectPositionToDeploymentBoundaries →
+      GetPathDeploymentBoundaryIntersection），TaleWorlds.Library.MBMath.IntersectRayWithPolygon 擲出
+      空參考例外。該輔助函式遍歷多邊形的邊而不作空檢查；當路徑起點不在任何部署邊界內時，部署程式碼會把一個
+      空的邊界多邊形交給它——這發生在部署框架原點恰好位於其自身部署區域之外的場景。整個戰鬥刻在戰鬥開始前
+      死亡。此問題偶發，取決於場景幾何與隨機生成位置，而非敵方陣營——同一場戰鬥可能多次正常，然後在某個場景
+      當機。這是原版 bug（缺少空檢查），而非著色器／驅動問題，也不是模組 bug。
+    tr: |
+      Savaş öncesi KONUŞLANDIRMA aşamasında, her birlik doğup konumu takımın konuşlandırma bölgesinin
+      içine geri yansıtılırken (SpawnTroop → Agent.set_Formation → ProjectPositionToDeploymentBoundaries
+      → GetPathDeploymentBoundaryIntersection) TaleWorlds.Library.MBMath.IntersectRayWithPolygon'dan
+      NullReferenceException fırlatıldı. Yardımcı, bir çokgenin kenarlarını null kontrolü olmadan dolaşır;
+      konuşlandırma kodu, yol başlangıç noktası hiçbir konuşlandırma sınırının içinde değilken ona null
+      bir sınır çokgeni verir — bu, konuşlandırma çerçevesi orijini kendi konuşlandırma bölgelerinin hemen
+      dışında kalan bir sahnede olur. Tüm görev tick'i savaş başlamadan ölür. Aralıklıdır ve sahne
+      geometrisine artı rastgele doğuş konumlarına bağlıdır, düşman fraksiyonuna DEĞİL — aynı savaş defalarca
+      sorunsuz olup sonra bir sahnede çökebilir. Bu bir orijinal oyun hatasıdır (eksik null kontrolü),
+      gölgelendirici/sürücü sorunu değil ve bir mod hatası da değildir.
+  fix:
+    en:
+      - "Crash Doctor already guards this — the deployment projection returns 'no intersection' instead of crashing, so troops deploy and the battle starts. Keep the «Battle-deploy crash guard (incomplete deployment zone)» fix ON (Crash Fixes tab)."
+      - "Nothing to change in your save — it's a one-off scene-geometry edge case, not corruption. If you hit it, just retry the battle (a fresh deploy usually places troops differently)."
+      - "It is NOT the enemy faction's fault (beastmen or otherwise) — the same fight works on other scenes."
+      - "Do NOT rebuild shaders or change drivers — this is an engine geometry bug, that won't help."
+    ru:
+      - "Crash Doctor уже это перехватывает — проекция развёртывания возвращает «нет пересечения» вместо краша, войска расставляются, бой начинается. Держи фикс «Защита от вылета при расстановке боя (неполная зона развёртывания)» ВКЛ (вкладка «Фиксы крашей»)."
+      - "В сейве менять нечего — это разовый краевой случай геометрии сцены, не порча. Если поймал — просто перезайди в бой (при новой расстановке войска встанут иначе)."
+      - "Виновата НЕ фракция врага (бистмены или кто угодно) — тот же бой работает на других сценах."
+      - "НЕ пересобирай шейдеры и не меняй драйвер — это баг геометрии движка, не поможет."
+    zh:
+      - "Crash Doctor 已经拦截了它——部署投影会返回“无交点”而非崩溃，于是部队部署、战斗开始。在「崩溃修复」页保持「战斗部署崩溃防护（部署区域不完整）」为开。"
+      - "存档无需改动——这是一次性的场景几何边缘情况，而非损坏。若遇到，重进战斗即可（重新部署通常会把部队放在不同位置）。"
+      - "这不是敌方阵营（兽人或其他）的错——同一场战斗在其他场景可正常进行。"
+      - "不要重建着色器或更换驱动——这是引擎几何 bug，没用。"
+    zht:
+      - "Crash Doctor 已經攔截了它——部署投影會回傳「無交點」而非當機，於是部隊部署、戰鬥開始。在「崩潰修復」頁保持「戰鬥部署崩潰防護（部署區域不完整）」為開。"
+      - "存檔無需改動——這是一次性的場景幾何邊緣情況，而非損壞。若遇到，重進戰鬥即可（重新部署通常會把部隊放在不同位置）。"
+      - "這不是敵方陣營（獸人或其他）的錯——同一場戰鬥在其他場景可正常進行。"
+      - "不要重建著色器或更換驅動——這是引擎幾何 bug，沒用。"
+    tr:
+      - "Crash Doctor bunu zaten koruyor — konuşlandırma yansıtması çökmek yerine 'kesişim yok' döndürür, böylece birlikler konuşlanır ve savaş başlar. «Savaş konuşlandırma çökme koruması (eksik konuşlandırma bölgesi)» düzeltmesini AÇIK tut (Çökme Düzeltmeleri sekmesi)."
+      - "Kaydında değiştirilecek bir şey yok — bu tek seferlik bir sahne-geometrisi uç durumudur, bozulma değil. Karşılaşırsan savaşı yeniden dene (yeni bir konuşlandırma birlikleri genellikle farklı yerleştirir)."
+      - "Suçlu düşman fraksiyonu DEĞİL (beastmen ya da başka) — aynı savaş başka sahnelerde çalışır."
+      - "Gölgelendiricileri yeniden oluşturma veya sürücü değiştirme — bu bir motor geometri hatasıdır, yardımcı olmaz."
+  match:
+    all:
+      - managed_exception: { frame_contains: "IntersectRayWithPolygon" }
+      - managed_exception: { type_contains: "NullReference" }
+
+# Load-time crash: TOR NREs while applying its late Harmony patches. NullReferenceException from
+# TOR_Core.SubModule.OnGameInitializationFinished ← MBGameManager.OnGameInitializationFinished ←
+# Campaign.OnInitialize (campaign load). The method's only statement is
+# HarmonyInstance.PatchCategory("LatePatches"); the NRE surfaces from within it. HarmonyInstance is
+# non-null (set in OnSubModuleLoad) and TOR's own patch targets resolve on a matching build — the
+# demonstrated cause is a "shader cache" / load-accelerator mod, above all FDS_ShaderCache
+# (Nexus 12195). Despite its name it is not a passive cache: its DLL patches MBObjectManager
+# .CreateDocumentFromXmlFile and, whenever an XML errors once during a shader-rebuild pass, writes
+# that path to fds_xml_blacklist.txt and thereafter feeds an EMPTY <base/> document instead — so the
+# objects that XML registers go missing and TOR's late-patch/init reads null. The skip is active only
+# while its shader-batch is running, which is why a plain game restart usually loads fine. Not a
+# shader/driver problem in the GPU sense — a mod is silently dropping game data.
+- id: tor.fds_shadercache_xml_blacklist_nre
+  category: managed
+  severity: critical
+  confidence: high
+  evidence_source: "Client report 2026-07-24 (report(36).txt, Bannerlord 1.3.15, TOR 1.3.15, FDS_ShaderCache v1.0.0.0 present) — NullReferenceException TOR_Core.SubModule.OnGameInitializationFinished_Patch1 ← MBGameManager.OnGameInitializationFinished ← Campaign.OnInitialize ← DoLoadingForGameType, after installing FDS_ShaderCache (Nexus 12195) and running its Armory weapon-shader rebuild. FDS_ShaderCache.dll decompiled: SanXmlLoadSkipGuard patches MBObjectManager.CreateDocumentFromXmlFile with a finalizer that blacklists any XML that throws (fds_xml_blacklist.txt) and a prefix that then returns an empty document for blacklisted paths while ShaderBatchController.Active. It also patches a finalizer onto OnGameInitializationFinished of every SubModule (the _Patch1 wrapper). A plain restart cleared it for the client. Captured by Crash Doctor managed capture."
+  requires_sources: [managed_exception]
+  title:
+    en: "Load crash — a 'shader cache' mod (FDS_ShaderCache) skipped a game XML TOR needs"
+    ru: "Вылет при загрузке — мод «кэш шейдеров» (FDS_ShaderCache) пропустил игровой XML, нужный TOR"
+    zh: "读档崩溃——“着色器缓存”模组（FDS_ShaderCache）跳过了 TOR 所需的游戏 XML"
+    zht: "讀檔崩潰——「著色器快取」模組（FDS_ShaderCache）跳過了 TOR 所需的遊戲 XML"
+    tr: "Yükleme çökmesi — bir 'shader cache' modu (FDS_ShaderCache) TOR'un ihtiyaç duyduğu bir oyun XML'ini atladı"
+  description:
+    en: |
+      NullReferenceException from TOR_Core.SubModule.OnGameInitializationFinished while a campaign
+      loads (Campaign.OnInitialize → OnGameInitializationFinished). That method only calls
+      HarmonyInstance.PatchCategory("LatePatches") — TOR applying its late Harmony patches — and the
+      NRE comes from inside it because the game data TOR expects is missing.
+      The cause is the FDS_ShaderCache mod (Nexus 12195). It is NOT a passive shader cache: its DLL
+      patches the game's XML loader (MBObjectManager.CreateDocumentFromXmlFile). During its
+      Armory shader-rebuild pass, if any XML throws once while loading, the mod permanently writes that
+      file to fds_xml_blacklist.txt and from then on returns an EMPTY document for it — so every object,
+      item or type that XML registers silently disappears, and TOR's initialization reads null. The skip
+      only runs while the mod's shader-batch is active, which is why a normal game restart usually loads
+      cleanly again. This is a mod dropping game data, NOT a shader/driver fault in the GPU sense and NOT
+      a TOR bug.
+    ru: |
+      NullReferenceException из TOR_Core.SubModule.OnGameInitializationFinished при загрузке кампании
+      (Campaign.OnInitialize → OnGameInitializationFinished). Этот метод лишь вызывает
+      HarmonyInstance.PatchCategory("LatePatches") — TOR применяет свои поздние Harmony-патчи — и NRE
+      прилетает изнутри, потому что нужных TOR игровых данных нет.
+      Причина — мод FDS_ShaderCache (Nexus 12195). Это НЕ пассивный кэш шейдеров: его DLL патчит
+      загрузчик XML игры (MBObjectManager.CreateDocumentFromXmlFile). Во время пересборки шейдеров
+      Armory, если какой-то XML хоть раз падает при загрузке, мод навсегда заносит этот файл в
+      fds_xml_blacklist.txt и дальше отдаёт вместо него ПУСТОЙ документ — все объекты, предметы и типы,
+      которые этот XML регистрирует, тихо исчезают, и инициализация TOR читает null. Пропуск работает
+      только пока активна пакетная пересборка шейдеров мода — поэтому обычный перезапуск игры обычно
+      грузится нормально. Это мод, теряющий игровые данные, а НЕ проблема шейдеров/драйвера в смысле GPU
+      и НЕ баг TOR.
+    zh: |
+      战役读取时（Campaign.OnInitialize → OnGameInitializationFinished），
+      TOR_Core.SubModule.OnGameInitializationFinished 抛出空引用异常。该方法只调用
+      HarmonyInstance.PatchCategory("LatePatches")——即 TOR 应用其后期 Harmony 补丁——空引用来自其内部，
+      因为 TOR 所需的游戏数据缺失。
+      原因是 FDS_ShaderCache 模组（Nexus 12195）。它并非被动的着色器缓存：其 DLL 修补了游戏的 XML 加载器
+      （MBObjectManager.CreateDocumentFromXmlFile）。在其 Armory 着色器重建过程中，只要某个 XML 加载时抛出
+      一次异常，该模组便会把该文件永久写入 fds_xml_blacklist.txt，此后对它返回一个空文档——于是该 XML 注册的
+      所有对象、物品或类型都会悄然消失，TOR 初始化读取到空值。该跳过仅在模组的着色器批处理激活时运行，因此正常
+      重启游戏通常又能正常读取。这是模组丢弃了游戏数据，并非 GPU 意义上的着色器／驱动故障，也不是 TOR 的 bug。
+    zht: |
+      戰役讀取時（Campaign.OnInitialize → OnGameInitializationFinished），
+      TOR_Core.SubModule.OnGameInitializationFinished 擲出空參考例外。該方法只呼叫
+      HarmonyInstance.PatchCategory("LatePatches")——即 TOR 套用其後期 Harmony 補丁——空參考來自其內部，
+      因為 TOR 所需的遊戲資料缺失。
+      原因是 FDS_ShaderCache 模組（Nexus 12195）。它並非被動的著色器快取：其 DLL 修補了遊戲的 XML 載入器
+      （MBObjectManager.CreateDocumentFromXmlFile）。在其 Armory 著色器重建過程中，只要某個 XML 載入時擲出
+      一次例外，該模組便會把該檔案永久寫入 fds_xml_blacklist.txt，此後對它回傳一個空文件——於是該 XML 註冊的
+      所有物件、物品或型別都會悄然消失，TOR 初始化讀取到空值。該跳過僅在模組的著色器批次處理啟用時執行，因此正常
+      重啟遊戲通常又能正常讀取。這是模組丟棄了遊戲資料，並非 GPU 意義上的著色器／驅動故障，也不是 TOR 的 bug。
+    tr: |
+      Bir sefer yüklenirken (Campaign.OnInitialize → OnGameInitializationFinished)
+      TOR_Core.SubModule.OnGameInitializationFinished'dan NullReferenceException fırlatıldı. Bu yöntem
+      yalnızca HarmonyInstance.PatchCategory("LatePatches") çağırır — TOR geç Harmony yamalarını uygular
+      — ve NRE onun içinden gelir çünkü TOR'un beklediği oyun verisi eksiktir.
+      Neden FDS_ShaderCache modudur (Nexus 12195). Pasif bir shader önbelleği DEĞİLDİR: DLL'i oyunun XML
+      yükleyicisini (MBObjectManager.CreateDocumentFromXmlFile) yamalar. Armory shader yeniden-derleme
+      geçişi sırasında, bir XML yüklenirken bir kez hata verirse mod o dosyayı kalıcı olarak
+      fds_xml_blacklist.txt'ye yazar ve bundan sonra onun için BOŞ bir belge döndürür — böylece o XML'in
+      kaydettiği tüm nesneler, eşyalar veya tipler sessizce kaybolur ve TOR'un başlatması null okur.
+      Atlama yalnızca modun shader toplu işlemi etkinken çalışır; bu yüzden normal bir oyun yeniden
+      başlatması genellikle yine temiz yüklenir. Bu, oyun verisini düşüren bir moddur; GPU anlamında bir
+      shader/sürücü arızası DEĞİL ve bir TOR hatası da değildir.
+  fix:
+    en:
+      - "If the game already loads fine after a restart, no action is needed right now — the skip only runs during FDS_ShaderCache's shader-rebuild pass, so a normal launch is unaffected."
+      - "To stop it recurring on the next shader rebuild: delete the file fds_xml_blacklist.txt in FDS_ShaderCache's log folder (near the game's mod logs). It holds the XMLs the mod decided to skip; clearing it makes them load again."
+      - "Recommended: remove the FDS_ShaderCache mod entirely. By design it blacklists and skips any XML that errors even once, silently dropping game data — that is what broke TOR here."
+      - "After removing it, if TOR/Armory content looks wrong, reinstall/re-subscribe to TOR_Armory and let the game rebuild its assets normally."
+      - "Do NOT rebuild shaders or change drivers to fix this — the crash is a mod skipping a data file, not a GPU problem."
+    ru:
+      - "Если после перезапуска игра уже грузится нормально — прямо сейчас делать ничего не нужно: пропуск работает только во время пересборки шейдеров FDS_ShaderCache, обычный запуск не затронут."
+      - "Чтобы не повторилось при следующей пересборке шейдеров: удали файл fds_xml_blacklist.txt в лог-папке FDS_ShaderCache (рядом с логами модов игры). В нём список XML, которые мод решил пропускать; очистка вернёт их загрузку."
+      - "Рекомендуется: снести мод FDS_ShaderCache целиком. Он by design заносит в чёрный список и пропускает любой XML, который хоть раз дал ошибку, тихо теряя игровые данные — именно это здесь и сломало TOR."
+      - "После удаления, если контент TOR/Armory выглядит битым, переустанови/переподпишись на TOR_Armory и дай игре пересобрать ассеты штатно."
+      - "НЕ пересобирай шейдеры и не меняй драйвер ради этого — вылет из-за того, что мод пропускает файл данных, а не из-за GPU."
+    zh:
+      - "如果重启后游戏已能正常读取，目前无需处理——跳过仅在 FDS_ShaderCache 的着色器重建过程中运行，正常启动不受影响。"
+      - "要避免下次着色器重建时重现：删除 FDS_ShaderCache 日志文件夹中的 fds_xml_blacklist.txt（在游戏模组日志附近）。它保存着该模组决定跳过的 XML；清空后它们会重新加载。"
+      - "建议：彻底移除 FDS_ShaderCache 模组。它按设计会把任何哪怕出错一次的 XML 加入黑名单并跳过，悄然丢弃游戏数据——这正是此处破坏 TOR 的原因。"
+      - "移除后，如果 TOR/Armory 内容显示异常，请重新安装／重新订阅 TOR_Armory，让游戏正常重建其资源。"
+      - "不要为此重建着色器或更换驱动——崩溃是模组跳过了一个数据文件，而非 GPU 问题。"
+    zht:
+      - "如果重啟後遊戲已能正常讀取，目前無需處理——跳過僅在 FDS_ShaderCache 的著色器重建過程中執行，正常啟動不受影響。"
+      - "要避免下次著色器重建時重現：刪除 FDS_ShaderCache 記錄檔資料夾中的 fds_xml_blacklist.txt（在遊戲模組記錄檔附近）。它保存著該模組決定跳過的 XML；清空後它們會重新載入。"
+      - "建議：徹底移除 FDS_ShaderCache 模組。它按設計會把任何哪怕出錯一次的 XML 加入黑名單並跳過，悄然丟棄遊戲資料——這正是此處破壞 TOR 的原因。"
+      - "移除後，如果 TOR/Armory 內容顯示異常，請重新安裝／重新訂閱 TOR_Armory，讓遊戲正常重建其資源。"
+      - "不要為此重建著色器或更換驅動——當機是模組跳過了一個資料檔案，而非 GPU 問題。"
+    tr:
+      - "Yeniden başlatmadan sonra oyun zaten düzgün yükleniyorsa şu an bir şey yapmaya gerek yok — atlama yalnızca FDS_ShaderCache'in shader yeniden-derleme geçişinde çalışır, normal başlatma etkilenmez."
+      - "Bir sonraki shader yeniden-derlemesinde tekrarlamaması için: FDS_ShaderCache'in günlük klasöründeki fds_xml_blacklist.txt dosyasını sil (oyunun mod günlüklerinin yanında). Modun atlamaya karar verdiği XML'leri tutar; temizlemek onları yeniden yükletir."
+      - "Önerilen: FDS_ShaderCache modunu tamamen kaldır. Tasarımı gereği bir kez bile hata veren her XML'i kara listeye alıp atlar, oyun verisini sessizce düşürür — burada TOR'u bozan da budur."
+      - "Kaldırdıktan sonra TOR/Armory içeriği bozuk görünüyorsa TOR_Armory'yi yeniden kur/yeniden abone ol ve oyunun varlıklarını normal şekilde yeniden oluşturmasına izin ver."
+      - "Bunu düzeltmek için shader yeniden oluşturma veya sürücü değiştirme — çökme, bir modun veri dosyasını atlamasıdır, GPU sorunu değil."
+  match:
+    all:
+      - managed_exception: { frame_contains: "TOR_Core.SubModule.OnGameInitializationFinished" }
       - managed_exception: { type_contains: "NullReference" }
 
 # Campaign-map crash: an army that is still GATHERING has to re-pick its rally point because the

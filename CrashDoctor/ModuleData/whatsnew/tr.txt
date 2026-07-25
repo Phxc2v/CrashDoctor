@@ -2,20 +2,12 @@ Crash Doctor'ı kullandığın için teşekkürler!
 
 YENİLİKLER
 
-• Sekiz yeni çökme koruması. Aralarında: bir kuşatmanın başladığı andaki harita çökmesi (ordu, kuşatılan kalenin yanında toplanıyordu), adı olmayan bir kahraman yüzünden artık açılmayan kayıt, bir krallık hükümdar değiştirirken takılıp kalan gün, ana menüye çıkarken masaüstüne atan çökme, dünya haritasında görev dağıtımı ve otomatik savaş ganimeti. Hepsi "Çökme düzeltmeleri" sekmesinde varsayılan olarak açık.
+• Bazı sahnelerde savaşın başında birlikler yerleştirilirken oluşan çökmeye karşı koruma. Eskiden sorunsuz oynanan bir savaş, girişte aniden çökebiliyordu. "Çökme düzeltmeleri" sekmesinde varsayılan olarak açık.
 
-• Başka bir oyun sürümü için derlenmiş bir modun yol açtığı çökme artık eksiksiz açıklanıyor: hangi mod çağırdı, hangi yöntem veya tür eksik, bunu oyunun mu yoksa başka bir modun mu sağlaması gerekiyordu ve o mod hangi sürümü hedefliyor. Eskiden burada sadece "yığın çerçevelerini oku" yazıyordu.
+• Özel birlik modlarıyla (örneğin My Little Warband) dizilim, asker alma ve Birlik ekranındaki çökmeye karşı koruma. Nedeni: birliğin silah yuvasındaki silah olmayan bir eşya. Varsayılan olarak açık.
 
-• Suçlu kararı yeniden dürüst. Sadece bir oyun modelini geçersiz kılıp oyunun kendi koduna devreden bir mod, oyunun içinde olan bir çökmeden artık sorumlu tutulmuyor — bu modlar çağrı yolu bağlamı olarak ayrıca listeleniyor.
+• Kasabanın "kapı önü" menüsünde alınan bir kaydı yüklerken oluşan çökmeye karşı koruma. Yüklemede karşılaşma durumu geri gelmediyse kaydın tamamı açılmıyordu; artık oyuncu haritaya geri gönderiliyor ve kayıt açılıyor. Varsayılan olarak açık.
 
-• Mod-oyun sürümü uyumluluk kontrolü. Modlar sekmesini açtığında her etkin mod, çalıştırdığın Bannerlord yapısıyla karşılaştırılır: bu sürümde bulunmayan oyun türlerine başvuruyorsa başka bir sürüm için derlenmiştir ve büyük olasılıkla çökmeye yol açar — kırmızı "Bu oyun sürümüyle uyumsuz" olarak işaretlenir ve eksik türler ayrıntıda listelenir. Yalnızca geçerli sürüm için gerçekten yüklenen mod kodu denetlenir, bu yüzden her sürüm için ayrı yapı sunan modlar yanlış işaretlenmez. Birden çok sürüme yönelik çerçeve kütüphaneleri (Harmony, ButterLib, MCM, UIExtenderEx, BLSE) hariç tutulur.
-
-• Modlar sekmesinde mod adı, en ağır sorununa göre renklendiriliyor: yeşil — temiz, kırmızı — bu oyun sürümüyle uyumsuz, sarı — Harmony çakışması veya yükleme sırası, turuncu — eksik bağımlılık, gri — devre dışı. Liste tek bakışta okunuyor. Harmony çakışması artık kırmızı değil sarı — bir yöntemdeki birden çok mod çoğu zaman uyumlu çalışır, kırmızı gerçek uyumsuzluğa ayrılmıştır.
-
-• Çökme düzeltmeleri sekmesi artık listeyi ters göstermiyor: bölüm adı yeniden kendi düzeltmelerinin üstünde. Aynı sorun üç listede daha giderildi — tanı sekmesindeki çözüm adımları ile sistem ayarları kartları alttan üste doğru diziliyordu.
-
-• Mod denetimi artık sorun uydurmuyor: Steam Atölyesi modları yüklü değil sayılmıyor, tek bir mod "iki kez yüklü" gibi gösterilmiyor ve devre dışı modlara laf edilmiyor.
-
-• Kayıtlar sekmesi zararsız farklar yüzünden kartı sarıya boyamıyor. Yalnızca gerçek bir mod listesi veya sürüm uyuşmazlığı uyarı sayılır.
+• FDS ShaderCache modunun yol açtığı yükleme çökmesi artık açıklanıyor. Bu mod shader'ları yeniden derlerken oyunun ihtiyaç duyduğu bir XML'i kara listeye alıyor, böylece nesneler kayboluyor ve oyun bir seferberliği yüklerken çöküyor (çoğunlukla The Old Realms kurulu düzeneklerde). Crash Doctor artık bu çökmeyi tanıyor ve "Sistem ince ayarı" sekmesindeki bir düğme kara listeyi tek tıkla temizliyor.
 
 Çökme bildir: t.me/CodeRickTg — çökme kartındaki "Klasörü aç" düğmesinden report.txt dosyasını gönder.
