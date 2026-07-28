@@ -150,6 +150,19 @@
           - all:
               - managed_exception: { frame_contains: "ShipTradeCampaignBehavior.OnShipOwnerChanged" }
               - managed_exception: { type_contains: "NullReference" }
+          - all:
+              - managed_exception: { frame_contains: "ChangeOwnerOfSettlementAction.ApplyInternal" }
+              - managed_exception: { type_contains: "NullReference" }
+          - all:
+              - managed_exception: { frame_contains: "Clan.get_HasNavalNavigationCapability" }
+              - managed_exception: { type_contains: "NullReference" }
+          - all:
+              - managed_exception: { frame_contains: "PartyComponent.ChangePartyLeader" }
+              - managed_exception: { type_contains: "NullReference" }
+          - all:
+              - managed_exception: { frame_contains: "MapScreen.OnFinalize" }
+              - managed_exception: { type_contains: "AccessViolation" }
+          - managed_exception: { frame_contains: "MissionNameMarkerVM" }
           # The missing-member family has its own verdict below and needs no frame gate: the
           # exception type alone already means "wrong build", whatever the stack looks like.
           - managed_exception: { type_contains: "MissingMethodException" }
@@ -612,6 +625,297 @@
   match:
     all:
       - managed_exception: { frame_contains: "BesiegerCamp.AddSiegePartyInternal" }
+      - managed_exception: { type_contains: "NullReference" }
+
+# Campaign-map siege crash: a siege is WON by a faction that has NO leader, so the new owner handed to
+# ChangeOwnerOfSettlementAction is null. NullReferenceException from
+# TaleWorlds.CampaignSystem.Actions.ChangeOwnerOfSettlementAction.ApplyInternal ←
+# KingdomManager.SiegeCompleted ← CampaignEvents.SiegeCompleted ← CampaignEventDispatcher.SiegeCompleted
+# ← MapEvent.FinalizeEventAux ← MapEvent.Update ← MapEventManager.Tick ← Campaign.Tick. SiegeCompleted
+# computes the new owner as (capturerParty.MapFaction as Kingdom)?.Leader ?? capturerParty.MapFaction
+# .Leader; a leaderless kingdom/clan makes that null, and ApplyInternal dereferences it for a
+# fortification (settlement.Town.OwnerClan = newOwner.Clan). NOT a shader/driver problem and not a TOR
+# bug — a mod left a kingdom/clan without a leader (execution / death / rebellion mods). Distinct from
+# the SkillTrainer variant, which throws in TOR's LeaveTraining further down the same event chain —
+# excluded below so the two crashes don't share a diagnosis.
+- id: campaign.siege_null_owner_nre
+  category: managed
+  severity: critical
+  confidence: high
+  evidence_source: "Client crash 2026-07-27 report(40).txt — NullReferenceException TaleWorlds.CampaignSystem.Actions.ChangeOwnerOfSettlementAction.ApplyInternal ← KingdomManager.SiegeCompleted ← CampaignEvents.SiegeCompleted ← CampaignEventDispatcher.SiegeCompleted ← MapEvent.FinalizeEventAux ← MapEvent.Update ← MapEventManager.Tick ← Campaign.Tick. Bannerlord 1.4.7. Modlist included execution/death mods (PlayerExecuteEdit, Dramalord) and Bannerlord.Diplomacy. Captured by Crash Doctor managed capture."
+  requires_sources: [managed_exception]
+  title:
+    en: "Siege crash — the winning faction has no leader — guarded by Crash Doctor"
+    ru: "Вылет в осаде — у победившей фракции нет лидера — перехвачено Crash Doctor"
+    zh: "围城崩溃——获胜势力没有首领——已被 Crash Doctor 拦截"
+    zht: "圍城崩潰——獲勝勢力沒有首領——已被 Crash Doctor 攔截"
+    tr: "Kuşatma çökmesi — kazanan hizbin lideri yok — Crash Doctor tarafından korunuyor"
+  description:
+    en: |
+      NullReferenceException from TaleWorlds.CampaignSystem.Actions.ChangeOwnerOfSettlementAction
+      .ApplyInternal on the campaign-map tick, right after a siege was finalized (KingdomManager
+      .SiegeCompleted → ChangeOwnerOfSettlementAction → MapEvent.FinalizeEventAux → Campaign.Tick).
+      When a siege is won, the game hands the captured settlement to the winning faction's leader.
+      Here that leader is NULL — the faction is a kingdom whose ruler was executed or died with no
+      heir (or a minor faction/clan with no leader), yet it kept besieging. For a fortification the
+      game does `settlement.Town.OwnerClan = newOwner.Clan` with no null-check, so a leaderless
+      winner crashes the whole campaign tick the instant the siege resolves. This is base-game code
+      TRIGGERED by mod state — some mod left a kingdom/clan without a leader — NOT a shader, driver
+      or TOR bug.
+    ru: |
+      NullReferenceException из TaleWorlds.CampaignSystem.Actions.ChangeOwnerOfSettlementAction
+      .ApplyInternal на тике карты, сразу после завершения осады (KingdomManager.SiegeCompleted →
+      ChangeOwnerOfSettlementAction → MapEvent.FinalizeEventAux → Campaign.Tick). Когда осада
+      выиграна, игра передаёт захваченное поселение лидеру победившей фракции. Здесь этот лидер —
+      NULL: фракция это королевство, чьего правителя казнили или он погиб без наследника (либо
+      минорная фракция/клан без лидера), но оно продолжало осаду. Для крепости игра делает
+      `settlement.Town.OwnerClan = newOwner.Clan` без проверки на null — поэтому безглавый победитель
+      роняет весь тик кампании в момент завершения осады. Это код базовой игры, ЗАПУЩЕННЫЙ состоянием
+      мода — какой-то мод оставил королевство/клан без лидера — а НЕ баг шейдеров, драйвера или TOR.
+    zh: |
+      战役地图刻期间，攻城结算完成后（KingdomManager.SiegeCompleted → ChangeOwnerOfSettlementAction
+      → MapEvent.FinalizeEventAux → Campaign.Tick），TaleWorlds.CampaignSystem.Actions
+      .ChangeOwnerOfSettlementAction.ApplyInternal 抛出空引用异常。攻城获胜后，游戏会把被攻占的据点
+      交给获胜势力的首领。而这里该首领为 NULL——该势力是一个统治者被处决或无嗣而亡的王国（或一个没有
+      首领的次要势力／家族），却仍在围城。对要塞，游戏执行 `settlement.Town.OwnerClan = newOwner.Clan`
+      且不做空检查，于是无首领的获胜方会在攻城结算的瞬间让整个战役刻崩溃。这是被模组状态触发的原版
+      代码——某个模组让一个王国／家族失去了首领——而不是着色器、驱动或 TOR 的 bug。
+    zht: |
+      戰役地圖刻期間，攻城結算完成後（KingdomManager.SiegeCompleted → ChangeOwnerOfSettlementAction
+      → MapEvent.FinalizeEventAux → Campaign.Tick），TaleWorlds.CampaignSystem.Actions
+      .ChangeOwnerOfSettlementAction.ApplyInternal 擲出空參考例外。攻城獲勝後，遊戲會把被攻佔的據點
+      交給獲勝勢力的首領。而這裡該首領為 NULL——該勢力是一個統治者被處決或無嗣而亡的王國（或一個沒有
+      首領的次要勢力／家族），卻仍在圍城。對要塞，遊戲執行 `settlement.Town.OwnerClan = newOwner.Clan`
+      且不做空檢查，於是無首領的獲勝方會在攻城結算的瞬間讓整個戰役刻崩潰。這是被模組狀態觸發的原版
+      程式碼——某個模組讓一個王國／家族失去了首領——而不是著色器、驅動或 TOR 的 bug。
+    tr: |
+      Sefer haritası tick'inde, bir kuşatma sonuçlandırıldıktan hemen sonra (KingdomManager
+      .SiegeCompleted → ChangeOwnerOfSettlementAction → MapEvent.FinalizeEventAux → Campaign.Tick)
+      TaleWorlds.CampaignSystem.Actions.ChangeOwnerOfSettlementAction.ApplyInternal'dan
+      NullReferenceException fırlatıldı. Bir kuşatma kazanıldığında oyun, ele geçirilen yerleşimi
+      kazanan hizbin liderine verir. Burada bu lider NULL — hizip, hükümdarı idam edilen ya da
+      varissiz ölen bir krallık (veya lideri olmayan bir küçük hizip/klan) olmasına rağmen kuşatmaya
+      devam etmiştir. Bir kale için oyun, null kontrolü yapmadan `settlement.Town.OwnerClan =
+      newOwner.Clan` işlemini yapar; bu yüzden lidersiz bir galip, kuşatma çözüldüğü anda tüm sefer
+      tick'ini çökertir. Bu, mod durumu tarafından TETİKLENEN oyun kodudur — bir mod bir krallığı/klanı
+      lidersiz bırakmıştır — gölgelendirici, sürücü ya da TOR hatası DEĞİLDİR.
+  fix:
+    en:
+      - "Crash Doctor already guards this — its safety net hands the captured settlement to the hero who actually took it instead of the missing faction leader, so the game keeps running. Keep the «Siege crash guard (leaderless winning faction)» fix ON (Crash Fixes tab)."
+      - "Root cause is a mod that left a kingdom or clan without a leader (its ruler was executed or died with no heir). Suspects on your list: PlayerExecuteEdit, Dramalord, Bannerlord.Diplomacy. If it keeps happening, disable them one at a time to find the source."
+      - "Do NOT rebuild shaders or change drivers — this is a mod/state bug, that won't help."
+    ru:
+      - "Crash Doctor уже это перехватывает — safety net отдаёт захваченное поселение герою, который его реально взял, вместо отсутствующего лидера фракции, и игра продолжает работать. Держи фикс «Защита от вылета в осаде (победившая фракция без лидера)» ВКЛ (вкладка «Фиксы крашей»)."
+      - "Корень — мод, оставивший королевство или клан без лидера (правителя казнили или он погиб без наследника). Подозреваемые в твоём списке: PlayerExecuteEdit, Dramalord, Bannerlord.Diplomacy. Если повторяется — отключай их по одному, чтобы найти источник."
+      - "НЕ пересобирай шейдеры и не меняй драйвер — это баг мода/состояния, не поможет."
+    zh:
+      - "Crash Doctor 已经拦截了它——安全网会把被攻占的据点交给真正攻占它的英雄，而非缺失的势力首领，游戏继续运行。在「崩溃修复」页保持「攻城崩溃防护（获胜势力无首领）」为开。"
+      - "根源是某个让一个王国或家族失去首领的模组（其统治者被处决或无嗣而亡）。你列表中的可疑者：PlayerExecuteEdit、Dramalord、Bannerlord.Diplomacy。若持续发生，逐一禁用以定位源头。"
+      - "不要重建着色器或更换驱动——这是模组／状态 bug，没用。"
+    zht:
+      - "Crash Doctor 已經攔截了它——安全網會把被攻佔的據點交給真正攻佔它的英雄，而非缺失的勢力首領，遊戲繼續執行。在「崩潰修復」頁保持「攻城崩潰防護（獲勝勢力無首領）」為開。"
+      - "根源是某個讓一個王國或家族失去首領的模組（其統治者被處決或無嗣而亡）。你列表中的可疑者：PlayerExecuteEdit、Dramalord、Bannerlord.Diplomacy。若持續發生，逐一停用以定位源頭。"
+      - "不要重建著色器或更換驅動——這是模組／狀態 bug，沒用。"
+    tr:
+      - "Crash Doctor bunu zaten koruyor — güvenlik ağı, ele geçirilen yerleşimi eksik hizip lideri yerine onu gerçekten alan kahramana verir, böylece oyun çalışmaya devam eder. «Kuşatma çökme koruması (lidersiz kazanan hizip)» düzeltmesini AÇIK tut (Çökme Düzeltmeleri sekmesi)."
+      - "Kök neden, bir krallığı ya da klanı lidersiz bırakan bir moddur (hükümdarı idam edildi ya da varissiz öldü). Listendeki şüpheliler: PlayerExecuteEdit, Dramalord, Bannerlord.Diplomacy. Devam ederse, kaynağı bulmak için tek tek devre dışı bırak."
+      - "Gölgelendiricileri yeniden oluşturma veya sürücü değiştirme — bu bir mod/durum hatası, yardımcı olmaz."
+  match:
+    all:
+      - managed_exception: { frame_contains: "ChangeOwnerOfSettlementAction.ApplyInternal" }
+      - managed_exception: { type_contains: "NullReference" }
+      - none:
+          - managed_exception: { frame_contains: "SkillTrainerBehavior" }
+
+# Clan-destruction crash: a clan is being liquidated on the daily tick and the game tries to hand a
+# dying leader's party to a new leader. NullReferenceException from
+# TaleWorlds.CampaignSystem.Party.PartyComponents.PartyComponent.ChangePartyLeader ←
+# KillCharacterAction.MakeDead ← KillCharacterAction.ApplyInternal ← DestroyClanAction.ApplyInternal ←
+# FactionDiscontinuationCampaignBehavior.DailyTickClan ← Campaign.Tick. ChangePartyLeader dereferences
+# this.MobileParty (its { get; private set; } back-reference) with no null-check; on a party whose
+# component is detached / half-torn-down during clan liquidation it reads back null and NREs. Base-game
+# bug TRIGGERED by mod/save state (seen on the Europe 1100 total conversion), NOT a shader/driver/TOR
+# problem. Guarded by Crash Doctor (id "change_party_leader_null_party").
+- id: campaign.change_party_leader_null_party_nre
+  category: managed
+  severity: critical
+  confidence: high
+  evidence_source: "Client crash 2026-07-28 report(43).txt (crash id e06c0e2c) — NullReferenceException TaleWorlds.CampaignSystem.Party.PartyComponents.PartyComponent.ChangePartyLeader ← KillCharacterAction.MakeDead ← KillCharacterAction.ApplyInternal ← DestroyClanAction.ApplyInternal ← FactionDiscontinuationCampaignBehavior.DailyTickClan ← CampaignEvents.DailyTickClan ← Campaign.Tick ← MapState.OnMapModeTick. Bannerlord 1.4.7, near-vanilla modlist + Europe1100. Captured by Crash Doctor managed capture."
+  requires_sources: [managed_exception]
+  title:
+    en: "Clan-destruction crash — a party lost its internal link — guarded by Crash Doctor"
+    ru: "Вылет при уничтожении клана — отряд потерял внутреннюю привязку — перехвачено Crash Doctor"
+    zh: "家族消灭崩溃——某队伍丢失内部关联——已被 Crash Doctor 拦截"
+    zht: "家族消滅崩潰——某隊伍遺失內部關聯——已被 Crash Doctor 攔截"
+    tr: "Klan yok etme çökmesi — bir grup iç bağlantısını kaybetti — Crash Doctor tarafından korunuyor"
+  description:
+    en: |
+      NullReferenceException from TaleWorlds.CampaignSystem.Party.PartyComponents.PartyComponent
+      .ChangePartyLeader on the campaign-map daily tick, while a clan was being destroyed
+      (FactionDiscontinuationCampaignBehavior.DailyTickClan → DestroyClanAction → KillCharacterAction
+      .MakeDead → ChangePartyLeader → Campaign.Tick). When a party's leader hero is killed, the game
+      tries to hand that party to a new leader. ChangePartyLeader dereferences the component's own
+      back-reference to its party (MobileParty) with no null-check — and on a party whose component was
+      detached / half-torn-down during the clan's liquidation it reads back NULL, so the whole daily
+      tick crashes the instant the dying faction's clan is removed. This is base-game code TRIGGERED by
+      mod/save state — a total conversion (Europe 1100) whose custom dying clans leave a party in this
+      state — NOT a shader, driver or TOR bug.
+    ru: |
+      NullReferenceException из TaleWorlds.CampaignSystem.Party.PartyComponents.PartyComponent
+      .ChangePartyLeader на дневном тике карты, во время уничтожения клана
+      (FactionDiscontinuationCampaignBehavior.DailyTickClan → DestroyClanAction → KillCharacterAction
+      .MakeDead → ChangePartyLeader → Campaign.Tick). Когда лидер отряда гибнет, игра пытается передать
+      отряд новому лидеру. ChangePartyLeader разыменовывает собственную обратную привязку компонента к
+      его отряду (MobileParty) без проверки на null — и у отряда, чей компонент «оторвался» / полу-снесён
+      при ликвидации клана, она читается как NULL, поэтому весь дневной тик падает в момент удаления
+      клана вымирающей фракции. Это код базовой игры, ЗАПУЩЕННЫЙ состоянием мода/сейва — тотальная
+      конверсия (Europe 1100), чьи кастомные вымирающие кланы оставляют отряд в таком состоянии — а НЕ
+      баг шейдеров, драйвера или TOR.
+    zh: |
+      战役地图每日刻期间、某家族正被消灭时（FactionDiscontinuationCampaignBehavior.DailyTickClan →
+      DestroyClanAction → KillCharacterAction.MakeDead → ChangePartyLeader → Campaign.Tick），
+      TaleWorlds.CampaignSystem.Party.PartyComponents.PartyComponent.ChangePartyLeader 抛出空引用异常。
+      当某队伍的首领英雄阵亡时，游戏会尝试把该队伍交给新首领。ChangePartyLeader 取用组件指回其队伍的
+      内部关联（MobileParty）却不做空检查——而对一支组件在家族清算中已脱离／半拆除的队伍，该关联读取为
+      NULL，于是在消亡势力的家族被移除的瞬间整个每日刻崩溃。这是被模组／存档状态触发的原版代码——某个
+      全面转换模组（Europe 1100），其自定义的消亡家族让队伍处于这种状态——而不是着色器、驱动或 TOR 的 bug。
+    zht: |
+      戰役地圖每日刻期間、某家族正被消滅時（FactionDiscontinuationCampaignBehavior.DailyTickClan →
+      DestroyClanAction → KillCharacterAction.MakeDead → ChangePartyLeader → Campaign.Tick），
+      TaleWorlds.CampaignSystem.Party.PartyComponents.PartyComponent.ChangePartyLeader 擲出空參考例外。
+      當某隊伍的首領英雄陣亡時，遊戲會嘗試把該隊伍交給新首領。ChangePartyLeader 取用元件指回其隊伍的
+      內部關聯（MobileParty）卻不做空檢查——而對一支元件在家族清算中已脫離／半拆除的隊伍，該關聯讀取為
+      NULL，於是在消亡勢力的家族被移除的瞬間整個每日刻崩潰。這是被模組／存檔狀態觸發的原版程式碼——某個
+      全面轉換模組（Europe 1100），其自訂的消亡家族讓隊伍處於這種狀態——而不是著色器、驅動或 TOR 的 bug。
+    tr: |
+      Sefer haritası günlük tick'inde, bir klan yok edilirken (FactionDiscontinuationCampaignBehavior
+      .DailyTickClan → DestroyClanAction → KillCharacterAction.MakeDead → ChangePartyLeader →
+      Campaign.Tick) TaleWorlds.CampaignSystem.Party.PartyComponents.PartyComponent.ChangePartyLeader'dan
+      NullReferenceException fırlatıldı. Bir grubun lider kahramanı öldürüldüğünde oyun o grubu yeni bir
+      lidere vermeye çalışır. ChangePartyLeader, bileşenin kendi grubuna geri dönen bağlantısını
+      (MobileParty) null kontrolü yapmadan kullanır — ve klanın tasfiyesi sırasında bileşeni kopmuş /
+      yarı-sökülmüş bir grupta bu bağlantı NULL okunur; böylece ölmekte olan hizbin klanı kaldırıldığı
+      anda tüm günlük tick çöker. Bu, mod/kayıt durumu tarafından TETİKLENEN oyun kodudur — özel ölmekte
+      olan klanları grubu bu durumda bırakan bir total conversion (Europe 1100) — gölgelendirici, sürücü
+      ya da TOR hatası DEĞİLDİR.
+  fix:
+    en:
+      - "Crash Doctor already guards this — its safety net skips the leader change on the detached party (which can do nothing without that internal link anyway), so the clan is removed and the game keeps running. Keep the «Clan-destruction crash guard (party with no leader link)» fix ON (Crash Fixes tab)."
+      - "Root cause is a mod / total conversion (here Europe 1100) whose custom clans leave a party half-detached as the clan dies. If it keeps happening on the same save, it is that mod's data — report it to that mod's author."
+      - "Do NOT rebuild shaders or change drivers — this is a mod/state bug, that won't help."
+    ru:
+      - "Crash Doctor уже это перехватывает — safety net пропускает смену лидера у «оторванного» отряда (без этой внутренней привязки он всё равно ничего не может), клан удаляется, игра продолжает работать. Держи фикс «Защита от вылета при уничтожении клана (отряд без внутренней привязки)» ВКЛ (вкладка «Фиксы крашей»)."
+      - "Корень — мод / тотальная конверсия (здесь Europe 1100), чьи кастомные кланы оставляют отряд полу-оторванным при гибели клана. Если повторяется на том же сейве — это данные того мода, сообщи его автору."
+      - "НЕ пересобирай шейдеры и не меняй драйвер — это баг мода/состояния, не поможет."
+    zh:
+      - "Crash Doctor 已经拦截了它——安全网会跳过“脱离”队伍的首领变更（没有该内部关联它本就无事可做），家族被移除，游戏继续运行。在「崩溃修复」页保持「家族消灭崩溃防护（队伍无首领关联）」为开。"
+      - "根源是某个模组／全面转换（此处为 Europe 1100），其自定义家族在家族消亡时让队伍处于半脱离状态。若在同一存档上持续发生，那是该模组的数据问题，请反馈给该模组作者。"
+      - "不要重建着色器或更换驱动——这是模组／状态 bug，没用。"
+    zht:
+      - "Crash Doctor 已經攔截了它——安全網會跳過「脫離」隊伍的首領變更（沒有該內部關聯它本就無事可做），家族被移除，遊戲繼續執行。在「崩潰修復」頁保持「家族消滅崩潰防護（隊伍無首領關聯）」為開。"
+      - "根源是某個模組／全面轉換（此處為 Europe 1100），其自訂家族在家族消亡時讓隊伍處於半脫離狀態。若在同一存檔上持續發生，那是該模組的資料問題，請回報給該模組作者。"
+      - "不要重建著色器或更換驅動——這是模組／狀態 bug，沒用。"
+    tr:
+      - "Crash Doctor bunu zaten koruyor — güvenlik ağı kopuk gruptaki lider değişimini atlar (o iç bağlantı olmadan zaten hiçbir şey yapamaz), böylece klan kaldırılır ve oyun çalışmaya devam eder. «Klan yok etme çökme koruması (lider bağlantısı olmayan grup)» düzeltmesini AÇIK tut (Çökme Düzeltmeleri sekmesi)."
+      - "Kök neden, klanı ölürken bir grubu yarı-kopuk bırakan bir mod / total conversion'dır (burada Europe 1100). Aynı kayıtta devam ederse bu o modun verisidir — o modun yazarına bildir."
+      - "Gölgelendiricileri yeniden oluşturma veya sürücü değiştirme — bu bir mod/durum hatası, yardımcı olmaz."
+  match:
+    all:
+      - managed_exception: { frame_contains: "PartyComponent.ChangePartyLeader" }
+      - managed_exception: { type_contains: "NullReference" }
+
+# Naval-capability crash: the game reads a faction's ship-hull data and finds none.
+# NullReferenceException from TaleWorlds.CampaignSystem.Clan.get_HasNavalNavigationCapability ←
+# BanditSpawnCampaignBehavior.IsLooterFaction ← BanditSpawnCampaignBehavior.MobilePartyDestroyed ←
+# CampaignEvents.OnMobilePartyDestroyed ← DestroyPartyAction.ApplyInternal ← MapEventSide
+# .HandleMapEventEnd ← MapEvent.FinalizeEventAux ← Campaign.Tick — fires the instant a bandit party
+# is destroyed at the end of a battle. The getter is `DefaultPartyTemplate.ShipHulls.Count > 0`;
+# DefaultPartyTemplate is `_defaultPartyTemplate ?? Culture.DefaultPartyTemplate` and ShipHulls is only
+# assigned in PartyTemplateObject.Deserialize (from XML), so it NREs when the clan has no ship-hull
+# template. TOR's beastmen (Ungors/Gors) are bandit factions whose culture/template carries no naval
+# data — a field TaleWorlds added for Naval content and assumes every faction has. Base-game bug
+# TRIGGERED by mod data, NOT a shader/driver/TOR-code problem.
+- id: campaign.naval_capability_null_template_nre
+  category: managed
+  severity: critical
+  confidence: high
+  evidence_source: "Client crash 2026-07-27 report(42).txt — NullReferenceException TaleWorlds.CampaignSystem.Clan.get_HasNavalNavigationCapability ← BanditSpawnCampaignBehavior.IsLooterFaction ← BanditSpawnCampaignBehavior.MobilePartyDestroyed ← CampaignEvents.OnMobilePartyDestroyed ← DestroyPartyAction.ApplyInternal ← MapEventSide.HandleMapEventEnd ← MapEvent.FinalizeEventAux ← MapEvent.Update ← MapEventManager.Tick ← Campaign.Tick. Bannerlord 1.3.15, TOR + ~40 mods. Crashed right after an auto-resolved battle against beastmen (Ungors). Captured by Crash Doctor managed capture."
+  requires_sources: [managed_exception]
+  title:
+    en: "Crash checking a faction's naval capability — it has no ship data — guarded by Crash Doctor"
+    ru: "Вылет при проверке мореходности фракции — у неё нет корабельных данных — перехвачено Crash Doctor"
+    zh: "检查势力航海能力时崩溃——该势力无船只数据——已被 Crash Doctor 拦截"
+    zht: "檢查勢力航海能力時崩潰——該勢力無船隻資料——已被 Crash Doctor 攔截"
+    tr: "Bir hizbin denizcilik yeteneği kontrol edilirken çökme — gemi verisi yok — Crash Doctor tarafından korunuyor"
+  description:
+    en: |
+      NullReferenceException from TaleWorlds.CampaignSystem.Clan.get_HasNavalNavigationCapability on the
+      campaign-map tick, the instant a bandit party was destroyed at the end of a battle (IsLooterFaction
+      → MobilePartyDestroyed → OnMobilePartyDestroyed → DestroyPartyAction → MapEvent.FinalizeEventAux →
+      Campaign.Tick). The getter reads `DefaultPartyTemplate.ShipHulls.Count`; the ship-hull list only
+      exists on a party template loaded from XML. Here the destroyed party's faction — a modded bandit
+      faction such as The Old Realms' beastmen (Ungors) — has no such template, so the game dereferences
+      null and crashes the whole campaign tick. This is base-game code TRIGGERED by mod data (a faction
+      with no naval/ship template) — NOT a shader, driver or TOR-code bug.
+    ru: |
+      NullReferenceException из TaleWorlds.CampaignSystem.Clan.get_HasNavalNavigationCapability на тике
+      карты, в момент, когда бандитский отряд уничтожается в конце боя (IsLooterFaction →
+      MobilePartyDestroyed → OnMobilePartyDestroyed → DestroyPartyAction → MapEvent.FinalizeEventAux →
+      Campaign.Tick). Геттер читает `DefaultPartyTemplate.ShipHulls.Count`; список корабельных корпусов
+      есть только у партийного шаблона, загруженного из XML. Здесь у фракции уничтоженного отряда —
+      модовой бандитской фракции вроде зверолюдов (Унгоров) The Old Realms — такого шаблона нет, поэтому
+      игра разыменовывает null и роняет весь тик кампании. Это код базовой игры, ЗАПУЩЕННЫЙ данными мода
+      (фракция без корабельного шаблона), а НЕ баг шейдеров, драйвера или TOR.
+    zh: |
+      战役地图刻期间，一支强盗队伍在战斗结束时被消灭的瞬间（IsLooterFaction → MobilePartyDestroyed →
+      OnMobilePartyDestroyed → DestroyPartyAction → MapEvent.FinalizeEventAux → Campaign.Tick），
+      TaleWorlds.CampaignSystem.Clan.get_HasNavalNavigationCapability 抛出空引用异常。该取值器读取
+      `DefaultPartyTemplate.ShipHulls.Count`；船体列表仅存在于从 XML 加载的队伍模板上。这里被消灭队伍
+      所属的势力——模组添加的强盗势力，如 The Old Realms 的兽人（Ungors）——没有这样的模板，于是游戏
+      解引用空值并让整个战役刻崩溃。这是被模组数据触发的原版代码（一个没有船只模板的势力），而不是
+      着色器、驱动或 TOR 的 bug。
+    zht: |
+      戰役地圖刻期間，一支強盜隊伍在戰鬥結束時被消滅的瞬間（IsLooterFaction → MobilePartyDestroyed →
+      OnMobilePartyDestroyed → DestroyPartyAction → MapEvent.FinalizeEventAux → Campaign.Tick），
+      TaleWorlds.CampaignSystem.Clan.get_HasNavalNavigationCapability 擲出空參考例外。該取值器讀取
+      `DefaultPartyTemplate.ShipHulls.Count`；船體清單僅存在於從 XML 載入的隊伍範本上。這裡被消滅隊伍
+      所屬的勢力——模組新增的強盜勢力，如 The Old Realms 的獸人（Ungors）——沒有這樣的範本，於是遊戲
+      解參考空值並讓整個戰役刻崩潰。這是被模組資料觸發的原版程式碼（一個沒有船隻範本的勢力），而不是
+      著色器、驅動或 TOR 的 bug。
+    tr: |
+      Sefer haritası tick'inde, bir haydut grubu savaşın sonunda yok edildiği anda (IsLooterFaction →
+      MobilePartyDestroyed → OnMobilePartyDestroyed → DestroyPartyAction → MapEvent.FinalizeEventAux →
+      Campaign.Tick) TaleWorlds.CampaignSystem.Clan.get_HasNavalNavigationCapability'dan
+      NullReferenceException fırlatıldı. Getter `DefaultPartyTemplate.ShipHulls.Count` değerini okur;
+      gemi gövdesi listesi yalnızca XML'den yüklenen bir grup şablonunda bulunur. Burada yok edilen
+      grubun hizbi — The Old Realms'in canavar adamları (Ungorlar) gibi bir mod haydut hizbi — böyle bir
+      şablona sahip değildir, bu yüzden oyun null'ı çözer ve tüm sefer tick'ini çökertir. Bu, mod verisi
+      tarafından TETİKLENEN oyun kodudur (denizcilik/gemi şablonu olmayan bir hizip) — gölgelendirici,
+      sürücü ya da TOR hatası DEĞİLDİR.
+  fix:
+    en:
+      - "Crash Doctor already guards this — its safety net answers 'this faction cannot sail' when the faction has no ship data, so the game keeps running. Keep the «Naval-capability crash guard (faction with no ship data)» fix ON (Crash Fixes tab)."
+      - "Root cause is a mod that adds a faction with no naval/ship party template — typically a bandit faction such as The Old Realms' beastmen. Nothing you need to change; the guard handles it. If you want to be sure, note whether the crash always follows a fight with beastmen/Ungors."
+      - "Do NOT rebuild shaders or change drivers — this is a mod/data bug, that won't help."
+    ru:
+      - "Crash Doctor уже это перехватывает — safety net отвечает «эта фракция не может ходить по морю», когда у фракции нет корабельных данных, и игра продолжает работать. Держи фикс «Защита от вылета при проверке мореходности (фракция без корабельных данных)» ВКЛ (вкладка «Фиксы крашей»)."
+      - "Корень — мод, добавляющий фракцию без корабельного партийного шаблона, обычно бандитскую, вроде зверолюдов The Old Realms. Менять ничего не нужно, защита справляется. Для верности заметь, всегда ли вылет идёт после боя со зверолюдами (Унгорами)."
+      - "НЕ пересобирай шейдеры и не меняй драйвер — это баг мода/данных, не поможет."
+    zh:
+      - "Crash Doctor 已经拦截了它——当势力没有船只数据时，安全网回答“该势力无法航海”，游戏继续运行。在「崩溃修复」页保持「航海能力崩溃防护（势力无船只数据）」为开。"
+      - "根源是某个添加了没有船只队伍模板的势力的模组——通常是强盗势力，如 The Old Realms 的兽人。你无需更改任何设置，防护会处理它。若想确认，可留意崩溃是否总是发生在与兽人（Ungors）交战之后。"
+      - "不要重建着色器或更换驱动——这是模组／数据 bug，没用。"
+    zht:
+      - "Crash Doctor 已經攔截了它——當勢力沒有船隻資料時，安全網回答「該勢力無法航海」，遊戲繼續執行。在「崩潰修復」頁保持「航海能力崩潰防護（勢力無船隻資料）」為開。"
+      - "根源是某個新增了沒有船隻隊伍範本的勢力的模組——通常是強盜勢力，如 The Old Realms 的獸人。你無需更改任何設定，防護會處理它。若想確認，可留意崩潰是否總是發生在與獸人（Ungors）交戰之後。"
+      - "不要重建著色器或更換驅動——這是模組／資料 bug，沒用。"
+    tr:
+      - "Crash Doctor bunu zaten koruyor — hizbin gemi verisi olmadığında güvenlik ağı 'bu hizip denizde gidemez' yanıtını verir, böylece oyun çalışmaya devam eder. «Denizcilik yeteneği çökme koruması (gemi verisi olmayan hizip)» düzeltmesini AÇIK tut (Çökme Düzeltmeleri sekmesi)."
+      - "Kök neden, denizcilik/gemi grup şablonu olmayan bir hizip ekleyen bir moddur — genellikle The Old Realms'in canavar adamları gibi bir haydut hizbi. Değiştirmen gereken bir şey yok; koruma bunu halleder. Emin olmak istersen, çökmenin her zaman canavar adamlarla (Ungorlar) yapılan bir savaştan sonra gelip gelmediğine dikkat et."
+      - "Gölgelendiricileri yeniden oluşturma veya sürücü değiştirme — bu bir mod/veri hatası, yardımcı olmaz."
+  match:
+    all:
+      - managed_exception: { frame_contains: "Clan.get_HasNavalNavigationCapability" }
       - managed_exception: { type_contains: "NullReference" }
 
 # Deployment / troop-supply crash: the game reads a troop's weapon slots to decide its default AI
@@ -1583,6 +1887,252 @@
     all:
       - managed_exception: { frame_contains: "NavalMobilePartyVisual" }
       - managed_exception: { type_contains: "AccessViolation" }
+
+# Save-load teardown crash: AccessViolationException (native protected-memory corruption) thrown from
+# SandBox.View.Map.MapScreen.OnFinalize while LOADING A SAVE from inside a running campaign.
+# TargetInvocationException → AccessViolationException: MapScreen.OnFinalize ← ScreenBase.HandleFinalize
+# ← ScreenManager.CleanScreens ← GameStateManager.CleanStates ← SavedGameVM.StartGame ←
+# SandBoxSaveHelper.TryLoadSave ← SaveLoadVM.LoadSelectedSave. MapScreen.OnFinalize (decompile-verified)
+# tears down the campaign map's NATIVE resources — every MapView + EntityVisualManagerBase (party/army/
+# settlement visuals), MapScene.ClearAll(), a forced GC, and the banner texture caches
+# (CharacterBannerMaterialCache/BannerTexturedMaterialCache/BannerPersistentTextureCache.FlushCache()).
+# An AV here means one of those native resources is already freed / dangling / double-freed — a mod
+# holding its own map/banner/party-visual native resource freeing it out of order as the live map screen
+# is torn down while loading over an active campaign. NOT catchable: our cleanscreens_teardown finalizer
+# deliberately swallows only NRE and rethrows AV (a corrupted-state exception — swallowing risks save
+# corruption, same reasoning as the Faster Ships AV rule above). Modlist here is heavy on banner mods
+# (BannerFix/HistoricalBannerIcons/CCsBanners/RaiseYourBanner/BannerColorPersistence) and map/party-visual
+# mods (Artems*, RBM, ImmersiveBattlefields, LT_EE1259). Recognizer-only, no guard.
+- id: campaign.map_screen_finalize_load_av
+  category: managed
+  severity: critical
+  confidence: medium
+  evidence_source: "Client crash 2026-07-28 report(16).txt (crash id 9751f0fe, seen 3×) — TargetInvocationException → AccessViolationException (read/write protected memory) at SandBox.View.Map.MapScreen.OnFinalize ← ScreenBase.HandleFinalize ← ScreenManager.CleanScreens ← GameStateManager.OnCleanStates/DoGameStateJobs/CleanStates ← SavedGameVM.StartGame ← SandBoxSaveHelper.TryLoadSave ← SavedGameVM.ExecuteSaveLoad ← SaveLoadVM.LoadSelectedSave. Bannerlord 1.4.7, ~90 mods heavy on banner + map-visual mods (BannerFix, HistoricalBannerIcons, CCsBanners, RaiseYourBanner, BannerColorPersistence, ArtemCore, RBM, ImmersiveBattlefields, LT_EE1259). Crash fired on clicking Load from inside an active campaign. Captured by Crash Doctor managed capture."
+  requires_sources: [managed_exception]
+  title:
+    en: "Crash loading a save from inside a campaign (map-screen teardown) — native, can't be caught"
+    ru: "Вылет при загрузке сейва из активной кампании (снос экрана карты) — нативный, не перехватывается"
+    zh: "在战役中加载存档时崩溃（地图界面拆除）——原生错误，无法拦截"
+    zht: "在戰役中載入存檔時崩潰（地圖介面拆除）——原生錯誤，無法攔截"
+    tr: "Kampanya içinden kayıt yüklerken çökme (harita ekranı yıkımı) — yerel, yakalanamaz"
+  description:
+    en: |
+      AccessViolationException (read/write of protected memory — native memory corruption) thrown from
+      SandBox.View.Map.MapScreen.OnFinalize while LOADING A SAVE from inside a running campaign
+      (SaveLoadVM.LoadSelectedSave → SavedGameVM.StartGame → GameStateManager.CleanStates →
+      ScreenManager.CleanScreens → MapScreen.OnFinalize). Loading a save over an active campaign tears
+      down the LIVE campaign-map screen, and OnFinalize releases the map's native resources — the party/
+      army/settlement visuals, the map scene, and the banner texture caches. An AV here means one of
+      those native resources was already freed or is being freed twice: a mod that manages its own map/
+      banner/party-visual native resources releases it out of order during this teardown. This is native
+      memory corruption, NOT an ordinary .NET bug — it cannot be caught safely (swallowing a
+      corrupted-state exception risks silently corrupting your save; Crash Doctor's teardown guard
+      deliberately swallows only NullReference here and lets an AccessViolation through, which is the
+      safe choice). Your modlist is heavy on banner mods (BannerFix, HistoricalBannerIcons, CCsBanners,
+      RaiseYourBanner, BannerColorPersistence) and map/party-visual mods (Artems*, RBM,
+      ImmersiveBattlefields, LT_EE1259) — one of those is the likely source.
+    ru: |
+      AccessViolationException (чтение/запись защищённой памяти — порча нативной памяти) из метода
+      SandBox.View.Map.MapScreen.OnFinalize при ЗАГРУЗКЕ СЕЙВА из активной кампании
+      (SaveLoadVM.LoadSelectedSave → SavedGameVM.StartGame → GameStateManager.CleanStates →
+      ScreenManager.CleanScreens → MapScreen.OnFinalize). Загрузка сейва поверх активной кампании сносит
+      ЖИВОЙ экран карты, и OnFinalize освобождает нативные ресурсы карты — визуалы отрядов/армий/
+      поселений, сцену карты и баннерные кэши текстур. AV здесь означает, что один из этих нативных
+      ресурсов уже освобождён или освобождается дважды: мод, управляющий собственными нативными
+      ресурсами карты/баннеров/визуалов отрядов, освобождает его не в том порядке во время сноса. Это
+      порча нативной памяти, а НЕ обычный .NET-баг — безопасно перехватить её нельзя (проглотить ошибку
+      «испорченного состояния» — риск тихо запороть сейв; наш гард сноса намеренно глушит здесь только
+      NullReference и пропускает AccessViolation, и это правильный выбор). Твой модлист перегружен
+      баннерными модами (BannerFix, HistoricalBannerIcons, CCsBanners, RaiseYourBanner,
+      BannerColorPersistence) и модами визуалов карты/отрядов (Artems*, RBM, ImmersiveBattlefields,
+      LT_EE1259) — источник, скорее всего, один из них.
+    zh: |
+      加载存档（在运行中的战役内）时，SandBox.View.Map.MapScreen.OnFinalize 抛出
+      AccessViolationException（读写受保护内存——原生内存损坏）
+      （SaveLoadVM.LoadSelectedSave → SavedGameVM.StartGame → GameStateManager.CleanStates →
+      ScreenManager.CleanScreens → MapScreen.OnFinalize）。在活动战役上加载存档会拆除正在运行的战役
+      地图界面，OnFinalize 释放地图的原生资源——队伍/军队/定居点视觉、地图场景以及旗帜纹理缓存。这里
+      的 AV 意味着其中一个原生资源已被释放或被释放了两次：某个管理自己地图/旗帜/队伍视觉原生资源的
+      模组在此拆除过程中以错误的顺序释放了它。这是原生内存损坏，而不是普通的 .NET bug——无法安全捕获
+      （吞掉「损坏状态」异常有可能悄悄损坏你的存档；Crash Doctor 的拆除防护在此故意只吞掉空引用而放行
+      访问越界，这是安全的选择）。你的模组列表旗帜类（BannerFix、HistoricalBannerIcons、CCsBanners、
+      RaiseYourBanner、BannerColorPersistence）与地图/队伍视觉类（Artems*、RBM、ImmersiveBattlefields、
+      LT_EE1259）很多——源头很可能是其中之一。
+    zht: |
+      載入存檔（在執行中的戰役內）時，SandBox.View.Map.MapScreen.OnFinalize 擲出
+      AccessViolationException（讀寫受保護記憶體——原生記憶體損壞）
+      （SaveLoadVM.LoadSelectedSave → SavedGameVM.StartGame → GameStateManager.CleanStates →
+      ScreenManager.CleanScreens → MapScreen.OnFinalize）。在進行中的戰役上載入存檔會拆除正在執行的
+      戰役地圖介面，OnFinalize 釋放地圖的原生資源——隊伍/軍隊/定居點視覺、地圖場景以及旗幟紋理快取。
+      這裡的 AV 意味著其中一個原生資源已被釋放或被釋放了兩次：某個管理自己地圖/旗幟/隊伍視覺原生資源
+      的模組在此拆除過程中以錯誤的順序釋放了它。這是原生記憶體損壞，而非普通的 .NET bug——無法安全
+      捕獲（吞掉「損壞狀態」例外有可能悄悄損壞你的存檔；Crash Doctor 的拆除防護在此故意只吞掉空參考
+      而放行存取違規，這是安全的選擇）。你的模組清單旗幟類（BannerFix、HistoricalBannerIcons、
+      CCsBanners、RaiseYourBanner、BannerColorPersistence）與地圖/隊伍視覺類（Artems*、RBM、
+      ImmersiveBattlefields、LT_EE1259）很多——源頭很可能是其中之一。
+    tr: |
+      Çalışan bir kampanyanın içinden KAYIT YÜKLERKEN SandBox.View.Map.MapScreen.OnFinalize metodundan
+      AccessViolationException (korumalı belleğin okunması/yazılması — yerel bellek bozulması) fırlatıldı
+      (SaveLoadVM.LoadSelectedSave → SavedGameVM.StartGame → GameStateManager.CleanStates →
+      ScreenManager.CleanScreens → MapScreen.OnFinalize). Aktif bir kampanyanın üzerine kayıt yüklemek,
+      ÇALIŞAN kampanya-harita ekranını yıkar ve OnFinalize haritanın yerel kaynaklarını serbest bırakır —
+      grup/ordu/yerleşim görselleri, harita sahnesi ve sancak doku önbellekleri. Buradaki bir AV, bu
+      yerel kaynaklardan birinin zaten serbest bırakıldığı ya da iki kez bırakıldığı anlamına gelir: kendi
+      harita/sancak/grup-görsel yerel kaynaklarını yöneten bir mod, bu yıkım sırasında onu yanlış sırada
+      serbest bırakır. Bu, sıradan bir .NET hatası DEĞİL, yerel bellek bozulmasıdır — güvenle yakalanamaz
+      (bir «bozuk durum» istisnasını yutmak kaydını sessizce bozma riski taşır; Crash Doctor'ın yıkım
+      koruması burada bilerek yalnızca NullReference'ı yutar ve AccessViolation'ı geçirir, ki bu güvenli
+      seçimdir). Mod listen sancak modları (BannerFix, HistoricalBannerIcons, CCsBanners, RaiseYourBanner,
+      BannerColorPersistence) ve harita/grup-görsel modları (Artems*, RBM, ImmersiveBattlefields,
+      LT_EE1259) açısından yoğun — kaynak büyük olasılıkla bunlardan biri.
+  fix:
+    en:
+      - "Load saves from the MAIN MENU, not from inside the campaign: Exit to Main Menu first, then Load. That avoids tearing down the live map screen, which is where the crash happens."
+      - "If it happens on a repeated load, fully restart the game between loads — a fresh process has nothing half-freed to trip over."
+      - "If it keeps crashing on the same save, the source is a banner or map-visual mod. Disable them a few at a time — banner mods first (BannerFix, HistoricalBannerIcons, CCsBanners, RaiseYourBanner, BannerColorPersistence), then map/party-visual mods (Artems*, RBM, ImmersiveBattlefields, LT_EE1259) — and load until it stops."
+      - "Do NOT rebuild shaders or change drivers — this is a native memory bug during screen teardown, not a GPU issue."
+      - "Why Crash Doctor can't swallow it: an AccessViolation is native memory corruption (a corrupted-state exception). .NET does not let it be caught safely, and swallowing one risks silently corrupting your save — a clean crash is safer. The teardown guard handles the NullReference form of this crash, but not memory corruption."
+    ru:
+      - "Грузи сейвы из ГЛАВНОГО МЕНЮ, а не из кампании: сначала «Выйти в главное меню», потом «Загрузить». Так живой экран карты не сносится — а именно на его сносе происходит вылет."
+      - "Если падает при повторной загрузке — полностью перезапускай игру между загрузками: у свежего процесса нет наполовину освобождённых ресурсов, на которых можно споткнуться."
+      - "Если краш повторяется на одном и том же сейве — источник в баннерном или визуальном моде карты. Отключай их пачками: сначала баннерные (BannerFix, HistoricalBannerIcons, CCsBanners, RaiseYourBanner, BannerColorPersistence), затем визуалы карты/отрядов (Artems*, RBM, ImmersiveBattlefields, LT_EE1259) — и грузи, пока не перестанет."
+      - "НЕ пересобирай шейдеры и не меняй драйвер — это баг нативной памяти при сносе экрана, а не проблема GPU."
+      - "Почему Crash Doctor это не глушит: AccessViolation — это порча нативной памяти (ошибка «испорченного состояния»). .NET не даёт безопасно её поймать, а проглотить — риск тихо запороть сейв; чистый краш безопаснее. Гард сноса перехватывает NullReference-версию этого вылета, но не порчу памяти."
+    zh:
+      - "从主菜单加载存档，而不是在战役内加载：先「退出到主菜单」，再「加载」。这样就不会拆除正在运行的地图界面——崩溃正是发生在它的拆除上。"
+      - "如果在重复加载时崩溃，两次加载之间彻底重启游戏——全新进程没有半释放的资源可供出错。"
+      - "如果在同一存档上持续崩溃，源头是某个旗帜或地图视觉模组。分批禁用：先旗帜类（BannerFix、HistoricalBannerIcons、CCsBanners、RaiseYourBanner、BannerColorPersistence），再地图/队伍视觉类（Artems*、RBM、ImmersiveBattlefields、LT_EE1259），加载直到不再崩溃。"
+      - "不要重建着色器或更换驱动——这是界面拆除期间的原生内存 bug，不是 GPU 问题。"
+      - "为什么 Crash Doctor 无法吞掉它：访问越界是原生内存损坏（「损坏状态」异常）。.NET 不允许安全地捕获它，吞掉它有可能悄悄损坏你的存档——干净地崩溃更安全。拆除防护能处理这次崩溃的空引用形式，但处理不了内存损坏。"
+    zht:
+      - "從主選單載入存檔，而不是在戰役內載入：先「退出到主選單」，再「載入」。這樣就不會拆除正在執行的地圖介面——崩潰正是發生在它的拆除上。"
+      - "如果在重複載入時崩潰，兩次載入之間徹底重啟遊戲——全新程序沒有半釋放的資源可供出錯。"
+      - "如果在同一存檔上持續崩潰，源頭是某個旗幟或地圖視覺模組。分批停用：先旗幟類（BannerFix、HistoricalBannerIcons、CCsBanners、RaiseYourBanner、BannerColorPersistence），再地圖/隊伍視覺類（Artems*、RBM、ImmersiveBattlefields、LT_EE1259），載入直到不再崩潰。"
+      - "不要重建著色器或更換驅動——這是介面拆除期間的原生記憶體 bug，不是 GPU 問題。"
+      - "為什麼 Crash Doctor 無法吞掉它：存取違規是原生記憶體損壞（「損壞狀態」例外）。.NET 不允許安全地捕獲它，吞掉它有可能悄悄損壞你的存檔——乾淨地崩潰更安全。拆除防護能處理這次崩潰的空參考形式，但處理不了記憶體損壞。"
+    tr:
+      - "Kayıtları kampanyanın içinden değil, ANA MENÜDEN yükle: önce Ana Menüye Çık, sonra Yükle. Bu, çalışan harita ekranının yıkılmasını önler — çökme tam da orada olur."
+      - "Tekrarlanan bir yüklemede oluyorsa, yüklemeler arasında oyunu tamamen yeniden başlat — taze bir sürecin takılacağı yarı-serbest bırakılmış bir şey yoktur."
+      - "Aynı kayıtta çökmeye devam ediyorsa, kaynak bir sancak ya da harita-görsel modudur. Birkaçını birden devre dışı bırak — önce sancak modları (BannerFix, HistoricalBannerIcons, CCsBanners, RaiseYourBanner, BannerColorPersistence), sonra harita/grup-görsel modları (Artems*, RBM, ImmersiveBattlefields, LT_EE1259) — ve durana kadar yükle."
+      - "Gölgelendiricileri yeniden oluşturma veya sürücü değiştirme — bu, ekran yıkımı sırasında yerel bir bellek hatasıdır, bir GPU sorunu değil."
+      - "Crash Doctor neden yutamaz: bir AccessViolation yerel bellek bozulmasıdır (bozuk durum istisnası). .NET bunun güvenle yakalanmasına izin vermez ve birini yutmak kaydını sessizce bozma riski taşır — temiz bir çökme daha güvenlidir. Yıkım koruması bu çökmenin NullReference biçimini ele alır, ancak bellek bozulmasını almaz."
+  match:
+    all:
+      - managed_exception: { frame_contains: "MapScreen.OnFinalize" }
+      - managed_exception: { type_contains: "AccessViolation" }
+
+# Naval-battle HUD crash: ArgumentNullException ("Value cannot be null. Parameter name: key") thrown
+# from the battle name-marker HUD (the labels/icons over units). TargetInvocationException →
+# ArgumentNullException: WidgetExtensions.SetWidgetAttribute ← GauntletView.RefreshBinding ←
+# MBBindingList.OnListChanged/InsertItem ← SandBox.ViewModelCollection.Missions.NameMarker
+# .MissionNameMarkerVM.Tick ← MissionScreen.OnFrameTick. A marker is inserted into the bound list with
+# a null binding key, and the synchronous Gauntlet refresh throws on the null key. The ONLY mod that
+# patches this VM in the reported case is Warlord v1.1.6.1 — a Postfix
+# (Warlord.WarbandCampaignBehaviors.PatchNervousView.Patch_MissionNameMarkerVM_Tick) that adds the bad
+# marker. Vanilla name-markers work fine without it. Triggered only in a NAVAL battle when the player
+# leaves the wheel (F) or switches captain (F5) — the controlled agent changes and the markers rebuild.
+# Recognizer-only, no guard: the broken insert is the MOD's own code, not a vanilla null-deref, so the
+# fix is to drop/update the mod (a HUD-tick swallow would only mask one mod's bug). Names the culprit.
+- id: mission.name_marker_binding_argnull
+  category: managed
+  severity: critical
+  confidence: high
+  evidence_source: "Client crash 2026-07-28 crashreport.html (BLSE/BEW) — TargetInvocationException → ArgumentNullException ('Value cannot be null. Parameter name: key') at TaleWorlds.GauntletUI.PrefabSystem.WidgetExtensions.SetWidgetAttribute ← GauntletView.RefreshBinding ← MBBindingList.OnListChanged/InsertItem ← SandBox.ViewModelCollection.Missions.NameMarker.MissionNameMarkerVM.Tick ← MissionScreen.OnFrameTick ← ScreenManager.Tick. Bannerlord + NavalDLC v1.2.5.0. Enhanced stacktrace names the only patch on that VM: Warlord v1.1.6.1 Postfix Warlord.WarbandCampaignBehaviors.PatchNervousView.Patch_MissionNameMarkerVM_Tick. Client: crashes EVERY time in a naval battle on pressing F (leave wheel) / F5 (switch captain)."
+  requires_sources: [managed_exception]
+  title:
+    en: "Naval-battle crash on leaving the wheel / switching captain — caused by the 'Warlord' mod's name-marker patch"
+    ru: "Вылет в морском бою при сходе со штурвала / смене капитана — из-за патча подписей-маркеров мода «Warlord»"
+    zh: "海战中离开舵轮／切换船长时崩溃——由「Warlord」模组的姓名标记补丁引起"
+    zht: "海戰中離開舵輪／切換船長時崩潰——由「Warlord」模組的姓名標記修補引起"
+    tr: "Deniz savaşında dümenden ayrılırken / kaptan değiştirirken çökme — 'Warlord' modunun isim-işareti yaması nedeniyle"
+  description:
+    en: |
+      ArgumentNullException ("Value cannot be null. Parameter name: key") thrown from the battle
+      name-marker HUD — the labels/icons drawn over units. On a mission frame tick,
+      MissionNameMarkerVM.Tick inserts a marker into a bound list, and the synchronous Gauntlet UI
+      refresh (MBBindingList.OnListChanged → GauntletView.RefreshBinding → WidgetExtensions
+      .SetWidgetAttribute) hits a NULL binding key and throws. The only mod patching that view-model in
+      this crash is Warlord v1.1.6.1 — a Harmony Postfix (Warlord.WarbandCampaignBehaviors
+      .PatchNervousView.Patch_MissionNameMarkerVM_Tick) that adds the broken marker. Vanilla and the
+      Naval DLC are only in the stack because they own the HUD the mod patches — the null marker comes
+      from Warlord. It fires only in a NAVAL battle when the player leaves the ship's wheel (F) or
+      switches the captain (F5): the controlled agent changes and the markers are rebuilt, at which
+      point Warlord's postfix inserts the bad one. This is the mod's own bug, so Crash Doctor names it
+      rather than swallowing it (a HUD-tick guard would only mask this one mod).
+    ru: |
+      ArgumentNullException («Value cannot be null. Parameter name: key») из боевого HUD подписей-
+      маркеров — надписи/иконки над юнитами. На кадровом тике миссии MissionNameMarkerVM.Tick вставляет
+      маркер в привязанный список, и синхронный refresh Gauntlet (MBBindingList.OnListChanged →
+      GauntletView.RefreshBinding → WidgetExtensions.SetWidgetAttribute) натыкается на NULL-ключ
+      биндинга и падает. Единственный мод, патчащий эту view-model в этом краше, — Warlord v1.1.6.1:
+      Harmony-Postfix (Warlord.WarbandCampaignBehaviors.PatchNervousView.Patch_MissionNameMarkerVM_Tick),
+      который и добавляет битый маркер. Ваниль и Naval DLC в стеке только потому, что им принадлежит HUD,
+      который мод патчит, — null-маркер идёт от Warlord. Срабатывает только в МОРСКОМ бою, когда игрок
+      сходит со штурвала (F) или меняет капитана (F5): управляемый агент меняется, маркеры
+      пересобираются, и постфикс Warlord вставляет битый. Это баг самого мода, поэтому Crash Doctor его
+      называет, а не глушит (HUD-гард лишь замаскировал бы баг одного мода).
+    zh: |
+      战斗姓名标记 HUD（画在单位上方的标签/图标）抛出 ArgumentNullException（"Value cannot be null.
+      Parameter name: key"）。在任务帧 tick 中，MissionNameMarkerVM.Tick 向绑定列表插入一个标记，随后
+      同步的 Gauntlet 刷新（MBBindingList.OnListChanged → GauntletView.RefreshBinding →
+      WidgetExtensions.SetWidgetAttribute）碰到一个 NULL 绑定键而抛出。此崩溃中唯一修补该视图模型的
+      模组是 Warlord v1.1.6.1——一个 Harmony 后缀补丁（Warlord.WarbandCampaignBehaviors
+      .PatchNervousView.Patch_MissionNameMarkerVM_Tick），它添加了损坏的标记。原版和海军 DLC 出现在
+      堆栈里只是因为它们拥有该模组所修补的 HUD——空标记来自 Warlord。只在海战中、玩家离开船舵（F）或
+      切换船长（F5）时触发：受控角色改变，标记重建，此时 Warlord 的后缀插入了损坏的那个。这是模组自身
+      的 bug，所以 Crash Doctor 指名它，而不是吞掉它（HUD 防护只会掩盖这一个模组的 bug）。
+    zht: |
+      戰鬥姓名標記 HUD（畫在單位上方的標籤/圖示）擲出 ArgumentNullException（"Value cannot be null.
+      Parameter name: key"）。在任務影格 tick 中，MissionNameMarkerVM.Tick 向繫結清單插入一個標記，
+      隨後同步的 Gauntlet 重新整理（MBBindingList.OnListChanged → GauntletView.RefreshBinding →
+      WidgetExtensions.SetWidgetAttribute）碰到一個 NULL 繫結鍵而擲出。此崩潰中唯一修補該檢視模型的
+      模組是 Warlord v1.1.6.1——一個 Harmony 後綴修補（Warlord.WarbandCampaignBehaviors
+      .PatchNervousView.Patch_MissionNameMarkerVM_Tick），它加入了損壞的標記。原版和海軍 DLC 出現在
+      堆疊裡只是因為它們擁有該模組所修補的 HUD——空標記來自 Warlord。只在海戰中、玩家離開船舵（F）或
+      切換船長（F5）時觸發：受控角色改變，標記重建，此時 Warlord 的後綴插入了損壞的那個。這是模組自身
+      的 bug，所以 Crash Doctor 指名它，而非吞掉它（HUD 防護只會掩蓋這一個模組的 bug）。
+    tr: |
+      Savaş isim-işareti HUD'undan (birimlerin üzerine çizilen etiketler/simgeler) ArgumentNullException
+      ("Value cannot be null. Parameter name: key") fırlatıldı. Bir görev kare tick'inde
+      MissionNameMarkerVM.Tick bağlı bir listeye bir işaret ekler ve senkron Gauntlet yenilemesi
+      (MBBindingList.OnListChanged → GauntletView.RefreshBinding → WidgetExtensions.SetWidgetAttribute)
+      NULL bir bağlama anahtarına çarpıp hata fırlatır. Bu çökmede o view-model'i yamalayan tek mod
+      Warlord v1.1.6.1'dir — bozuk işareti ekleyen bir Harmony Postfix'i (Warlord.WarbandCampaignBehaviors
+      .PatchNervousView.Patch_MissionNameMarkerVM_Tick). Oyunun kendisi ve Naval DLC yığında yalnızca
+      modun yamaladığı HUD'a sahip oldukları için görünür — null işaret Warlord'dan gelir. Yalnızca bir
+      DENİZ savaşında, oyuncu geminin dümeninden ayrıldığında (F) ya da kaptanı değiştirdiğinde (F5)
+      tetiklenir: kontrol edilen ajan değişir, işaretler yeniden oluşturulur ve o anda Warlord'un
+      postfix'i bozuk olanı ekler. Bu, modun kendi hatasıdır, bu yüzden Crash Doctor onu yutmak yerine
+      adlandırır (bir HUD koruması yalnızca bu tek modun hatasını maskelerdi).
+  fix:
+    en:
+      - "Disable or update the 'Warlord' mod (v1.1.6.1). Its name-marker patch (Patch_MissionNameMarkerVM_Tick) is what inserts the broken marker — this is its bug, not the base game or the Naval DLC."
+      - "To confirm before removing anything: start a naval battle and press F / F5 with Warlord OFF — it will not crash. With it ON, it crashes every time."
+      - "If you must keep Warlord: avoid switching captain / leaving the wheel (F, F5) during naval battles until the mod is fixed — but updating or removing it is the real fix."
+      - "Do NOT keep disabling your other mods, and do NOT rebuild shaders or change drivers — the crash is inside Warlord's own name-marker patch, nothing else will change it."
+    ru:
+      - "Отключи или обнови мод «Warlord» (v1.1.6.1). Битый маркер вставляет его патч подписей (Patch_MissionNameMarkerVM_Tick) — это баг мода, а не базовой игры и не Naval DLC."
+      - "Как проверить перед удалением: начни морской бой и нажми F / F5 с ВЫКЛЮЧЕННЫМ Warlord — вылета не будет. С включённым — падает каждый раз."
+      - "Если хочешь оставить Warlord: до его починки не меняй капитана / не сходи со штурвала (F, F5) в морских боях — но настоящее решение это обновить или снять мод."
+      - "НЕ отключай остальные моды дальше и НЕ пересобирай шейдеры/драйвер — краш внутри собственного патча Warlord, ничего из этого не поможет."
+    zh:
+      - "禁用或更新「Warlord」模组（v1.1.6.1）。损坏的标记是由它的姓名标记补丁（Patch_MissionNameMarkerVM_Tick）插入的——这是该模组的 bug，不是原版也不是海军 DLC。"
+      - "删除前确认：关闭 Warlord 后开始一场海战并按 F / F5——不会崩溃。开启时每次都崩。"
+      - "如果一定要保留 Warlord：在其修复前，海战中不要切换船长／离开船舵（F、F5）——但真正的解决办法是更新或移除该模组。"
+      - "不要继续逐个禁用其他模组，也不要重建着色器或更换驱动——崩溃在 Warlord 自己的姓名标记补丁里，这些都不会改变结果。"
+    zht:
+      - "停用或更新「Warlord」模組（v1.1.6.1）。損壞的標記是由它的姓名標記修補（Patch_MissionNameMarkerVM_Tick）插入的——這是該模組的 bug，不是原版也不是海軍 DLC。"
+      - "刪除前確認：關閉 Warlord 後開始一場海戰並按 F / F5——不會崩潰。開啟時每次都崩。"
+      - "如果一定要保留 Warlord：在其修復前，海戰中不要切換船長／離開船舵（F、F5）——但真正的解決辦法是更新或移除該模組。"
+      - "不要繼續逐個停用其他模組，也不要重建著色器或更換驅動——崩潰在 Warlord 自己的姓名標記修補裡，這些都不會改變結果。"
+    tr:
+      - "'Warlord' modunu (v1.1.6.1) devre dışı bırak ya da güncelle. Bozuk işareti onun isim-işareti yaması (Patch_MissionNameMarkerVM_Tick) ekler — bu, oyunun ya da Naval DLC'nin değil, modun hatasıdır."
+      - "Herhangi bir şeyi kaldırmadan önce doğrula: Warlord KAPALIYKEN bir deniz savaşı başlat ve F / F5'e bas — çökmeyecek. Açıkken her seferinde çöker."
+      - "Warlord'u tutman gerekiyorsa: mod düzeltilene kadar deniz savaşlarında kaptan değiştirme / dümenden ayrılma (F, F5) — ama gerçek çözüm onu güncellemek ya da kaldırmaktır."
+      - "Diğer modlarını teker teker devre dışı bırakmaya devam etme ve gölgelendiricileri yeniden oluşturma veya sürücü değiştirme — çökme Warlord'un kendi isim-işareti yamasının içindedir, bunların hiçbiri sonucu değiştirmez."
+  match:
+    all:
+      - managed_exception: { frame_contains: "MissionNameMarkerVM" }
 
 # Battle crash at reinforcement spawn: vanilla ColumnFormation.GetLocalPositionOfUnit builds the
 # list of agent positions on the column's vanguard (head) file, Insert(0, OrderPosition)s into it

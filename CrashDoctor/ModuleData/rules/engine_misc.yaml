@@ -612,3 +612,93 @@
               contains: "OnGovernorChanged"
           - log_line:
               contains: "GovernorChangeAction"
+
+- id: engine.naval_port_ship_visual_av
+  category: engine
+  severity: critical
+  confidence: medium
+  evidence_source: "Real client crash 2026-07-28_01.11.28 — Bannerlord 1.4.7.117484 + NavalDLC v1.2.7, ~95 mods, save 'Ferrovia Em' migrated from 1.4.6.115628 (Used Versions lists both builds). Sequence: entered town -> [GAME MENU] port_menu -> 'VisualShipFactory.CreateVisualShip: meditheavy_ship_nested' was the final log line, then a native access violation 0xC0000005 (WRITE to near-null address 0x35fbc) at 0x7ffda205c415, no managed stack captured. Crash while building the port/ship visuals of the Naval DLC. No 'Missing shader from sack' lines, so this is not the pbr_terrain shader-cache AV."
+  requires_sources: [log_line, watchdog_log]
+  title:
+    en: "Native crash building port/ship visuals (Naval DLC)"
+    ru: "Нативный краш при отрисовке кораблей в порту (Naval DLC)"
+    zh: "构建港口/船只视觉时的原生崩溃（海军 DLC）"
+    zht: "建構港口/船隻視覺時的原生崩潰（海軍 DLC）"
+    tr: "Liman/gemi görsellerini oluştururken yerel çökme (Naval DLC)"
+  description:
+    en: |
+      The game died with a native access violation (0xC0000005) right after the
+      Naval DLC started building ship visuals for a port scene
+      (VisualShipFactory.CreateVisualShip), and no managed (.NET) stack trace was
+      captured. This is an engine-level null write inside the Naval DLC port/ship
+      rendering path, not a catchable .NET exception — so no live Harmony guard can
+      stop it. Seen right after the game updated to a new build while loading a save
+      created on the previous build, with a very large mod list: a save/build
+      migration plus a mod touching party/settlement/ship visuals makes it more
+      likely.
+    ru: |
+      Игра упала с нативным access violation (0xC0000005) сразу после того, как
+      Naval DLC начал строить визуалы кораблей для сцены порта
+      (VisualShipFactory.CreateVisualShip); управляемого (.NET) стека нет. Это
+      null-запись на уровне движка внутри отрисовки порта/кораблей Naval DLC, а не
+      перехватываемое .NET-исключение — поэтому никакой live-гард Harmony его не
+      остановит. Замечено сразу после обновления игры на новый билд при загрузке
+      сейва со старого билда и с очень большим списком модов: миграция сейва/билда
+      плюс мод, трогающий визуалы отряда/поселения/кораблей, повышают вероятность.
+    zh: |
+      游戏在海军 DLC 开始为港口场景构建船只视觉
+      （VisualShipFactory.CreateVisualShip）后立即发生原生 access violation
+      （0xC0000005）崩溃，且没有捕获到托管（.NET）堆栈。这是海军 DLC 港口/船只渲染
+      路径中引擎级的空指针写入，而不是可捕获的 .NET 异常——因此任何 Harmony 实时防护
+      都拦不住它。常见于游戏更新到新版本后加载旧版本存档、且模组列表非常庞大时：存档/
+      版本迁移加上修改队伍/定居点/船只视觉的模组会提高概率。
+    zht: |
+      遊戲在海軍 DLC 開始為港口場景建構船隻視覺
+      （VisualShipFactory.CreateVisualShip）後立即發生原生 access violation
+      （0xC0000005）崩潰，且沒有捕捉到託管（.NET）堆疊。這是海軍 DLC 港口/船隻渲染
+      路徑中引擎級的空指標寫入，而非可捕捉的 .NET 例外——因此任何 Harmony 即時防護
+      都攔不住它。常見於遊戲更新到新版本後載入舊版本存檔、且模組清單非常龐大時：存檔/
+      版本遷移加上修改隊伍/定居點/船隻視覺的模組會提高機率。
+    tr: |
+      Oyun, Naval DLC bir liman sahnesi için gemi görsellerini oluşturmaya
+      başladıktan (VisualShipFactory.CreateVisualShip) hemen sonra, yönetilen
+      (.NET) yığın izi olmadan yerel bir access violation (0xC0000005) ile çöktü.
+      Bu, Naval DLC liman/gemi render yolunda motor düzeyinde bir null yazımıdır,
+      yakalanabilir bir .NET istisnası değildir — bu yüzden hiçbir canlı Harmony
+      koruması onu durduramaz. Oyun yeni bir yapıya güncellendikten sonra önceki
+      yapıda oluşturulmuş bir kaydı çok büyük bir mod listesiyle yüklerken görüldü.
+  fix:
+    en:
+      - "After a game update, load the save and re-save once from a safe map spot before visiting ports — a fresh save on the new build is more stable."
+      - "If it crashes at one specific port, approach it on the campaign map and enter through the town menu instead of the port scene, or try a different port."
+      - "Temporarily disable mods that change party/settlement or ship visuals (RBM, the Artems* visual pack, vbody/CarbonBody) and re-test that port."
+      - "Verify game files in Steam (right-click Bannerlord -> Properties -> Installed Files -> Verify) to rule out a corrupt Naval DLC asset."
+    ru:
+      - "После обновления игры загрузи сейв и пересохрани его в безопасном месте на карте до захода в порты — свежий сейв на новом билде стабильнее."
+      - "Если краш на одном конкретном порту — подойди к нему по карте и зайди через меню города, а не через сцену порта, либо попробуй другой порт."
+      - "Временно отключи моды, меняющие визуалы отряда/поселения/кораблей (RBM, визуальный пак Artems*, vbody/CarbonBody), и перепроверь этот порт."
+      - "Проверь целостность файлов в Steam (ПКМ по Bannerlord -> Свойства -> Установленные файлы -> Проверить) — на случай битого ассета Naval DLC."
+    zh:
+      - "游戏更新后，先在地图安全位置读取并重新保存一次存档，再去港口——新版本上的全新存档更稳定。"
+      - "如果只在某个特定港口崩溃，用地图靠近它并通过城镇菜单进入，而不是港口场景，或换一个港口。"
+      - "临时禁用修改队伍/定居点/船只视觉的模组（RBM、Artems* 视觉包、vbody/CarbonBody），再测试该港口。"
+      - "在 Steam 中验证游戏文件（右键 Bannerlord -> 属性 -> 已安装文件 -> 验证），排除损坏的海军 DLC 资源。"
+    zht:
+      - "遊戲更新後，先在地圖安全位置讀取並重新儲存一次存檔，再前往港口——新版本上的全新存檔更穩定。"
+      - "如果只在某個特定港口崩潰，用地圖靠近它並透過城鎮選單進入，而非港口場景，或換一個港口。"
+      - "暫時停用修改隊伍/定居點/船隻視覺的模組（RBM、Artems* 視覺包、vbody/CarbonBody），再測試該港口。"
+      - "在 Steam 中驗證遊戲檔案（右鍵 Bannerlord -> 內容 -> 已安裝檔案 -> 驗證），排除損壞的海軍 DLC 資源。"
+    tr:
+      - "Oyun güncellemesinden sonra, limanlara gitmeden önce kaydı yükleyip haritada güvenli bir noktada bir kez yeniden kaydet — yeni yapıda taze bir kayıt daha kararlıdır."
+      - "Belirli bir limanda çöküyorsa, ona harita üzerinde yaklaş ve liman sahnesi yerine kasaba menüsünden gir ya da farklı bir liman dene."
+      - "Parti/yerleşim veya gemi görsellerini değiştiren modları (RBM, Artems* görsel paketi, vbody/CarbonBody) geçici olarak devre dışı bırak ve o limanı yeniden test et."
+      - "Kötü bir Naval DLC varlığını elemek için Steam'de oyun dosyalarını doğrula (Bannerlord'a sağ tık -> Özellikler -> Yüklü Dosyalar -> Doğrula)."
+  match:
+    all:
+      - exception:
+          code_equals: "0xC0000005"
+      - log_line:
+          contains: "VisualShipFactory.CreateVisualShip"
+      - none:
+          - log_line:
+              contains: "Missing shader from sack"

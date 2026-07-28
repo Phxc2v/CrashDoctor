@@ -2,12 +2,14 @@ Thanks for using Crash Doctor!
 
 WHAT'S NEW
 
-• Crash guard for placing troops at the start of a battle on some scenes. A battle that used to run fine could suddenly crash on entry. On by default on the "Crash fixes" tab.
+• Crash guard for bandit factions that have no ship data (e.g. The Old Realms beastmen). It stops crashes after auto-resolved battles and, more importantly, crashes that stopped a save from loading at all. On by default on the "Crash fixes" tab.
 
-• Crash guard for deploying, recruiting and the Party screen with custom-troop mods (e.g. My Little Warband). The cause is a non-weapon item in a troop's weapon slot. On by default.
+• Crash guard for a dying clan being wiped out. On the daily tick, when a clan is removed and one of its parties has lost its internal link, the game crashed; seen with total-conversion mods (e.g. Europe 1100). On by default.
 
-• Crash guard for loading a save made at the "at the gate" town menu. If the encounter didn't restore on load the whole save wouldn't open; now the player is returned to the map and the save opens. On by default.
+• Crash guard for a siege won by a faction that has no leader. The captured settlement is handed to the hero who actually took it, so the campaign keeps running. On by default.
 
-• A load crash caused by the FDS ShaderCache mod is now explained. During its shader rebuild that mod blacklists an XML the game needs, so objects vanish and the game crashes loading a campaign (most often on setups with The Old Realms). Crash Doctor now recognises this crash, and a button on the System tune-up tab clears the blacklist in one click.
+• Cleanup no longer stops on a single protected folder. "Clear old files from %TEMP%" and the other cleanups used to abort with an "Access denied" error over one locked folder (like Windows' msdtadmin) and delete nothing; now they skip what they can't read and clear the rest.
+
+• New crashes now get a clear verdict: a naval-battle crash from a name-marker mod (Warlord), a crash when loading a save from inside a campaign (a banner/visual mod), and a native crash in Naval DLC ports. These can't be auto-fixed, so Crash Doctor names the cause and tells you what to do.
 
 Report a crash: t.me/CodeRickTg — send the report.txt from the "Open folder" button on the crash card.

@@ -2,12 +2,14 @@ Crash Doctor'ı kullandığın için teşekkürler!
 
 YENİLİKLER
 
-• Bazı sahnelerde savaşın başında birlikler yerleştirilirken oluşan çökmeye karşı koruma. Eskiden sorunsuz oynanan bir savaş, girişte aniden çökebiliyordu. "Çökme düzeltmeleri" sekmesinde varsayılan olarak açık.
+• Gemi verisi olmayan haydut hizipleri (örneğin The Old Realms canavar adamları) için çökme koruması. Otomatik çözülen savaşlardan sonraki çökmeleri ve daha da önemlisi bir kaydın hiç açılmamasına yol açan çökmeleri durdurur. "Çökme düzeltmeleri" sekmesinde varsayılan olarak açık.
 
-• Özel birlik modlarıyla (örneğin My Little Warband) dizilim, asker alma ve Birlik ekranındaki çökmeye karşı koruma. Nedeni: birliğin silah yuvasındaki silah olmayan bir eşya. Varsayılan olarak açık.
+• Ölmekte olan bir klan yok edilirken oluşan çökmeye karşı koruma. Günlük tick'te, bir klan kaldırıldığında ve gruplarından biri iç bağlantısını kaybettiğinde oyun çöküyordu; total conversion modlarında (örneğin Europe 1100) görüldü. Varsayılan olarak açık.
 
-• Kasabanın "kapı önü" menüsünde alınan bir kaydı yüklerken oluşan çökmeye karşı koruma. Yüklemede karşılaşma durumu geri gelmediyse kaydın tamamı açılmıyordu; artık oyuncu haritaya geri gönderiliyor ve kayıt açılıyor. Varsayılan olarak açık.
+• Lidersiz bir hizbin kazandığı kuşatmadaki çökmeye karşı koruma. Ele geçirilen yerleşim onu gerçekten alan kahramana verilir ve sefer devam eder. Varsayılan olarak açık.
 
-• FDS ShaderCache modunun yol açtığı yükleme çökmesi artık açıklanıyor. Bu mod shader'ları yeniden derlerken oyunun ihtiyaç duyduğu bir XML'i kara listeye alıyor, böylece nesneler kayboluyor ve oyun bir seferberliği yüklerken çöküyor (çoğunlukla The Old Realms kurulu düzeneklerde). Crash Doctor artık bu çökmeyi tanıyor ve "Sistem ince ayarı" sekmesindeki bir düğme kara listeyi tek tıkla temizliyor.
+• Temizlik artık tek bir korumalı klasörde durmuyor. "%TEMP% içindeki eski dosyaları temizle" ve diğer temizlikler eskiden kilitli bir klasör (örneğin Windows'un msdtadmin'i) yüzünden "Erişim reddedildi" hatasıyla durup hiçbir şey silmiyordu; artık okuyamadıklarını atlayıp geri kalanı temizliyor.
+
+• Yeni çökmeler artık net bir tanıyla açıklanıyor: bir isim-işareti modundan (Warlord) kaynaklanan deniz savaşı çökmesi, kampanya içinden kayıt yüklerken (bir sancak/görsel modu) oluşan çökme ve Naval DLC limanlarındaki yerel bir çökme. Bunlar otomatik düzeltilemez, bu yüzden Crash Doctor nedeni adlandırır ve ne yapman gerektiğini söyler.
 
 Çökme bildir: t.me/CodeRickTg — çökme kartındaki "Klasörü aç" düğmesinden report.txt dosyasını gönder.
