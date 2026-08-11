@@ -422,3 +422,99 @@
       - system:
           field: page_file_available_mb
           lt: "1024"
+
+- id: hw.temp_points_at_dead_drive
+  category: hardware
+  severity: warning
+  confidence: medium
+  evidence_source: "player report 2026-07-29 (A:\\ volume renamed to D:\\, TEMP left stale)"
+  requires_sources: [log_line]
+  title:
+    en: "A path points at a drive that no longer exists (often stale TEMP)"
+    ru: "Путь ведёт на несуществующий диск (часто — устаревший TEMP)"
+    zh: "某个路径指向不再存在的驱动器（通常是过时的 TEMP）"
+    zht: "某個路徑指向不再存在的磁碟（通常是過時的 TEMP）"
+    tr: "Bir yol artık var olmayan bir sürücüyü gösteriyor (genelde eski TEMP)"
+  description:
+    en: |
+      The log carries a .NET drive-not-found error — "Could not find the drive
+      'X:\'. The drive might not be ready or might not be mapped." Something is
+      configured to use a drive letter that no longer exists or isn't ready.
+
+      The most common cause is a stale Windows TMP/TEMP after a drive-letter
+      change: e.g. a temporary volume created as A:\ and later renamed to D:\,
+      while TMP/TEMP kept the old A:\ path. Nothing can then write to %TEMP%, so
+      the shader compiler's 'Build Shader Cache' finishes 'with errors' and
+      installers / other apps fail the same way.
+    ru: |
+      В логе .NET-ошибка «диск не найден» — «Could not find the drive 'X:\'. The
+      drive might not be ready or might not be mapped». Что-то настроено на букву
+      диска, которой больше нет или которая не готова.
+
+      Чаще всего это устаревший Windows TMP/TEMP после смены буквы диска:
+      например, временный том создали как A:\, потом переименовали в D:\, а
+      TMP/TEMP остались с путём A:\. Тогда в %TEMP% ничего нельзя записать —
+      «Build Shader Cache» завершается «с ошибками», установщики и другие
+      программы падают так же.
+    zh: |
+      日志中有一个 .NET「找不到驱动器」错误——"Could not find the drive 'X:\'.
+      The drive might not be ready or might not be mapped."。某处被配置为使用一个
+      不再存在或未就绪的盘符。
+
+      最常见的原因是驱动器盘符更改后过时的 Windows TMP/TEMP：例如把一个临时卷
+      创建为 A:\，之后重命名为 D:\，而 TMP/TEMP 仍保留旧的 A:\ 路径。这样就无法
+      向 %TEMP% 写入任何内容——着色器编译的 'Build Shader Cache' 会「带错误」完成，
+      安装程序和其他程序也会同样失败。
+    zht: |
+      日誌中有一個 .NET「找不到磁碟」錯誤——"Could not find the drive 'X:\'.
+      The drive might not be ready or might not be mapped."。某處被設定為使用一個
+      不再存在或未就緒的磁碟機代號。
+
+      最常見的原因是磁碟機代號更改後過時的 Windows TMP/TEMP：例如把一個暫時磁碟區
+      建立為 A:\，之後重新命名為 D:\，而 TMP/TEMP 仍保留舊的 A:\ 路徑。這樣就無法
+      向 %TEMP% 寫入任何內容——著色器編譯的 'Build Shader Cache' 會「帶錯誤」完成，
+      安裝程式和其他程式也會同樣失敗。
+    tr: |
+      Günlükte bir .NET sürücü-bulunamadı hatası var — "Could not find the drive
+      'X:\'. The drive might not be ready or might not be mapped." Bir şey, artık
+      var olmayan ya da hazır olmayan bir sürücü harfini kullanacak şekilde
+      ayarlanmış.
+
+      En yaygın neden, bir sürücü harfi değişikliğinden sonra eski kalan Windows
+      TMP/TEMP'tir: örneğin A:\ olarak oluşturulan geçici bir birim sonradan D:\
+      olarak yeniden adlandırılır ama TMP/TEMP eski A:\ yolunu korur. O zaman
+      %TEMP% içine hiçbir şey yazılamaz — gölgelendirici derlemesinin 'Build
+      Shader Cache' adımı 'hatalarla' biter, yükleyiciler ve diğer uygulamalar da
+      aynı şekilde başarısız olur.
+  fix:
+    en:
+      - "Open Crash Doctor → System tune-up. If the 'Repair broken Windows TEMP path' card is shown, Apply it — it repoints TMP/TEMP back to %USERPROFILE%\\AppData\\Local\\Temp."
+      - "Then SIGN OUT of Windows (or reboot) — environment changes only take effect in a new logon session."
+      - "Manual alternative: System Properties → Advanced → Environment Variables → set User TMP and TEMP to %USERPROFILE%\\AppData\\Local\\Temp (or an existing drive), then sign out and back in."
+      - "If it was a shader build: after fixing TEMP, Crash Doctor → System tune-up → 'Clear Bannerlord shader cache', then run 'Build Shader Cache' from the main menu again."
+    ru:
+      - "Открой Crash Doctor → Настройка системы. Если появилась карточка «Починить битый путь Windows TEMP» — применить: она вернёт TMP/TEMP на %USERPROFILE%\\AppData\\Local\\Temp."
+      - "Затем ВЫЙДИ из Windows (или перезагрузка) — переменные среды применяются только при новом входе."
+      - "Вручную: Свойства системы → Дополнительно → Переменные среды → задай пользовательские TMP и TEMP как %USERPROFILE%\\AppData\\Local\\Temp (или существующий диск), затем выйди и зайди заново."
+      - "Если это была сборка шейдеров: после починки TEMP — Crash Doctor → Настройка системы → «Очистить кэш шейдеров Bannerlord», потом снова «Build Shader Cache» из главного меню."
+    zh:
+      - "打开 Crash Doctor → 系统调优。如果出现「修复损坏的 Windows TEMP 路径」卡片，就应用它——它会把 TMP/TEMP 重新指向 %USERPROFILE%\\AppData\\Local\\Temp。"
+      - "然后注销 Windows（或重启）——环境变量只在新的登录会话中生效。"
+      - "手动方式：系统属性 → 高级 → 环境变量 → 把用户的 TMP 和 TEMP 设为 %USERPROFILE%\\AppData\\Local\\Temp（或一个存在的驱动器），然后注销再登录。"
+      - "如果是着色器构建：修复 TEMP 后，Crash Doctor → 系统调优 → '清理着色器缓存'，再从主菜单重新运行 'Build Shader Cache'。"
+    zht:
+      - "開啟 Crash Doctor → 系統調校。如果出現「修復損壞的 Windows TEMP 路徑」卡片，就套用它——它會把 TMP/TEMP 重新指向 %USERPROFILE%\\AppData\\Local\\Temp。"
+      - "然後登出 Windows（或重新啟動）——環境變數只在新的登入工作階段中生效。"
+      - "手動方式：系統內容 → 進階 → 環境變數 → 把使用者的 TMP 和 TEMP 設為 %USERPROFILE%\\AppData\\Local\\Temp（或一個存在的磁碟），然後登出再登入。"
+      - "如果是著色器建構：修復 TEMP 後，Crash Doctor → 系統調校 → '清理著色器快取'，再從主選單重新執行 'Build Shader Cache'。"
+    tr:
+      - "Crash Doctor → Sistem ayarını açın. 'Bozuk Windows TEMP yolunu onar' kartı görünürse Uygula — TMP/TEMP'i %USERPROFILE%\\AppData\\Local\\Temp konumuna geri yönlendirir."
+      - "Ardından Windows'tan ÇIKIŞ yapın (ya da yeniden başlatın) — ortam değişkenleri yalnızca yeni bir oturumda etkili olur."
+      - "Elle alternatif: Sistem Özellikleri → Gelişmiş → Ortam Değişkenleri → Kullanıcı TMP ve TEMP değerlerini %USERPROFILE%\\AppData\\Local\\Temp (ya da var olan bir sürücü) yapın, sonra oturumu kapatıp açın."
+      - "Bir gölgelendirici derlemesiyse: TEMP'i onardıktan sonra Crash Doctor → Sistem ayarı → 'gölgelendirici önbelleğini temizle', ardından ana menüden 'Build Shader Cache'i tekrar çalıştırın."
+  match:
+    any:
+      - log_line:
+          contains: "The drive might not be ready or might not be mapped"
+      - log_line:
+          contains: "Could not find the drive"

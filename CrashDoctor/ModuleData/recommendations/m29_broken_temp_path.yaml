@@ -1,0 +1,161 @@
+- id: m29_broken_temp_path
+  title:
+    en: "Repair broken Windows TEMP path"
+    ru: "Починить битый путь Windows TEMP"
+    zh: "修复损坏的 Windows TEMP 路径"
+    zht: "修復損壞的 Windows TEMP 路徑"
+    tr: "Bozuk Windows TEMP yolunu onar"
+  description:
+    en: |
+      Your Windows TMP/TEMP environment variables point at a drive that no
+      longer exists or isn't ready. This usually happens after a drive letter
+      is renamed (e.g. a temporary A:\ volume renamed to D:\) — TMP/TEMP keep
+      the old letter, so nothing can write to %TEMP% anymore.
+
+      That silently breaks a lot: the shader compiler writes intermediate files
+      to %TEMP% during 'Build Shader Cache', so the build finishes 'with errors';
+      installers, .NET apps and Windows itself hit the same wall.
+
+      This card appears when HKCU\Environment TMP or TEMP resolves to an
+      unavailable drive.
+
+      Apply will:
+        1. Set HKCU\Environment TMP and TEMP back to the Windows default
+           %USERPROFILE%\AppData\Local\Temp (always on the system drive, can't
+           vanish under a drive-letter change).
+        2. Create that folder if missing.
+        Per-USER change only — system-wide TEMP (HKLM) is untouched, no admin
+        rights required.
+
+      MANDATORY after Apply: SIGN OUT of Windows (or reboot). The change only
+      takes effect for NEW logon sessions.
+
+      Reversible: Rollback restores the previous TMP/TEMP value.
+    ru: |
+      Переменные среды Windows TMP/TEMP указывают на диск, которого больше нет
+      или который не готов. Обычно это случается после переименования буквы
+      диска (например, временный том A:\ переименовали в D:\) — TMP/TEMP хранят
+      старую букву, и в %TEMP% больше нельзя ничего записать.
+
+      Это тихо ломает многое: компилятор шейдеров пишет промежуточные файлы в
+      %TEMP% во время «Build Shader Cache», поэтому сборка завершается «с
+      ошибками»; установщики, .NET-программы и сама Windows упираются в то же.
+
+      Карточка появляется, когда HKCU\Environment TMP или TEMP ведёт на
+      недоступный диск.
+
+      «Применить»:
+        1. Вернёт TMP и TEMP в HKCU\Environment на стандартный путь Windows
+           %USERPROFILE%\AppData\Local\Temp (всегда на системном диске, не
+           пропадёт при смене буквы диска).
+        2. Создаст папку, если её нет.
+        Только для ТВОЕГО пользователя — system-wide TEMP (HKLM) не трогаем,
+        админ-права не нужны.
+
+      ОБЯЗАТЕЛЬНО после «Применить»: ВЫЙДИ из Windows (или перезагрузка).
+      Изменение применяется только при НОВОМ входе пользователя.
+
+      Откатываемо: Rollback вернёт прежнее значение TMP/TEMP.
+    zh: |
+      你的 Windows TMP/TEMP 环境变量指向一个不再存在或未就绪的驱动器。这通常
+      发生在驱动器盘符被重命名之后（例如把临时的 A:\ 卷改名为 D:\）——TMP/TEMP
+      仍保留旧盘符，于是再也无法向 %TEMP% 写入任何内容。
+
+      这会悄悄地破坏很多东西：着色器编译器在 'Build Shader Cache' 期间会把中间
+      文件写到 %TEMP%，因此构建会「带错误」完成；安装程序、.NET 程序乃至 Windows
+      本身都会撞上同一堵墙。
+
+      当 HKCU\Environment 中的 TMP 或 TEMP 解析到不可用的驱动器时，出现此卡片。
+
+      应用会：
+        1. 把 HKCU\Environment 中的 TMP 和 TEMP 改回 Windows 默认路径
+           %USERPROFILE%\AppData\Local\Temp（始终在系统盘上，不会因盘符更改而消失）。
+        2. 若该文件夹缺失则创建它。
+        仅针对当前用户的更改——系统范围的 TEMP（HKLM）不会被触碰，不需要管理员权限。
+
+      应用后必做：注销 Windows（或重启）。该更改只对新的登录会话生效。
+
+      可撤销：回退会还原之前的 TMP/TEMP 值。
+    zht: |
+      你的 Windows TMP/TEMP 環境變數指向一個不再存在或未就緒的磁碟。這通常
+      發生在磁碟機代號被重新命名之後（例如把暫時的 A:\ 磁碟區改名為 D:\）——
+      TMP/TEMP 仍保留舊代號，於是再也無法向 %TEMP% 寫入任何內容。
+
+      這會悄悄地破壞很多東西：著色器編譯器在 'Build Shader Cache' 期間會把中間
+      檔案寫到 %TEMP%，因此建構會「帶錯誤」完成；安裝程式、.NET 程式乃至 Windows
+      本身都會撞上同一堵牆。
+
+      當 HKCU\Environment 中的 TMP 或 TEMP 解析到不可用的磁碟時，出現此卡片。
+
+      套用會：
+        1. 把 HKCU\Environment 中的 TMP 和 TEMP 改回 Windows 預設路徑
+           %USERPROFILE%\AppData\Local\Temp（始終在系統磁碟上，不會因代號更改而消失）。
+        2. 若該資料夾缺失則建立它。
+        僅針對目前使用者的更改——系統範圍的 TEMP（HKLM）不會被觸碰，不需要系統管理員權限。
+
+      套用後必做：登出 Windows（或重新啟動）。該更改只對新的登入工作階段生效。
+
+      可復原：回退會還原之前的 TMP/TEMP 值。
+    tr: |
+      Windows TMP/TEMP ortam değişkenleriniz artık var olmayan ya da hazır
+      olmayan bir sürücüyü gösteriyor. Bu genellikle bir sürücü harfi yeniden
+      adlandırıldıktan sonra olur (örneğin geçici bir A:\ birimi D:\ olarak
+      yeniden adlandırılır) — TMP/TEMP eski harfi tutar, böylece %TEMP% içine
+      artık hiçbir şey yazılamaz.
+
+      Bu sessizce çok şeyi bozar: gölgelendirici derleyicisi 'Build Shader Cache'
+      sırasında ara dosyaları %TEMP%'e yazar, bu yüzden derleme 'hatalarla'
+      biter; yükleyiciler, .NET uygulamaları ve Windows'un kendisi de aynı
+      duvara toslar.
+
+      Bu kart, HKCU\Environment TMP veya TEMP kullanılamayan bir sürücüye
+      çözümlendiğinde görünür.
+
+      Uygula şunları yapar:
+        1. HKCU\Environment içindeki TMP ve TEMP değerlerini Windows varsayılanı
+           %USERPROFILE%\AppData\Local\Temp değerine geri döndürür (her zaman
+           sistem sürücüsünde, sürücü harfi değişse de kaybolmaz).
+        2. Klasör yoksa oluşturur.
+        Yalnızca KULLANICI başına değişiklik — sistem genelindeki TEMP (HKLM)
+        dokunulmaz, yönetici hakları gerekmez.
+
+      Uygula'dan sonra ZORUNLU: Windows'tan OTURUMU KAPAT (ya da yeniden başlat).
+      Değişiklik yalnızca YENİ oturum açma oturumları için geçerli olur.
+
+      Geri alınabilir: Geri Al, önceki TMP/TEMP değerini geri yükler.
+  details:
+    en:
+      - "Source: HKCU\\Environment\\TMP and TEMP"
+      - "Target: %USERPROFILE%\\AppData\\Local\\Temp (Windows default)"
+      - "Per-user only: HKLM (system-wide TEMP) is not touched. No admin rights needed."
+      - "Reversible: Rollback writes the previous value back."
+      - "After Apply: Windows sign-out (or reboot) is required for the new TEMP to take effect."
+      - "Card hides when TMP and TEMP both resolve to an available drive."
+    ru:
+      - "Источник: HKCU\\Environment\\TMP и TEMP"
+      - "Цель: %USERPROFILE%\\AppData\\Local\\Temp (стандарт Windows)"
+      - "Только для пользователя: HKLM (system-wide TEMP) не трогаем. Админ-права не нужны."
+      - "Откатываемо: Rollback запишет прежнее значение."
+      - "После «Применить»: нужен выход из Windows (или перезагрузка) для применения нового TEMP."
+      - "Карточка прячется, когда и TMP, и TEMP ведут на доступный диск."
+    zh:
+      - "来源：HKCU\\Environment\\TMP 和 TEMP"
+      - "目标：%USERPROFILE%\\AppData\\Local\\Temp（Windows 默认）"
+      - "仅针对用户：HKLM（系统范围的 TEMP）不会被触碰。不需要管理员权限。"
+      - "可撤销：回退会写回之前的值。"
+      - "应用后：需要注销 Windows（或重启）才能使新的 TEMP 生效。"
+      - "当 TMP 和 TEMP 都解析到可用的驱动器时，卡片会隐藏。"
+    zht:
+      - "來源：HKCU\\Environment\\TMP 和 TEMP"
+      - "目標：%USERPROFILE%\\AppData\\Local\\Temp（Windows 預設）"
+      - "僅針對使用者：HKLM（系統範圍的 TEMP）不會被觸碰。不需要系統管理員權限。"
+      - "可復原：回退會寫回之前的值。"
+      - "套用後：需要登出 Windows（或重新啟動）才能使新的 TEMP 生效。"
+      - "當 TMP 和 TEMP 都解析到可用的磁碟時，卡片會隱藏。"
+    tr:
+      - "Kaynak: HKCU\\Environment\\TMP ve TEMP"
+      - "Hedef: %USERPROFILE%\\AppData\\Local\\Temp (Windows varsayılanı)"
+      - "Yalnızca kullanıcı başına: HKLM (sistem genelindeki TEMP) dokunulmaz. Yönetici hakları gerekmez."
+      - "Geri alınabilir: Geri Al, önceki değeri geri yazar."
+      - "Uygula'dan sonra: yeni TEMP'in geçerli olması için Windows oturum kapatma (ya da yeniden başlatma) gerekir."
+      - "TMP ve TEMP'in her ikisi de kullanılabilir bir sürücüye çözümlendiğinde kart gizlenir."

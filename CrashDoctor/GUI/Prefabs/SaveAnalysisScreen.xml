@@ -228,6 +228,18 @@
                                HorizontalAlignment="Center"
                                StackLayout.LayoutMethod="HorizontalLeftToRight">
                       <Children>
+                        <!-- Prevention journal: what Crash Doctor stopped, which mod, which data.
+                             Renders into the same report body, so no extra Gauntlet layer. -->
+                        <ButtonWidget DoNotPassEventsToChildren="true" IsEnabled="@IsNotWorking"
+                                      Command.Click="ExecuteShowPrevented" Brush="Popup.Cancel.Button"
+                                      WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="300" SuggestedHeight="52"
+                                      MarginRight="10">
+                          <Children>
+                            <TextWidget DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
+                                        Brush="Popup.Button.Text" Brush.FontSize="17"
+                                        Brush.TextHorizontalAlignment="Center" Text="@LabelBtnPrevented" />
+                          </Children>
+                        </ButtonWidget>
                         <ButtonWidget DoNotPassEventsToChildren="true" IsEnabled="@IsNotWorking"
                                       Command.Click="ExecuteShowWipeList" Brush="Popup.Cancel.Button"
                                       WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="220" SuggestedHeight="52"

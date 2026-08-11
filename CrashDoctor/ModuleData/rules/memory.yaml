@@ -186,12 +186,17 @@
       - log_line:
           contains: "TaleWorlds.MountAndBlade"
 
+# Native use-after-free surfacing on the GC finalizer thread. Matches BOTH shapes of evidence: the
+# log-file form (rgl_log lines) and a Crash Doctor managed capture, whose stack is the single frame
+# TaleWorlds.DotNet.NativeObject.Finalize. `requires_sources` is deliberately ABSENT — it is an AND
+# over sources, so pinning it to log_line (as it was until 2026-07-30) silently starved every
+# managed-capture report of this diagnosis and dropped it into the managed.code_bug catch-all, which
+# blames "a mod's code" for what is a native fault. The same signature is excluded there.
 - id: native.dotnet_finalizer_av
   category: native
   severity: critical
   confidence: high
-  evidence_source: "Client crash 3973dcff (2026-06-03 / 2026-06-08, new-game start)"
-  requires_sources: [log_line]
+  evidence_source: "Client crash id 3973dcff — 5 separate occurrences on Bannerlord 1.3.15 with The Old Realms: 2026-06-13, 2026-06-21, 2026-07-23 (x2), 2026-07-26, 2026-07-30. Third-party suspects ruled out by modlist comparison (TOR_Chaos_Fraction absent from later ones; RTSCameraUniversal absent from three of five, incl. the 12-module minimal list of 2026-07-30) — the TOR stack is the only constant. First hard attribution 2026-07-30: the reporter had just clicked TOR's main-menu 'Build Shader Cache', which runs MBGameManager.StartNewGame(new TORShaderGameManager()) → a custom battle on battle_terrain_a holding every unique TOR troop/NPC (soldiers x4, truncated at 1999 characters) purely to force shader compilation. Confirmed by decompiling TOR_Core: MainMenuOptionsPatches.BuildShaderCache + TORShaderGameManager.LoadScene/GetPlayerParty."
   title:
     en: "Access violation in TaleWorlds.DotNet native finalizer"
     ru: "Access violation в нативном финализаторе TaleWorlds.DotNet"
@@ -201,62 +206,133 @@
   description:
     en: |
       System.AccessViolationException in TaleWorlds.DotNet.NativeObject.Finalize() —
-      the .NET garbage collector tried to release a native engine object that the
-      engine had already destroyed (use-after-free). A random base-game native fault,
-      most often surfacing at new-game start and scene transitions, where native
-      allocation/finalization peaks. Not caused by mods — no mod frames are in the
-      stack. Unrelated to the shader cache; rebuilding shaders will NOT help.
+      the .NET garbage collector tried to release a native engine object that the engine
+      had already destroyed (use-after-free). The stack is a single frame, so nothing in
+      it can point at a mod.
+
+      It shows up where native allocation and finalization peak: scene transitions,
+      tournaments, starting a game or tearing a session down — and most reliably while
+      The Old Realms' main-menu option "Build Shader Cache" is running. That option is
+      not a quiet background pre-load: it starts a custom battle on one map holding EVERY
+      unique troop and NPC of the mod (soldiers four times over, capped at 1999
+      characters) purely to force shader compilation, so thousands of meshes, textures
+      and materials are created and released in a single scene. On a 16 GB machine that
+      is exactly the pressure under which the finalizer reaches an already-freed pointer.
+
+      No code guard is possible: an access violation on the garbage collector's finalizer
+      thread is a corrupted-state exception, and no try/catch or patch can wrap it.
+      Rebuilding the shader cache does not repair the fault either — the shader run is
+      where it surfaces, not its cure.
     ru: |
       System.AccessViolationException в TaleWorlds.DotNet.NativeObject.Finalize() —
-      сборщик мусора .NET попытался освободить нативный объект движка, который движок
-      уже уничтожил (обращение к освобождённой памяти). Случайный нативный сбой самой
-      игры, чаще всего вылезает при старте новой игры и смене сцен, где пик нативных
-      выделений и очистки памяти. Не вина модов — их кода в стеке нет. К кэшу шейдеров
-      отношения не имеет, пересобирать шейдеры НЕ нужно.
+      сборщик мусора .NET попытался освободить нативный объект движка, который движок уже
+      уничтожил (обращение к освобождённой памяти). В стеке всего один кадр, поэтому по
+      нему нельзя указать ни на один мод.
+
+      Вылезает там, где пик нативных выделений и очистки памяти: смена сцен, турниры,
+      старт игры или снос сессии — и чаще всего во время пункта главного меню
+      «Build Shader Cache» из The Old Realms. Этот пункт не тихая фоновая подгрузка: он
+      запускает кастомный бой на одной карте, куда сгоняются ВСЕ уникальные войска и NPC
+      мода (солдаты по четыре штуки, всего до 1999 персонажей), только чтобы заставить
+      игру скомпилировать шейдеры, — то есть тысячи мешей, текстур и материалов
+      создаются и освобождаются в одной сцене. При 16 ГБ ОЗУ это ровно та нагрузка, при
+      которой финализатор добирается до уже освобождённого указателя.
+
+      Перехватить кодом нельзя: access violation на потоке финализатора GC — это
+      исключение повреждённого состояния, вокруг него не встают ни try/catch, ни патч.
+      Пересборка кэша шейдеров сбой тоже не лечит — прогон шейдеров это место, где он
+      проявляется, а не лекарство.
     zh: |
       TaleWorlds.DotNet.NativeObject.Finalize() 中的 System.AccessViolationException——
-      .NET 垃圾回收器试图释放引擎已经销毁的原生对象（释放后使用）。这是基础游戏的随机
-      原生故障，多在开始新游戏和场景切换时出现，此时原生内存分配/回收达到高峰。与模组
-      无关——堆栈中没有任何模组代码。与着色器缓存无关，重建着色器没有帮助。
+      .NET 垃圾回收器试图释放引擎已经销毁的原生对象（释放后使用）。堆栈只有一个帧，因此
+      无法据此指认任何模组。
+
+      它出现在原生内存分配与回收的高峰处：场景切换、比武大会、开始游戏或结束会话——而最
+      稳定复现的时机，是 The Old Realms 主菜单的 “Build Shader Cache” 正在运行时。该选项
+      并非安静的后台预加载：它会在一张地图上开启一场自定义战斗，装入该模组的每一种独特
+      部队与 NPC（士兵各四份，总数上限 1999），纯粹为了强制编译着色器——于是成千上万的
+      网格、贴图和材质在同一个场景里被创建又被释放。在 16 GB 内存的机器上，这正是让终结器
+      触碰到已释放指针的压力。
+
+      无法用代码防护：垃圾回收器终结线程上的访问冲突属于状态已损坏的异常，try/catch 和
+      补丁都无法包住它。重建着色器缓存同样修不好这个故障——着色器流程是它暴露的地方，
+      而不是解药。
     zht: |
       TaleWorlds.DotNet.NativeObject.Finalize() 中的 System.AccessViolationException——
-      .NET 垃圾回收器試圖釋放引擎已經銷毀的原生物件（釋放後使用）。這是基礎遊戲的隨機
-      原生故障，多在開始新遊戲和場景切換時出現，此時原生記憶體配置/回收達到高峰。與模組
-      無關——堆疊中沒有任何模組程式碼。與著色器快取無關，重建著色器沒有幫助。
+      .NET 垃圾回收器試圖釋放引擎已經銷毀的原生物件（釋放後使用）。堆疊只有一個框架，因此
+      無法據此指認任何模組。
+
+      它出現在原生記憶體配置與回收的高峰處：場景切換、比武大會、開始遊戲或結束工作階段
+      ——而最穩定重現的時機，是 The Old Realms 主選單的「Build Shader Cache」正在執行時。
+      該選項並非安靜的背景預先載入：它會在一張地圖上開啟一場自訂戰鬥，裝入該模組的每一種
+      獨特部隊與 NPC（士兵各四份，總數上限 1999），純粹為了強制編譯著色器——於是成千上萬
+      的網格、貼圖和材質在同一個場景裡被建立又被釋放。在 16 GB 記憶體的機器上，這正是讓
+      終結器觸碰到已釋放指標的壓力。
+
+      無法用程式碼防護：垃圾回收器終結執行緒上的存取違規屬於狀態已損壞的例外，try/catch
+      和修補都無法包住它。重建著色器快取同樣修不好這個故障——著色器流程是它暴露的地方，
+      而不是解藥。
     tr: |
       TaleWorlds.DotNet.NativeObject.Finalize() içinde System.AccessViolationException —
       .NET çöp toplayıcı, motorun zaten yok ettiği bir yerel motor nesnesini serbest
-      bırakmaya çalıştı (serbest bırakıldıktan sonra kullanım). Yeni oyun başlangıcında
-      ve sahne geçişlerinde sıkça beliren, temel oyuna ait rastgele bir yerel hata.
-      Modlardan kaynaklanmaz — yığında mod karesi yok. Shader önbelleğiyle ilgisi yok;
-      shader'ları yeniden derlemek YARDIMCI OLMAZ.
+      bırakmaya çalıştı (serbest bırakıldıktan sonra kullanım). Yığın tek bir kareden
+      ibarettir, dolayısıyla ondan hiçbir mod işaret edilemez.
+
+      Yerel bellek ayırma ve sonlandırmanın zirve yaptığı yerlerde ortaya çıkar: sahne
+      geçişleri, turnuvalar, oyunun başlatılması ya da oturumun kapatılması — ve en
+      güvenilir şekilde, The Old Realms'in ana menüdeki "Build Shader Cache" seçeneği
+      çalışırken. Bu seçenek sessiz bir arka plan ön yüklemesi değildir: yalnızca
+      shader derlemesini zorlamak için tek bir haritada, modun BÜTÜN benzersiz birlik ve
+      NPC'lerini (askerler dörder kez, en fazla 1999 karakter) içeren özel bir savaş
+      başlatır; böylece binlerce mesh, doku ve materyal tek bir sahnede oluşturulup
+      serbest bırakılır. 16 GB bellekli bir makinede sonlandırıcının zaten serbest
+      bırakılmış bir işaretçiye uzanmasına yol açan baskı tam olarak budur.
+
+      Kod koruması mümkün değildir: çöp toplayıcının sonlandırıcı iş parçacığındaki bir
+      erişim ihlali, durumu bozulmuş bir istisnadır; onu ne try/catch ne de bir yama
+      sarabilir. Shader önbelleğini yeniden derlemek de hatayı onarmaz — shader turu,
+      hatanın göründüğü yerdir, çaresi değil.
   fix:
     en:
-      - "Just restart and start the new game again — the fault is random and usually clears on the next attempt."
-      - "Steam → Verify integrity of game files (in case of a genuinely broken native asset)."
-      - "Reset GPU/CPU overclock or undervolt to default; with 16 GB RAM, close background apps before launching."
+      - "If it happened during The Old Realms' «Build Shader Cache»: the cache is INCREMENTAL — everything that compiled before the crash is kept. Start it again and it will get further; two or three passes usually see it through to the deployment phase."
+      - "Before re-running it: close the browser and other background apps, do NOT Alt+Tab while it works, make sure the Windows page file is enabled and the system drive has several GB free — the shader compiler writes its temporary files into %TEMP% (the System tune-up tab checks both)."
+      - "You can skip that button entirely and let the cache build itself as you play. It takes longer, but it never loads two thousand characters into one scene."
+      - "If the crash happened OUTSIDE the shader run, note exactly what you were doing (tournament, leaving a menu, entering a settlement, loading a save). With a one-frame stack that action is the only usable clue — the modlist has already been exhausted: the crash recurs on a minimal Old Realms setup, so no side mod is to blame."
+      - "Steam → Verify integrity of game files, and reset any GPU/CPU overclock or undervolt to default."
     ru:
-      - "Просто перезапусти игру и снова начни новую — сбой случайный, обычно проходит со следующей попытки."
-      - "Steam → Проверить целостность файлов игры (на случай реально битого нативного ресурса)."
-      - "Сбрось разгон/андервольт GPU и процессора на стандарт; при 16 ГБ ОЗУ закрой фоновые программы перед запуском."
+      - "Если это случилось во время «Build Shader Cache» из The Old Realms: кэш ИНКРЕМЕНТАЛЬНЫЙ — всё, что успело скомпилироваться до вылета, сохранилось. Запусти ещё раз, дойдёт дальше; обычно за два-три прогона доходит до фазы расстановки."
+      - "Перед повтором: закрой браузер и прочие фоновые программы, НЕ переключайся по Alt+Tab во время работы, убедись, что файл подкачки Windows включён и на системном диске есть несколько ГБ свободного места — компилятор шейдеров пишет временные файлы в %TEMP% (вкладка «Тонкая настройка» проверяет и то, и другое)."
+      - "Эту кнопку можно вообще не трогать и дать кэшу собираться по ходу игры. Дольше, зато в одну сцену не грузятся две тысячи персонажей."
+      - "Если вылет случился НЕ во время сборки шейдеров, запомни, что именно ты делал (турнир, выход из меню, вход в поселение, загрузка сейва). При стеке из одного кадра это единственная рабочая зацепка — модлист себя уже исчерпал: вылет повторяется на минимальной сборке с The Old Realms, так что сторонний мод ни при чём."
+      - "Steam → Проверить целостность файлов игры; разгон/андервольт GPU и процессора сбросить на стандарт."
     zh:
-      - "直接重启并重新开始新游戏——故障是随机的，通常下次尝试就能通过。"
-      - "Steam → 验证游戏文件完整性（以防真的有损坏的原生资源）。"
-      - "把 GPU/CPU 的超频或降压重置为默认；16 GB 内存下，启动前关闭后台程序。"
+      - "如果它发生在 The Old Realms 的「Build Shader Cache」期间：缓存是增量的——崩溃前已编译的内容都保留了。再运行一次会走得更远；通常两三轮就能走到部署阶段。"
+      - "重新运行前：关闭浏览器和其他后台程序，运行期间不要 Alt+Tab，确认 Windows 页面文件已启用且系统盘还有数 GB 空间——着色器编译器会把临时文件写入 %TEMP%（系统调优页会检查这两项）。"
+      - "你也可以完全不点那个按钮，让缓存在游玩过程中自行积累。虽然更慢，但绝不会把两千个角色装进同一个场景。"
+      - "如果崩溃不是发生在着色器编译期间，请记下你当时具体在做什么（比武大会、退出菜单、进入据点、读取存档）。在只有一个堆栈帧的情况下，那个动作是唯一可用的线索——模组列表这条路已经走到头了：在最小化的 The Old Realms 配置下崩溃依然重现，因此与任何附加模组无关。"
+      - "Steam → 验证游戏文件完整性；把 GPU/CPU 的超频或降压重置为默认。"
     zht:
-      - "直接重啟並重新開始新遊戲——故障是隨機的，通常下次嘗試就能通過。"
-      - "Steam → 驗證遊戲檔案完整性（以防真的有損壞的原生資源）。"
-      - "把 GPU/CPU 的超頻或降壓重設為預設；16 GB 記憶體下，啟動前關閉背景程式。"
+      - "如果它發生在 The Old Realms 的「Build Shader Cache」期間：快取是增量的——崩潰前已編譯的內容都保留了。再執行一次會走得更遠；通常兩三輪就能走到部署階段。"
+      - "重新執行前：關閉瀏覽器和其他背景程式，執行期間不要 Alt+Tab，確認 Windows 分頁檔已啟用且系統碟還有數 GB 空間——著色器編譯器會把暫存檔寫入 %TEMP%（系統調校頁會檢查這兩項）。"
+      - "你也可以完全不點那個按鈕，讓快取在遊玩過程中自行累積。雖然更慢，但絕不會把兩千個角色裝進同一個場景。"
+      - "如果崩潰不是發生在著色器編譯期間，請記下你當時具體在做什麼（比武大會、退出選單、進入據點、讀取存檔）。在只有一個堆疊框架的情況下，那個動作是唯一可用的線索——模組清單這條路已經走到頭了：在最小化的 The Old Realms 配置下崩潰依然重現，因此與任何附加模組無關。"
+      - "Steam → 驗證遊戲檔案完整性；把 GPU/CPU 的超頻或降壓重設為預設。"
     tr:
-      - "Sadece yeniden başlat ve yeni oyunu tekrar başlat — hata rastgeledir, genelde bir sonraki denemede geçer."
-      - "Steam → Oyun dosyalarının bütünlüğünü doğrula (gerçekten bozuk bir yerel varlık ihtimaline karşı)."
-      - "GPU/CPU overclock veya undervolt'u varsayılana sıfırla; 16 GB RAM ile başlatmadan önce arka plan uygulamalarını kapat."
+      - "The Old Realms'in «Build Shader Cache» seçeneği çalışırken olduysa: önbellek ARTIMLIDIR — çökmeden önce derlenen her şey korunur. Yeniden başlat, daha ileri gidecektir; genelde iki üç geçişte konuşlandırma aşamasına ulaşır."
+      - "Yeniden çalıştırmadan önce: tarayıcıyı ve diğer arka plan uygulamalarını kapat, çalışırken Alt+Tab YAPMA, Windows sayfa dosyasının açık ve sistem sürücüsünde birkaç GB boş alan olduğundan emin ol — shader derleyici geçici dosyalarını %TEMP% içine yazar (Sistem ayarları sekmesi ikisini de kontrol eder)."
+      - "O düğmeye hiç dokunmadan, önbelleğin oynadıkça kendiliğinden oluşmasını da bekleyebilirsin. Daha uzun sürer ama tek bir sahneye iki bin karakter yüklemez."
+      - "Çökme shader turunun DIŞINDA olduysa, tam olarak ne yaptığını not et (turnuva, menüden çıkış, yerleşime giriş, kayıt yükleme). Tek kareli bir yığında o eylem tek kullanışlı ipucudur — mod listesi yolu tükendi: çökme minimal bir The Old Realms kurulumunda da tekrarlıyor, yani yan bir modun suçu değil."
+      - "Steam → Oyun dosyalarının bütünlüğünü doğrula; GPU/CPU overclock ya da undervolt ayarlarını varsayılana sıfırla."
   match:
-    all:
-      - log_line:
-          contains: "AccessViolationException"
-      - log_line:
-          contains: "NativeObject.Finalize"
+    any:
+      - all:
+          - log_line:
+              contains: "AccessViolationException"
+          - log_line:
+              contains: "NativeObject.Finalize"
+      - all:
+          - managed_exception: { type_contains: "AccessViolation" }
+          - managed_exception: { frame_contains: "NativeObject.Finalize" }
 
 - id: native.stack_overflow
   category: native

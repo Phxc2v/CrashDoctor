@@ -1394,6 +1394,128 @@
           </Children>
         </Widget>
 
+        <!-- ===================== TAB 8: PREVENTED =====================
+             Cumulative journal of crashes the safety nets stopped: what was prevented, which mod was
+             blamed, and which game object was involved. Same list shape as History; Copy/Clear are
+             hidden while the journal is empty. -->
+        <Widget IsVisible="@IsPreventedTabActive"
+                WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
+                MarginTop="190" MarginBottom="120" MarginLeft="80" MarginRight="80">
+          <Children>
+            <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="Popup.Inner.Bg">
+              <Children>
+                <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="30"
+                            VerticalAlignment="Top" MarginTop="12" MarginLeft="20"
+                            Brush.FontSize="20" Brush.FontColor="#C8B898FF" Text="@PreventionStatusText" />
+
+                <Widget Id="PreventionScrollWrap" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
+                        MarginTop="50" MarginBottom="80" MarginLeft="12" MarginRight="32">
+                  <Children>
+                    <ScrollablePanel Id="PreventionScroll" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
+                                     AutoHideScrollBars="true"
+                                     ClipRect="PreventionClipRect" InnerPanel="PreventionClipRect\PreventionEntriesList"
+                                     VerticalScrollbar="..\PreventionScrollbar">
+                      <Children>
+                        <Widget Id="PreventionClipRect" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginRight="20" ClipContents="true">
+                          <Children>
+                            <ListPanel Id="PreventionEntriesList" DataSource="{PreventionEntries}"
+                                       WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren"
+                                       StackLayout.LayoutMethod="VerticalBottomToTop">
+                              <ItemTemplate>
+                                <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="104"
+                                        MarginTop="4" MarginLeft="4" MarginRight="4" Brush="ButtonBrush1">
+                                  <Children>
+                                    <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="70" SuggestedHeight="22"
+                                                HorizontalAlignment="Left" VerticalAlignment="Top"
+                                                MarginLeft="14" MarginTop="6"
+                                                Brush.FontSize="17" Brush.FontColor="@CountColor" Text="@CountText" />
+                                    <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="40"
+                                                HorizontalAlignment="Left" VerticalAlignment="Top"
+                                                MarginLeft="92" MarginTop="6" MarginRight="230"
+                                                Brush.FontSize="17" Brush.FontColor="#F4E1C4FF" Text="@Title" />
+                                    <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="215" SuggestedHeight="22"
+                                                HorizontalAlignment="Right" VerticalAlignment="Top"
+                                                MarginRight="14" MarginTop="6"
+                                                Brush.FontSize="14" Brush.FontColor="#988673FF" Brush.TextHorizontalAlignment="Right"
+                                                Text="@Timestamp" />
+                                    <TextWidget IsVisible="@HasMod"
+                                                WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="20"
+                                                HorizontalAlignment="Left" VerticalAlignment="Top"
+                                                MarginLeft="92" MarginTop="50" MarginRight="14"
+                                                Brush.FontSize="15" Brush.FontColor="#EEBB66FF" Text="@ModText" />
+                                    <TextWidget IsVisible="@HasDetails"
+                                                WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="20"
+                                                HorizontalAlignment="Left" VerticalAlignment="Top"
+                                                MarginLeft="92" MarginTop="70" MarginRight="14"
+                                                Brush.FontSize="15" Brush.FontColor="#C8B898FF" Text="@DetailsText" />
+                                    <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="18"
+                                                HorizontalAlignment="Left" VerticalAlignment="Bottom"
+                                                MarginLeft="14" MarginBottom="4" MarginRight="14"
+                                                Brush.FontSize="13" Brush.FontColor="#7A6A55FF" Text="@TechText" />
+                                  </Children>
+                                </Widget>
+                              </ItemTemplate>
+                            </ListPanel>
+                          </Children>
+                        </Widget>
+                      </Children>
+                    </ScrollablePanel>
+                    <ScrollbarWidget Id="PreventionScrollbar"
+                                     WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent"
+                                     SuggestedWidth="10" HorizontalAlignment="Right" VerticalAlignment="Top"
+                                     MarginTop="6" MarginBottom="6" MarginRight="2"
+                                     AlignmentAxis="Vertical" Handle="PreventionScrollbarHandle"
+                                     MaxValue="100" MinValue="0">
+                      <Children>
+                        <Widget WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="4"
+                                HorizontalAlignment="Center"
+                                Sprite="BlankWhiteSquare_9" Color="#5a4033FF" AlphaFactor="0.4" />
+                        <ImageWidget Id="PreventionScrollbarHandle"
+                                     WidthSizePolicy="Fixed" HeightSizePolicy="Fixed"
+                                     SuggestedHeight="40" SuggestedWidth="10"
+                                     HorizontalAlignment="Center" Brush="FaceGen.Scrollbar.Handle" />
+                      </Children>
+                    </ScrollbarWidget>
+                  </Children>
+                </Widget>
+
+                <ListPanel WidthSizePolicy="CoverChildren" HeightSizePolicy="Fixed" SuggestedHeight="60"
+                           HorizontalAlignment="Center" VerticalAlignment="Bottom" MarginBottom="14"
+                           StackLayout.LayoutMethod="HorizontalLeftToRight">
+                  <Children>
+                    <ButtonWidget DoNotPassEventsToChildren="true" Command.Click="ExecutePreventionRefresh" Brush="Popup.Done.Button"
+                                  WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="240" SuggestedHeight="60"
+                                  MarginRight="14">
+                      <Children>
+                        <TextWidget DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
+                                    Brush="Popup.Button.Text" Brush.FontSize="18"
+                                    Brush.TextHorizontalAlignment="Center" Text="@LabelBtnPreventionRefresh" />
+                      </Children>
+                    </ButtonWidget>
+                    <ButtonWidget DoNotPassEventsToChildren="true" IsVisible="@PreventionHasEntries" Command.Click="ExecutePreventionCopy" Brush="Popup.Done.Button"
+                                  WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="300" SuggestedHeight="60"
+                                  MarginRight="14">
+                      <Children>
+                        <TextWidget DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
+                                    Brush="Popup.Button.Text" Brush.FontSize="18"
+                                    Brush.TextHorizontalAlignment="Center" Text="@LabelBtnPreventionCopy" />
+                      </Children>
+                    </ButtonWidget>
+                    <ButtonWidget DoNotPassEventsToChildren="true" IsVisible="@PreventionHasEntries" Command.Click="ExecutePreventionClear" Brush="Popup.Delete.Button"
+                                  WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="300" SuggestedHeight="60">
+                      <Children>
+                        <TextWidget DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
+                                    Brush="Popup.Button.Text" Brush.FontSize="18"
+                                    Brush.TextHorizontalAlignment="Center" Text="@LabelBtnPreventionClear" />
+                      </Children>
+                    </ButtonWidget>
+                  </Children>
+                </ListPanel>
+              </Children>
+            </Widget>
+          </Children>
+        </Widget>
+
         <!-- ===================== TAB STRIP (placed AFTER tab panels so it sits on top of the Z-stack) =====================
              Four tabs: Crashes, Tune-up, History, Optimization. Widths reduced to fit a 4th
              button on the same horizontal strip. Active-tab strip indicator widgets below
@@ -1406,7 +1528,7 @@
           <Children>
             <ButtonWidget DoNotPassEventsToChildren="true" Command.Click="ExecuteShowCrashesTab"
                           Brush="Popup.Done.Button"
-                          WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="188" SuggestedHeight="66"
+                          WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="164" SuggestedHeight="66"
                           MarginRight="6">
               <Children>
                 <TextWidget DoNotAcceptEvents="true"
@@ -1417,7 +1539,7 @@
             </ButtonWidget>
             <ButtonWidget DoNotPassEventsToChildren="true" Command.Click="ExecuteShowTuneUpTab"
                           Brush="Popup.Done.Button"
-                          WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="188" SuggestedHeight="66"
+                          WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="164" SuggestedHeight="66"
                           MarginRight="6">
               <Children>
                 <TextWidget DoNotAcceptEvents="true"
@@ -1428,7 +1550,7 @@
             </ButtonWidget>
             <ButtonWidget DoNotPassEventsToChildren="true" Command.Click="ExecuteShowHistoryTab"
                           Brush="Popup.Done.Button"
-                          WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="188" SuggestedHeight="66"
+                          WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="164" SuggestedHeight="66"
                           MarginRight="6">
               <Children>
                 <TextWidget DoNotAcceptEvents="true"
@@ -1439,7 +1561,7 @@
             </ButtonWidget>
             <ButtonWidget DoNotPassEventsToChildren="true" Command.Click="ExecuteShowSavesTab"
                           Brush="Popup.Done.Button"
-                          WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="188" SuggestedHeight="66"
+                          WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="164" SuggestedHeight="66"
                           MarginRight="6">
               <Children>
                 <TextWidget DoNotAcceptEvents="true"
@@ -1452,7 +1574,7 @@
                  (Harmony conflicts / missing deps / disabled-in-save / load order). -->
             <ButtonWidget DoNotPassEventsToChildren="true" Command.Click="ExecuteShowModsTab"
                           Brush="Popup.Done.Button"
-                          WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="188" SuggestedHeight="66"
+                          WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="164" SuggestedHeight="66"
                           MarginRight="6">
               <Children>
                 <TextWidget DoNotAcceptEvents="true"
@@ -1466,7 +1588,7 @@
                  whole tab manages live Harmony patches, which can't run without the module. -->
             <ButtonWidget DoNotPassEventsToChildren="true" Command.Click="ExecuteShowCrashFixesTab"
                           Brush="Popup.Done.Button"
-                          WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="188" SuggestedHeight="66"
+                          WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="164" SuggestedHeight="66"
                           MarginRight="6">
               <Children>
                 <TextWidget DoNotAcceptEvents="true"
@@ -1475,11 +1597,24 @@
                             Brush.TextHorizontalAlignment="Center" Text="@LabelTabCrashFixes" />
               </Children>
             </ButtonWidget>
+            <!-- NEW (2026-08-03) Prevented tab — cumulative journal of crashes the safety nets stopped
+                 (what, which mod, which game data). Placed before Settings so Settings stays last. -->
+            <ButtonWidget DoNotPassEventsToChildren="true" Command.Click="ExecuteShowPreventedTab"
+                          Brush="Popup.Done.Button"
+                          WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="164" SuggestedHeight="66"
+                          MarginRight="6">
+              <Children>
+                <TextWidget DoNotAcceptEvents="true"
+                            WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
+                            Brush="Popup.Button.Text" Brush.FontSize="15"
+                            Brush.TextHorizontalAlignment="Center" Text="@LabelTabPrevented" />
+              </Children>
+            </ButtonWidget>
             <!-- NEW (2026-05-14) Settings tab — last in the strip. Holds Emergency Save / Native
                  crash log / UI error patching toggles. -->
             <ButtonWidget DoNotPassEventsToChildren="true" Command.Click="ExecuteShowSettingsTab"
                           Brush="Popup.Done.Button"
-                          WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="188" SuggestedHeight="66">
+                          WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="164" SuggestedHeight="66">
               <Children>
                 <TextWidget DoNotAcceptEvents="true"
                             WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
@@ -1594,15 +1729,18 @@
           </Children>
         </ListPanel>
 
-        <!-- Support author — pinned to the far bottom-right corner, OUTSIDE the centered action
-             cluster, so it never crowds the other buttons and stays out of the way. (It used to
-             sit at the end of the centered row, right next to Close.) -->
+        <!-- Donate — pinned to the far bottom-right corner, OUTSIDE the centered action cluster,
+             so it never crowds the other buttons and stays out of the way. (It used to sit at the
+             end of the centered row, right next to Close.) It is the mod's ONLY permanent donate
+             entry point, and it opens the popup rather than a browser: per DONATE.md §4 the
+             player must see where they are going before they leave the game. No reminders, no
+             timers, no animation. -->
         <ButtonWidget DoNotPassEventsToChildren="true" Command.Click="ExecuteShowSupportDialog" Brush="Popup.Done.Button"
                       WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="280" SuggestedHeight="66"
                       HorizontalAlignment="Right" VerticalAlignment="Bottom" MarginBottom="30" MarginRight="30">
           <Children>
             <TextWidget DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
-                        Brush="Popup.Button.Text" Brush.TextHorizontalAlignment="Center" Text="@LabelSupportButton" />
+                        Brush="Popup.Button.Text" Brush.TextHorizontalAlignment="Center" Text="@LabelDonateButton" />
           </Children>
         </ButtonWidget>
 
@@ -1689,7 +1827,10 @@
                 WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
                 Sprite="BlankWhiteSquare_9" Color="#000000EE">
           <Children>
-            <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="900" SuggestedHeight="560"
+            <!-- 600 tall: the stack below ends at y=502 (thanks line) and the close button
+                 occupies the last 68px, so anything shorter puts the two on top of each other.
+                 Re-measure this if a label above grows. -->
+            <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="900" SuggestedHeight="600"
                     HorizontalAlignment="Center" VerticalAlignment="Center"
                     Sprite="StdAssets\Popup\canvas">
               <Children>
@@ -1701,63 +1842,82 @@
 
                 <!-- Title -->
                 <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="40"
-                            VerticalAlignment="Top" MarginTop="20"
+                            VerticalAlignment="Top" MarginTop="18"
                             Brush.FontSize="28" Brush.FontColor="#E0A040FF" Brush.TextHorizontalAlignment="Center"
-                            Text="@LabelSupportTitle" />
+                            Text="@LabelDonateHeading" />
 
-                <!-- USDT Tron — clickable text, copies to clipboard -->
-                <ButtonWidget DoNotPassEventsToChildren="true" Command.Click="ExecuteCopyTron"
-                              WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="820" SuggestedHeight="28"
-                              VerticalAlignment="Top" HorizontalAlignment="Center" MarginTop="90">
-                  <Children>
-                    <TextWidget DoNotAcceptEvents="true"
-                                WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
-                                Brush.FontSize="15" Brush.FontColor="#D8C8A8FF" Brush.TextHorizontalAlignment="Center"
-                                Text="@LabelSupportTron" />
-                  </Children>
-                </ButtonWidget>
+                <!-- Why the donation exists and what it does NOT buy -->
+                <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="800" SuggestedHeight="170"
+                            HorizontalAlignment="Center" VerticalAlignment="Top" MarginTop="64"
+                            Brush.FontSize="15" Brush.FontColor="#C8B898FF" Brush.TextHorizontalAlignment="Left"
+                            Text="@LabelDonateBody" />
 
-                <!-- USDT ERC-20 — clickable text, copies to clipboard -->
-                <ButtonWidget DoNotPassEventsToChildren="true" Command.Click="ExecuteCopyErc20"
-                              WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="820" SuggestedHeight="28"
-                              VerticalAlignment="Top" HorizontalAlignment="Center" MarginTop="124">
-                  <Children>
-                    <TextWidget DoNotAcceptEvents="true"
-                                WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
-                                Brush.FontSize="15" Brush.FontColor="#D8C8A8FF" Brush.TextHorizontalAlignment="Center"
-                                Text="@LabelSupportErc20" />
-                  </Children>
-                </ButtonWidget>
-
-                <!-- Card / SBP payment (Tribute) — right after the USDT addresses; Russian users only -->
-                <ButtonWidget IsVisible="@ShowCardPaymentButton" DoNotPassEventsToChildren="true" Command.Click="ExecuteOpenCardPayment"
+                <!-- Primary: the plain web page (works without Telegram, takes a card) -->
+                <ButtonWidget DoNotPassEventsToChildren="true" Command.Click="ExecuteOpenDonateWeb"
                               Brush="Popup.Done.Button"
-                              WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="360" SuggestedHeight="48"
-                              HorizontalAlignment="Center" VerticalAlignment="Top" MarginTop="160">
+                              WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="380" SuggestedHeight="48"
+                              HorizontalAlignment="Center" VerticalAlignment="Top" MarginTop="244">
                   <Children>
                     <TextWidget DoNotAcceptEvents="true"
                                 WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
                                 Brush="Popup.Button.Text" Brush.FontSize="17" Brush.TextHorizontalAlignment="Center"
-                                Text="@LabelSupportCard" />
+                                Text="@LabelDonateWeb" />
+                  </Children>
+                </ButtonWidget>
+                <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="800" SuggestedHeight="22"
+                            HorizontalAlignment="Center" VerticalAlignment="Top" MarginTop="296"
+                            Brush.FontSize="13" Brush.FontColor="#A89878FF" Brush.TextHorizontalAlignment="Center"
+                            Text="@LabelDonateWebSub" />
+
+                <!-- Secondary: the same page inside Telegram -->
+                <ButtonWidget DoNotPassEventsToChildren="true" Command.Click="ExecuteOpenDonateTelegram"
+                              Brush="Popup.Cancel.Button"
+                              WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="380" SuggestedHeight="44"
+                              HorizontalAlignment="Center" VerticalAlignment="Top" MarginTop="328">
+                  <Children>
+                    <TextWidget DoNotAcceptEvents="true"
+                                WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
+                                Brush="Popup.Button.Text" Brush.FontSize="16" Brush.TextHorizontalAlignment="Center"
+                                Text="@LabelDonateTelegram" />
+                  </Children>
+                </ButtonWidget>
+                <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="800" SuggestedHeight="22"
+                            HorizontalAlignment="Center" VerticalAlignment="Top" MarginTop="376"
+                            Brush.FontSize="13" Brush.FontColor="#A89878FF" Brush.TextHorizontalAlignment="Center"
+                            Text="@LabelDonateTelegramSub" />
+
+                <!-- The address in full, so the player sees where they're going, + copy button -->
+                <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="800" SuggestedHeight="24"
+                            HorizontalAlignment="Center" VerticalAlignment="Top" MarginTop="410"
+                            Brush.FontSize="15" Brush.FontColor="#D8C8A8FF" Brush.TextHorizontalAlignment="Center"
+                            Text="@LabelDonateAddress" />
+                <ButtonWidget DoNotPassEventsToChildren="true" Command.Click="ExecuteCopyDonateLink"
+                              WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="260" SuggestedHeight="36"
+                              HorizontalAlignment="Center" VerticalAlignment="Top" MarginTop="438">
+                  <Children>
+                    <TextWidget DoNotAcceptEvents="true"
+                                WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
+                                Brush.FontSize="14" Brush.FontColor="#E0A040FF" Brush.TextHorizontalAlignment="Center"
+                                Text="@LabelDonateCopy" />
                   </Children>
                 </ButtonWidget>
 
-                <!-- Disclaimer + thanks (multiline, scrollable not needed at this length) -->
-                <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="780" SuggestedHeight="280"
-                            HorizontalAlignment="Center" VerticalAlignment="Top" MarginTop="224"
-                            Brush.FontSize="15" Brush.FontColor="#C8B898FF" Brush.TextHorizontalAlignment="Left"
-                            Text="@LabelSupportBody" />
+                <!-- Thanks -->
+                <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="800" SuggestedHeight="22"
+                            HorizontalAlignment="Center" VerticalAlignment="Top" MarginTop="480"
+                            Brush.FontSize="14" Brush.FontColor="#C8B898FF" Brush.TextHorizontalAlignment="Center"
+                            Text="@LabelDonateNote" />
 
                 <!-- Close -->
                 <ButtonWidget DoNotPassEventsToChildren="true" Command.Click="ExecuteHideSupportDialog"
                               Brush="Popup.Cancel.Button"
-                              WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="220" SuggestedHeight="56"
-                              HorizontalAlignment="Center" VerticalAlignment="Bottom" MarginBottom="20">
+                              WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="220" SuggestedHeight="52"
+                              HorizontalAlignment="Center" VerticalAlignment="Bottom" MarginBottom="16">
                   <Children>
                     <TextWidget DoNotAcceptEvents="true"
                                 WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
                                 Brush="Popup.Button.Text" Brush.TextHorizontalAlignment="Center"
-                                Text="@LabelSupportClose" />
+                                Text="@LabelDonateClose" />
                   </Children>
                 </ButtonWidget>
               </Children>

@@ -1,15 +1,55 @@
-Thanks for using Crash Doctor!
+﻿Thanks for using Crash Doctor!
 
 WHAT'S NEW
 
-• Crash guard for bandit factions that have no ship data (e.g. The Old Realms beastmen). It stops crashes after auto-resolved battles and, more importantly, crashes that stopped a save from loading at all. On by default on the "Crash fixes" tab.
+• New "is this mod working at all" check: a missing library (ButterLib, MCM, UIExtenderEx, Harmony, BLSE) or a half-extracted archive now flags the mod on the Mods tab, naming the exact missing file — before it turns into anything.
 
-• Crash guard for a dying clan being wiped out. On the daily tick, when a clan is removed and one of its parties has lost its internal link, the game crashed; seen with total-conversion mods (e.g. Europe 1100). On by default.
+• New "Prevented" tab — a running journal of the crashes that were stopped: what exactly, how many times, which mod, and on which game data. Press Ctrl+Alt+D for the same list in a campaign.
 
-• Crash guard for a siege won by a faction that has no leader. The captured settlement is handed to the hero who actually took it, so the campaign keeps running. On by default.
+• Prevented-crash messages now name the object the game tripped over: the troop and its missing culture, the party, hero, clan or settlement.
 
-• Cleanup no longer stops on a single protected folder. "Clear old files from %TEMP%" and the other cleanups used to abort with an "Access denied" error over one locked folder (like Windows' msdtadmin) and delete nothing; now they skip what they can't read and clear the rest.
+• They also name the mod whose code threw — but only when that can be determined honestly. If the game's own code threw, no mod is named; a wrong name gets an innocent mod uninstalled.
 
-• New crashes now get a clear verdict: a naval-battle crash from a name-marker mod (Warlord), a crash when loading a save from inside a campaign (a banner/visual mod), and a native crash in Naval DLC ports. These can't be auto-fixed, so Crash Doctor names the cause and tells you what to do.
+• Donations reworked: one page in two forms — a normal web page that takes a card without Telegram, and the same page inside Telegram — picked for your language, with the address shown in full and a copy button.
 
-Report a crash: t.me/CodeRickTg — send the report.txt from the "Open folder" button on the crash card.
+GUARDS AGAINST CRASHES
+
+• A battle handing out loot with a settlement among the winners — a village repelling a raid, a town repelling an assault. Typical symptom: the save loads fine and the game crashes the moment you start moving.
+
+• Sharing out prisoners right after a battle, when the game removes a troop that is no longer in the roster. That one transfer is skipped and the battle finishes.
+
+• A child being born to a parent that has no body-shape data — a character some mod created in code. The newborn gets an average build and the day passes.
+
+• A town raising a rebellion when its culture has no rebel-hero templates. That town does not rebel and is rolled for again the next day.
+
+• The daily error about a rebel clan the game never registered — usually a clan left behind by a mod added or removed mid-save. It repeated every single day, once per clan.
+
+• Party wages on the day change; the wage of the problem party counts as zero for that day.
+
+• Auto-upgrading an AI party's troops — a divide-by-zero in the game itself when a higher-tier troop is paid the same wage.
+
+• A town creating a smithing order; the order is skipped and the slot is filled the next day.
+
+• A battle ending with a hero killed in it — the pass is restarted, so the result is applied in full.
+
+• An AI clan leaving a kingdom it no longer belonged to, usually after a mod moved that clan's leader.
+
+FIXES
+
+• The "What's new" window no longer appears over the first-launch brightness setup, and no longer beats the menu to the screen. The check that was supposed to prevent this was reading a property the game does not have, so it never once ran.
+
+• Mod settings and markers are no longer lost when Windows has redirected Documents into OneDrive. They now live in a folder that is always readable at startup, and what you already had is moved across once.
+
+• A crash report no longer calls the game's own code a third-party mod when that code happens to be patched.
+
+• The Tune-Up tab now speaks Traditional Chinese — every status and result line, not just the cards.
+
+• "Don't show news again" checkbox on this window: tick it and close, and it will not return on this version or any future one.
+
+• Crashes in the game's native finalizer (AccessViolation) are diagnosed correctly, including the case around The Old Realms' "Build Shader Cache" button.
+
+• Repair for a broken Windows TEMP path: if TMP/TEMP point at a drive that is gone, the Tune-Up tab restores the standard path in one click.
+
+• The crash report now ships with crashdoctor_at_crash.log, which shows the exact troop, party or settlement the game broke on.
+
+Report a crash: t.me/CodeRickTg — press "Open folder" on the crash card and send BOTH files: report.txt and crashdoctor_at_crash.log.

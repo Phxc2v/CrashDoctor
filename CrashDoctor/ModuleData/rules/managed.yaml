@@ -49,27 +49,27 @@
       yazması için ihtiyaç duyduğu tam olarak budur.
   fix:
     en:
-      - "Click «Open folder» at the bottom and send the developer the report.txt file inside it — it already holds the exception, the culprit mod and the full stack trace, everything needed for a patch."
+      - "Click «Open folder» at the bottom and send the developer BOTH files inside it — report.txt (the exception, the culprit mod and the full stack trace) and crashdoctor_at_crash.log (the mod's own log at the moment of the crash, which often names the exact broken object the stack can't)."
       - "Report channel: https://t.me/CodeRickTg . Mention what you were doing when it crashed (battle / menu / save load / which mods)."
       - "Copy the evidence below (subsystem, culprit mod, stack frames) into your message — that's exactly what pinpoints the bug."
       - "Do NOT rebuild shaders or change drivers for this crash — it's a code bug, that won't help. If the culprit is a specific mod, try disabling it as a temporary workaround."
     ru:
-      - "Нажми «Открыть папку» внизу и пришли разработчику файл report.txt из неё — в нём уже есть исключение, виновник-мод и полный стек, всё что нужно для патча."
+      - "Нажми «Открыть папку» внизу и пришли разработчику ОБА файла из неё — report.txt (исключение, виновник-мод и полный стек) и crashdoctor_at_crash.log (лог мода на момент краша, он часто называет конкретный битый объект, которого не видно по стеку)."
       - "Канал для отчётов: https://t.me/CodeRickTg . Напиши, что делал в момент краша (бой / меню / загрузка сейва / какие моды)."
       - "Скопируй улики ниже (подсистема, виновник-мод, кадры стека) в сообщение — именно они указывают на баг."
       - "НЕ пересобирай шейдеры и не меняй драйвер из-за этого краша — это баг кода, не поможет. Если виновник — конкретный мод, попробуй временно отключить его."
     zh:
-      - "点击下方「打开文件夹」，把里面的 report.txt 文件发给开发者——它已包含异常、肇事模组和完整堆栈，做补丁所需的一切都在里面。"
+      - "点击下方「打开文件夹」，把里面的两个文件都发给开发者——report.txt（异常、肇事模组和完整堆栈）和 crashdoctor_at_crash.log（崩溃当时模组自己的日志，它常能指出堆栈看不到的具体损坏对象）。"
       - "反馈频道：https://t.me/CodeRickTg 。说明崩溃时你在做什么（战斗 / 菜单 / 读取存档 / 哪些模组）。"
       - "把下方证据（子系统、肇事模组、堆栈帧）复制到你的消息里——正是它们定位了 bug。"
       - "不要为这次崩溃重建着色器或更换驱动——这是代码 bug，没用。如果肇事者是某个具体模组，可尝试临时禁用它。"
     zht:
-      - "點擊下方「開啟資料夾」，把裡面的 report.txt 檔案傳給開發者——它已包含例外、肇事模組和完整堆疊，做修補程式所需的一切都在裡面。"
+      - "點擊下方「開啟資料夾」，把裡面的兩個檔案都傳給開發者——report.txt（例外、肇事模組和完整堆疊）和 crashdoctor_at_crash.log（崩潰當時模組自己的記錄檔，它常能指出堆疊看不到的具體損壞物件）。"
       - "回報頻道：https://t.me/CodeRickTg 。說明崩潰時你在做什麼（戰鬥 / 選單 / 讀取存檔 / 哪些模組）。"
       - "把下方證據（子系統、肇事模組、堆疊框架）複製到你的訊息裡——正是它們定位了 bug。"
       - "不要為這次崩潰重建著色器或更換驅動——這是程式碼 bug，沒用。如果肇事者是某個具體模組，可嘗試暫時停用它。"
     tr:
-      - "Aşağıdaki «Klasörü aç» düğmesine tıkla ve içindeki report.txt dosyasını geliştiriciye gönder — istisnayı, suçlu modu ve tam yığın izini, yani yama için gereken her şeyi zaten içerir."
+      - "Aşağıdaki «Klasörü aç» düğmesine tıkla ve içindeki HER İKİ dosyayı da geliştiriciye gönder — report.txt (istisna, suçlu mod ve tam yığın izi) ve crashdoctor_at_crash.log (çökme anındaki modun kendi günlüğü; çoğu zaman yığının gösteremediği bozuk nesneyi adlandırır)."
       - "Rapor kanalı: https://t.me/CodeRickTg . Çökme anında ne yaptığını belirt (savaş / menü / kayıt yükleme / hangi modlar)."
       - "Aşağıdaki kanıtları (alt sistem, suçlu mod, yığın çerçeveleri) mesajına kopyala — hatayı tam olarak bunlar gösterir."
       - "Bu çökme için gölgelendiricileri yeniden oluşturma veya sürücü değiştirme — bu bir kod hatası, yardımcı olmaz. Suçlu belirli bir modsa geçici çözüm olarak onu devre dışı bırakmayı dene."
@@ -95,6 +95,11 @@
               - managed_exception: { type_contains: "UnderFlow" }
           - all:
               - managed_exception: { frame_contains: "NavalMobilePartyVisual" }
+              - managed_exception: { type_contains: "AccessViolation" }
+          # A one-frame TaleWorlds.DotNet.NativeObject.Finalize AV is a NATIVE use-after-free on the
+          # GC finalizer thread, not managed code throwing — native.dotnet_finalizer_av owns it.
+          - all:
+              - managed_exception: { frame_contains: "NativeObject.Finalize" }
               - managed_exception: { type_contains: "AccessViolation" }
           - all:
               - managed_exception: { frame_contains: "game_menu_encounter_on_init" }
@@ -141,6 +146,15 @@
           - all:
               - managed_exception: { frame_contains: "GetDefaultTroopTraits" }
               - managed_exception: { type_contains: "NullReference" }
+          - all:
+              - managed_exception: { frame_contains: "DefaultPartyWageModel.GetTotalWage" }
+              - managed_exception: { type_contains: "NullReference" }
+          - all:
+              - managed_exception: { frame_contains: "CraftingCampaignBehavior.CreateTownOrder" }
+              - managed_exception: { type_contains: "NullReference" }
+          - all:
+              - managed_exception: { frame_contains: "HandleMapEventEndForPartyInternal" }
+              - managed_exception: { type_contains: "ArgumentOutOfRange" }
           - all:
               - managed_exception: { frame_contains: "TOR_Core.SubModule.OnGameInitializationFinished" }
               - managed_exception: { type_contains: "NullReference" }
@@ -726,6 +740,123 @@
       - managed_exception: { type_contains: "NullReference" }
       - none:
           - managed_exception: { frame_contains: "SkillTrainerBehavior" }
+
+# Campaign-map daily-tick crash: an AI clan leaves a kingdom it no longer belongs to, so the oldKingdom
+# handed to the relation handler is null. NullReferenceException from
+# TaleWorlds.CampaignSystem.CampaignBehaviors.CharacterRelationCampaignBehavior.OnClanChangedKingdom ←
+# CampaignEventDispatcher.OnClanChangedKingdom ← ChangeKingdomAction.ApplyInternal ←
+# LeaveKingdomAsClanBarterable.Apply ← DiplomaticBartersBehavior.ConsiderClanLeaveKingdom ← DailyTickClan
+# ← Campaign.Tick. Verified against the SHIPPED 1.4.7 CampaignSystem: the handler does
+# `foreach (Clan c in oldKingdom.Clans) ChangeRelationAction.ApplyRelationChangeBetweenHeroes(...)` with
+# no null-check, while ChangeKingdomAction's own CheckIfPartyIconIsDirty writes `oldKingdom ?? clan` —
+# vanilla expects the null everywhere except here. It arrives because DiplomaticBartersBehavior checks
+# `clan.Kingdom != null` on the TICKED clan but LeaveKingdomAsClanBarterable.Apply acts on
+# OriginalOwner.Clan (= clan.Leader.Clan), a different, possibly kingdomless clan once a mod has moved
+# that leader hero. NOT a shader/driver/TOR problem. Guarded by Crash Doctor (id
+# "clan_left_kingdom_null_old").
+- id: campaign.clan_left_kingdom_null_old_kingdom_nre
+  category: managed
+  severity: critical
+  confidence: high
+  evidence_source: "Client crash 2026-07-30 report-1.txt (crash id a62e0006, seen 3x in under 2 hours) — NullReferenceException TaleWorlds.CampaignSystem.CampaignBehaviors.CharacterRelationCampaignBehavior.OnClanChangedKingdom ← MbEvent`5.InvokeList ← CampaignEvents.OnClanChangedKingdom ← CampaignEventDispatcher.OnClanChangedKingdom ← ChangeKingdomAction.ApplyInternal ← LeaveKingdomAsClanBarterable.Apply ← DiplomaticBartersBehavior.ConsiderClanLeaveKingdom ← DiplomaticBartersBehavior.DailyTickClan ← CampaignEvents.DailyTickClan ← Campaign.Tick ← MapState.OnMapModeTick. Bannerlord 1.4.7, ~70 mods including Dramalord, KeepYourClanMembersAfterMarriage, Titles, PlayerSwitcher, BannerlordExpanded.ChildrenExpanded, Bannerlord.Diplomacy. Root confirmed by decompiling the shipped 1.4.7 CampaignSystem: OnClanChangedKingdom iterates oldKingdom.Clans with no null-check, and ChangeRelationAction.ApplyInternal (112 bytes of IL, past the JIT inline limit) is absent from the stack, so the fault is in the handler's own frame. Captured by Crash Doctor managed capture."
+  requires_sources: [managed_exception]
+  title:
+    en: "Leave-kingdom crash — the kingdom that was left no longer exists — guarded by Crash Doctor"
+    ru: "Вылет при выходе клана из королевства — покинутого королевства уже нет — перехвачено Crash Doctor"
+    zh: "脱离王国崩溃——被脱离的王国已不存在——已被 Crash Doctor 拦截"
+    zht: "脫離王國崩潰——被脫離的王國已不存在——已被 Crash Doctor 攔截"
+    tr: "Krallıktan ayrılma çökmesi — ayrılınan krallık artık yok — Crash Doctor tarafından korunuyor"
+  description:
+    en: |
+      NullReferenceException from TaleWorlds.CampaignSystem.CampaignBehaviors
+      .CharacterRelationCampaignBehavior.OnClanChangedKingdom on the campaign-map daily tick, while an
+      AI clan was leaving a kingdom (DiplomaticBartersBehavior.DailyTickClan → ConsiderClanLeaveKingdom
+      → LeaveKingdomAsClanBarterable.Apply → ChangeKingdomAction.ApplyInternal → Campaign.Tick).
+      When a clan leaves, the game applies a relation penalty (-20, or -40 for a rebellion) towards
+      every clan of the kingdom it left — and reads that kingdom's clan list with no null-check. Here
+      the kingdom is NULL, because the AI leave decision is CHECKED for one clan but APPLIED to the
+      clan its LEADER belongs to: a mod that moves heroes between clans makes those two different, and
+      the second one may have no kingdom at all. The base game tolerates that null everywhere else in
+      the same action (it writes `oldKingdom ?? clan` a few lines earlier) — only the relation handler
+      forgot the check, so the whole daily tick dies the moment such a clan leaves. This is base-game
+      code TRIGGERED by mod state, NOT a shader, driver or TOR bug.
+    ru: |
+      NullReferenceException из TaleWorlds.CampaignSystem.CampaignBehaviors
+      .CharacterRelationCampaignBehavior.OnClanChangedKingdom на дневном тике карты, когда ИИ-клан
+      выходил из королевства (DiplomaticBartersBehavior.DailyTickClan → ConsiderClanLeaveKingdom →
+      LeaveKingdomAsClanBarterable.Apply → ChangeKingdomAction.ApplyInternal → Campaign.Tick).
+      При выходе клана игра начисляет штраф к отношениям (-20, при восстании -40) со всеми кланами
+      покинутого королевства — и читает список его кланов без проверки на null. Здесь королевство
+      равно NULL, потому что решение о выходе ПРОВЕРЯЕТСЯ для одного клана, а ПРИМЕНЯЕТСЯ к клану, в
+      котором числится его ЛИДЕР: мод, переставляющий героев между кланами, делает эти два клана
+      разными, и у второго королевства может не быть вовсе. Базовая игра терпит этот null везде в том
+      же действии (парой строк выше она пишет `oldKingdom ?? clan`) — проверку забыли только в
+      обработчике отношений, поэтому весь дневной тик падает в момент такого выхода. Это код базовой
+      игры, ЗАПУЩЕННЫЙ состоянием мода, а НЕ баг шейдеров, драйвера или TOR.
+    zh: |
+      战役地图每日结算期间，某 AI 家族正脱离王国时（DiplomaticBartersBehavior.DailyTickClan →
+      ConsiderClanLeaveKingdom → LeaveKingdomAsClanBarterable.Apply → ChangeKingdomAction.ApplyInternal
+      → Campaign.Tick），TaleWorlds.CampaignSystem.CampaignBehaviors.CharacterRelationCampaignBehavior
+      .OnClanChangedKingdom 抛出空引用异常。家族脱离时，游戏会对所脱离王国的每个家族施加关系惩罚
+      （-20，叛乱为 -40），并且读取该王国的家族列表时不做空检查。此处王国为 NULL，因为脱离王国的 AI
+      决策是针对一个家族做的判断，却施加到其首领所在的家族上：移动英雄的模组会让这两者不是同一个家族，
+      而后者可能根本没有王国。原版在同一动作的其他地方都容忍这个空值（几行之前就写着
+      `oldKingdom ?? clan`）——唯独关系处理逻辑漏了检查，于是这样的脱离一发生，整个每日结算就崩溃。
+      这是被模组状态触发的原版代码，而不是着色器、驱动或 TOR 的 bug。
+    zht: |
+      戰役地圖每日結算期間，某 AI 家族正脫離王國時（DiplomaticBartersBehavior.DailyTickClan →
+      ConsiderClanLeaveKingdom → LeaveKingdomAsClanBarterable.Apply → ChangeKingdomAction.ApplyInternal
+      → Campaign.Tick），TaleWorlds.CampaignSystem.CampaignBehaviors.CharacterRelationCampaignBehavior
+      .OnClanChangedKingdom 擲出空參考例外。家族脫離時，遊戲會對所脫離王國的每個家族施加關係懲罰
+      （-20，叛亂為 -40），並且讀取該王國的家族清單時不做空檢查。此處王國為 NULL，因為脫離王國的 AI
+      決策是針對一個家族做的判斷，卻施加到其首領所在的家族上：移動英雄的模組會讓這兩者不是同一個家族，
+      而後者可能根本沒有王國。原版在同一動作的其他地方都容忍這個空值（幾行之前就寫著
+      `oldKingdom ?? clan`）——唯獨關係處理邏輯漏了檢查，於是這樣的脫離一發生，整個每日結算就崩潰。
+      這是被模組狀態觸發的原版程式碼，而不是著色器、驅動或 TOR 的 bug。
+    tr: |
+      Sefer haritası günlük tick'inde, bir YZ klanı bir krallıktan ayrılırken
+      (DiplomaticBartersBehavior.DailyTickClan → ConsiderClanLeaveKingdom →
+      LeaveKingdomAsClanBarterable.Apply → ChangeKingdomAction.ApplyInternal → Campaign.Tick)
+      TaleWorlds.CampaignSystem.CampaignBehaviors.CharacterRelationCampaignBehavior
+      .OnClanChangedKingdom'dan NullReferenceException fırlatıldı. Bir klan ayrıldığında oyun,
+      ayrılınan krallığın her klanına bir ilişki cezası (-20; isyanda -40) uygular ve o krallığın klan
+      listesini null kontrolü yapmadan okur. Burada krallık NULL'dur, çünkü ayrılma YZ kararı bir klan
+      için KONTROL EDİLİR ama LİDERİNİN ait olduğu klana UYGULANIR: kahramanları klanlar arasında
+      taşıyan bir mod bu ikisini farklı kılar ve ikincisinin hiç krallığı olmayabilir. Oyun bu null'a
+      aynı eylemin her yerinde katlanır (birkaç satır önce `oldKingdom ?? clan` yazar) — kontrolü
+      yalnızca ilişki işleyicisi unutmuştur, bu yüzden böyle bir ayrılma anında tüm günlük tick ölür.
+      Bu, mod durumu tarafından TETİKLENEN oyun kodudur; gölgelendirici, sürücü ya da TOR hatası
+      DEĞİLDİR.
+  fix:
+    en:
+      - "Crash Doctor already guards this — its safety net skips the relation penalty when the kingdom that was left no longer exists, so the game keeps running. Keep the «Leave-kingdom crash guard (the old kingdom is gone)» fix ON (Crash Fixes tab)."
+      - "Root cause is a mod that moves a clan leader into another clan, so the AI's leave-kingdom decision is applied to a clan that has no kingdom. Suspects on your list: Dramalord, KeepYourClanMembersAfterMarriage, Titles, PlayerSwitcher, BannerlordExpanded.ChildrenExpanded. If it keeps happening, disable them one at a time to find the source."
+      - "Nothing is wrong with your save — the guard applies no changes to it, and the crash only fires while an AI clan is leaving a kingdom."
+      - "Do NOT rebuild shaders or change drivers — this is a mod/state bug, that won't help."
+    ru:
+      - "Crash Doctor уже это перехватывает — safety net пропускает штраф к отношениям, когда покинутого королевства уже нет, и игра продолжает работать. Держи фикс «Защита от вылета при выходе клана из королевства (прежнего королевства уже нет)» ВКЛ (вкладка «Фиксы крашей»)."
+      - "Корень — мод, переводящий лидера клана в другой клан, из-за чего решение ИИ о выходе применяется к клану без королевства. Подозреваемые в твоём списке: Dramalord, KeepYourClanMembersAfterMarriage, Titles, PlayerSwitcher, BannerlordExpanded.ChildrenExpanded. Если повторяется — отключай их по одному, чтобы найти источник."
+      - "С сейвом всё в порядке — защита в него ничего не пишет, а вылет случается только в момент выхода ИИ-клана из королевства."
+      - "НЕ пересобирай шейдеры и не меняй драйвер — это баг мода/состояния, не поможет."
+    zh:
+      - "Crash Doctor 已经拦截了它——安全网会在被脱离的王国已不存在时跳过关系惩罚，游戏继续运行。在「崩溃修复」页保持「脱离王国崩溃防护（原王国已不存在）」为开。"
+      - "根源是某个把家族首领调到别的家族的模组，导致 AI 的脱离王国决策被施加到一个没有王国的家族上。你列表中的可疑者：Dramalord、KeepYourClanMembersAfterMarriage、Titles、PlayerSwitcher、BannerlordExpanded.ChildrenExpanded。若持续发生，逐一禁用以定位源头。"
+      - "你的存档没有问题——此防护不会写入存档，崩溃只在 AI 家族脱离王国的瞬间发生。"
+      - "不要重建着色器或更换驱动——这是模组／状态 bug，没用。"
+    zht:
+      - "Crash Doctor 已經攔截了它——安全網會在被脫離的王國已不存在時跳過關係懲罰，遊戲繼續執行。在「崩潰修復」頁保持「脫離王國崩潰防護（原王國已不存在）」為開。"
+      - "根源是某個把家族首領調到別的家族的模組，導致 AI 的脫離王國決策被施加到一個沒有王國的家族上。你列表中的可疑者：Dramalord、KeepYourClanMembersAfterMarriage、Titles、PlayerSwitcher、BannerlordExpanded.ChildrenExpanded。若持續發生，逐一停用以定位源頭。"
+      - "你的存檔沒有問題——此防護不會寫入存檔，崩潰只在 AI 家族脫離王國的瞬間發生。"
+      - "不要重建著色器或更換驅動——這是模組／狀態 bug，沒用。"
+    tr:
+      - "Crash Doctor bunu zaten koruyor — güvenlik ağı, ayrılınan krallık artık yoksa ilişki cezasını atlar, böylece oyun çalışmaya devam eder. «Krallıktan ayrılma çökme koruması (eski krallık yok)» düzeltmesini AÇIK tut (Çökme Düzeltmeleri sekmesi)."
+      - "Kök neden, bir klan liderini başka bir klana taşıyan bir moddur; bu yüzden YZ'nin krallıktan ayrılma kararı krallığı olmayan bir klana uygulanır. Listendeki şüpheliler: Dramalord, KeepYourClanMembersAfterMarriage, Titles, PlayerSwitcher, BannerlordExpanded.ChildrenExpanded. Devam ederse, kaynağı bulmak için tek tek devre dışı bırak."
+      - "Kaydında bir sorun yok — koruma ona hiçbir değişiklik yazmaz ve çökme yalnızca bir YZ klanı krallıktan ayrılırken tetiklenir."
+      - "Gölgelendiricileri yeniden oluşturma veya sürücü değiştirme — bu bir mod/durum hatası, yardımcı olmaz."
+  match:
+    all:
+      - managed_exception: { frame_contains: "CharacterRelationCampaignBehavior.OnClanChangedKingdom" }
+      - managed_exception: { type_contains: "NullReference" }
 
 # Clan-destruction crash: a clan is being liquidated on the daily tick and the game tries to hand a
 # dying leader's party to a new leader. NullReferenceException from
@@ -1750,6 +1881,116 @@
     all:
       - managed_exception: { frame_contains: "TORPartyUpgraderCampaignBehavior" }
       - managed_exception: { type_contains: "NullReference" }
+
+# Campaign-map DAILY-tick DivideByZeroException inside the VANILLA auto-upgrader.
+# PartyUpgraderCampaignBehavior.GetPossibleUpgradeTargets ← UpgradeReadyTroops ← DailyTickParty ←
+# CampaignEvents.DailyTickParty ← Campaign.Tick. Capping how many troops fit an AI party's wage
+# budget, the base game divides by (Wage(upgradeTarget) - Wage(source)) with no zero check — while
+# the two neighbouring divisions in the same method ARE guarded. The difference is zero whenever a
+# higher-tier troop costs the same wage: DefaultPartyWageModel pays by tier (1/2/3/5/8/12/17, flat 23
+# beyond 6) and multiplies mercenaries by 1.5 truncated to int, so mercenary T1 (3) → regular T2 (3)
+# and mercenary T4 (12) → regular T5 (12) both divide by zero; a mod raising MaxCharacterTier makes
+# every tier ≥7 pay the same, and a mod replacing PartyWageModel can equalise any pair. With a zero
+# difference the branch's own condition reduces to TotalWage > PaymentLimit, so it only fires for a
+# party already over its wage budget — which is why it is rare and looks random. Verified identical
+# in game 1.3.15 and 1.4.7. NOT a mod bug per se and NOT a hardware/driver problem.
+- id: campaign.party_upgrade_wage_div_zero
+  category: managed
+  severity: critical
+  confidence: high
+  evidence_source: "Client crash 2026-08-05 report(20).txt (crash id 277821a7, game 1.4.7) — System.DivideByZeroException at TaleWorlds.CampaignSystem.CampaignBehaviors.PartyUpgraderCampaignBehavior.GetPossibleUpgradeTargets ← UpgradeReadyTroops ← DailyTickParty ← CampaignEvents.DailyTickParty ← CampaignPeriodicEventManager ← Campaign.Tick. Confirmed against the decompiled 1.4.7 TaleWorlds.CampaignSystem.dll: unguarded denominator (PaymentLimit - TotalWage) / (Wage(target) - Wage(source)). Captured by Crash Doctor managed capture."
+  requires_sources: [managed_exception]
+  title:
+    en: "Daily-tick crash — divide-by-zero in the game's troop auto-upgrade wage cap — guarded by Crash Doctor"
+    ru: "Вылет на дневном тике — деление на ноль в лимите жалования при авто-улучшении войск — перехвачено Crash Doctor"
+    zh: "每日结算崩溃——游戏部队自动升级的薪金上限除以零——已被 Crash Doctor 拦截"
+    zht: "每日結算崩潰——遊戲部隊自動升級的薪資上限除以零——已被 Crash Doctor 攔截"
+    tr: "Günlük tick çökmesi — oyunun birlik otomatik yükseltme maaş sınırında sıfıra bölme — Crash Doctor tarafından korunuyor"
+  description:
+    en: |
+      DivideByZeroException on the campaign-map DAILY tick, thrown from the base game's own troop
+      auto-upgrader (PartyUpgraderCampaignBehavior.GetPossibleUpgradeTargets → UpgradeReadyTroops →
+      DailyTickParty). Once a day the game upgrades AI parties' veteran troops. Before it does, it
+      caps how many soldiers fit the party's wage budget by dividing by the wage difference between
+      the upgraded troop and the current one — without checking that difference isn't zero. It is
+      zero whenever the higher-tier troop costs the same wage as the one it upgrades from: mercenary
+      troops are paid the same as the next regular tier, and every tier above 6 (added by troop mods)
+      is paid a flat rate. That path is only taken for a party that has already overrun its payment
+      limit, which is why the crash looks random and hits one save but not another. This is a bug in
+      the base game, not a broken save and not a hardware/driver problem.
+    ru: |
+      DivideByZeroException на ДНЕВНОМ тике карты, из собственного авто-улучшения войск базовой игры
+      (PartyUpgraderCampaignBehavior.GetPossibleUpgradeTargets → UpgradeReadyTroops → DailyTickParty).
+      Раз в день игра улучшает выслужившихся бойцов ИИ-отрядов. Перед этим она ограничивает, сколько
+      бойцов влезет в лимит жалования отряда, деля на разницу жалования между улучшенным и текущим
+      бойцом — не проверяя, что разница не ноль. А ноль она даёт всегда, когда боец более высокого
+      ранга стоит столько же, сколько исходный: наёмники получают столько же, сколько следующий
+      обычный ранг, а все ранги выше 6-го (их добавляют моды на войска) стоят одинаково. В эту ветку
+      попадают только отряды, уже перебравшие лимит выплат, — поэтому вылет выглядит случайным и
+      ловится на одном сейве, но не на другом. Это баг базовой игры, а не битый сейв и не железо.
+    zh: |
+      战役地图每日 tick 时抛出除零异常，来自原版自身的部队自动升级器
+      （PartyUpgraderCampaignBehavior.GetPossibleUpgradeTargets → UpgradeReadyTroops → DailyTickParty）。
+      游戏每天会升级 AI 队伍中够资历的部队。在此之前，它会用升级目标与当前部队的薪金差作除数，
+      来限制有多少士兵能塞进队伍的薪金预算——却不检查该差值是否为零。而当更高阶部队与原部队薪金
+      相同时它正好为零：佣兵部队与下一个常规阶层同价，6 阶以上（由部队模组添加）一律同价。只有
+      已超出支付上限的队伍才会走到这条分支，所以崩溃看起来很随机，在一个存档触发而另一个不会。
+      这是原版游戏的 bug，不是存档损坏，也不是硬件／驱动问题。
+    zht: |
+      戰役地圖每日 tick 時擲出除零例外，來自原版自身的部隊自動升級器
+      （PartyUpgraderCampaignBehavior.GetPossibleUpgradeTargets → UpgradeReadyTroops → DailyTickParty）。
+      遊戲每天會升級 AI 隊伍中夠資歷的部隊。在此之前，它會用升級目標與目前部隊的薪資差作除數，
+      來限制有多少士兵能塞進隊伍的薪資預算——卻不檢查該差值是否為零。而當更高階部隊與原部隊薪資
+      相同時它正好為零：傭兵部隊與下一個常規階層同價，6 階以上（由部隊模組新增）一律同價。只有
+      已超出支付上限的隊伍才會走到這條分支，所以崩潰看起來很隨機，在一個存檔觸發而另一個不會。
+      這是原版遊戲的 bug，不是存檔損壞，也不是硬體／驅動問題。
+    tr: |
+      Sefer haritası GÜNLÜK tick'inde, oyunun kendi birlik otomatik yükselticisinden bir
+      DivideByZeroException (PartyUpgraderCampaignBehavior.GetPossibleUpgradeTargets →
+      UpgradeReadyTroops → DailyTickParty). Oyun günde bir kez AI gruplarının kıdemli birliklerini
+      yükseltir. Bundan önce, grubun maaş bütçesine kaç askerin sığdığını, yükseltilmiş birlik ile
+      mevcut birlik arasındaki maaş farkına bölerek sınırlar — bu farkın sıfır olup olmadığını
+      kontrol etmeden. Daha yüksek kademeli birlik, yükseltildiği birlikle aynı maaşa mal olduğunda
+      bu fark sıfırdır: paralı askerler bir sonraki normal kademeyle aynı ücreti alır ve 6'nın
+      üzerindeki her kademe (birlik modlarının eklediği) sabit ücretlidir. Bu yola yalnızca ödeme
+      sınırını çoktan aşmış gruplar girer; çökme bu yüzden rastgele görünür ve bir kayıtta olup
+      diğerinde olmaz. Bu, oyunun kendi hatasıdır — bozuk bir kayıt ya da donanım/sürücü sorunu değil.
+  fix:
+    en:
+      - "Crash Doctor already guards this — its safety net skips the auto-upgrade for that one AI party and keeps the game running. Keep the «Troop auto-upgrade crash guard (wage budget divide-by-zero)» fix ON (Crash Fixes tab)."
+      - "Nothing is wrong with your save: the guard changes no data, and your own party never goes through this code."
+      - "No mod needs to be removed. Troop mods that add tiers above 6 or change wages only make the base-game bug easier to hit; they are not themselves broken."
+      - "Do NOT rebuild shaders or change drivers — this is a game-logic bug, that won't help."
+    ru:
+      - "Crash Doctor уже это перехватывает — safety net пропускает авто-улучшение для одного ИИ-отряда и не даёт игре упасть. Держи фикс «Защита от вылета при авто-улучшении войск (деление на ноль в лимите жалования)» ВКЛ (вкладка «Фиксы крашей»)."
+      - "С сейвом всё в порядке: защита ничего не меняет в данных, а отряд игрока через этот код вообще не проходит."
+      - "Ничего удалять не нужно. Моды на войска, добавляющие ранги выше 6-го или меняющие жалование, лишь повышают шанс попасть на баг базовой игры — сами по себе они не сломаны."
+      - "НЕ пересобирай шейдеры и не меняй драйвер — это баг игровой логики, не поможет."
+    zh:
+      - "Crash Doctor 已经拦截了它——安全网会跳过那一支 AI 队伍的自动升级并让游戏继续运行。在「崩溃修复」页保持「部队自动升级崩溃防护（薪金上限除以零）」为开。"
+      - "你的存档没有问题：该防护不修改任何数据，而你自己的队伍根本不会进入这段代码。"
+      - "无需移除任何模组。添加 6 阶以上部队或修改薪金的模组只是让原版这个 bug 更容易被触发，它们本身并没有损坏。"
+      - "不要重建着色器或更换驱动——这是游戏逻辑 bug，没用。"
+    zht:
+      - "Crash Doctor 已經攔截了它——安全網會跳過那一支 AI 隊伍的自動升級並讓遊戲繼續執行。在「崩潰修復」頁保持「部隊自動升級崩潰防護（薪資上限除以零）」為開。"
+      - "你的存檔沒有問題：該防護不修改任何資料，而你自己的隊伍根本不會進入這段程式碼。"
+      - "無需移除任何模組。新增 6 階以上部隊或修改薪資的模組只是讓原版這個 bug 更容易被觸發，它們本身並沒有損壞。"
+      - "不要重建著色器或更換驅動——這是遊戲邏輯 bug，沒用。"
+    tr:
+      - "Crash Doctor bunu zaten koruyor — güvenlik ağı o tek AI grubunun otomatik yükseltmesini atlar ve oyunu çalışır tutar. «Birlik otomatik yükseltme çökme koruması (maaş bütçesinde sıfıra bölme)» düzeltmesini AÇIK tut (Çökme Düzeltmeleri sekmesi)."
+      - "Kaydında bir sorun yok: koruma hiçbir veriyi değiştirmez ve senin kendi grubun bu koddan hiç geçmez."
+      - "Hiçbir modu kaldırmana gerek yok. 6'nın üzerinde kademe ekleyen ya da maaşları değiştiren birlik modları yalnızca oyunun kendi hatasına denk gelme olasılığını artırır; kendileri bozuk değildir."
+      - "Gölgelendiricileri yeniden oluşturma veya sürücü değiştirme — bu bir oyun mantığı hatası, yardımcı olmaz."
+  match:
+    all:
+      - managed_exception: { type_contains: "DivideByZero" }
+      - managed_exception: { frame_contains: "PartyUpgraderCampaignBehavior" }
+      # TOR ships its own TORPartyUpgraderCampaignBehavior, whose name CONTAINS the vanilla one.
+      # Its port of this method added `&& !IsWageLimitExceeded()`, which makes the zero-division
+      # branch unreachable — so a stack through TOR's class is a different bug and must not claim
+      # this verdict (nor this guard, which patches the vanilla class only).
+      - none:
+          - managed_exception: { frame_contains: "TORPartyUpgraderCampaignBehavior" }
 
 # War Sails (official naval DLC, module id "NavalDLC") world-map ship-visual crash, caused by a
 # BROKEN third-party "Faster Ships" mod. AccessViolationException (0xC0000005) thrown from
@@ -3589,6 +3830,135 @@
       - managed_exception: { frame_contains: "AddSkillBonusForParty" }
       - managed_exception: { type_contains: "NullReference" }
 
+# TICK crash: NullReferenceException thrown INSIDE vanilla DefaultBattleRewardModel
+# .GetLootItemChancesForWinnerParties itself (top frame), while an auto-resolved battle hands out item
+# loot. Sibling of campaign.skill_bonus_party_nre — the SAME null, one line later. Verified against the
+# IL of the shipped 1.4.7 assembly: the winner loop explicitly allows a party with no MobileParty
+# (`mobileParty == null || (!IsGarrison && !IsMilitia)`) — that IS a settlement's own party, which is
+# what fights when a village repels a raid or a town repels an assault — and then derefs it anyway:
+# `party.MobileParty.HasPerk(Roguery.KnowHow, false) && (defeatedParty.MobileParty.IsCaravan || …)`.
+# The same class guards this correctly everywhere else (IsMobile checks in
+# CalculatePlunderedGoldAmountFromDefeatedParty and GetLootGoldChances) — these two lines forgot.
+# The `none` clause keeps this apart from the SkillHelper rule: a stack carrying AddSkillBonusForParty
+# threw one line EARLIER and is that other rule's verdict, not this one.
+# IMPORTANT — do NOT blame the mod in the stack: a mod overriding BattleRewardModel (e.g.
+# NavalDLCBattleRewardModel) only forwards to base; the throw is in the vanilla frame above it.
+- id: campaign.loot_item_chances_nre
+  category: managed
+  severity: critical
+  confidence: high
+  evidence_source: "Client crash report (crash id adca8e9b, 2026-08-07, Bannerlord 1.4.7, ~40 mods incl. NavalDLC/PlayerSettlement/HomesteadsReloaded/VillageEnterprise; 5 occurrences, crashes seconds after every load as soon as the player moves) — NullReferenceException at TaleWorlds.CampaignSystem.GameComponents.DefaultBattleRewardModel.GetLootItemChancesForWinnerParties ← NavalDLC.GameComponents.NavalDLCBattleRewardModel.GetLootItemChancesForWinnerParties ← MapEvent.LootDefeatedPartyItems ← CalculateAndCommitMapEventResults ← OnBattleWon ← set_BattleState ← CalculateWinner ← SimulateBattleRound ← SimulateBattleSessionForMapEvent ← MapEvent.Update ← MapEventManager.Tick ← Campaign.Tick ← MapState.OnMapModeTick. No SkillHelper frame: Crash Doctor's own skill_bonus_party guard swallowed the first throw of the same null, and the model then dereferenced it again in its own frame. Root confirmed by dumping the IL of the shipped 1.4.7 TaleWorlds.CampaignSystem.dll (unguarded get_MobileParty on both the winner and the defeated party)."
+  requires_sources: [managed_exception]
+  title:
+    en: "Crash while a battle hands out loot — a winning party the game cannot read — guarded by Crash Doctor"
+    ru: "Вылет при раздаче трофеев после боя — игра не может прочитать победивший отряд — перехвачено Crash Doctor"
+    zh: "战斗派发战利品时崩溃——游戏无法读取某个获胜队伍——已被 Crash Doctor 拦截"
+    zht: "戰鬥派發戰利品時當機——遊戲無法讀取某個獲勝隊伍——已被 Crash Doctor 攔截"
+    tr: "Bir savaş ganimet dağıtırken çökme — oyunun okuyamadığı bir kazanan grup — Crash Doctor tarafından korunuyor"
+  description:
+    en: |
+      NullReferenceException thrown in vanilla DefaultBattleRewardModel.GetLootItemChancesForWinner-
+      Parties while a battle resolved on the map hands out item loot.
+      Root cause: to decide who gets what, the game walks the winning parties and EXPLICITLY allows a
+      party with no mobile party of its own — that is a settlement's own party, which is what fights
+      when a village repels a raid or a town repels an assault. Two lines later it reads that missing
+      party anyway, with no check, on both the winner and the defeated party. The same class checks
+      this correctly everywhere else; these two lines are the ones that forgot. The crash lands in the
+      middle of resolving the battle and kills the whole campaign tick.
+      Typical symptom: the save already contains that unfinished battle, so the game loads fine and
+      crashes a moment after you start moving — as soon as campaign time resumes.
+      IMPORTANT — the mod whose loot model appears in the stack is usually NOT the culprit. A mod that
+      overrides the battle-reward model (for example NavalDLC's) simply forwards the call to the game's
+      own code, and the crash happens in that vanilla code one frame above it. This is a game bug, NOT
+      a shader or driver problem.
+    ru: |
+      NullReferenceException в ванильном DefaultBattleRewardModel.GetLootItemChancesForWinnerParties в
+      момент, когда разрешённый на карте бой раздаёт предметные трофеи.
+      Корень: решая, кому что достанется, игра обходит победившие отряды и ЯВНО допускает отряд без
+      собственного мобильного отряда — а это отряд самого поселения, именно он и дерётся, когда деревня
+      отбивает налёт, а город — штурм. Двумя строками ниже она всё равно читает этот отсутствующий
+      отряд без всякой проверки — и у победителя, и у побеждённого. В этом же классе везде проверка
+      сделана правильно; забыли ровно в этих двух строках. Вылет приходится на середину разрешения боя
+      и убивает весь тик кампании.
+      Типичная картина: незавершённый бой уже лежит в сейве, поэтому игра грузится нормально и вылетает
+      через мгновение после того, как ты начал двигаться — как только пошло время кампании.
+      ВАЖНО: мод, чья модель трофеев видна в стеке, обычно НЕ виноват. Мод, переопределяющий модель
+      наград за бой (например, из NavalDLC), просто передаёт вызов в код самой игры, и падает именно
+      этот ванильный код — фреймом выше. Это баг игры, а НЕ шейдеров или драйвера.
+    zh: |
+      在原版 DefaultBattleRewardModel.GetLootItemChancesForWinnerParties 中抛出的空引用异常，发生在地图上
+      结算的战斗派发物品战利品时。
+      根源：为了决定谁获得什么，游戏会遍历获胜的队伍，并明确允许没有自己机动队伍的一方——那就是定居点
+      自身的队伍，村庄击退劫掠、城镇击退强攻时作战的正是它。可是两行之后，它仍然不加检查地读取这个并不
+      存在的队伍，获胜方和被击败方都是如此。同一个类在其他地方都做了正确的检查；唯独这两行忘了。崩溃恰好
+      发生在战斗结算中途，并连带整个战役结算。
+      典型表现：存档里已经保存了这场未结束的战斗，因此游戏能正常读档，却在你开始移动、战役时间恢复流动的
+      一瞬间崩溃。
+      重要：堆栈中出现的那个战利品模型所属模组通常并非罪魁。覆写战斗奖励模型的模组（例如 NavalDLC 的）只是
+      把调用转发给游戏自身的代码，崩溃就发生在它上一层的原版代码中。这是游戏 bug，不是着色器或驱动问题。
+    zht: |
+      在原版 DefaultBattleRewardModel.GetLootItemChancesForWinnerParties 中擲出的空參考例外，發生在地圖上
+      結算的戰鬥派發物品戰利品時。
+      根源：為了決定誰獲得什麼，遊戲會走訪獲勝的隊伍，並明確允許沒有自己機動隊伍的一方——那就是聚落自身的
+      隊伍，村莊擊退劫掠、城鎮擊退強攻時作戰的正是它。可是兩行之後，它仍然不加檢查地讀取這個並不存在的
+      隊伍，獲勝方和被擊敗方都是如此。同一個類別在其他地方都做了正確的檢查；唯獨這兩行忘了。當機恰好發生在
+      戰鬥結算途中，並連帶整個戰役結算。
+      典型表現：存檔裡已經保存了這場未結束的戰鬥，因此遊戲能正常讀檔，卻在你開始移動、戰役時間恢復流動的
+      一瞬間當機。
+      重要：堆疊中出現的那個戰利品模型所屬模組通常並非罪魁。覆寫戰鬥獎勵模型的模組（例如 NavalDLC 的）只是
+      把呼叫轉發給遊戲自身的程式碼，當機就發生在它上一層的原版程式碼中。這是遊戲 bug，不是著色器或驅動問題。
+    tr: |
+      Haritada çözülen bir savaş eşya ganimeti dağıtırken orijinal
+      DefaultBattleRewardModel.GetLootItemChancesForWinnerParties içinde fırlatılan NullReferenceException.
+      Kök neden: kimin ne alacağına karar vermek için oyun kazanan grupları dolaşır ve kendi hareketli
+      grubu olmayan bir tarafa AÇIKÇA izin verir — bu, bir köy baskını ya da bir kasaba kuşatmasını
+      püskürtürken savaşan, yerleşimin kendi grubudur. İki satır sonra o eksik grubu yine de, hiçbir
+      kontrol yapmadan okur; hem kazanan hem de yenilen taraf için. Aynı sınıf bunu başka her yerde doğru
+      kontrol eder; yalnızca bu iki satır unutmuştur. Çökme, savaşın çözümünün tam ortasına denk gelir ve
+      tüm kampanya tick'ini öldürür.
+      Tipik belirti: bitmemiş savaş zaten kayıtta durur, bu yüzden oyun sorunsuz yüklenir ve sen hareket
+      etmeye başlar başlamaz — kampanya zamanı yeniden akmaya başladığı anda — çöker.
+      ÖNEMLİ — yığında ganimet modeli görünen mod genelde suçlu DEĞİLDİR. Savaş-ödülü modelini geçersiz
+      kılan bir mod (örneğin NavalDLC'ninki) çağrıyı yalnızca oyunun kendi koduna iletir ve çökme, bir üst
+      çerçevedeki o orijinal kodda olur. Bu bir oyun hatasıdır; gölgelendirici veya sürücü sorunu DEĞİL.
+  fix:
+    en:
+      - "Crash Doctor already guards this — its safety net shares the loot out by each winner's contribution to the battle instead, so the battle finishes and the campaign keeps running. Keep the «Battle loot crash guard (settlement among the winners)» fix ON (Crash Fixes tab)."
+      - "Do NOT blame the mod named in the crash (e.g. a naval/battle-reward model): it only calls the game's own code."
+      - "If you are on an older Crash Doctor: update it. The guard needs Bannerlord 1.4 or newer, which is where this loot code lives."
+      - "Only the Roguery loot bonus is lost, and only for that one battle. Nothing else changes."
+      - "Do NOT rebuild shaders or change drivers — this is a game bug, that won't help."
+    ru:
+      - "Crash Doctor уже это перехватывает — safety net делит трофеи по вкладу каждого победителя в бой, бой доводится до конца, кампания продолжается. Держи фикс «Защита от вылета при раздаче трофеев (поселение среди победителей)» ВКЛ (вкладка «Фиксы крашей»)."
+      - "НЕ вини мод, названный в отчёте (например, модель трофеев морского DLC): он лишь вызывает код самой игры."
+      - "Если у тебя старая версия Crash Doctor — обнови. Защита работает на Bannerlord 1.4 и новее, где этот код трофеев и живёт."
+      - "Теряется только бонус к трофеям от Плутовства и только в этом одном бою. Больше ничего не меняется."
+      - "НЕ пересобирай шейдеры и не меняй драйвер — это баг игры, не поможет."
+    zh:
+      - "Crash Doctor 已经拦截了它——安全网改为按每个获胜方对战斗的贡献分配战利品，于是战斗得以结束，战役继续。在「崩溃修复」页保持「战斗战利品崩溃防护（获胜方中有定居点）」为开。"
+      - "不要指责崩溃中提到的那个模组（例如海战／战利品模型）：它只是调用了游戏自身的代码。"
+      - "如果你的 Crash Doctor 版本较旧，请更新。该防护需要 Bannerlord 1.4 或更高版本，这段战利品代码正是在那里。"
+      - "只损失这一场战斗的盗贼技能战利品加成，其他一切不变。"
+      - "不要重建着色器或更换驱动——这是游戏 bug，没用。"
+    zht:
+      - "Crash Doctor 已經攔截了它——安全網改為按每個獲勝方對戰鬥的貢獻分配戰利品，於是戰鬥得以結束，戰役繼續。在「崩潰修復」頁保持「戰鬥戰利品當機防護（獲勝方中有聚落）」為開。"
+      - "不要指責當機中提到的那個模組（例如海戰／戰利品模型）：它只是呼叫了遊戲自身的程式碼。"
+      - "如果你的 Crash Doctor 版本較舊，請更新。該防護需要 Bannerlord 1.4 或更高版本，這段戰利品程式碼正是在那裡。"
+      - "只損失這一場戰鬥的盜賊技能戰利品加成，其他一切不變。"
+      - "不要重建著色器或更換驅動——這是遊戲 bug，沒用。"
+    tr:
+      - "Crash Doctor bunu zaten koruyor — güvenlik ağı ganimeti her kazananın savaşa katkısına göre paylaştırır; böylece savaş tamamlanır ve kampanya devam eder. «Savaş ganimeti çökme koruması (kazananlar arasında bir yerleşim)» düzeltmesini AÇIK tut (Çökme Düzeltmeleri sekmesi)."
+      - "Çökmede adı geçen modu SUÇLAMA (örneğin bir deniz/savaş-ödülü modeli): o yalnızca oyunun kendi kodunu çağırır."
+      - "Daha eski bir Crash Doctor kullanıyorsan güncelle. Koruma, bu ganimet kodunun bulunduğu Bannerlord 1.4 veya sonrasını gerektirir."
+      - "Yalnızca o tek savaşın Serserilik ganimet bonusu kaybolur. Başka hiçbir şey değişmez."
+      - "Gölgelendiricileri yeniden oluşturma veya sürücü değiştirme — bu bir oyun hatası, yardımcı olmaz."
+  match:
+    all:
+      - managed_exception: { frame_contains: "GetLootItemChancesForWinnerParties" }
+      - managed_exception: { type_contains: "NullReference" }
+      - none:
+          - managed_exception: { frame_contains: "AddSkillBonusForParty" }
+
 # WORLD-MAP crash inside the Naval DLC mod itself (top frame is its own code, not vanilla under it).
 # Decompiled from the shipped NavalDLC.dll: OnShipOwnerChanged resolves the selling town's governor via
 # Town.Governor, then reads `governor.CurrentSettlement.Town` — the settlement the governor is standing
@@ -4679,3 +5049,774 @@
     all:
       - managed_exception: { type_contains: "HarmonyException" }
       - managed_exception: { frame_contains: "ApplyHarmonyPatches" }
+
+# DAILY-TICK crash: NullReferenceException inside the VANILLA wage model, on the clan-finance pass.
+#   DefaultPartyWageModel.GetTotalWage <- MobileParty.get_TotalWage <- DefaultClanFinanceModel
+#   .CalculatePartyWage <- AddPartyExpense <- AddExpensesFromPartiesAndGarrisons
+#   <- CalculateClanExpensesInternal <- CalculateClanGoldChange <- ClanVariablesCampaignBehavior
+#   .DailyTickClan <- CampaignEventDispatcher.DailyTickClan <- Campaign.Tick.
+# GetTotalWage walks every element of a party's roster and has four unguarded dereferences, any of
+# which produces this exact stack: character.Culture.IsBandit (a troop whose Culture is null),
+# character.IsHero (a null CharacterObject left in a roster), CurrentSettlement.Owner.Culture in the
+# garrison branch (Settlement.Owner is OwnerClan.Leader - null for a clan that lost its leader but
+# kept its fiefs), and LeaderHero.Clan.Kingdom (a party leader with no clan). The throw is inside
+# game code, so the mod that CREATED the bad data is not in the stack and cannot be named from it.
+# Because it runs on the daily clan tick, the save gets stuck at the day boundary: every attempt to
+# pass that day crashes again.
+- id: campaign.party_wage_nre
+  category: managed
+  severity: critical
+  confidence: high
+  evidence_source: "Client crash report (Bannerlord 1.4.7, no TOR, crash id ce11de94, 4 occurrences 2026-08-06/07) - NullReferenceException DefaultPartyWageModel.GetTotalWage <- MobileParty.get_TotalWage <- DefaultClanFinanceModel.CalculatePartyWage <- AddPartyExpense <- AddExpensesFromPartiesAndGarrisons <- CalculateClanExpensesInternal <- CalculateClanGoldChange <- ClanVariablesCampaignBehavior.DailyTickClan. Captured by Crash Doctor managed capture."
+  requires_sources: [managed_exception]
+  title:
+    en: "Crash on the day change - party wages hit broken data - guarded by Crash Doctor"
+    ru: "Вылет на смене дня — подсчёт жалованья наткнулся на битые данные — перехвачено Crash Doctor"
+    zh: "日期切换时崩溃——军饷结算遇到损坏数据——已被 Crash Doctor 拦截"
+    zht: "日期切換時崩潰——軍餉結算遇到損壞資料——已被 Crash Doctor 攔截"
+    tr: "Gün değişiminde çökme - birlik maaşı bozuk veriye rastladı - Crash Doctor tarafından korunuyor"
+  description:
+    en: |
+      NullReferenceException on the daily clan-finance tick. Once a day the game adds up what every
+      clan owes its parties and garrisons, and DefaultPartyWageModel.GetTotalWage walks each party's
+      roster troop by troop. It dereferences four things without a null-check: a troop's culture, the
+      troop object itself, the owner of the settlement a garrison sits in (that owner is the owning
+      clan's LEADER, which is null for a clan that lost its leader but kept its fiefs), and the clan
+      of a party's leader. Any one of them being empty throws here.
+      The throw happens inside GAME code, so the mod that left the bad data behind is not in the
+      stack and cannot be named from it - the crash usually traces back to a mod that adds or edits
+      troops and cultures, or reloads character data at runtime. Because this runs on the day change,
+      the save is stuck at that day: every attempt to pass it crashes again. It is a mod/save-data
+      problem, NOT a shader or driver problem.
+    ru: |
+      NullReferenceException на дневном тике финансов клана. Раз в день игра суммирует, сколько каждый
+      клан должен своим отрядам и гарнизонам, и DefaultPartyWageModel.GetTotalWage проходит состав
+      каждого отряда боец за бойцом. Там четыре разыменования без проверки на null: культура бойца,
+      сам объект бойца, владелец поселения, в котором стоит гарнизон (владелец — это ЛИДЕР
+      клана-владельца, а он null у клана, потерявшего лидера, но сохранившего феоды), и клан лидера
+      отряда. Пустое любое из них — и здесь вылет.
+      Бросает при этом КОД ИГРЫ, поэтому мода, оставившего битые данные, в стеке нет и назвать его по
+      стеку нельзя — обычно корень в моде, который добавляет или правит войска и культуры либо
+      перезагружает данные персонажей в рантайме. Так как это дневной тик, сейв застревает на этом
+      дне: каждая попытка его пережить снова роняет игру. Это проблема мода/данных сейва, а НЕ
+      шейдеров или драйвера.
+    zh: |
+      每日家族财政结算时抛出空引用异常。游戏每天累计每个家族欠其队伍和驻军的军饷，
+      DefaultPartyWageModel.GetTotalWage 会逐名遍历每支队伍的成员。其中有四处没有空检查的解引用：
+      部队的文化、部队对象本身、驻军所在定居点的所有者（该所有者是拥有家族的首领，对于失去首领
+      但仍持有领地的家族来说为空），以及队伍首领的家族。其中任意一项为空都会在此抛出异常。
+      抛出发生在游戏代码内部，因此留下损坏数据的模组不在堆栈中，无法据此点名——根源通常是添加或
+      修改部队与文化、或在运行时重载角色数据的模组。由于它发生在日期切换，存档会卡在那一天：
+      每次尝试度过该天都会再次崩溃。这是模组／存档数据问题，不是着色器或驱动问题。
+    zht: |
+      每日家族財政結算時擲出空參考例外。遊戲每天累計每個家族欠其隊伍和駐軍的軍餉，
+      DefaultPartyWageModel.GetTotalWage 會逐名遍歷每支隊伍的成員。其中有四處沒有空檢查的解參考：
+      部隊的文化、部隊物件本身、駐軍所在聚落的擁有者（該擁有者是擁有家族的首領，對於失去首領
+      但仍持有領地的家族來說為空），以及隊伍首領的家族。其中任意一項為空都會在此擲出例外。
+      擲出發生在遊戲程式碼內部，因此留下損壞資料的模組不在堆疊中，無法據此點名——根源通常是新增或
+      修改部隊與文化、或在執行時重新載入角色資料的模組。由於它發生在日期切換，存檔會卡在那一天：
+      每次嘗試度過該天都會再次崩潰。這是模組／存檔資料問題，不是著色器或驅動問題。
+    tr: |
+      Günlük klan maliyesi tick'inde NullReferenceException. Oyun günde bir kez her klanın gruplarına
+      ve garnizonlarına borcunu toplar ve DefaultPartyWageModel.GetTotalWage her grubun kadrosunu
+      asker asker dolaşır. Orada null kontrolü olmayan dört başvuru vardır: askerin kültürü, askerin
+      kendisi, garnizonun bulunduğu yerleşimin sahibi (bu sahip, sahip klanın LİDERİdir; liderini
+      kaybetmiş ama tımarlarını korumuş bir klanda null olur) ve bir grup liderinin klanı. Bunlardan
+      herhangi biri boşsa burada hata fırlar.
+      Hata OYUN kodunun içinde fırlar, bu yüzden bozuk veriyi bırakan mod yığında yer almaz ve yığından
+      adlandırılamaz - kök neden genelde birlik ve kültür ekleyen/düzenleyen ya da karakter verisini
+      çalışma anında yeniden yükleyen bir moddur. Gün değişiminde çalıştığı için kayıt o güne takılır:
+      o günü geçme denemesi her seferinde yeniden çöker. Bu bir mod/kayıt-verisi sorunudur,
+      gölgelendirici veya sürücü sorunu DEĞİL.
+  fix:
+    en:
+      - "Crash Doctor already guards this - the wage for that one party counts as zero for that day and the game continues. Keep the «Daily-tick crash guard (party wages)» fix ON (Crash Fixes tab)."
+      - "The guard writes what it found into crashdoctor.log - the exact troop, party or settlement. Send report.txt AND crashdoctor_at_crash.log from the crash folder to https://t.me/CodeRickTg ; that pair identifies the broken object, the stack alone does not."
+      - "Suspect the mods that add or edit troops and cultures, or that reload character data at runtime. Keep «Fix broken troops on save load» ON, load the save, then RE-SAVE."
+      - "Do NOT rebuild shaders or change drivers - this is a save-data bug, that won't help."
+    ru:
+      - "Crash Doctor уже это перехватывает — жалованье этого одного отряда за день считается нулевым, игра продолжается. Держи фикс «Защита от вылета на дневном тике (жалованье отрядов)» ВКЛ (вкладка «Фиксы крашей»)."
+      - "Защита пишет найденное в crashdoctor.log — конкретного бойца, отряд или поселение. Пришли на https://t.me/CodeRickTg оба файла из папки краша: report.txt И crashdoctor_at_crash.log — именно эта пара называет битый объект, по одному стеку его не определить."
+      - "Подозревай моды, которые добавляют или правят войска и культуры либо перезагружают данные персонажей в рантайме. Держи «Чинить сломанные отряды при загрузке» ВКЛ, загрузи сейв и ПЕРЕСОХРАНИ."
+      - "НЕ пересобирай шейдеры и не меняй драйвер — это баг данных сейва, не поможет."
+    zh:
+      - "Crash Doctor 已经拦截了它——该队伍当日军饷按零计算，游戏继续。在「崩溃修复」页保持「每日结算崩溃防护（部队军饷）」为开。"
+      - "防护会把发现的内容写入 crashdoctor.log——具体的部队、队伍或定居点。请把崩溃文件夹中的 report.txt 和 crashdoctor_at_crash.log 一并发送到 https://t.me/CodeRickTg ；只有这两个文件在一起才能指出损坏的对象，仅靠堆栈无法判断。"
+      - "怀疑那些添加或修改部队与文化、或在运行时重载角色数据的模组。保持「读档时修复损坏的部队」为开，读取存档后再次保存。"
+      - "不要重建着色器或更换驱动——这是存档数据 bug，没用。"
+    zht:
+      - "Crash Doctor 已經攔截了它——該隊伍當日軍餉按零計算，遊戲繼續。在「崩潰修復」頁保持「每日結算崩潰防護（部隊軍餉）」為開。"
+      - "防護會把發現的內容寫入 crashdoctor.log——具體的部隊、隊伍或聚落。請把崩潰資料夾中的 report.txt 和 crashdoctor_at_crash.log 一併傳送到 https://t.me/CodeRickTg ；只有這兩個檔案在一起才能指出損壞的物件，僅靠堆疊無法判斷。"
+      - "懷疑那些新增或修改部隊與文化、或在執行時重新載入角色資料的模組。保持「讀檔時修復損壞的部隊」為開，讀取存檔後再次儲存。"
+      - "不要重建著色器或更換驅動——這是存檔資料 bug，沒用。"
+    tr:
+      - "Crash Doctor bunu zaten koruyor - o tek grubun o günkü maaşı sıfır sayılır ve oyun devam eder. «Günlük tick çökme koruması (birlik maaşları)» düzeltmesini AÇIK tut (Çökme Düzeltmeleri sekmesi)."
+      - "Koruma bulduğunu crashdoctor.log'a yazar - tam olarak hangi asker, grup veya yerleşim. Çökme klasöründeki report.txt VE crashdoctor_at_crash.log dosyalarının ikisini birden https://t.me/CodeRickTg adresine gönder; bozuk nesneyi ancak bu ikili gösterir, tek başına yığın göstermez."
+      - "Birlik ve kültür ekleyen/düzenleyen ya da karakter verisini çalışma anında yeniden yükleyen modlardan şüphelen. «Kayıt yüklenirken bozuk birlikleri onar»ı AÇIK tut, kaydı yükle ve YENİDEN KAYDET."
+      - "Gölgelendiricileri yeniden oluşturma veya sürücü değiştirme - bu bir kayıt-verisi hatası, yardımcı olmaz."
+  match:
+    all:
+      - managed_exception: { frame_contains: "DefaultPartyWageModel.GetTotalWage" }
+      - managed_exception: { type_contains: "NullReference" }
+
+# DAILY-TICK crash: NullReferenceException in the vanilla crafting behaviour, creating a town order.
+#   CraftingCampaignBehavior.CreateTownOrder <- ReplaceCraftingOrder <- DailyTick
+#   <- CampaignEvents.DailyTick <- Campaign.Tick.
+# CreateTownOrder opens with `if (orderOwner.CurrentSettlement == null || !IsTown) Debug.Print(...)`
+# and then falls through WITHOUT a return, dereferencing orderOwner.CurrentSettlement.Town on the very
+# next line. The order owner is a random pick out of the settlement's HeroesWithoutParty plus the
+# leaders of the parties standing there, so the trigger is a hero the TOWN still lists while the
+# hero's own CurrentSettlement is null - a desync left by a mod that moves heroes between towns and
+# parties. The throw is in game code, so the mod that created the desync is not in the stack.
+- id: campaign.crafting_town_order_nre
+  category: managed
+  severity: critical
+  confidence: high
+  evidence_source: "Client crash report (Bannerlord 1.4.7, ~50 mods, crash id 2de42a01, 4 occurrences 2026-08-07) - NullReferenceException CraftingCampaignBehavior.CreateTownOrder <- ReplaceCraftingOrder <- CraftingCampaignBehavior.DailyTick <- CampaignEvents.DailyTick <- Campaign.Tick. Captured by Crash Doctor managed capture."
+  requires_sources: [managed_exception]
+  title:
+    en: "Crash on the day change - a town smithing order for a resident who is nowhere - guarded by Crash Doctor"
+    ru: "Вылет на смене дня — заказ на ковку для жителя, которого нигде нет — перехвачено Crash Doctor"
+    zh: "日期切换时崩溃——城镇为不在任何地方的居民创建锻造订单——已被 Crash Doctor 拦截"
+    zht: "日期切換時崩潰——城鎮為不在任何地方的居民建立鍛造訂單——已被 Crash Doctor 攔截"
+    tr: "Gün değişiminde çökme - hiçbir yerde olmayan bir sakin için kasaba demircilik siparişi - Crash Doctor tarafından korunuyor"
+  description:
+    en: |
+      NullReferenceException on the daily tick, while a town refreshed its smithing orders. The game
+      picks a random resident of the town - from the settlement's own list of heroes without a party,
+      plus the leaders of the parties standing there - and creates an order in that hero's name.
+      The method starts by checking whether that hero actually has a settlement, writes a note to the
+      debug log when they do not, and then reads the settlement anyway on the next line, with no
+      return in between. That missing return is the entire bug.
+      What makes it fire is a hero the TOWN still lists as present while the hero's own record says
+      they are nowhere - two halves of the same link that stopped agreeing, typically left by a mod
+      that moves heroes between towns and parties. The throw itself happens in GAME code, so the mod
+      that caused the desync is not in the stack and cannot be named from it. It is a mod/save-data
+      problem, NOT a shader or driver problem.
+    ru: |
+      NullReferenceException на дневном тике, когда город обновлял заказы на ковку. Игра берёт
+      случайного жителя города — из списка героев поселения без отряда плюс лидеров стоящих там
+      отрядов — и создаёт заказ от его имени. Метод начинается с проверки, есть ли у этого героя
+      поселение, пишет строчку в отладочный лог, если его нет, и следующей же строкой всё равно это
+      поселение читает — без return между ними. Этот забытый return и есть весь баг.
+      Срабатывает он на герое, которого ГОРОД по-прежнему числит у себя, тогда как запись самого
+      героя говорит, что он нигде: две половины одной связи перестали совпадать, обычно из-за мода,
+      который перемещает героев между городами и отрядами. Бросает при этом КОД ИГРЫ, поэтому мода,
+      создавшего рассинхрон, в стеке нет и назвать его по стеку нельзя. Это проблема мода/данных
+      сейва, а НЕ шейдеров или драйвера.
+    zh: |
+      每日结算时抛出空引用异常，发生在城镇刷新锻造订单期间。游戏会从该城镇的居民中随机挑选一位
+      （聚落自身的无队伍英雄名单，加上停留在那里的队伍首领），并以该英雄的名义创建订单。
+      该方法一开始就检查这位英雄是否真的身处某个聚落，若没有则往调试日志写一行，然后在下一行
+      依然读取该聚落，中间没有 return。这个被遗漏的 return 就是全部问题所在。
+      触发条件是：城镇仍将该英雄列为在场，而英雄自己的记录却说他不在任何地方——同一条关联的
+      两端不再一致，通常由在城镇与队伍之间移动英雄的模组造成。抛出发生在游戏代码内部，
+      因此造成不一致的模组不在堆栈中，无法据此点名。这是模组／存档数据问题，不是着色器或驱动问题。
+    zht: |
+      每日結算時擲出空參考例外，發生在城鎮刷新鍛造訂單期間。遊戲會從該城鎮的居民中隨機挑選一位
+      （聚落自身的無隊伍英雄名單，加上停留在那裡的隊伍首領），並以該英雄的名義建立訂單。
+      該方法一開始就檢查這位英雄是否真的身處某個聚落，若沒有則往除錯記錄寫一行，然後在下一行
+      依然讀取該聚落，中間沒有 return。這個被遺漏的 return 就是全部問題所在。
+      觸發條件是：城鎮仍將該英雄列為在場，而英雄自己的記錄卻說他不在任何地方——同一條關聯的
+      兩端不再一致，通常由在城鎮與隊伍之間移動英雄的模組造成。擲出發生在遊戲程式碼內部，
+      因此造成不一致的模組不在堆疊中，無法據此點名。這是模組／存檔資料問題，不是著色器或驅動問題。
+    tr: |
+      Bir kasaba demircilik siparişlerini yenilerken günlük tick'te NullReferenceException. Oyun
+      kasabanın sakinlerinden birini rastgele seçer - yerleşimin kendi gruba bağlı olmayan kahraman
+      listesinden, artı orada duran grupların liderlerinden - ve siparişi o kahramanın adına oluşturur.
+      Metot, o kahramanın gerçekten bir yerleşimi olup olmadığını kontrol ederek başlar, yoksa hata
+      ayıklama günlüğüne bir satır yazar ve hemen bir sonraki satırda yerleşimi yine de okur; arada
+      return yoktur. Unutulan bu return hatanın tamamıdır.
+      Tetikleyici, KASABANIN hâlâ mevcut olarak listelediği, kendi kaydına göre ise hiçbir yerde
+      olmayan bir kahramandır - aynı bağın iki ucu artık uyuşmuyordur; bunu genelde kahramanları
+      kasabalar ve gruplar arasında taşıyan bir mod bırakır. Hata OYUN kodunda fırlar, bu yüzden
+      uyumsuzluğu yaratan mod yığında yer almaz ve adlandırılamaz. Bu bir mod/kayıt-verisi sorunudur,
+      gölgelendirici veya sürücü sorunu DEĞİL.
+  fix:
+    en:
+      - "Crash Doctor already guards this - that single order is skipped and the free slot is filled on the next daily tick. Keep the «Daily-tick crash guard (town smithing orders)» fix ON (Crash Fixes tab)."
+      - "The guard writes the hero and the town it tripped over into crashdoctor.log, and the Prevented tab lists them. The hero's id usually carries the prefix of the mod that added or moved them."
+      - "Suspect the mods that move heroes between towns and parties - companion/wanderer handling, relationship and family mods, anything that reloads character data at runtime."
+      - "Do NOT rebuild shaders or change drivers - this is a save-data bug, that won't help."
+    ru:
+      - "Crash Doctor уже это перехватывает — этот один заказ пропускается, а освободившийся слот заполнится на следующем дневном тике. Держи фикс «Защита от вылета на дневном тике (заказы на ковку)» ВКЛ (вкладка «Фиксы крашей»)."
+      - "Защита пишет в crashdoctor.log героя и город, на которых споткнулась, и они же попадают на вкладку «Предотвращено». По префиксу id героя обычно видно, какой мод его добавил или переместил."
+      - "Подозревай моды, которые перемещают героев между городами и отрядами: работа с компаньонами и странниками, отношения и семьи, а также всё, что перезагружает данные персонажей в рантайме."
+      - "НЕ пересобирай шейдеры и не меняй драйвер — это баг данных сейва, не поможет."
+    zh:
+      - "Crash Doctor 已经拦截了它——该订单被跳过，空出的槽位会在下一个每日结算填满。在「崩溃修复」页保持「每日结算崩溃防护（城镇锻造订单）」为开。"
+      - "防护会把出问题的英雄和城镇写入 crashdoctor.log，并显示在「已预防」页。英雄 id 的前缀通常能看出是哪个模组添加或移动了他。"
+      - "怀疑那些在城镇与队伍之间移动英雄的模组：同伴／流浪者相关、关系与家族相关，以及任何在运行时重载角色数据的模组。"
+      - "不要重建着色器或更换驱动——这是存档数据 bug，没用。"
+    zht:
+      - "Crash Doctor 已經攔截了它——該訂單被跳過，空出的欄位會在下一個每日結算填滿。在「崩潰修復」頁保持「每日結算崩潰防護（城鎮鍛造訂單）」為開。"
+      - "防護會把出問題的英雄和城鎮寫入 crashdoctor.log，並顯示在「已預防」頁。英雄 id 的前綴通常能看出是哪個模組新增或移動了他。"
+      - "懷疑那些在城鎮與隊伍之間移動英雄的模組：夥伴／流浪者相關、關係與家族相關，以及任何在執行時重新載入角色資料的模組。"
+      - "不要重建著色器或更換驅動——這是存檔資料 bug，沒用。"
+    tr:
+      - "Crash Doctor bunu zaten koruyor - o tek sipariş atlanır ve boşalan yer bir sonraki günlük tick'te dolar. «Günlük tick çökme koruması (kasaba demircilik siparişleri)» düzeltmesini AÇIK tut (Çökme Düzeltmeleri sekmesi)."
+      - "Koruma, takıldığı kahramanı ve kasabayı crashdoctor.log'a yazar; aynısı «Önlenenler» sekmesinde de listelenir. Kahramanın id'sindeki önek genelde onu ekleyen ya da taşıyan modu gösterir."
+      - "Kahramanları kasabalar ve gruplar arasında taşıyan modlardan şüphelen: yoldaş/gezgin yönetimi, ilişki ve aile modları ve karakter verisini çalışma anında yeniden yükleyen her şey."
+      - "Gölgelendiricileri yeniden oluşturma veya sürücü değiştirme - bu bir kayıt-verisi hatası, yardımcı olmaz."
+  match:
+    all:
+      - managed_exception: { frame_contains: "CraftingCampaignBehavior.CreateTownOrder" }
+      - managed_exception: { type_contains: "NullReference" }
+
+# BATTLE-END crash: ArgumentOutOfRangeException from a lazy iterator whose source list shrank underneath it.
+#   LinQuick.WhereQ<T>.MoveNext <- MapEventSide.HandleMapEventEndForPartyInternal <- HandleMapEventEnd
+#   <- MapEvent.FinalizeEventAux <- MapEvent.Update <- MapEventManager.Tick <- Campaign.Tick.
+# Three pieces of game code combine into the bug: (1) LinQuick.WhereQ captures source.Count ONCE before
+# the first yield and then indexes the live list; (2) TroopRoster.GetTroopRoster() hands out the LIVE
+# internal list, not a copy; (3) HandleMapEventEndForPartyInternal calls KillCharacterAction.ApplyByBattle
+# inside the foreach over that enumerable, and killing a hero removes them from the roster. The list
+# shrinks, the captured length is stale, and the next indexed read runs off the end. One hero death is
+# enough as long as that hero was not the last element. Vanilla rarely trips it because lords normally
+# fall unconscious instead of dying; mods that make heroes actually die in battle - and mods that put
+# more heroes into party rosters - turn a rare condition into a frequent one.
+- id: campaign.map_event_end_roster_aoore
+  category: managed
+  severity: critical
+  confidence: high
+  evidence_source: "Client crash report (Bannerlord 1.4.7, ~50 mods incl. a hero-mortality mod, crash id 54397ce3, 4 occurrences 2026-08-07) - ArgumentOutOfRangeException 'index' at LinQuick.WhereQ.MoveNext <- MapEventSide.HandleMapEventEndForPartyInternal <- HandleMapEventEnd <- MapEvent.FinalizeEventAux <- MapEventManager.Tick. WhereQ implementation confirmed by decompiling the shipped TaleWorlds.LinQuick.dll (1.4.7). Captured by Crash Doctor managed capture."
+  requires_sources: [managed_exception]
+  title:
+    en: "Crash when a battle ends with a hero killed in it - guarded by Crash Doctor"
+    ru: "Вылет при завершении боя, в котором погиб герой — перехвачено Crash Doctor"
+    zh: "有英雄阵亡的战斗结算时崩溃——已被 Crash Doctor 拦截"
+    zht: "有英雄陣亡的戰鬥結算時崩潰——已被 Crash Doctor 攔截"
+    tr: "İçinde bir kahramanın öldüğü savaş bittiğinde çökme - Crash Doctor tarafından korunuyor"
+  description:
+    en: |
+      Not a null reference this time: the game read past the end of a list. When a battle finishes, the
+      game walks a party's roster looking for heroes marked as killed in that battle, and kills each one
+      it finds. The problem is that it walks the roster and shortens that same roster at the same time:
+      the helper it uses takes the number of entries once, before the walk starts, and then keeps
+      reading by position, while every hero it kills is removed from the list it is reading. After the
+      first removal the remembered length is too big, and the next read runs off the end.
+      All of this is the game's own code - the roster it hands out is the real list, not a copy. One
+      killed hero is enough, as long as they were not the last entry. It stays rare in an unmodded game
+      because lords normally fall unconscious instead of dying, so mods that make heroes truly die in
+      battle - and mods that put more heroes into party rosters - are what make it show up regularly.
+      No mod appears in the stack, so none can be blamed for the crash itself. NOT a shader or driver
+      problem.
+    ru: |
+      В этот раз не пустая ссылка: игра прочитала за пределами списка. Когда бой заканчивается, игра
+      проходит состав отряда в поисках героев, помеченных как погибшие в этом бою, и убивает каждого
+      найденного. Беда в том, что она одновременно перебирает состав и укорачивает его же:
+      вспомогательный метод запоминает количество записей один раз, до начала обхода, и дальше читает
+      по позициям, а каждый убитый герой из этого самого списка удаляется. После первого удаления
+      запомненная длина оказывается больше реальной, и следующее чтение уходит за конец.
+      Всё это — собственный код игры: состав, который она отдаёт, это настоящий список, а не копия.
+      Достаточно одного погибшего героя, если он не был последней записью. В неизменённой игре такое
+      встречается редко, потому что лорды обычно не гибнут, а выбывают без сознания, — поэтому
+      регулярным этот вылет делают моды, из-за которых герои по-настоящему погибают в бою, и моды,
+      сажающие в отряды больше героев. В стеке нет ни одного мода, так что винить в самом вылете
+      некого. Это НЕ проблема шейдеров или драйвера.
+    zh: |
+      这次不是空引用：游戏读取越过了列表末尾。战斗结束时，游戏会遍历队伍成员，寻找被标记为在该战斗中
+      阵亡的英雄并逐一处死。问题在于它一边遍历名单，一边缩短同一份名单：所用的辅助方法在遍历开始前
+      只记录一次条目数量，之后按位置读取，而每个被处死的英雄都会从它正在读取的列表中移除。
+      第一次移除之后，记住的长度就偏大了，下一次读取便越过了末尾。
+      这些全都是游戏自身的代码——它交出的名单是真实列表，而非副本。只要阵亡英雄不是最后一条，
+      一个就足够触发。在未加模组的游戏中这很少见，因为领主通常只是昏迷而非阵亡；因此让这个崩溃
+      频繁出现的，是那些让英雄真正阵亡的模组，以及往队伍里塞入更多英雄的模组。
+      堆栈中没有任何模组，因此崩溃本身无法归咎于谁。这不是着色器或驱动问题。
+    zht: |
+      這次不是空參考：遊戲讀取越過了清單結尾。戰鬥結束時，遊戲會遍歷隊伍成員，尋找被標記為在該戰鬥中
+      陣亡的英雄並逐一處死。問題在於它一邊遍歷名單，一邊縮短同一份名單：所用的輔助方法在遍歷開始前
+      只記錄一次項目數量，之後按位置讀取，而每個被處死的英雄都會從它正在讀取的清單中移除。
+      第一次移除之後，記住的長度就偏大了，下一次讀取便越過了結尾。
+      這些全都是遊戲自身的程式碼——它交出的名單是真實清單，而非副本。只要陣亡英雄不是最後一條，
+      一個就足夠觸發。在未加模組的遊戲中這很少見，因為領主通常只是昏迷而非陣亡；因此讓這個崩潰
+      頻繁出現的，是那些讓英雄真正陣亡的模組，以及往隊伍裡塞入更多英雄的模組。
+      堆疊中沒有任何模組，因此崩潰本身無法歸咎於誰。這不是著色器或驅動問題。
+    tr: |
+      Bu sefer boş referans değil: oyun bir listenin sonunu aştı. Bir savaş bittiğinde oyun, o savaşta
+      ölmüş olarak işaretlenmiş kahramanları aramak için grubun kadrosunu dolaşır ve bulduğu her birini
+      öldürür. Sorun şu ki kadroyu dolaşırken aynı kadroyu kısaltır da: kullandığı yardımcı metot,
+      dolaşma başlamadan önce kayıt sayısını bir kez alır ve sonra konuma göre okumaya devam eder;
+      oysa öldürülen her kahraman, okuduğu listeden çıkarılır. İlk çıkarmadan sonra hatırlanan uzunluk
+      fazla gelir ve bir sonraki okuma sonu aşar.
+      Bunların tamamı oyunun kendi kodudur - verdiği kadro gerçek listedir, kopya değil. Öldürülen tek
+      bir kahraman, son kayıt olmadığı sürece yeterlidir. Modsuz oyunda nadir kalır, çünkü lordlar
+      genelde ölmek yerine bayılır; dolayısıyla bunu düzenli hale getiren şey, kahramanların savaşta
+      gerçekten ölmesini sağlayan modlar ve grup kadrolarına daha fazla kahraman koyan modlardır.
+      Yığında hiçbir mod yok, bu yüzden çökmenin kendisi için kimse suçlanamaz. Bu bir gölgelendirici
+      veya sürücü sorunu DEĞİL.
+  fix:
+    en:
+      - "Crash Doctor already guards this - it catches the failed pass and re-runs the game's own battle-end routine, which then completes normally, so the battle result (losses, party destruction, prisoners) is applied in full. Keep the «Battle-end crash guard (heroes killed in battle)» fix ON (Crash Fixes tab)."
+      - "Nothing needs repairing in the save: this is a bug in the game's code, not broken data. It simply shows up more often on setups where heroes really die in battle."
+      - "If you want it to happen less often, the mods that make lords die instead of falling unconscious - and those that add extra heroes to party rosters - are what raise the odds."
+      - "Do NOT rebuild shaders or change drivers - this is a code bug, that won't help."
+    ru:
+      - "Crash Doctor уже это перехватывает — ловит сорвавшийся проход и заново запускает собственную процедуру игры, которая на повторе доходит до конца, так что результат боя (потери, уничтожение отряда, пленные) применяется полностью. Держи фикс «Защита от вылета при завершении боя (погибшие герои)» ВКЛ (вкладка «Фиксы крашей»)."
+      - "Чинить в сейве нечего: это баг в коде игры, а не битые данные. Просто на сборках, где герои реально гибнут в бою, он вылезает чаще."
+      - "Если хочешь, чтобы это случалось реже: шансы поднимают моды, из-за которых лорды погибают вместо того чтобы выбывать без сознания, и моды, добавляющие в отряды лишних героев."
+      - "НЕ пересобирай шейдеры и не меняй драйвер — это баг кода, не поможет."
+    zh:
+      - "Crash Doctor 已经拦截了它——它会捕获失败的那一次遍历并重新运行游戏自身的战斗结算流程，重试时能正常走完，因此战斗结果（伤亡、队伍覆灭、俘虏）会被完整应用。在「崩溃修复」页保持「战斗结算崩溃防护（阵亡英雄）」为开。"
+      - "存档不需要修复：这是游戏代码的 bug，不是数据损坏。只是在英雄会真正阵亡的配置下更常出现。"
+      - "若想让它更少发生：提高概率的是那些让领主阵亡而非昏迷的模组，以及往队伍中添加额外英雄的模组。"
+      - "不要重建着色器或更换驱动——这是代码 bug，没用。"
+    zht:
+      - "Crash Doctor 已經攔截了它——它會捕獲失敗的那一次遍歷並重新執行遊戲自身的戰鬥結算流程，重試時能正常走完，因此戰鬥結果（傷亡、隊伍覆滅、俘虜）會被完整套用。在「崩潰修復」頁保持「戰鬥結算崩潰防護（陣亡英雄）」為開。"
+      - "存檔不需要修復：這是遊戲程式碼的 bug，不是資料損壞。只是在英雄會真正陣亡的配置下更常出現。"
+      - "若想讓它更少發生：提高機率的是那些讓領主陣亡而非昏迷的模組，以及往隊伍中新增額外英雄的模組。"
+      - "不要重建著色器或更換驅動——這是程式碼 bug，沒用。"
+    tr:
+      - "Crash Doctor bunu zaten koruyor - başarısız geçişi yakalar ve oyunun kendi savaş sonu yordamını yeniden çalıştırır; tekrarda sorunsuz tamamlanır, böylece savaş sonucu (kayıplar, grup yok oluşu, esirler) eksiksiz uygulanır. «Savaş sonu çökme koruması (savaşta ölen kahramanlar)» düzeltmesini AÇIK tut (Çökme Düzeltmeleri sekmesi)."
+      - "Kayıtta onarılacak bir şey yok: bu, oyunun kodundaki bir hatadır, bozuk veri değil. Sadece kahramanların savaşta gerçekten öldüğü kurulumlarda daha sık ortaya çıkar."
+      - "Daha az yaşamak istersen: olasılığı artıranlar, lordların bayılmak yerine ölmesini sağlayan modlar ve grup kadrolarına fazladan kahraman ekleyen modlardır."
+      - "Gölgelendiricileri yeniden oluşturma veya sürücü değiştirme - bu bir kod hatası, yardımcı olmaz."
+  match:
+    all:
+      - managed_exception: { frame_contains: "HandleMapEventEndForPartyInternal" }
+      - managed_exception: { type_contains: "ArgumentOutOfRange" }
+
+# DAY-CHANGE crash: NullReferenceException when a town starts a rebellion and its culture cannot
+# supply the rebel heroes.
+#   RebellionsCampaignBehavior.CreateRebelPartyAndClan <- StartRebellionEvent <- DailyTickSettlement
+#   <- CampaignEvents.DailyTickSettlement <- Campaign.Tick.
+# CreateRebelPartyAndClan opens with `settlement.Culture.RebelliousHeroTemplates` and immediately
+# feeds that list to GetRandomElement, with no check anywhere. Two nulls land in that one statement:
+# a settlement whose Culture did not resolve, and a CultureObject whose RebelliousHeroTemplates is
+# null - that auto-property is assigned in exactly one place, CultureObject.Deserialize, so a culture
+# that never completed XML deserialisation keeps the default null. An EMPTY template list is the same
+# fault one level down: Extensions.GetRandomElement returns default(T) on Count == 0, so the null
+# surfaces inside CreateRebelHeroInternal instead. The throw is in GAME code, so the mod that shipped
+# the incomplete culture is not in the stack. Because the rebellion is rolled per town per day, the
+# save crashes again on every attempt to pass that day.
+- id: campaign.rebellion_missing_culture_templates
+  category: managed
+  severity: critical
+  confidence: high
+  evidence_source: "Client crash report (BUTR E50HP3, Bannerlord 1.4.5, BLSE 1.6.7.356, 48 mods incl. 'Ancient Civilization' e1.5.2.0 - an e1.x-era culture content mod running on v1.4.5 - plus BellumCivile). NullReferenceException RebellionsCampaignBehavior.CreateRebelPartyAndClan <- StartRebellionEvent <- DailyTickSettlement <- Campaign.Tick. The report's enhanced stack pins the fault to IL_0001 ldfld Settlement::Culture / IL_0006 callvirt get_RebelliousHeroTemplates / IL_0014 call GetRandomElement. Root confirmed by decompiling the shipped 1.4.5 CampaignSystem; RebellionsCampaignBehavior.StartRebellionEvent(Settlement) and CultureObject.RebelliousHeroTemplates verified present on 1.2, 1.3.15 and 1.4.5 with Mono.Cecil. BUTR names Crash Doctor as the top 'involved module' only because our managed-crash capture patches Module.OnApplicationTick, which wraps every campaign tick."
+  requires_sources: [managed_exception]
+  title:
+    en: "Crash on the day change - a town rebelled and its culture has no rebel-hero templates"
+    ru: "Вылет на смене дня — город восстал, а у его культуры нет шаблонов героев-повстанцев"
+    zh: "日期切换时崩溃——城镇发动叛乱，但其文化没有叛乱英雄模板"
+    zht: "日期切換時當機——城鎮發動叛亂，但其文化沒有叛亂英雄範本"
+    tr: "Gün değişiminde çökme - bir şehir isyan etti ama kültüründe isyancı kahraman şablonu yok"
+  description:
+    en: |
+      NullReferenceException on the daily settlement tick, while the game was turning a town's
+      rebellion into an actual rebel clan. To build that clan it reads
+      settlement.Culture.RebelliousHeroTemplates on the very first line and hands the list straight
+      to GetRandomElement - with no null check on either. So a town whose culture did not resolve,
+      or whose culture carries no rebel-hero templates at all, takes the whole daily tick down.
+      The templates list is filled in one place only, when a culture is read from its XML, which is
+      why an incomplete or era-mismatched culture mod produces this. The throw happens inside GAME
+      code, so the mod that shipped the culture is NOT in the stack and cannot be named from it.
+      Rebellion is rolled for every eligible town every day, so the save crashes again each time you
+      try to pass that day. This is a mod/data problem, NOT a shader, driver or hardware problem.
+    ru: |
+      NullReferenceException на дневном тике поселений, когда игра превращала восстание города в
+      настоящий клан мятежников. Чтобы собрать этот клан, она первой же строкой читает
+      settlement.Culture.RebelliousHeroTemplates и сразу отдаёт список в GetRandomElement — без
+      проверки на null ни там, ни там. Поэтому город, у которого культура не разрешилась или в
+      культуре вовсе нет шаблонов героев-повстанцев, роняет весь дневной тик.
+      Список шаблонов заполняется ровно в одном месте — при чтении культуры из её XML, — поэтому так
+      ведёт себя неполный мод на культуры или мод не от той версии игры. Бросает КОД ИГРЫ, поэтому
+      мода, поставившего культуру, в стеке нет и назвать его по стеку нельзя.
+      Восстание разыгрывается для каждого подходящего города каждый день, так что сейв вылетает
+      снова при каждой попытке пережить этот день. Это проблема мода/данных, а НЕ шейдеров,
+      драйвера или железа.
+    zh: |
+      每日聚落结算时抛出空引用异常，当时游戏正把某城镇的叛乱转化为真正的叛军家族。为组建该家族，
+      它在第一行就读取 settlement.Culture.RebelliousHeroTemplates 并直接把该列表交给
+      GetRandomElement——两处都没有空检查。因此文化未能解析、或文化中根本没有叛乱英雄模板的城镇，
+      会让整个每日结算崩溃。
+      模板列表只在一个地方填充：从 XML 读取文化时。所以不完整的文化模组、或版本世代不符的模组会
+      造成这种情况。抛出发生在游戏代码内部，因此提供该文化的模组不在堆栈中，无法据此点名。
+      叛乱是对每个符合条件的城镇逐日掷骰的，所以每次试图度过那一天，存档都会再次崩溃。
+      这是模组／数据问题，不是着色器、驱动或硬件问题。
+    zht: |
+      每日聚落結算時擲出空參考例外，當時遊戲正把某城鎮的叛亂轉化為真正的叛軍家族。為組建該家族，
+      它在第一行就讀取 settlement.Culture.RebelliousHeroTemplates 並直接把該清單交給
+      GetRandomElement——兩處都沒有空檢查。因此文化未能解析、或文化中根本沒有叛亂英雄範本的城鎮，
+      會讓整個每日結算當機。
+      範本清單只在一個地方填入：從 XML 讀取文化時。所以不完整的文化模組、或版本世代不符的模組會
+      造成這種情況。擲出發生在遊戲程式碼內部，因此提供該文化的模組不在堆疊中，無法據此點名。
+      叛亂是對每個符合條件的城鎮逐日擲骰的，所以每次試圖度過那一天，存檔都會再次當機。
+      這是模組／資料問題，不是著色器、驅動或硬體問題。
+    tr: |
+      Günlük yerleşim tick'inde NullReferenceException; oyun o sırada bir şehrin isyanını gerçek bir
+      isyancı hanesine dönüştürüyordu. Bu haneyi kurmak için daha ilk satırda
+      settlement.Culture.RebelliousHeroTemplates değerini okur ve listeyi doğrudan GetRandomElement'e
+      verir - ikisinde de null kontrolü yoktur. Bu yüzden kültürü çözümlenemeyen ya da kültüründe hiç
+      isyancı kahraman şablonu bulunmayan bir şehir tüm günlük tick'i çökertir.
+      Şablon listesi tek bir yerde doldurulur: kültür kendi XML'inden okunurken. Eksik bir kültür modu
+      ya da farklı bir oyun sürümü için yapılmış bir mod bu yüzden buna yol açar. Hata OYUNUN kodunda
+      fırlar, dolayısıyla kültürü getiren mod yığında yoktur ve oradan adlandırılamaz.
+      İsyan, uygun her şehir için her gün zar atılarak belirlenir; bu nedenle o günü geçmeye her
+      çalıştığında kayıt yeniden çöker. Bu bir mod/veri sorunudur; gölgelendirici, sürücü ya da
+      donanım sorunu DEĞİLDİR.
+  fix:
+    en:
+      - "Crash Doctor guards this - keep «Town rebellion crash guard (culture without rebel-hero templates)» ON on the Crash Fixes tab. The affected town simply does not rebel; it keeps its owner, garrison and militia, and nothing is written to your save."
+      - "Open the Prevented tab (or Ctrl+Alt+D) after it triggers: it names the town and the culture id. That id is the mod whose culture data is incomplete."
+      - "Then look at your culture / faction content mods, starting with any built for a different game era (a version like e1.x while you are on v1.4.x). A culture added without rebel-hero templates is the usual cause."
+      - "Do NOT rebuild shaders, reinstall the game or change drivers - this is mod data, none of that helps."
+    ru:
+      - "Crash Doctor это перехватывает — держи «Защиту от вылета при восстании города (у культуры нет шаблонов повстанцев)» ВКЛЮЧЁННОЙ на вкладке «Фиксы крашей». Затронутый город просто не восстаёт: у него остаются владелец, гарнизон и ополчение, в сейв ничего не пишется."
+      - "После срабатывания открой вкладку «Предотвращено» (или Ctrl+Alt+D) — там будут город и id культуры. Этот id и указывает на мод с неполными данными культуры."
+      - "Дальше смотри моды на культуры и фракции, начиная с тех, что собраны под другую эпоху версий (версия вида e1.x, когда у тебя v1.4.x). Обычная причина — культура, добавленная без шаблонов героев-повстанцев."
+      - "Не пересобирай шейдеры, не переустанавливай игру и не меняй драйвер — это данные мода, ничего из этого не поможет."
+    zh:
+      - "Crash Doctor 会拦截它——请在「崩溃修复」页保持「城镇叛乱崩溃防护（文化缺少叛乱英雄模板）」为开。受影响的城镇只是不叛乱：领主、驻军和民兵都保留，不向存档写入任何内容。"
+      - "触发后打开「已预防」页（或 Ctrl+Alt+D）：其中会写明城镇和文化 id。该 id 就指向文化数据不完整的模组。"
+      - "然后检查你的文化／派系内容模组，优先看那些为不同游戏世代构建的（例如你在 v1.4.x 上却是 e1.x 版本）。常见原因是新增的文化没有叛乱英雄模板。"
+      - "不要重建着色器、重装游戏或更换驱动——这是模组数据问题，都没用。"
+    zht:
+      - "Crash Doctor 會攔截它——請在「崩潰修復」頁保持「城鎮叛亂崩潰防護（文化缺少叛亂英雄範本）」為開。受影響的城鎮只是不叛亂：領主、駐軍和民兵都保留，不向存檔寫入任何內容。"
+      - "觸發後開啟「已預防」頁（或 Ctrl+Alt+D）：其中會寫明城鎮和文化 id。該 id 就指向文化資料不完整的模組。"
+      - "然後檢查你的文化／派系內容模組，優先看那些為不同遊戲世代建置的（例如你在 v1.4.x 上卻是 e1.x 版本）。常見原因是新增的文化沒有叛亂英雄範本。"
+      - "不要重建著色器、重灌遊戲或更換驅動程式——這是模組資料問題，都沒用。"
+    tr:
+      - "Crash Doctor bunu korur - «Şehir isyanı çökme koruması (isyancı kahraman şablonu olmayan kültür)» düzeltmesini Çökme Düzeltmeleri sekmesinde AÇIK tut. Etkilenen şehir yalnızca isyan etmez; sahibini, garnizonunu ve milisini korur ve kaydına hiçbir şey yazılmaz."
+      - "Tetiklendikten sonra Önlenenler sekmesini (ya da Ctrl+Alt+D) aç: şehri ve kültür id'sini yazar. O id, kültür verisi eksik olan moddur."
+      - "Sonra kültür / hizip içerik modlarına bak; önce farklı bir oyun dönemi için yapılmış olanlara (sen v1.4.x üzerindeyken e1.x gibi bir sürüm). Olağan sebep, isyancı kahraman şablonu olmadan eklenmiş bir kültürdür."
+      - "Gölgelendiricileri yeniden oluşturma, oyunu yeniden kurma veya sürücü değiştirme - bu mod verisidir, hiçbiri yardımcı olmaz."
+  match:
+    all:
+      - managed_exception: { frame_contains: "RebellionsCampaignBehavior.CreateRebelPartyAndClan" }
+      - managed_exception: { type_contains: "NullReference" }
+
+# BATTLE-END crash: IndexOutOfRangeException removing a troop that is no longer in the roster.
+#   TroopRoster.AddToCountsAtIndex <- TroopRoster.RemoveTroop <- MapEvent.LootDefeatedPartyPrisoners
+#   <- CalculateAndCommitMapEventResults <- OnBattleWon <- set_BattleState <- CalculateWinner
+#   <- SimulateBattleRound <- MapEventManager.Tick <- Campaign.Tick.
+# RemoveTroop calls FindIndexOfTroop, which returns -1 when the troop is not in the roster, and passes
+# that straight to AddToCountsAtIndex - which dereferences this.data[index].Character on its FIRST
+# line. So a lookup miss is an instant IndexOutOfRange. The miss comes from LootDefeatedPartyPrisoners
+# walking the LIVE prisoner list (GetTroopRoster hands out the internal list) while RemoveTroop deletes
+# by the index of the FIRST match rather than the loop's own index: a roster holding the same
+# CharacterObject twice shifts under the loop, and the next pass looks up a troop already consumed.
+# Duplicate roster entries are routine in builds that edit troops. NOTE the _Patch1 suffix on the top
+# frame is Crash Doctor's own prefix on that method - the throw is in GAME code.
+- id: campaign.troop_roster_negative_index
+  category: managed
+  severity: critical
+  confidence: high
+  evidence_source: "Client crash report (Crash Doctor managed capture, crash id 9f176929, seen 4x on 2026-08-07, Bannerlord 1.4.7, 53 mods incl. AdonnaysTroopChanger, MoreNationsRemastered and six Mo*FemaleTroops packs). IndexOutOfRangeException TroopRoster.AddToCountsAtIndex_Patch1 <- TroopRoster.RemoveTroop <- MapEvent.LootDefeatedPartyPrisoners <- CalculateAndCommitMapEventResults <- OnBattleWon <- CalculateWinner <- SimulateBattleRound <- MapEventManager.Tick. Root confirmed by decompiling the shipped CampaignSystem: FindIndexOfTroop returns -1 on a miss, RemoveTroop forwards it unchecked, AddToCountsAtIndex derefs data[index] on line 1. The return value of AddToCountsAtIndex is discarded by all 26 call sites in the game and TOR, which is what makes skipping the call safe."
+  requires_sources: [managed_exception]
+  title:
+    en: "Crash right after a battle - the game removed a prisoner that was no longer in the roster"
+    ru: "Вылет сразу после боя — игра убирала пленного, которого в составе уже не было"
+    zh: "战斗结束后立即崩溃——游戏移除了一个已不在名册中的俘虏"
+    zht: "戰鬥結束後立即當機——遊戲移除了一個已不在名冊中的俘虜"
+    tr: "Savaştan hemen sonra çökme - oyun kadroda artık bulunmayan bir esiri çıkardı"
+  description:
+    en: |
+      IndexOutOfRangeException while the game was settling a battle and sharing out the defeated
+      side's prisoners. TroopRoster.RemoveTroop looks the troop up with FindIndexOfTroop, which
+      returns -1 when it is not in that roster, and passes that straight into AddToCountsAtIndex -
+      which reads data[index] on its very first line. A lookup miss is therefore an instant crash.
+      The miss itself comes from the prisoner loop walking the LIVE roster list while RemoveTroop
+      deletes by the index of the FIRST matching troop rather than the loop's own position: a roster
+      holding the same troop type twice shifts underneath the loop, and the next pass asks for a
+      troop that has already been taken out. Duplicate roster entries are normal in builds with
+      troop-editing mods.
+      The _Patch1 suffix on the top frame is Crash Doctor's own guard on that method - the throw is
+      in GAME code, not in a mod, and no mod can be named from this stack. This is a code/data
+      problem, NOT a shader, driver or hardware problem.
+    ru: |
+      IndexOutOfRangeException, когда игра подводила итоги боя и делила пленных проигравшей стороны.
+      TroopRoster.RemoveTroop ищет бойца через FindIndexOfTroop, который возвращает -1, если бойца в
+      этом составе нет, и передаёт это значение прямо в AddToCountsAtIndex — а тот первой же строкой
+      читает data[index]. Поэтому промах поиска — мгновенный вылет.
+      Сам промах берётся из того, что цикл по пленным идёт по ЖИВОМУ списку состава, а RemoveTroop
+      удаляет по индексу ПЕРВОГО совпадения, а не по позиции цикла: если один и тот же тип бойца
+      встречается в составе дважды, список сдвигается под циклом, и на следующем витке запрашивается
+      боец, которого уже забрали. Дубликаты в составе — обычное дело для сборок с модами на войска.
+      Суффикс _Patch1 у верхнего кадра — это собственная защита Crash Doctor на этом методе; бросает
+      КОД ИГРЫ, а не мод, и назвать мод по этому стеку нельзя. Это проблема кода/данных, а НЕ
+      шейдеров, драйвера или железа.
+    zh: |
+      游戏结算战斗并分配败方俘虏时抛出索引越界异常。TroopRoster.RemoveTroop 用 FindIndexOfTroop 查找
+      部队，若该部队不在此名册中则返回 -1，并把该值直接传给 AddToCountsAtIndex——后者在第一行就读取
+      data[index]。因此查找未命中就是立即崩溃。
+      未命中本身源于俘虏循环遍历的是「活的」名册列表，而 RemoveTroop 按第一个匹配项的索引删除，而非
+      按循环自身的位置：若名册中同一兵种出现两次，列表会在循环下方发生位移，下一轮便会请求一个已被
+      取走的部队。在带有部队编辑模组的配置中，名册出现重复条目很常见。
+      顶层帧的 _Patch1 后缀是 Crash Doctor 自己在该方法上的防护——抛出发生在游戏代码中而非模组，
+      无法据此堆栈点名任何模组。这是代码／数据问题，不是着色器、驱动或硬件问题。
+    zht: |
+      遊戲結算戰鬥並分配敗方俘虜時擲出索引超出範圍例外。TroopRoster.RemoveTroop 用 FindIndexOfTroop
+      查找部隊，若該部隊不在此名冊中則傳回 -1，並把該值直接傳給 AddToCountsAtIndex——後者在第一行就
+      讀取 data[index]。因此查找未命中就是立即當機。
+      未命中本身源於俘虜迴圈遍歷的是「活的」名冊清單，而 RemoveTroop 按第一個相符項目的索引刪除，而非
+      按迴圈自身的位置：若名冊中同一兵種出現兩次，清單會在迴圈下方發生位移，下一輪便會請求一個已被
+      取走的部隊。在帶有部隊編輯模組的配置中，名冊出現重複項目很常見。
+      頂層框架的 _Patch1 後綴是 Crash Doctor 自己在該方法上的防護——擲出發生在遊戲程式碼中而非模組，
+      無法據此堆疊點名任何模組。這是程式碼／資料問題，不是著色器、驅動或硬體問題。
+    tr: |
+      Oyun bir savaşı sonuçlandırıp yenilen tarafın esirlerini paylaştırırken IndexOutOfRangeException.
+      TroopRoster.RemoveTroop birliği FindIndexOfTroop ile arar; birlik o kadroda yoksa -1 döner ve bu
+      değer doğrudan AddToCountsAtIndex'e geçer - o da daha ilk satırda data[index] okur. Dolayısıyla
+      arama ıskası anında çökmedir.
+      Iskanın kendisi, esir döngüsünün CANLI kadro listesi üzerinde yürümesinden ve RemoveTroop'un
+      döngünün kendi konumu yerine İLK eşleşen birliğin indeksinden silmesinden kaynaklanır: aynı birlik
+      türünü iki kez barındıran bir kadro döngünün altından kayar ve sonraki tur zaten alınmış bir
+      birliği ister. Birlik düzenleyen modların bulunduğu kurulumlarda yinelenen kadro kayıtları olağandır.
+      Üst karedeki _Patch1 son eki Crash Doctor'ın o metottaki kendi korumasıdır - hata OYUN kodunda
+      fırlar, bir modda değil, ve bu yığından hiçbir mod adlandırılamaz. Bu bir kod/veri sorunudur;
+      gölgelendirici, sürücü ya da donanım sorunu DEĞİLDİR.
+  fix:
+    en:
+      - "Crash Doctor guards this - keep «Troop count crash guard (roster underflow)» ON on the Crash Fixes tab. That single prisoner transfer is skipped, the battle finishes and the campaign continues."
+      - "Open the Prevented tab (or Ctrl+Alt+D) after it triggers: it names the party whose roster was involved."
+      - "Nothing needs repairing in the save - this is a bug in the game's own roster code, made more likely by duplicate roster entries."
+      - "If you want it to happen less often, look at mods that add or edit troops (troop-changer and extra-troop-pack mods) - they are what produce duplicate entries."
+      - "Do NOT rebuild shaders or change drivers - this is a code bug, none of that helps."
+    ru:
+      - "Crash Doctor это перехватывает — держи «Защиту от вылета по числу войск (underflow ростера)» ВКЛЮЧЁННОЙ на вкладке «Фиксы крашей». Одна эта передача пленного пропускается, бой досчитывается, кампания продолжается."
+      - "После срабатывания открой вкладку «Предотвращено» (или Ctrl+Alt+D) — там будет отряд, чей состав участвовал."
+      - "Чинить в сейве нечего — это баг в самом ростерном коде игры, которому помогают дубликаты записей в составе."
+      - "Чтобы случалось реже, посмотри моды, добавляющие или правящие войска (troop-changer и паки дополнительных войск) — именно они плодят дубликаты."
+      - "Не пересобирай шейдеры и не меняй драйвер — это баг кода, не поможет."
+    zh:
+      - "Crash Doctor 会拦截它——请在「崩溃修复」页保持「兵力数量崩溃防护（名册下溢）」为开。这一次俘虏转移被跳过，战斗结算完成，战役继续。"
+      - "触发后打开「已预防」页（或 Ctrl+Alt+D）：其中会写明涉及名册的队伍。"
+      - "存档无需修复——这是游戏自身名册代码的漏洞，重复的名册条目会让它更容易出现。"
+      - "若想减少发生，请检查添加或修改部队的模组（部队替换类与额外兵种包）——重复条目正是由它们造成的。"
+      - "不要重建着色器或更换驱动——这是代码漏洞，都没用。"
+    zht:
+      - "Crash Doctor 會攔截它——請在「崩潰修復」頁保持「兵力數量崩潰防護（名冊下溢）」為開。這一次俘虜轉移被跳過，戰鬥結算完成，戰役繼續。"
+      - "觸發後開啟「已預防」頁（或 Ctrl+Alt+D）：其中會寫明涉及名冊的隊伍。"
+      - "存檔無需修復——這是遊戲自身名冊程式碼的瑕疵，重複的名冊項目會讓它更容易出現。"
+      - "若想減少發生，請檢查新增或修改部隊的模組（部隊替換類與額外兵種包）——重複項目正是由它們造成的。"
+      - "不要重建著色器或更換驅動程式——這是程式碼瑕疵，都沒用。"
+    tr:
+      - "Crash Doctor bunu korur - «Birlik sayısı çökme koruması (kadro alt taşması)» düzeltmesini Çökme Düzeltmeleri sekmesinde AÇIK tut. O tek esir aktarımı atlanır, savaş tamamlanır ve sefer devam eder."
+      - "Tetiklendikten sonra Önlenenler sekmesini (ya da Ctrl+Alt+D) aç: kadrosu işin içinde olan grubu yazar."
+      - "Kayıtta onarılacak bir şey yok - bu, oyunun kendi kadro kodundaki bir hatadır; yinelenen kadro kayıtları olasılığı artırır."
+      - "Daha seyrek yaşamak istersen birlik ekleyen ya da düzenleyen modlara bak (birlik değiştirici ve ek birlik paketleri) - yinelenen kayıtları onlar üretir."
+      - "Gölgelendiricileri yeniden oluşturma veya sürücü değiştirme - bu bir kod hatası, yardımcı olmaz."
+  match:
+    all:
+      - managed_exception: { frame_contains: "TroopRoster.AddToCountsAtIndex" }
+      - managed_exception: { frame_contains: "LootDefeatedPartyPrisoners" }
+      - managed_exception: { type_contains: "IndexOutOfRange" }
+
+# DAILY, REPEATING error (not a one-off crash): KeyNotFoundException on the rebellion tick for a
+# clan flagged IsRebelClan that the game never registered.
+#   Dictionary.get_Item <- RebellionsCampaignBehavior.DailyTickClan <- CampaignEvents.DailyTickClan
+#   <- Campaign.Tick.   (DailyTickSettlement carries the same unguarded read.)
+# A clan enters the behaviour's _rebelClansAndDaysPassedAfterCreation dictionary ONLY through
+# CreateRebelPartyAndClan, and leaves it in two places - OnClanDestroyed, and the 30-day conversion,
+# which also clears IsRebelClan. So "IsRebelClan and not in the dictionary" is impossible in a healthy
+# game. It happens when another mod creates a clan and sets the flag itself, or leaves such a clan in
+# the save after being uninstalled: the flag is saved on the CLAN, the dictionary on the BEHAVIOUR,
+# and the two disagree for ever. With BLSE this is not a crash but a "continue?" prompt every day,
+# once per orphan clan.
+- id: campaign.rebel_clan_not_registered
+  category: managed
+  severity: warning
+  confidence: high
+  evidence_source: "Client crash report (BUTR R9TDAK, Bannerlord 1.4.7, 42 mods). KeyNotFoundException Dictionary.get_Item <- RebellionsCampaignBehavior.DailyTickClan <- CampaignEvents.DailyTickClan <- Campaign.Tick. Reporter: 'It occurs from installing/uninstalling Warlord, with the claimant clans being the issue... It doesn't cause a crash, but it does stop execution and prompt to continue every day, once per missing clan.' Warlord is no longer in the module list, matching an uninstall. Root confirmed by decompiling the shipped CampaignSystem: DailyTickClan guards its FIRST block with ContainsKey but its second block reads _rebelClansAndDaysPassedAfterCreation[clan] raw, and DailyTickSettlement reads it raw for a town owned by a rebel clan. Field and both methods verified present on 1.2, 1.3.15 and 1.4.5 with Mono.Cecil."
+  requires_sources: [managed_exception]
+  title:
+    en: "Repeating daily error - a rebel clan the game never registered (left by an added/removed mod)"
+    ru: "Повторяющаяся ежедневная ошибка — клан мятежников, не зарегистрированный игрой (остался от мода)"
+    zh: "每日重复报错——游戏从未登记的叛军家族（由中途增删的模组遗留）"
+    zht: "每日重複錯誤——遊戲從未登記的叛軍家族（由中途增刪的模組遺留）"
+    tr: "Her gün tekrarlayan hata - oyunun hiç kaydetmediği bir isyancı hane (eklenen/kaldırılan bir moddan kalma)"
+  description:
+    en: |
+      KeyNotFoundException on the daily rebellion tick. The game keeps its own rebel clans in a
+      private list and puts a clan there only when it starts that rebellion itself. Two places in
+      the daily tick then read that list for any clan merely FLAGGED as a rebel clan, with no check:
+      the landless-rebel-clan wind-down in DailyTickClan, and the post-rebellion loyalty boost in
+      DailyTickSettlement.
+      The flag lives on the clan and the list lives on the behaviour, and both are saved separately.
+      So a clan that another mod created and flagged itself - or one left behind in the save after
+      that mod was uninstalled - is flagged but absent, and the read fails every day from then on,
+      once per affected clan. It never repairs itself.
+      With BLSE installed this is not a crash: execution stops and you get a "continue?" prompt each
+      time. This is a mod/save-data problem, NOT a shader, driver or hardware problem.
+    ru: |
+      KeyNotFoundException на дневном тике восстаний. Игра держит свои кланы мятежников в приватном
+      списке и заносит туда клан только тогда, когда сама начинает это восстание. При этом два места
+      дневного тика читают список для любого клана, у которого просто СТОИТ признак мятежного, без
+      всякой проверки: сворачивание безземельного клана мятежников в DailyTickClan и прибавка
+      лояльности после восстания в DailyTickSettlement.
+      Признак хранится у клана, а список — у поведения, и сохраняются они порознь. Поэтому клан,
+      который создал и пометил сам другой мод — или клан, оставшийся в сейве после сноса такого
+      мода, — помечен, но отсутствует, и чтение падает каждый день, по разу на каждый такой клан.
+      Само это не исправится.
+      С установленным BLSE это не вылет: выполнение останавливается и каждый раз спрашивают
+      «продолжить?». Это проблема мода/данных сейва, а НЕ шейдеров, драйвера или железа.
+    zh: |
+      叛乱每日结算时抛出 KeyNotFoundException。游戏把自己的叛军家族保存在一份私有列表中，且只有在它
+      自己发动该次叛乱时才会加入。而每日结算中有两处会为任何仅仅被「标记」为叛军的家族读取该列表，
+      且不做检查：DailyTickClan 中对无领地叛军家族的收尾，以及 DailyTickSettlement 中叛乱后的忠诚度
+      加成。
+      标记保存在家族上，列表保存在行为上，两者分别存档。因此由其他模组自行创建并标记的家族——或该
+      模组被卸载后遗留在存档中的家族——有标记却不在列表中，此后每天都会读取失败，每个此类家族各一次。
+      它不会自行恢复。
+      装有 BLSE 时这不是崩溃：执行会中断，并且每次都会提示「是否继续」。这是模组／存档数据问题，
+      不是着色器、驱动或硬件问题。
+    zht: |
+      叛亂每日結算時擲出 KeyNotFoundException。遊戲把自己的叛軍家族儲存在一份私有清單中，且只有在它
+      自己發動該次叛亂時才會加入。而每日結算中有兩處會為任何僅僅被「標記」為叛軍的家族讀取該清單，
+      且不做檢查：DailyTickClan 中對無領地叛軍家族的收尾，以及 DailyTickSettlement 中叛亂後的忠誠度
+      加成。
+      標記儲存在家族上，清單儲存在行為上，兩者分別存檔。因此由其他模組自行建立並標記的家族——或該
+      模組被解除安裝後遺留在存檔中的家族——有標記卻不在清單中，此後每天都會讀取失敗，每個此類家族各
+      一次。它不會自行恢復。
+      裝有 BLSE 時這不是當機：執行會中斷，並且每次都會提示「是否繼續」。這是模組／存檔資料問題，
+      不是著色器、驅動或硬體問題。
+    tr: |
+      Günlük isyan tick'inde KeyNotFoundException. Oyun kendi isyancı hanelerini özel bir listede
+      tutar ve bir haneyi oraya yalnızca o isyanı kendisi başlattığında koyar. Günlük tick'teki iki
+      yer ise yalnızca isyancı olarak İŞARETLENMİŞ herhangi bir hane için bu listeyi kontrolsüz okur:
+      DailyTickClan'daki topraksız isyancı hane tasfiyesi ve DailyTickSettlement'taki isyan sonrası
+      sadakat artışı.
+      İşaret hanede, liste ise davranışta durur ve ikisi ayrı ayrı kaydedilir. Bu yüzden başka bir
+      modun kendi oluşturup işaretlediği bir hane - ya da o mod kaldırıldıktan sonra kayıtta kalan bir
+      hane - işaretlidir ama listede yoktur ve okuma o günden sonra her gün, etkilenen hane başına bir
+      kez başarısız olur. Kendiliğinden düzelmez.
+      BLSE kuruluyken bu bir çökme değildir: yürütme durur ve her seferinde bir «devam?» sorusu
+      alırsın. Bu bir mod/kayıt verisi sorunudur; gölgelendirici, sürücü ya da donanım sorunu DEĞİLDİR.
+  fix:
+    en:
+      - "Crash Doctor guards this - keep «Daily rebellion-tick guard (rebel clan the game never registered)» ON on the Crash Fixes tab. The rebellion tick skips that one clan and the daily prompt stops."
+      - "Open the Prevented tab (or Ctrl+Alt+D): it names the clan, so you can see which mod left it behind."
+      - "The clan itself stays in your save and keeps working - only the game's own rebel-clan handling skips it. Nothing is written to the save."
+      - "If you want it gone entirely, that is the other mod's job: reinstall the mod that created the clan and let it clean up, or remove the clan with its own tools. Crash Doctor deliberately does not register it with the game, because the game would then rename it after 30 days and start removing its heroes after 90."
+      - "Do NOT rebuild shaders or reinstall the game - this is save data, none of that helps."
+    ru:
+      - "Crash Doctor это перехватывает — держи «Защиту дневного тика восстаний (клан мятежников, не зарегистрированный игрой)» ВКЛЮЧЁННОЙ на вкладке «Фиксы крашей». Тик восстаний пропускает этот клан, и ежедневный диалог прекращается."
+      - "Открой вкладку «Предотвращено» (или Ctrl+Alt+D) — там будет имя клана, по нему видно, чей мод его оставил."
+      - "Сам клан остаётся в сейве и работает — его пропускает только игровая обработка кланов мятежников. В сейв ничего не пишется."
+      - "Если хочешь убрать его совсем — это дело того мода: верни мод, создавший клан, и дай ему прибраться, либо удали клан его же средствами. Crash Doctor намеренно не регистрирует клан в игре: тогда игра через 30 дней переименует его, а через 90 начнёт убирать его героев."
+      - "Не пересобирай шейдеры и не переустанавливай игру — это данные сейва, не поможет."
+    zh:
+      - "Crash Doctor 会拦截它——请在「崩溃修复」页保持「叛乱每日结算防护（游戏从未登记的叛军家族）」为开。叛乱结算会跳过该家族，每日提示随之停止。"
+      - "打开「已预防」页（或 Ctrl+Alt+D）：其中会写明家族名称，由此可知是哪个模组遗留的。"
+      - "该家族本身仍留在存档中并正常运作——只有游戏自身的叛军家族处理会跳过它。不向存档写入任何内容。"
+      - "若想彻底清除，那是另一个模组的事：重新安装创建该家族的模组并让它自行清理，或用它自带的工具移除该家族。Crash Doctor 特意不为其补登记，因为那样游戏会在 30 天后重命名它，并在 90 天后开始移除其英雄。"
+      - "不要重建着色器或重装游戏——这是存档数据，都没用。"
+    zht:
+      - "Crash Doctor 會攔截它——請在「崩潰修復」頁保持「叛亂每日結算防護（遊戲從未登記的叛軍家族）」為開。叛亂結算會跳過該家族，每日提示隨之停止。"
+      - "開啟「已預防」頁（或 Ctrl+Alt+D）：其中會寫明家族名稱，由此可知是哪個模組遺留的。"
+      - "該家族本身仍留在存檔中並正常運作——只有遊戲自身的叛軍家族處理會跳過它。不向存檔寫入任何內容。"
+      - "若想徹底清除，那是另一個模組的事：重新安裝建立該家族的模組並讓它自行清理，或用它自帶的工具移除該家族。Crash Doctor 特意不為其補登記，因為那樣遊戲會在 30 天後重新命名它，並在 90 天後開始移除其英雄。"
+      - "不要重建著色器或重灌遊戲——這是存檔資料，都沒用。"
+    tr:
+      - "Crash Doctor bunu korur - «Günlük isyan tick koruması (oyunun hiç kaydetmediği isyancı hane)» düzeltmesini Çökme Düzeltmeleri sekmesinde AÇIK tut. İsyan tick'i o haneyi atlar ve günlük soru sona erer."
+      - "Önlenenler sekmesini (ya da Ctrl+Alt+D) aç: haneyi adıyla yazar, böylece onu hangi modun geride bıraktığını görürsün."
+      - "Hanenin kendisi kaydında kalır ve çalışmaya devam eder - yalnızca oyunun kendi isyancı hane işleyişi onu atlar. Kaydına hiçbir şey yazılmaz."
+      - "Tamamen gitmesini istiyorsan bu diğer modun işidir: haneyi oluşturan modu geri kur ve temizlemesine izin ver, ya da haneyi onun kendi araçlarıyla kaldır. Crash Doctor bilerek onu oyuna kaydetmez; aksi halde oyun 30 gün sonra adını değiştirir ve 90 gün sonra kahramanlarını kaldırmaya başlar."
+      - "Gölgelendiricileri yeniden oluşturma veya oyunu yeniden kurma - bu kayıt verisidir, hiçbiri yardımcı olmaz."
+  match:
+    all:
+      - managed_exception: { frame_contains: "RebellionsCampaignBehavior.DailyTick" }
+      - managed_exception: { type_contains: "KeyNotFound" }
+
+# DAY-CHANGE crash at CHILDBIRTH: NullReferenceException building the newborn's body properties.
+#   CharacterHelper.GetDynamicBodyPropertiesBetweenMinMaxRange <- HeroCreator.HeroInitializationArgs..ctor
+#   <- HeroCreator.DeliverOffSpring <- PregnancyCampaignBehavior.CheckOffspringToDeliver
+#   <- DailyTickHero <- Campaign.Tick.
+# The helper's FIRST line is `character.BodyPropertyRange.BodyPropertyMin` with no check.
+# BasicCharacterObject.BodyPropertyRange is a virtual MBBodyProperty REFERENCE, filled during XML
+# deserialisation (with a RegisterPresumedObject fallback when the file declares no face data), so a
+# CharacterObject a mod builds in CODE has it null. DefaultHeroCreationModel.GetCharacterTemplateForOffspring
+# returns the FATHER's or MOTHER's own CharacterObject as the newborn's template, so a single modded
+# parent breaks every delivery they are part of. The throw is in GAME code - the mod that supplied the
+# parent is not in the stack and cannot be named from it.
+- id: campaign.offspring_body_properties_nre
+  category: managed
+  severity: critical
+  confidence: high
+  evidence_source: "Client crash report (Crash Doctor managed capture, crash id 68325555, seen 2x on 2026-07-26, Bannerlord 1.4.5, 68 mods incl. ChaosInvasion, CustomTroop, DeathTroops, BannerKnights e1.0.5.0, and a zzCharacterCreation v1.8.1.0 / zzCharacterCreation_AdditionalSliders v1.5.7.171 version mismatch). NullReferenceException Helpers.CharacterHelper.GetDynamicBodyPropertiesBetweenMinMaxRange <- HeroCreator.HeroInitializationArgs..ctor <- HeroCreator.DeliverOffSpring <- PregnancyCampaignBehavior.CheckOffspringToDeliver <- DailyTickHero. Root confirmed by decompiling the shipped 1.4.5 CampaignSystem/Core: the helper derefs character.BodyPropertyRange on line 1, BodyPropertyRange is a virtual reference filled only on XML deserialisation, and GetCharacterTemplateForOffspring hands back a parent's own CharacterObject. Reporter later found that disabling ChaosInvasion stopped it - one data point at two occurrences, not a confirmed attribution."
+  requires_sources: [managed_exception]
+  title:
+    en: "Crash on the day change when a child is born - a parent has no body-shape data"
+    ru: "Вылет на смене дня при рождении ребёнка — у родителя нет данных о телосложении"
+    zh: "孩子出生时的日期切换崩溃——父母一方缺少体型数据"
+    zht: "孩子出生時的日期切換當機——父母一方缺少體型資料"
+    tr: "Bir çocuk doğarken gün değişiminde çökme - ebeveynin vücut verisi yok"
+  description:
+    en: |
+      NullReferenceException on the daily hero tick, at the moment a pregnancy delivers. To pick the
+      newborn's build the game reads the body-shape range off the child's template and dereferences
+      it on the very first line, with no check — and that template is the FATHER's or MOTHER's own
+      character.
+      A character gets its body-shape range when it is read from XML. A character a mod creates in
+      CODE never gets one, so it stays empty and every delivery involving that parent kills the
+      whole daily hero tick. Because pregnancies keep coming due, the save then crashes again and
+      again around the same in-game days.
+      The throw happens inside GAME code, so the mod that supplied the parent is NOT in the stack
+      and cannot be named from it. This is a mod/data problem, NOT a shader, driver or hardware
+      problem.
+    ru: |
+      NullReferenceException на дневном тике героев, в момент родов. Чтобы выбрать телосложение
+      новорождённого, игра читает диапазон внешности у шаблона ребёнка и разыменовывает его первой
+      же строкой, без всякой проверки, — а шаблоном служит персонаж ОТЦА или МАТЕРИ.
+      Диапазон внешности появляется у персонажа, когда тот читается из XML. У персонажа, которого
+      мод создал В КОДЕ, его нет вовсе, поэтому каждые роды с таким родителем роняют весь дневной
+      тик героев. Беременности продолжают подходить к сроку, так что сейв вылетает снова и снова
+      примерно на одних и тех же игровых днях.
+      Бросает КОД ИГРЫ, поэтому мода, поставившего такого родителя, в стеке нет и назвать его по
+      стеку нельзя. Это проблема мода/данных, а НЕ шейдеров, драйвера или железа.
+    zh: |
+      每日英雄结算、恰逢分娩时抛出空引用异常。为确定新生儿的体型，游戏会读取孩子模板的体型范围，
+      并在第一行就解引用且不做任何检查——而该模板正是父亲或母亲本人的角色。
+      角色的体型范围是在从 XML 读取时获得的。由模组在代码中创建的角色永远不会获得它，因此每一次
+      涉及该父母的分娩都会让整个每日英雄结算崩溃。由于怀孕会不断到期，存档会在大致相同的游戏日
+      反复崩溃。
+      抛出发生在游戏代码内部，因此提供该父母的模组不在堆栈中，无法据此点名。这是模组／数据问题，
+      不是着色器、驱动或硬件问题。
+    zht: |
+      每日英雄結算、恰逢分娩時擲出空參考例外。為確定新生兒的體型，遊戲會讀取孩子範本的體型範圍，
+      並在第一行就解參考且不做任何檢查——而該範本正是父親或母親本人的角色。
+      角色的體型範圍是在從 XML 讀取時獲得的。由模組在程式碼中建立的角色永遠不會獲得它，因此每一次
+      涉及該父母的分娩都會讓整個每日英雄結算當機。由於懷孕會不斷到期，存檔會在大致相同的遊戲日
+      反覆當機。
+      擲出發生在遊戲程式碼內部，因此提供該父母的模組不在堆疊中，無法據此點名。這是模組／資料問題，
+      不是著色器、驅動或硬體問題。
+    tr: |
+      Günlük kahraman tick'inde, tam bir gebelik sonuçlanırken NullReferenceException. Yeni doğanın
+      yapısını seçmek için oyun, çocuğun şablonundan vücut aralığını okur ve daha ilk satırda hiçbir
+      kontrol yapmadan başvurur - o şablon ise BABANIN ya da ANNENİN kendi karakteridir.
+      Bir karakter vücut aralığını XML'den okunurken kazanır. Bir modun KODLA oluşturduğu karakter
+      bunu hiç kazanmaz; bu yüzden o ebeveynin dahil olduğu her doğum tüm günlük kahraman tick'ini
+      çökertir. Gebelikler sürekli vadesi geldiğinden kayıt, aynı oyun günleri civarında tekrar
+      tekrar çöker.
+      Hata OYUNUN kodunda fırlar; dolayısıyla o ebeveyni sağlayan mod yığında yoktur ve oradan
+      adlandırılamaz. Bu bir mod/veri sorunudur; gölgelendirici, sürücü ya da donanım sorunu DEĞİLDİR.
+  fix:
+    en:
+      - "Crash Doctor guards this - keep «Childbirth crash guard (character with no body-shape data)» ON on the Crash Fixes tab. The newborn gets an average build instead and the day passes."
+      - "Open the Prevented tab (or Ctrl+Alt+D) after it triggers: it names the character that has no body-shape data. That is the mod to look at."
+      - "The likely sources are mods that create heroes or characters in code: invasion/faction mods, custom-troop and custom-lord mods, and character-appearance mods. Check any whose version does not match the rest of its own family (an add-on built for an older version of its parent mod is a classic)."
+      - "Do NOT rebuild shaders, reinstall the game or change drivers - this is character data, none of that helps."
+    ru:
+      - "Crash Doctor это перехватывает — держи «Защиту от вылета при рождении ребёнка (у персонажа нет данных о телосложении)» ВКЛЮЧЁННОЙ на вкладке «Фиксы крашей». Новорождённый получит среднее телосложение, и день пройдёт."
+      - "После срабатывания открой вкладку «Предотвращено» (или Ctrl+Alt+D) — там будет персонаж без данных о телосложении. На его мод и надо смотреть."
+      - "Вероятные источники — моды, создающие героев и персонажей в коде: моды на вторжения и фракции, на кастомные войска и лордов, на внешность персонажей. Проверь те, чья версия расходится с остальными частями того же мода (дополнение, собранное под старую версию своего основного мода, — классика)."
+      - "Не пересобирай шейдеры, не переустанавливай игру и не меняй драйвер — это данные персонажа, ничего из этого не поможет."
+    zh:
+      - "Crash Doctor 会拦截它——请在「崩溃修复」页保持「生育崩溃防护（角色缺少体型数据）」为开。新生儿改用平均体型，这一天即可正常度过。"
+      - "触发后打开「已预防」页（或 Ctrl+Alt+D）：其中会写明缺少体型数据的角色。要排查的就是它所属的模组。"
+      - "可能的来源是那些在代码中创建英雄或角色的模组：入侵／派系类、自定义兵种与自定义领主类、角色外观类。请检查版本与同一模组家族其他部分不一致的那些（为旧版本主模组构建的附加组件是典型情况）。"
+      - "不要重建着色器、重装游戏或更换驱动——这是角色数据问题，都没用。"
+    zht:
+      - "Crash Doctor 會攔截它——請在「崩潰修復」頁保持「生育崩潰防護（角色缺少體型資料）」為開。新生兒改用平均體型，這一天即可正常度過。"
+      - "觸發後開啟「已預防」頁（或 Ctrl+Alt+D）：其中會寫明缺少體型資料的角色。要排查的就是它所屬的模組。"
+      - "可能的來源是那些在程式碼中建立英雄或角色的模組：入侵／派系類、自訂兵種與自訂領主類、角色外觀類。請檢查版本與同一模組家族其他部分不一致的那些（為舊版本主模組建置的附加元件是典型情況）。"
+      - "不要重建著色器、重灌遊戲或更換驅動程式——這是角色資料問題，都沒用。"
+    tr:
+      - "Crash Doctor bunu korur - «Doğum çökme koruması (vücut verisi olmayan karakter)» düzeltmesini Çökme Düzeltmeleri sekmesinde AÇIK tut. Yeni doğan bunun yerine ortalama bir yapı alır ve gün geçer."
+      - "Tetiklendikten sonra Önlenenler sekmesini (ya da Ctrl+Alt+D) aç: vücut verisi olmayan karakteri yazar. Bakılacak mod odur."
+      - "Olası kaynaklar, kahraman ya da karakterleri kodla oluşturan modlardır: istila/hizip modları, özel birlik ve özel lord modları, karakter görünüm modları. Sürümü kendi mod ailesinin geri kalanıyla uyuşmayanları kontrol et (ana modunun eski bir sürümü için yapılmış bir eklenti klasik bir örnektir)."
+      - "Gölgelendiricileri yeniden oluşturma, oyunu yeniden kurma veya sürücü değiştirme - bu karakter verisidir, hiçbiri yardımcı olmaz."
+  match:
+    all:
+      - managed_exception: { frame_contains: "GetDynamicBodyPropertiesBetweenMinMaxRange" }
+      - managed_exception: { type_contains: "NullReference" }

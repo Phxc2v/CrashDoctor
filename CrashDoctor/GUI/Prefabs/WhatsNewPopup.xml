@@ -40,7 +40,7 @@
                  grow it past the clip rect, which is exactly what gives the scrollbar something
                  to move. -->
             <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
-                    MarginTop="94" MarginBottom="96" MarginLeft="40" MarginRight="40">
+                    MarginTop="94" MarginBottom="132" MarginLeft="40" MarginRight="40">
               <Children>
                 <ScrollablePanel Id="WhatsNewScroll" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
                                  AutoHideScrollBars="true"
@@ -75,6 +75,30 @@
                 </ScrollbarWidget>
               </Children>
             </Widget>
+
+            <!-- "Don't show news again" — the whole row is one clickable toggle (label has
+                 DoNotAcceptEvents so its clicks fall through to the button). Persisted globally on
+                 close. FiraSans has no check glyph (renders as '?'), so the tick is a filled square
+                 shown only when selected (IsVisible="@DoNotShowAgain"), never a ✓ character. -->
+            <ButtonWidget DoNotPassEventsToChildren="true" Command.Click="ExecuteToggleNeverShow"
+                          WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="520" SuggestedHeight="28"
+                          HorizontalAlignment="Left" VerticalAlignment="Bottom" MarginLeft="60" MarginBottom="84">
+              <Children>
+                <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="24" SuggestedHeight="24"
+                        HorizontalAlignment="Left" VerticalAlignment="Center"
+                        Sprite="BlankWhiteSquare_9" Color="#8A6A44FF">
+                  <Children>
+                    <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="14" SuggestedHeight="14"
+                            HorizontalAlignment="Center" VerticalAlignment="Center"
+                            Sprite="BlankWhiteSquare_9" Color="#F4E1C4FF" IsVisible="@DoNotShowAgain" />
+                  </Children>
+                </Widget>
+                <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="484"
+                            HorizontalAlignment="Right" VerticalAlignment="Center" DoNotAcceptEvents="true"
+                            Brush.FontSize="16" Brush.FontColor="#C8B89AFF"
+                            Brush.TextHorizontalAlignment="Left" Text="@LabelWhatsNewNeverShow" />
+              </Children>
+            </ButtonWidget>
 
             <!-- Buttons: Telegram left, Close right — same geometry as every other dialog here. -->
             <ButtonWidget DoNotPassEventsToChildren="true" Command.Click="ExecuteWhatsNewTelegram"

@@ -493,11 +493,11 @@
   evidence_source: "MCM-Prefab catalog 2026-05-02"
   requires_sources: [log_line]
   title:
-    en: "MCM PrefabInjector ArgumentNullException fieldInfo"
-    ru: "MCM PrefabInjector ArgumentNullException fieldInfo"
-    zh: "MCM PrefabInjector ArgumentNullException fieldInfo"
-    zht: "MCM PrefabInjector ArgumentNullException fieldInfo"
-    tr: "MCM PrefabInjector ArgumentNullException fieldInfo"
+    en: "MCM crashes building a mod's settings screen (outdated MCM)"
+    ru: "MCM падает при построении экрана настроек мода (устаревший MCM)"
+    zh: "MCM 构建模组设置界面时崩溃（MCM 版本过旧）"
+    zht: "MCM 建構模組設定介面時崩潰（MCM 版本過舊）"
+    tr: "MCM bir modun ayarlar ekranını oluştururken çöküyor (eski MCM)"
   description:
     en: |
       MCM.UI.Functionality.Injectors.PrefabInjector throws ArgumentNullException
@@ -605,3 +605,104 @@
           contains: "Harmony.PatchException"
       - log_line:
           contains: "HarmonyPatchException"
+
+# A mod's DLL could not load because an assembly it references is not there. This is the single
+# most common "the game dies before the main menu, leaves no crash folder and no log" failure: the
+# CLR raises the missing-assembly exception while the engine is still loading modules, and Windows
+# records it as 0xE0434352 (unhandled .NET exception) with nothing else to go on.
+# The cause is always the same shape — a prerequisite library module missing from the setup or
+# installed but switched OFF (ButterLib, MCM/MBOptionScreen, UIExtenderEx, Harmony, BLSE), or the
+# mod's own bundled DLL never extracted / blocked by Windows.
+# Evidence: client 2026-08-07 — Realm of Thrones 8.0.10 on game 1.3.15 with only Harmony and
+# UIExtenderEx present (no ButterLib, no MCM), 4 identical faults at the same address, no crash
+# folder, no managed capture. Crash Doctor's own pre-crash check (ModDependencyScanner) reports the
+# same thing BY NAME in report.txt and crashdoctor.log.
+- id: mod.assembly_load_failure
+  category: modules
+  severity: critical
+  confidence: high
+  requires_sources: [managed_exception]
+  title:
+    en: "A mod could not load a library it needs (missing prerequisite module)"
+    ru: "Мод не смог загрузить нужную ему библиотеку (не хватает обязательного мода)"
+    zh: "某模组无法加载它所需的库（缺少必需的前置模组）"
+    zht: "某模組無法載入它所需的程式庫（缺少必要的前置模組）"
+    tr: "Bir mod ihtiyaç duyduğu kütüphaneyi yükleyemedi (eksik ön koşul modu)"
+  description:
+    en: |
+      The .NET runtime could not find or load an assembly a mod asked for ("Could not load file or
+      assembly"). A mod's code lives in a DLL, and that DLL names the libraries it was built
+      against; if one of them is not installed, is switched off in the launcher, or was never
+      extracted from the archive, the mod cannot be loaded at all and the game dies — typically at
+      startup, before the main menu, leaving no crash folder and no log to read.
+      This is a SETUP problem, not a bug in the mod and not a hardware fault. The usual missing
+      pieces are the shared prerequisite modules: ButterLib, MCM (Mod Configuration Menu),
+      UIExtenderEx, Harmony, or BLSE.
+    ru: |
+      Среда .NET не смогла найти или загрузить сборку, которую запросил мод («Could not load file
+      or assembly»). Код мода лежит в DLL, и эта DLL перечисляет библиотеки, под которые её
+      собирали; если одной из них нет в сборке, она выключена в лаунчере или её просто не
+      распаковали — мод не загрузится вообще, и игра падает, обычно на старте, до главного меню,
+      не оставив ни папки краша, ни логов.
+      Это проблема КОМПЛЕКТАЦИИ сборки, а не баг мода и не железо. Чаще всего не хватает общих
+      обязательных модов: ButterLib, MCM (Mod Configuration Menu), UIExtenderEx, Harmony или BLSE.
+    zh: |
+      .NET 运行时找不到或无法加载某模组请求的程序集（“Could not load file or assembly”）。模组代码位于
+      DLL 中，而该 DLL 声明了它编译时依赖的库；只要其中一个未安装、在启动器中被禁用，或压缩包根本没解压，
+      该模组就完全无法加载，游戏随之崩溃——通常发生在进入主菜单之前，且不留崩溃文件夹和日志。
+      这是配置问题，不是模组的 bug，也不是硬件故障。最常缺失的是公共前置模组：ButterLib、MCM
+      （Mod Configuration Menu）、UIExtenderEx、Harmony 或 BLSE。
+    zht: |
+      .NET 執行階段找不到或無法載入某模組請求的組件（「Could not load file or assembly」）。模組程式碼位於
+      DLL 中，而該 DLL 宣告了它編譯時相依的程式庫；只要其中一個未安裝、在啟動器中被停用，或壓縮檔根本沒解壓，
+      該模組就完全無法載入，遊戲隨之當機——通常發生在進入主選單之前，且不留當機資料夾和日誌。
+      這是配置問題，不是模組的 bug，也不是硬體故障。最常缺失的是公共前置模組：ButterLib、MCM
+      （Mod Configuration Menu）、UIExtenderEx、Harmony 或 BLSE。
+    tr: |
+      .NET çalışma zamanı bir modun istediği derlemeyi bulamadı ya da yükleyemedi ("Could not load
+      file or assembly"). Bir modun kodu bir DLL'de bulunur ve o DLL, derlendiği kütüphaneleri
+      listeler; bunlardan biri kurulu değilse, başlatıcıda kapalıysa ya da arşivden hiç
+      çıkarılmadıysa mod hiç yüklenemez ve oyun çöker — genellikle ana menüden önce, çökme klasörü
+      ve günlük bırakmadan.
+      Bu bir KURULUM sorunudur; modun hatası ya da donanım arızası değildir. En sık eksik olanlar
+      ortak ön koşul modlarıdır: ButterLib, MCM (Mod Configuration Menu), UIExtenderEx, Harmony
+      veya BLSE.
+  fix:
+    en:
+      - "Read the assembly name in the message — that IS the answer. 'Bannerlord.ButterLib' means install ButterLib; 'MCMv5'/'MCMv4' means Mod Configuration Menu (MCM); 'Bannerlord.UIExtenderEx' means UIExtenderEx; '0Harmony' means Harmony; 'Bannerlord.BLSE…' means BLSE."
+      - "Check the module is not merely INSTALLED but also TICKED in the launcher — a switched-off library fails exactly like a missing one."
+      - "Open Crash Doctor, Mods tab: mods that cannot load are marked red with the exact file or library they need."
+      - "If the library is a file the mod itself ships, re-extract the archive — a partially unpacked mod is missing DLLs. Then unblock the DLLs (Crash Doctor, System tune-up, «Unblock DLLs»), because Windows blocks downloaded files."
+      - "Do NOT reinstall the game and do NOT rebuild shaders — nothing in the game files is broken."
+    ru:
+      - "Имя сборки в сообщении — это и есть ответ. 'Bannerlord.ButterLib' — ставь ButterLib; 'MCMv5'/'MCMv4' — Mod Configuration Menu (MCM); 'Bannerlord.UIExtenderEx' — UIExtenderEx; '0Harmony' — Harmony; 'Bannerlord.BLSE…' — BLSE."
+      - "Проверь, что модуль не просто УСТАНОВЛЕН, но и ОТМЕЧЕН в лаунчере — выключенная библиотека ломает всё ровно так же, как отсутствующая."
+      - "Открой Crash Doctor, вкладка «Моды»: моды, которые не могут загрузиться, помечены красным с точным именем нужного файла или библиотеки."
+      - "Если библиотека — это файл самого мода, распакуй архив заново: недораспакованный мод остаётся без DLL. Потом разблокируй DLL (Crash Doctor, «Тонкая настройка», «Разблокировать DLL») — Windows блокирует скачанные файлы."
+      - "НЕ переустанавливай игру и НЕ пересобирай шейдеры — с файлами игры всё в порядке."
+    zh:
+      - "消息中的程序集名称就是答案。'Bannerlord.ButterLib' 表示要安装 ButterLib；'MCMv5'/'MCMv4' 表示 Mod Configuration Menu (MCM)；'Bannerlord.UIExtenderEx' 表示 UIExtenderEx；'0Harmony' 表示 Harmony；'Bannerlord.BLSE…' 表示 BLSE。"
+      - "确认该模块不仅已安装，而且在启动器中已勾选——被禁用的库与缺失的库后果完全相同。"
+      - "打开 Crash Doctor 的「模组」页：无法加载的模组会标红，并写明它需要的确切文件或库。"
+      - "若该库是模组自带的文件，请重新解压压缩包——解压不完整会缺少 DLL。随后解锁这些 DLL（Crash Doctor 的「系统调校」页，「解锁 DLL」），因为 Windows 会阻止下载的文件。"
+      - "不要重装游戏，也不要重建着色器——游戏文件没有问题。"
+    zht:
+      - "訊息中的組件名稱就是答案。'Bannerlord.ButterLib' 表示要安裝 ButterLib；'MCMv5'/'MCMv4' 表示 Mod Configuration Menu (MCM)；'Bannerlord.UIExtenderEx' 表示 UIExtenderEx；'0Harmony' 表示 Harmony；'Bannerlord.BLSE…' 表示 BLSE。"
+      - "確認該模組不僅已安裝，而且在啟動器中已勾選——被停用的程式庫與缺失的程式庫後果完全相同。"
+      - "打開 Crash Doctor 的「模組」頁：無法載入的模組會標紅，並寫明它需要的確切檔案或程式庫。"
+      - "若該程式庫是模組自帶的檔案，請重新解壓縮——解壓不完整會缺少 DLL。隨後解除鎖定這些 DLL（Crash Doctor 的「系統調校」頁，「解鎖 DLL」），因為 Windows 會阻擋下載的檔案。"
+      - "不要重裝遊戲，也不要重建著色器——遊戲檔案沒有問題。"
+    tr:
+      - "Mesajdaki derleme adı zaten cevaptır. 'Bannerlord.ButterLib' ButterLib demek; 'MCMv5'/'MCMv4' Mod Configuration Menu (MCM) demek; 'Bannerlord.UIExtenderEx' UIExtenderEx demek; '0Harmony' Harmony demek; 'Bannerlord.BLSE…' BLSE demek."
+      - "Modülün yalnızca KURULU değil, başlatıcıda İŞARETLİ de olduğunu kontrol et — kapalı bir kütüphane, eksik olanla birebir aynı sonucu verir."
+      - "Crash Doctor'da Modlar sekmesini aç: yüklenemeyen modlar kırmızı işaretlenir ve ihtiyaç duydukları dosya ya da kütüphane adıyla yazılır."
+      - "Kütüphane modun kendi getirdiği bir dosyaysa arşivi yeniden çıkar — eksik çıkarılmış bir mod DLL'siz kalır. Sonra DLL'lerin engelini kaldır (Crash Doctor, Sistem İnce Ayar, «DLL engelini kaldır»), çünkü Windows indirilen dosyaları engeller."
+      - "Oyunu yeniden KURMA ve gölgelendiricileri yeniden oluşturma — oyun dosyalarında bir sorun yok."
+  match:
+    all:
+      - any:
+          - managed_exception: { message_contains: "Could not load file or assembly" }
+          - managed_exception: { type_contains: "FileLoadException" }
+      # The TOR/NAudio System.Memory case has its own card with a step-by-step fix — don't shadow it.
+      - none:
+          - managed_exception: { frame_contains: "NAudio" }
