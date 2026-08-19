@@ -702,3 +702,93 @@
       - none:
           - log_line:
               contains: "Missing shader from sack"
+
+- id: shader.cache_write_denied
+  category: gpu
+  severity: critical
+  confidence: high
+  evidence_source: "Client report 2026-08-13 (report crash-2026-08-13_02.20.02): rgl_log carries 'Could not write shader cache file.' / 'Could not write shader mapping file.' next to 'Shader assembly could not be found for :C:\\ProgramData/Mount and Blade II Bannerlord/Shaders/CoreShaders/D3D11/256v.sacx'. The player had deleted the cache, then built shaders four times: the folder ended with 13 files, every launch recompiled from scratch, and the launcher (correctly) kept offering to build."
+  requires_sources: [log_line]
+  title:
+    en: "Shaders compile but are never saved — the game cannot write the shader cache"
+    ru: "Шейдеры собираются, но не сохраняются — игра не может писать кэш шейдеров"
+    zh: "着色器已编译却从未保存——游戏无法写入着色器缓存"
+    zht: "著色器已編譯卻從未儲存——遊戲無法寫入著色器快取"
+    tr: "Gölgelendiriciler derleniyor ama hiç kaydedilmiyor — oyun gölgelendirici önbelleğine yazamıyor"
+  description:
+    en: |
+      The engine says it in as many words in its own log: `Could not write shader cache file.`
+      Everything it compiles this run is lost when the game closes, so the next launch compiles
+      it all again — long freezes on load, hundreds of "Missing shader from sack", and a shader
+      build that runs its full course and saves nothing.
+
+      This is not a corrupt cache and not a driver problem. The folder the engine writes into,
+      C:\ProgramData\Mount and Blade II Bannerlord\Shaders\CoreShaders\D3D11, is either missing
+      or cannot be written to. The engine does not create that folder and does not stop when the
+      write fails — which is why it looks like "the shaders just disappear again".
+    ru: |
+      Движок пишет это прямым текстом в своём логе: `Could not write shader cache file.`
+      Всё, что он собрал за этот запуск, теряется при выходе, и следующий запуск компилирует
+      заново — долгие фризы на загрузке, сотни «Missing shader from sack» и сборка шейдеров,
+      которая честно отрабатывает и ничего не сохраняет.
+
+      Это не битый кэш и не драйвер. Папка, в которую пишет движок,
+      C:\ProgramData\Mount and Blade II Bannerlord\Shaders\CoreShaders\D3D11, либо отсутствует,
+      либо в неё нельзя писать. Сам движок эту папку не создаёт и на отказ записи не
+      останавливается — поэтому со стороны выглядит так, будто «шейдеры снова исчезли».
+    zh: |
+      引擎在自己的日志里写得很清楚：`Could not write shader cache file.`
+      本次运行编译的所有内容都会在游戏关闭时丢失，下次启动只能全部重新编译——加载长时间卡顿、
+      成百上千条 "Missing shader from sack"，而着色器构建跑完全程却什么也没保存。
+
+      这不是缓存损坏，也不是驱动问题。引擎写入的目录
+      C:\ProgramData\Mount and Blade II Bannerlord\Shaders\CoreShaders\D3D11 要么不存在，
+      要么无法写入。引擎不会创建该目录，写入失败时也不会停下——所以看起来就像"着色器又没了"。
+    zht: |
+      引擎在自己的記錄裡寫得很清楚：`Could not write shader cache file.`
+      本次執行編譯的所有內容都會在遊戲關閉時遺失，下次啟動只能全部重新編譯——載入長時間卡頓、
+      成百上千條 "Missing shader from sack"，而著色器建構跑完全程卻什麼也沒儲存。
+
+      這不是快取損壞，也不是驅動問題。引擎寫入的目錄
+      C:\ProgramData\Mount and Blade II Bannerlord\Shaders\CoreShaders\D3D11 要麼不存在，
+      要麼無法寫入。引擎不會建立該目錄，寫入失敗時也不會停下——所以看起來就像「著色器又不見了」。
+    tr: |
+      Motor bunu kendi günlüğünde açıkça yazıyor: `Could not write shader cache file.`
+      Bu çalıştırmada derlediği her şey oyun kapanınca kayboluyor, bir sonraki açılış hepsini
+      yeniden derliyor — uzun yükleme donmaları, yüzlerce "Missing shader from sack" satırı ve
+      sonuna kadar çalışıp hiçbir şey kaydetmeyen bir gölgelendirici derlemesi.
+
+      Bu bozuk bir önbellek ya da sürücü sorunu değil. Motorun yazdığı klasör,
+      C:\ProgramData\Mount and Blade II Bannerlord\Shaders\CoreShaders\D3D11, ya yok ya da
+      yazılabilir değil. Motor bu klasörü oluşturmaz ve yazma başarısız olduğunda durmaz — bu
+      yüzden dışarıdan "gölgelendiriciler yine kayboldu" gibi görünür.
+  fix:
+    en:
+      - "Open C:\\ProgramData\\Mount and Blade II Bannerlord. The Shaders folder must exist and must NOT be read-only; if Shaders\\CoreShaders\\D3D11 is missing, create it — the game will not."
+      - "Check the antivirus / Windows «Controlled folder access»: Bannerlord.exe must be allowed to write inside ProgramData."
+      - "If that folder was made by another account or by something run as administrator: right-click Shaders → Properties → Security → give your own user Full control (or delete the folder and let the launcher recreate it)."
+      - "Then build shaders ONCE. Do not reinstall the game and do not change drivers — neither is broken here."
+    ru:
+      - "Открой C:\\ProgramData\\Mount and Blade II Bannerlord. Папка Shaders должна существовать и НЕ быть «только для чтения»; если нет Shaders\\CoreShaders\\D3D11 — создай её, игра сама этого не сделает."
+      - "Проверь антивирус и «Контролируемый доступ к папкам» в Windows: Bannerlord.exe должно быть разрешено писать в ProgramData."
+      - "Если папку создала другая учётка или запуск «от имени администратора»: ПКМ по Shaders → Свойства → Безопасность → дай своему пользователю полный доступ (или удали папку — лаунчер создаст её заново)."
+      - "После этого собери шейдеры ОДИН раз. Не переустанавливай игру и не меняй драйвер — с ними всё в порядке."
+    zh:
+      - "打开 C:\\ProgramData\\Mount and Blade II Bannerlord。Shaders 目录必须存在且不能是只读；若缺少 Shaders\\CoreShaders\\D3D11，请手动创建——游戏不会创建它。"
+      - "检查杀毒软件与 Windows「受控文件夹访问」：必须允许 Bannerlord.exe 写入 ProgramData。"
+      - "如果该目录由其他账户或「以管理员身份运行」创建：右键 Shaders → 属性 → 安全 → 给自己的用户完全控制（或删除该目录，让启动器重建）。"
+      - "然后构建一次着色器。不要重装游戏、不要更换驱动——它们都没有问题。"
+    zht:
+      - "開啟 C:\\ProgramData\\Mount and Blade II Bannerlord。Shaders 資料夾必須存在且不能是唯讀；若缺少 Shaders\\CoreShaders\\D3D11，請手動建立——遊戲不會建立它。"
+      - "檢查防毒軟體與 Windows「受控資料夾存取權」：必須允許 Bannerlord.exe 寫入 ProgramData。"
+      - "如果該資料夾由其他帳戶或「以系統管理員身分執行」建立：右鍵 Shaders → 內容 → 安全性 → 給自己的使用者完全控制（或刪除該資料夾，讓啟動器重建）。"
+      - "然後建構一次著色器。不要重灌遊戲、不要更換驅動程式——它們都沒有問題。"
+    tr:
+      - "C:\\ProgramData\\Mount and Blade II Bannerlord klasörünü açın. Shaders klasörü var olmalı ve salt okunur OLMAMALI; Shaders\\CoreShaders\\D3D11 yoksa oluşturun — oyun oluşturmaz."
+      - "Antivirüsü ve Windows «Denetimli klasör erişimi» ayarını kontrol edin: Bannerlord.exe ProgramData içine yazabilmeli."
+      - "Klasör başka bir hesapla ya da «yönetici olarak çalıştır» ile oluşturulduysa: Shaders → sağ tık → Özellikler → Güvenlik → kendi kullanıcınıza Tam denetim verin (ya da klasörü silin, başlatıcı yeniden oluşturur)."
+      - "Sonra gölgelendiricileri BİR kez derleyin. Oyunu yeniden kurmayın, sürücü değiştirmeyin — ikisinde de sorun yok."
+  match:
+    all:
+      - log_line:
+          contains: "Could not write shader cache file"

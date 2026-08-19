@@ -168,10 +168,16 @@
               - managed_exception: { frame_contains: "ChangeOwnerOfSettlementAction.ApplyInternal" }
               - managed_exception: { type_contains: "NullReference" }
           - all:
+              - managed_exception: { frame_contains: "MapEvents.MapEvent.Update" }
+              - managed_exception: { type_contains: "NullReference" }
+          - all:
               - managed_exception: { frame_contains: "Clan.get_HasNavalNavigationCapability" }
               - managed_exception: { type_contains: "NullReference" }
           - all:
               - managed_exception: { frame_contains: "PartyComponent.ChangePartyLeader" }
+              - managed_exception: { type_contains: "NullReference" }
+          - all:
+              - managed_exception: { frame_contains: "WarPartyComponent.OnFinalize" }
               - managed_exception: { type_contains: "NullReference" }
           - all:
               - managed_exception: { frame_contains: "MapScreen.OnFinalize" }
@@ -4803,6 +4809,125 @@
       - managed_exception: { frame_contains: "GetMoraleEffectsFromSkill" }
       - managed_exception: { type_contains: "NullReference" }
 
+# Quarter-daily party tick: the party-healing model reads a GARRISON's settlement with no null-check.
+#   DefaultPartyHealingModel.GetDailyHealingForRegulars ← (TORPartyHealingModel / any override, which
+#   only delegates) ← PartyBase.get_HealingRateForMemberRegulars
+#   ← PartyHealCampaignBehavior.TryToHealOrWoundMembers ← TryHealOrWoundParty ← OnQuarterDailyPartyTick.
+# In the non-prisoner branch every settlement access is guarded EXCEPT the two in the garrison branch:
+#   `party.IsStarving || (mobileParty.IsGarrison && mobileParty.CurrentSettlement.IsStarving)` and
+#   `if (mobileParty.IsGarrison) { if (mobileParty.CurrentSettlement.IsTown) … }`.
+# A garrison has no settlement either because it was orphaned (its town/castle was lost) or because it
+# is out on a sally-out. Vanilla only cleans orphans in MobileParty.AfterLoad for saves older than
+# v1.3.15, so on a current save the party stays and the tick crashes 4× per game day.
+- id: campaign.party_healing_garrison_no_settlement_nre
+  category: managed
+  severity: critical
+  confidence: high
+  evidence_source: "Client crash 2026-08-17 crash-2026-08-17_21.48.39.txt, crash id c7244a7f, 4 occurrences at the same address (Bannerlord 1.3.15, TOR + LoreHardcore + RTSCameraUniversal, crashed ~3 minutes after loading). NullReferenceException DefaultPartyHealingModel.GetDailyHealingForRegulars ← TORPartyHealingModel.GetDailyHealingForRegulars line 152 (`return base.…`) ← PartyBase.get_HealingRateForMemberRegulars ← PartyHealCampaignBehavior.TryToHealOrWoundMembers ← OnQuarterDailyPartyTick ← Campaign.Tick. Verified against decompiled DefaultPartyHealingModel.GetDailyHealingForRegulars (the two unguarded mobileParty.CurrentSettlement reads in the garrison branch), MobileParty.AfterLoad (orphan-garrison fixup limited to saves older than v1.3.15) and SkillHelper/PerkHelper (the other calls in the method are null-tolerant)."
+  requires_sources: [managed_exception]
+  title:
+    en: "World-map crash every few seconds: a garrison with no settlement breaks the healing tick — guarded by Crash Doctor"
+    ru: "Вылет на карте каждые несколько секунд: гарнизон без поселения ломает тик лечения — перехвачено Crash Doctor"
+    zh: "大地图每隔几秒崩溃：没有据点的驻军破坏治疗结算——已被 Crash Doctor 拦截"
+    zht: "大地圖每隔幾秒當機：沒有據點的駐軍破壞治療結算——已被 Crash Doctor 攔截"
+    tr: "Birkaç saniyede bir dünya haritası çökmesi: yerleşimi olmayan bir garnizon iyileşme tick'ini bozuyor — Crash Doctor koruyor"
+  description:
+    en: |
+      NullReferenceException in DefaultPartyHealingModel.GetDailyHealingForRegulars on the quarter-daily
+      party tick. Four times a game day the game works out how fast every party heals. In that
+      calculation each settlement access is null-checked except the two in the garrison branch, which
+      read `mobileParty.CurrentSettlement.IsStarving` / `.IsTown` straight off the party. A garrison
+      without a settlement therefore kills the whole campaign tick, and since the tick repeats, the save
+      crashes again within seconds of every load.
+      A garrison ends up with no settlement in two ways: it was orphaned — its town or castle was lost
+      during the campaign, or a module-set change dropped it — or it is temporarily out on a sally-out.
+      The game removes orphaned garrisons only while loading a save made before v1.3.15, so on a current
+      save such a party simply stays there forever.
+      If a mod's healing model appears in the stack (TOR's TORPartyHealingModel and the like), it is only
+      an override calling the base method — the throw is in the base game a line below it, so that mod is
+      NOT the culprit. NOT a shader or driver problem.
+    ru: |
+      NullReferenceException в DefaultPartyHealingModel.GetDailyHealingForRegulars на четвертьдневном
+      тике отрядов. Четыре раза в игровые сутки игра считает, с какой скоростью лечится каждый отряд. В
+      этом расчёте все обращения к поселению проверены на пустоту, кроме двух в ветке гарнизона: там
+      `mobileParty.CurrentSettlement.IsStarving` / `.IsTown` читаются у отряда напрямую. Поэтому гарнизон
+      без поселения роняет весь тик кампании, а так как тик повторяется, сейв вылетает снова через
+      считанные секунды после каждой загрузки.
+      Гарнизон остаётся без поселения по двум причинам: он осиротел — его город или замок пропал по ходу
+      кампании либо исчез со сменой набора модов, — или он временно ушёл на вылазку из осаждённого
+      поселения. Осиротевшие гарнизоны игра убирает только при загрузке сейва, сделанного до v1.3.15, так
+      что в текущем сейве такой отряд просто остаётся навсегда.
+      Если в стеке видна модель лечения какого-то мода (TORPartyHealingModel из TOR и подобные) — это
+      лишь override, вызывающий базовый метод: падает код самой игры строкой ниже, и этот мод НЕ виноват.
+      НЕ проблема шейдеров или драйвера.
+    zh: |
+      四分之一日队伍结算中 DefaultPartyHealingModel.GetDailyHealingForRegulars 抛出空引用异常。游戏每个游戏日
+      会四次计算每支队伍的治疗速度。在该计算中，除驻军分支里的两处外，所有对据点的访问都做了空检查——那两处直接
+      从队伍读取 `mobileParty.CurrentSettlement.IsStarving` / `.IsTown`。因此没有据点的驻军会摧毁整个战役结算；
+      由于结算会不断重复，每次读档几秒后存档就会再次崩溃。
+      驻军失去据点有两种情形：它被孤立了——其城镇或城堡在战役中丢失，或因模组集变动而消失；或者它正暂时出击。
+      游戏只在读取 v1.3.15 之前制作的存档时才移除孤立驻军，因此在当前存档中这支队伍会一直留着。
+      若堆栈中出现某个模组的治疗模型（TOR 的 TORPartyHealingModel 之类），那只是调用基类方法的覆写——真正抛出的
+      是下一行的基础游戏代码，因此该模组并非元凶。不是着色器或驱动问题。
+    zht: |
+      四分之一日隊伍結算中 DefaultPartyHealingModel.GetDailyHealingForRegulars 擲出空參考例外。遊戲每個遊戲日
+      會四次計算每支隊伍的治療速度。在該計算中，除駐軍分支裡的兩處外，所有對據點的存取都做了空值檢查——那兩處直接
+      從隊伍讀取 `mobileParty.CurrentSettlement.IsStarving` / `.IsTown`。因此沒有據點的駐軍會摧毀整個戰役結算；
+      由於結算會不斷重複，每次讀檔幾秒後存檔就會再次當機。
+      駐軍失去據點有兩種情形：它被孤立了——其城鎮或城堡在戰役中遺失，或因模組集變動而消失；或者它正暫時出擊。
+      遊戲只在讀取 v1.3.15 之前製作的存檔時才移除孤立駐軍，因此在目前的存檔中這支隊伍會一直留著。
+      若堆疊中出現某個模組的治療模型（TOR 的 TORPartyHealingModel 之類），那只是呼叫基底方法的覆寫——真正擲出的
+      是下一行的基礎遊戲程式碼，因此該模組並非元兇。不是著色器或驅動問題。
+    tr: |
+      Çeyrek günlük grup tick'inde DefaultPartyHealingModel.GetDailyHealingForRegulars içinde
+      NullReferenceException. Oyun her oyun gününde dört kez her birliğin ne kadar hızlı iyileştiğini
+      hesaplar. Bu hesapta yerleşime yapılan tüm erişimler null denetiminden geçer; garnizon dalındaki iki
+      tanesi hariç — orada `mobileParty.CurrentSettlement.IsStarving` / `.IsTown` doğrudan birlikten
+      okunur. Bu yüzden yerleşimi olmayan bir garnizon tüm kampanya tick'ini öldürür ve tick tekrarlandığı
+      için kayıt, her yüklemeden saniyeler sonra yeniden çöker.
+      Bir garnizon iki şekilde yerleşimsiz kalır: sahipsiz kalmıştır — kasabası ya da kalesi kampanya
+      sırasında kaybedilmiş veya mod listesi değişikliğiyle yok olmuştur — ya da geçici olarak bir huruç
+      harekâtındadır. Oyun sahipsiz garnizonları yalnızca v1.3.15 öncesinde yapılmış bir kaydı yüklerken
+      temizler; bu yüzden güncel bir kayıtta böyle bir birlik orada kalır.
+      Yığında bir modun iyileşme modeli görünüyorsa (TOR'un TORPartyHealingModel'i gibi), bu yalnızca temel
+      metodu çağıran bir geçersiz kılmadır — hata bir satır altta, temel oyunda atılır; o mod suçlu
+      DEĞİLDİR. Gölgelendirici veya sürücü sorunu DEĞİL.
+  fix:
+    en:
+      - "Crash Doctor already guards this — that one party skips healing for that one tick and the tick completes. Keep the «Crash guard: party healing (garrison with no settlement)» fix ON (Crash Fixes tab). Update Crash Doctor to the latest version — older builds don't have this guard."
+      - "If the garrison was orphaned, keep «Fix broken troops on save load» ON, load the save and RE-SAVE: the broken garrison is removed on session launch and the re-save makes the fix permanent."
+      - "crashdoctor.log names the party each time the guard fires and says whether it was orphaned or merely out on a sally-out."
+      - "A mod's healing model in the stack is NOT the culprit — it only calls the base game method that throws. Removing it will not help."
+      - "Do NOT rebuild shaders or change drivers — this is a save-data bug, that won't help."
+    ru:
+      - "Crash Doctor уже это перехватывает — отряд пропускает лечение только на этом тике, и тик доходит до конца. Держи фикс «Защита от вылета при лечении отряда (гарнизон без поселения)» ВКЛЮЧЁННЫМ (вкладка «Фиксы крашей»). Обнови Crash Doctor до последней версии — в старых сборках этой защиты нет."
+      - "Если гарнизон осиротел — держи «Чинить сломанные отряды при загрузке» ВКЛ, загрузи сейв и ПЕРЕСОХРАНИ: битый гарнизон убирается при входе в кампанию, а пересохранение закрепляет исправление насовсем."
+      - "В crashdoctor.log при каждом срабатывании пишется сам отряд и его состояние — осиротел он или просто ушёл на вылазку."
+      - "Модель лечения мода в стеке НЕ виновата — она лишь вызывает падающий метод самой игры. Её удаление не поможет."
+      - "НЕ пересобирай шейдеры и не меняй драйвер — это баг данных сейва, не поможет."
+    zh:
+      - "Crash Doctor 已经拦截了它——该队伍只在这一次结算中跳过治疗，结算得以完成。在「崩溃修复」页保持「崩溃防护：队伍治疗（没有据点的驻军）」为开。请将 Crash Doctor 更新到最新版本——旧版本没有此防护。"
+      - "若驻军已被孤立：保持「读档时修复损坏的部队」为开，读取存档后再次保存——损坏的驻军会在进入战役时被移除，重新保存则让修复永久生效。"
+      - "每次防护触发都会把该队伍及其状态（是孤立还是只是出击中）写入 crashdoctor.log。"
+      - "堆栈中的模组治疗模型并非元凶——它只是调用了会崩溃的基础游戏方法。移除它没有用。"
+      - "不要重建着色器或更换驱动——这是存档数据 bug，没用。"
+    zht:
+      - "Crash Doctor 已經攔截了它——該隊伍只在這一次結算中跳過治療，結算得以完成。在「崩潰修復」頁保持「崩潰防護：隊伍治療（沒有據點的駐軍）」為開。請將 Crash Doctor 更新到最新版本——舊版本沒有此防護。"
+      - "若駐軍已被孤立：保持「讀檔時修復損壞的部隊」為開，讀取存檔後再次儲存——損壞的駐軍會在進入戰役時被移除，重新儲存則讓修復永久生效。"
+      - "每次防護觸發都會把該隊伍及其狀態（是孤立還是只是出擊中）寫入 crashdoctor.log。"
+      - "堆疊中的模組治療模型並非元兇——它只是呼叫了會當機的基礎遊戲方法。移除它沒有用。"
+      - "不要重建著色器或更換驅動——這是存檔資料 bug，沒用。"
+    tr:
+      - "Crash Doctor bunu zaten koruyor — o birlik yalnızca o tick'te iyileşmeyi atlar ve tick tamamlanır. «Çökme koruması: birlik iyileşmesi (yerleşimi olmayan garnizon)» düzeltmesini AÇIK tut (Çökme Düzeltmeleri sekmesi). Crash Doctor'ı en son sürüme güncelle — eski sürümlerde bu koruma yok."
+      - "Garnizon sahipsiz kaldıysa «Kayıt yüklenirken bozuk birlikleri onar»ı AÇIK tut, kaydı yükle ve YENİDEN KAYDET: bozuk garnizon oturum açılışında kaldırılır, yeniden kaydetmek düzeltmeyi kalıcı yapar."
+      - "Koruma her tetiklendiğinde birliği ve durumunu (sahipsiz mi yoksa huruçta mı) crashdoctor.log dosyasına yazar."
+      - "Yığındaki mod iyileşme modeli suçlu DEĞİL — yalnızca hata veren temel oyun metodunu çağırıyor. Onu kaldırmak yardımcı olmaz."
+      - "Gölgelendiricileri yeniden oluşturma veya sürücü değiştirme — bu bir kayıt verisi hatası, yardımcı olmaz."
+  match:
+    all:
+      - managed_exception: { frame_contains: "GetDailyHealingForRegulars" }
+      - managed_exception: { type_contains: "NullReference" }
+
 # NEW GAME never loads: Naval DLC creates its six storyline heroes during campaign init and one of the
 # character definitions is missing from the game's object manager.
 #   HeroCreator.CreateBasicHero ← NavalStorylineData.CreateStorylineHero ← NavalStorylineData.Initialize
@@ -5375,6 +5500,123 @@
       - managed_exception: { frame_contains: "HandleMapEventEndForPartyInternal" }
       - managed_exception: { type_contains: "ArgumentOutOfRange" }
 
+# BATTLE-END crash: NullReferenceException while a lord/bandit party is being removed from the world.
+#   WarPartyComponent.OnFinalize <- MobileParty.OnRemoveParty <- MobileParty.RemoveParty <-
+#   DestroyPartyAction.ApplyInternal <- DisbandPartyAction.StartDisband <- a mod's OnMapEventEnded
+#   handler <- MapEvent.FinalizeEventAux <- MapEvent.Update <- MapEventManager.Tick <- Campaign.Tick.
+# WarPartyComponent.OnFinalize is one statement - `Clan.OnWarPartyRemoved(this)` - where Clan is read
+# live off the party as `Party.MobileParty.ActualClan`, with no null check anywhere (identical in the
+# shipped CampaignSystem.dll of 1.2, 1.3.15, 1.4.5 and 1.4.7). On a healthy removal the clan is still
+# there: MobileParty.OnRemoveParty finalizes the component FIRST and clears ActualClan after. Vanilla
+# creates no path to a null clan here - a war party cannot even be created without one (OnInitialize
+# calls Clan.OnWarPartyAdded the same unchecked way). It reads null in two mod-made situations:
+# (a) the party is being removed a SECOND time - the first removal nulled the clan and cleared the
+#     roster, and nothing stops the repeat: DisbandPartyAction.StartDisband sees TotalManCount == 0
+#     and calls DestroyPartyAction, whose only objection to an inactive party is a Debug.FailedAssert
+#     (a no-op in the shipped build) before it removes it again;
+# (b) a mod assigned ActualClan = null itself - the setter notifies the clan only when swapping one
+#     non-null clan for another, so a null assignment leaves the clan holding a stale reference.
+# Both usually surface from a mod's own battle-end handler: CampaignEvents.OnMapEventEnded is
+# dispatched at the TOP of MapEvent.FinalizeEventAux, before the game destroys the wiped-out parties
+# itself, so a handler that disbands a warband there is racing the engine's own cleanup.
+- id: campaign.war_party_finalize_null_clan_nre
+  category: managed
+  severity: critical
+  confidence: high
+  evidence_source: "Client crash report (Bannerlord 1.4.7, ~80 mods incl. BrigandBands 1.5.1, crash id a0060ffe, 2026-08-09) - NullReferenceException at WarPartyComponent.OnFinalize <- MobileParty.OnRemoveParty <- RemoveParty <- DestroyPartyAction.ApplyInternal <- DisbandPartyAction.StartDisband <- BrigandBands.BrigandLeaderBehavior.CollapseWarbandAfterPhantomHeroLoss <- OnMapEventEnded <- MapEvent.FinalizeEventAux <- MapEventManager.Tick. OnFinalize, the ActualClan setter, StartDisband and DestroyPartyAction confirmed by decompiling the shipped TaleWorlds.CampaignSystem.dll (1.2 / 1.3.15 / 1.4.5 / 1.4.7). Captured by Crash Doctor managed capture."
+  requires_sources: [managed_exception]
+  title:
+    en: "Crash when a party is removed from the world (the party has no clan) - guarded by Crash Doctor"
+    ru: "Вылет при удалении отряда из мира (у отряда нет клана) — перехвачено Crash Doctor"
+    zh: "队伍被移出世界时崩溃（该队伍没有所属家族）——已被 Crash Doctor 拦截"
+    zht: "隊伍被移出世界時當機（該隊伍沒有所屬家族）——已被 Crash Doctor 攔截"
+    tr: "Bir grup dünyadan kaldırılırken çökme (grubun klanı yok) - Crash Doctor tarafından korunuyor"
+  description:
+    en: |
+      NullReferenceException thrown as the game removes a lord's or bandit's party from the world,
+      almost always at the moment a battle finishes. The last thing the game does with such a party
+      is take it off its clan's roll of war parties - and it calls that on the clan without ever
+      checking that there IS one. The clan is read live off the party, so a party that has already
+      lost it crashes the whole campaign tick right there. Nothing in the unmodded game produces a
+      party in that state: it cannot even be created without a clan. It gets there when a mod
+      destroys or disbands a party that was ALREADY removed (the first removal clears the clan and
+      empties the roster, and the game's only objection to the repeat is a debug assert it does not
+      act on), or when a mod clears the party's clan by hand. The usual setting is a mod's own
+      battle-end handler: the game hands those out before it destroys the wiped-out parties itself,
+      so a handler that disbands a defeated party there is racing the engine's cleanup.
+    ru: |
+      NullReferenceException в момент, когда игра удаляет из мира отряд лорда или бандитов, — почти
+      всегда при завершении боя. Последнее, что игра делает с таким отрядом, — снимает его с учёта
+      в списке боевых отрядов клана, и вызывает это у клана, ни разу не проверив, есть ли он вообще.
+      Клан читается у отряда напрямую, поэтому отряд, который его уже потерял, роняет весь тик
+      кампании прямо здесь. В игре без модов отряда в таком состоянии не бывает: без клана его
+      нельзя даже создать. Он попадает туда, когда мод уничтожает или распускает отряд, который УЖЕ
+      был удалён (первое удаление обнуляет клан и очищает состав, а единственное возражение игры
+      против повтора — отладочное предупреждение, на которое она не реагирует), либо когда мод сам
+      обнуляет клан отряда. Типичная обстановка — обработчик конца боя в моде: игра рассылает это
+      событие раньше, чем сама уничтожает выкошенные отряды, поэтому обработчик, распускающий там
+      побеждённый отряд, соревнуется с уборкой самого движка.
+    zh: |
+      当游戏把领主或匪帮的队伍移出世界时抛出 NullReferenceException，几乎总是发生在战斗结算的瞬间。
+      游戏对这类队伍做的最后一件事，是把它从所属家族的作战队伍名册中注销——而它在调用家族时从不
+      检查家族是否存在。家族是直接从队伍上读取的，因此一支已经失去家族的队伍会当场让整个战役结算
+      崩溃。无模组的游戏不会产生处于该状态的队伍：没有家族它甚至无法被创建。它之所以变成这样，是
+      因为某个模组销毁或解散了一支**已经**被移除的队伍（首次移除会清空家族与部队名单，而游戏对重复
+      移除的唯一异议只是一条它并不理会的调试断言），或者某个模组手动清空了队伍的家族。常见场景是
+      模组自己的战斗结束处理逻辑：游戏在自行销毁被全歼的队伍之前就派发该事件，因此在那里解散战败
+      队伍的处理逻辑，等于在与引擎自身的清理抢跑。
+    zht: |
+      當遊戲把領主或匪幫的隊伍移出世界時擲出 NullReferenceException，幾乎總是發生在戰鬥結算的瞬間。
+      遊戲對這類隊伍做的最後一件事，是把它從所屬家族的作戰隊伍名冊中註銷——而它在呼叫家族時從不
+      檢查家族是否存在。家族是直接從隊伍上讀取的，因此一支已經失去家族的隊伍會當場讓整個戰役結算
+      當機。無模組的遊戲不會產生處於該狀態的隊伍：沒有家族它甚至無法被建立。它之所以變成這樣，是
+      因為某個模組銷毀或解散了一支**已經**被移除的隊伍（首次移除會清空家族與部隊名單，而遊戲對重複
+      移除的唯一異議只是一條它並不理會的除錯斷言），或者某個模組手動清空了隊伍的家族。常見情境是
+      模組自己的戰鬥結束處理邏輯：遊戲在自行銷毀被全滅的隊伍之前就派發該事件，因此在那裡解散戰敗
+      隊伍的處理邏輯，等於在與引擎自身的清理搶跑。
+    tr: |
+      Oyun bir lordun ya da haydutların grubunu dünyadan kaldırırken NullReferenceException fırlatıldı;
+      neredeyse her zaman bir savaşın bittiği anda. Oyunun böyle bir grupla yaptığı son iş, onu
+      klanının savaş grupları listesinden düşürmektir - ve bunu klan üzerinde, öyle bir klan var mı
+      diye hiç kontrol etmeden çağırır. Klan doğrudan gruptan okunur, bu yüzden klanını çoktan
+      kaybetmiş bir grup tüm sefer tick'ini tam orada çökertir. Modsuz oyun bu durumda bir grup
+      üretmez: klanı olmadan oluşturulamaz bile. Bu duruma, bir mod ZATEN kaldırılmış bir grubu yok
+      ettiğinde ya da dağıttığında (ilk kaldırma klanı temizler ve kadroyu boşaltır; oyunun tekrara
+      tek itirazı, gereğini yapmadığı bir hata ayıklama uyarısıdır) veya bir mod grubun klanını elle
+      temizlediğinde düşer. Alışıldık ortam, bir modun kendi savaş sonu işleyicisidir: oyun bu olayı,
+      yok edilmiş grupları kendisi silmeden ÖNCE dağıtır, dolayısıyla orada yenilmiş bir grubu dağıtan
+      bir işleyici, motorun kendi temizliğiyle yarışır.
+  fix:
+    en:
+      - "Crash Doctor already guards this - its safety net skips the impossible call and takes the party off any clan roll that still lists it, so the removal finishes and the game keeps running. Keep the «Party-removal crash guard (party with no clan)» fix ON (Crash Fixes tab)."
+      - "Root cause is a mod that disbands or destroys a party from its battle-end handler. Your modlist includes BrigandBands, which does exactly that for its warbands - update it to the latest version, or disable it, and check whether the crash stops."
+      - "Other suspects: anything that removes, merges or reassigns parties when a battle ends (bandit-spawn, army, mercenary and warband mods)."
+      - "Do NOT rebuild shaders or change drivers - this is a mod/state bug, that won't help."
+    ru:
+      - "Crash Doctor уже это перехватывает — safety net пропускает невозможный вызов и сам снимает отряд с учёта во всех кланах, где он ещё числится, так что удаление доходит до конца и игра продолжает работать. Держи фикс «Защита от вылета при удалении отряда (отряд без клана)» ВКЛ (вкладка «Фиксы крашей»)."
+      - "Корень — мод, который распускает или уничтожает отряд из своего обработчика конца боя. В твоём списке есть BrigandBands, который именно так и поступает со своими бандами: обнови его до свежей версии или отключи и проверь, пропал ли вылет."
+      - "Другие подозреваемые: всё, что удаляет, сливает или переподчиняет отряды по завершении боя (моды на спавн бандитов, армии, наёмников и банды)."
+      - "НЕ пересобирай шейдеры и не меняй драйвер — это баг мода/состояния, не поможет."
+    zh:
+      - "Crash Doctor 已经拦截了它——安全网会跳过这个不可能完成的调用，并把该队伍从仍然列有它的家族名册中移除，于是移除流程正常收尾，游戏继续运行。在「崩溃修复」页保持「队伍移除崩溃防护（队伍无所属家族）」为开。"
+      - "根源是某个在战斗结束处理逻辑里解散或销毁队伍的模组。你的模组列表含 BrigandBands，它对自己的匪帮正是这么做的——把它更新到最新版本，或禁用它，看崩溃是否停止。"
+      - "其他可疑者：任何在战斗结束时移除、合并或改派队伍的模组（匪徒生成、军队、雇佣兵与匪帮类模组）。"
+      - "不要重建着色器或更换驱动——这是模组／状态 bug，没用。"
+    zht:
+      - "Crash Doctor 已經攔截了它——安全網會跳過這個不可能完成的呼叫，並把該隊伍從仍然列有它的家族名冊中移除，於是移除流程正常收尾，遊戲繼續執行。在「崩潰修復」頁保持「隊伍移除崩潰防護（隊伍無所屬家族）」為開。"
+      - "根源是某個在戰鬥結束處理邏輯裡解散或銷毀隊伍的模組。你的模組列表含 BrigandBands，它對自己的匪幫正是這麼做的——把它更新到最新版本，或停用它，看崩潰是否停止。"
+      - "其他可疑者：任何在戰鬥結束時移除、合併或改派隊伍的模組（匪徒生成、軍隊、傭兵與匪幫類模組）。"
+      - "不要重建著色器或更換驅動——這是模組／狀態 bug，沒用。"
+    tr:
+      - "Crash Doctor bunu zaten koruyor - güvenlik ağı imkânsız çağrıyı atlar ve grubu onu hâlâ listeleyen klan listelerinden düşürür, böylece kaldırma tamamlanır ve oyun çalışmaya devam eder. «Grup kaldırma çökme koruması (klansız grup)» düzeltmesini AÇIK tut (Çökme Düzeltmeleri sekmesi)."
+      - "Kök neden, savaş sonu işleyicisinden bir grubu dağıtan ya da yok eden bir moddur. Mod listende BrigandBands var ve kendi çeteleri için tam olarak bunu yapıyor - onu en son sürüme güncelle ya da devre dışı bırak ve çökmenin durup durmadığını kontrol et."
+      - "Diğer şüpheliler: bir savaş bittiğinde grupları kaldıran, birleştiren ya da yeniden atayan her şey (haydut doğurma, ordu, paralı asker ve çete modları)."
+      - "Gölgelendiricileri yeniden oluşturma veya sürücü değiştirme - bu bir mod/durum hatası, yardımcı olmaz."
+  match:
+    all:
+      - managed_exception: { frame_contains: "WarPartyComponent.OnFinalize" }
+      - managed_exception: { type_contains: "NullReference" }
+
 # DAY-CHANGE crash: NullReferenceException when a town starts a rebellion and its culture cannot
 # supply the rebel heroes.
 #   RebellionsCampaignBehavior.CreateRebelPartyAndClan <- StartRebellionEvent <- DailyTickSettlement
@@ -5819,4 +6061,472 @@
   match:
     all:
       - managed_exception: { frame_contains: "GetDynamicBodyPropertiesBetweenMinMaxRange" }
+      - managed_exception: { type_contains: "NullReference" }
+
+# Campaign-map battle tick crash: a battle's leading party no longer belongs to any faction.
+# NullReferenceException thrown INSIDE TaleWorlds.CampaignSystem.MapEvents.MapEvent.Update() itself
+# (top frame, nothing above it) <- MapEventManager.Tick <- Campaign.Tick <- MapState.OnMapModeTick.
+# Update opens with `_sides[0].LeaderParty == null || _sides[1].LeaderParty == null ||
+# !_sides[0].LeaderParty.MapFaction.IsAtWarWith(_sides[1].LeaderParty.MapFaction)` - LeaderParty is
+# null-checked, LeaderParty.MapFaction is not, and it is the only unguarded dereference in the whole
+# method. MobileParty.MapFaction returns null when ActualClan and LeaderHero are both null; a party
+# destroyed while still standing in a battle lands exactly there, because MobileParty.RemoveParty
+# nulls ActualClan and does NOT detach the party from its map event. The broken battle is written to
+# the save, so the game then dies about a second after every load. Base-game bug triggered by a mod
+# that destroys a party mid-battle without detaching it first.
+- id: campaign.map_event_null_faction_nre
+  category: managed
+  severity: critical
+  confidence: high
+  evidence_source: "Client crash 2026-08-13 (RickLauncher bundle, crash id a1196648) — NullReferenceException TaleWorlds.CampaignSystem.MapEvents.MapEvent.Update ← MapEventManager.Tick ← Campaign.Tick ← MapState.OnMapModeTick. Bannerlord 1.3.15, TOR + ~55 mods. Reproducible: 15 crashes at the same faulting address, ~1 second after every load of the same save. rgl_log shows OnMobilePartyDestroyed for a lord party with LeaderHero NULL 0.2 s before the throw. Captured by the in-game managed capture."
+  requires_sources: [managed_exception]
+  title:
+    en: "Crash on the battle tick — a battle's leading party has no faction — guarded by Crash Doctor"
+    ru: "Вылет на тике битвы — у ведущего отряда битвы нет фракции — перехвачено Crash Doctor"
+    zh: "战斗刻崩溃——某场战斗的主导队伍没有势力——已被 Crash Doctor 拦截"
+    zht: "戰鬥刻崩潰——某場戰鬥的主導隊伍沒有勢力——已被 Crash Doctor 攔截"
+    tr: "Savaş tick'inde çökme — bir savaşın öncü grubunun hizbi yok — Crash Doctor tarafından korunuyor"
+  description:
+    en: |
+      NullReferenceException thrown inside TaleWorlds.CampaignSystem.MapEvents.MapEvent.Update itself
+      (it is the top frame — MapEventManager.Tick → Campaign.Tick sit under it, and no mod appears
+      anywhere). The method starts by asking whether the two sides of a battle are at war. It checks
+      that each side still HAS a leading party, but not that the party still belongs to a faction, and
+      then calls a method on that missing faction. A party ends up factionless when it is destroyed
+      while still standing in a battle: the engine clears its clan and leader but leaves the battle
+      pointing at it. Because the battle is stored in the save, the game crashes again about a second
+      after every load — reloading cannot help. This is base-game code triggered by a mod that destroys
+      parties mid-battle — NOT a shader, driver or GPU problem.
+    ru: |
+      NullReferenceException брошено внутри самого TaleWorlds.CampaignSystem.MapEvents.MapEvent.Update
+      (это верхний кадр — под ним MapEventManager.Tick → Campaign.Tick, и ни одного мода в стеке).
+      Метод начинается с вопроса, воюют ли стороны битвы. Он проверяет, что у каждой стороны ЕСТЬ
+      ведущий отряд, но не проверяет, принадлежит ли этот отряд хоть какой-то фракции, и сразу зовёт
+      метод у отсутствующей фракции. Отряд остаётся без фракции, когда его уничтожают прямо во время
+      битвы: движок обнуляет его клан и лидера, но битва продолжает на него ссылаться. Битва лежит в
+      сейве, поэтому игра падает снова примерно через секунду после каждой загрузки — перезагрузка не
+      помогает. Это код базовой игры, запущенный модом, который уничтожает отряды посреди боя, а НЕ
+      проблема шейдеров, драйвера или видеокарты.
+    zh: |
+      空引用异常抛自 TaleWorlds.CampaignSystem.MapEvents.MapEvent.Update 本身（它是栈顶帧——下方是
+      MapEventManager.Tick → Campaign.Tick，整个栈里没有任何模组）。该方法开头询问战斗双方是否处于
+      战争状态。它检查了每一方是否仍有主导队伍，却没有检查该队伍是否仍属于某个势力，随后直接对这个
+      缺失的势力调用方法。当一支队伍仍身处战斗时被消灭，它就会失去势力：引擎清空了它的家族与首领，
+      却让战斗继续指向它。由于该战斗保存在存档中，每次读档约一秒后游戏会再次崩溃——重新读档没有用。
+      这是被某个在战斗中消灭队伍的模组触发的原版代码，而不是着色器、驱动或显卡问题。
+    zht: |
+      空參考例外擲自 TaleWorlds.CampaignSystem.MapEvents.MapEvent.Update 本身（它是堆疊頂端框架——
+      下方是 MapEventManager.Tick → Campaign.Tick，整個堆疊裡沒有任何模組）。該方法開頭詢問戰鬥雙方
+      是否處於戰爭狀態。它檢查了每一方是否仍有主導隊伍，卻沒有檢查該隊伍是否仍屬於某個勢力，隨後直接
+      對這個缺失的勢力呼叫方法。當一支隊伍仍身處戰鬥時被消滅，它就會失去勢力：引擎清空了它的家族與
+      首領，卻讓戰鬥繼續指向它。由於該戰鬥保存在存檔中，每次讀檔約一秒後遊戲會再次崩潰——重新讀檔
+      沒有用。這是被某個在戰鬥中消滅隊伍的模組觸發的原版程式碼，而不是著色器、驅動或顯示卡問題。
+    tr: |
+      NullReferenceException, TaleWorlds.CampaignSystem.MapEvents.MapEvent.Update'in kendi içinden
+      fırlatıldı (en üstteki çerçeve o — altında MapEventManager.Tick → Campaign.Tick var ve yığında
+      hiçbir mod görünmüyor). Metot, bir savaşın iki tarafının savaş hâlinde olup olmadığını sorarak
+      başlar. Her tarafın hâlâ bir öncü grubu OLDUĞUNU denetler, ancak o grubun hâlâ bir hizbe ait olup
+      olmadığını denetlemez ve doğrudan bu eksik hizip üzerinde bir metot çağırır. Bir grup, savaşın
+      içindeyken yok edildiğinde hizipsiz kalır: motor klanını ve liderini temizler ama savaş onu
+      göstermeye devam eder. Savaş kayda yazıldığı için oyun her yüklemeden yaklaşık bir saniye sonra
+      yeniden çöker — yeniden yüklemek işe yaramaz. Bu, savaş sırasında grup yok eden bir mod
+      tarafından tetiklenen oyun kodudur — gölgelendirici, sürücü ya da ekran kartı sorunu DEĞİLDİR.
+  fix:
+    en:
+      - "Crash Doctor already guards this — its safety net ends the broken battle instead of crashing, which also repairs the save. Keep the «Battle crash guard (factionless leading party)» fix ON (Crash Fixes tab)."
+      - "Without the guard the save is unusable: load an earlier save made before that battle started. No in-game action can reach the broken battle, because it belongs to AI parties."
+      - "If it keeps happening on new saves, a mod is destroying parties in the middle of a battle. Suspect mods that manage lord or companion parties (bodyguard, free-company, garrison and settlement mods) and disable them in halves to find it."
+      - "Do NOT rebuild shaders or change drivers — this is a code bug, that won't help."
+    ru:
+      - "Crash Doctor уже это перехватывает — safety net завершает битую битву вместо вылета, заодно чиня сейв. Держи фикс «Защита от вылета в битве (ведущий отряд без фракции)» ВКЛ (вкладка «Фиксы крашей»)."
+      - "Без защиты сейв нерабочий: грузи более ранний сейв, сделанный до начала той битвы. Изнутри игры до битой битвы не добраться — она принадлежит отрядам ИИ."
+      - "Если повторяется на новых сейвах — какой-то мод уничтожает отряды прямо посреди боя. Подозревай моды, управляющие отрядами лордов и компаньонов (телохранители, вольные роты, гарнизоны, поселения), и отключай их половинами, чтобы найти виновника."
+      - "НЕ пересобирай шейдеры и не меняй драйвер — это баг кода, не поможет."
+    zh:
+      - "Crash Doctor 已经拦截了它——安全网会结束损坏的战斗而不是崩溃，同时也修复了存档。在「崩溃修复」页保持「战斗崩溃防护（无势力的主导队伍）」为开。"
+      - "没有该防护时存档不可用：读取那场战斗开始之前的更早存档。游戏内无法触及这场损坏的战斗，因为它属于 AI 队伍。"
+      - "若在新存档上仍反复出现，说明某个模组在战斗进行中消灭队伍。优先怀疑管理领主或同伴队伍的模组（护卫、自由连队、驻军、定居点类），并对半禁用来定位。"
+      - "不要重建着色器或更换驱动——这是代码 bug，没用。"
+    zht:
+      - "Crash Doctor 已經攔截了它——安全網會結束損壞的戰鬥而不是當機，同時也修復了存檔。在「崩潰修復」頁保持「戰鬥崩潰防護（無勢力的主導隊伍）」為開。"
+      - "沒有該防護時存檔不可用：讀取那場戰鬥開始之前的更早存檔。遊戲內無法觸及這場損壞的戰鬥，因為它屬於 AI 隊伍。"
+      - "若在新存檔上仍反覆出現，說明某個模組在戰鬥進行中消滅隊伍。優先懷疑管理領主或同伴隊伍的模組（護衛、自由連隊、駐軍、聚落類），並對半停用來定位。"
+      - "不要重建著色器或更換驅動——這是程式碼 bug，沒用。"
+    tr:
+      - "Crash Doctor bunu zaten koruyor — güvenlik ağı çökmek yerine bozuk savaşı sonlandırır, bu da kaydı onarır. «Savaş çökme koruması (hizipsiz öncü grup)» düzeltmesini AÇIK tut (Çökme Düzeltmeleri sekmesi)."
+      - "Koruma olmadan kayıt kullanılamaz: o savaş başlamadan önce alınmış daha eski bir kaydı yükle. Bozuk savaşa oyun içinden ulaşılamaz, çünkü YZ gruplarına aittir."
+      - "Yeni kayıtlarda da tekrarlıyorsa, bir mod savaşın ortasında grupları yok ediyordur. Lort veya yoldaş gruplarını yöneten modlardan şüphelen (koruma, serbest bölük, garnizon ve yerleşim modları) ve yarı yarıya kapatarak bul."
+      - "Gölgelendiricileri yeniden oluşturma veya sürücü değiştirme — bu bir kod hatası, yardımcı olmaz."
+  match:
+    all:
+      - managed_exception: { frame_contains: "MapEvent.Update" }
+      - managed_exception: { frame_contains: "MapEventManager.Tick" }
+      - managed_exception: { type_contains: "NullReference" }
+      # MapEvent.Update also sits DEEP in the stack of every crash thrown by the battle teardown it
+      # calls (naval-capability, renown, loot, captivity, roster...). Those have their own rules and
+      # their own guards; this one is only about a throw in the body of Update itself, so any frame
+      # that can only appear ABOVE Update disqualifies it.
+      - none:
+          - managed_exception: { frame_contains: "MapEvent.FinalizeEventAux" }
+          - managed_exception: { frame_contains: "MapEvent.FinishBattle" }
+          - managed_exception: { frame_contains: "MapEvent.Simulate" }
+          - managed_exception: { frame_contains: "MapEvent.CheckRunAway" }
+          - managed_exception: { frame_contains: "MapEvent.Loot" }
+          - managed_exception: { frame_contains: "MapEvent.CalculateAndCommitMapEventResults" }
+          - managed_exception: { frame_contains: "MapEvent.set_BattleState" }
+          - managed_exception: { frame_contains: "MapEventSide" }
+          - managed_exception: { frame_contains: "MapEventParty" }
+          - managed_exception: { frame_contains: "MapEventComponent" }
+          - managed_exception: { frame_contains: "CampaignEventDispatcher" }
+          - managed_exception: { frame_contains: "RecalculateShortTermBehavior" }
+
+- id: managed.map_event_update_nre
+  category: managed
+  severity: critical
+  confidence: high
+  evidence_source: "Client report 2026-08-13 (crash-2026-08-13_02.20.02): NullReferenceException at TaleWorlds.CampaignSystem.MapEvents.MapEvent.Update() <- MapEventManager.Tick <- Campaign.Tick <- MapState.OnMapModeTick, seconds after the save opened the campaign map, captured by our in-game catcher. Windows had logged 15 earlier faults at the same address: the save reproduces it every time. Modlist included Bannerlord.Diplomacy, ReinforcementSystem, FrontlineMod, Bodyguards."
+  requires_sources: [managed_exception]
+  title:
+    en: "A battle recorded in this save is broken — the campaign map crashes on load"
+    ru: "В этом сейве сломан бой — игра падает сразу после загрузки карты"
+    zh: "存档中记录的一场战斗已损坏——加载战役地图时崩溃"
+    zht: "存檔中記錄的一場戰鬥已損壞——載入戰役地圖時當機"
+    tr: "Bu kayıtta duran bir savaş bozuk — kampanya haritası yüklenirken çöküyor"
+  description:
+    en: |
+      The crash is a NullReferenceException inside MapEvent.Update — the campaign clock
+      ticking an ongoing map event (a battle, raid or siege) that is stored in the save with
+      a missing piece. It fires on the very first ticks after the map appears, which is why
+      every attempt to load this save ends the same way.
+
+      This is a code/save problem, not shaders, drivers or the GPU: rebuilding the shader
+      cache cannot change it. The event was usually left broken by a mod that creates or
+      finishes battles (reinforcement, army, diplomacy and siege mods are the usual family),
+      or by such a mod being removed while a battle was in progress.
+    ru: |
+      Это NullReferenceException внутри MapEvent.Update — часы кампании тикают по
+      незавершённому событию на карте (бой, набег или осада), которое лежит в сейве с
+      недостающей частью. Падает на первых же тиках после появления карты, поэтому любая
+      попытка загрузить именно этот сейв кончается одинаково.
+
+      Проблема в коде и в сейве, а не в шейдерах, драйвере или видеокарте: пересборка кэша
+      шейдеров тут ничего не изменит. Обычно такое событие оставляет мод, который создаёт
+      или завершает бои (моды на подкрепления, армии, дипломатию и осады), либо удаление
+      такого мода в момент, когда бой шёл.
+    zh: |
+      崩溃是 MapEvent.Update 内部的 NullReferenceException——战役时钟在推进一个仍在进行的
+      地图事件（战斗、劫掠或攻城），而它在存档里缺了一部分。它在地图出现后的最初几个 tick
+      就触发，所以每次加载这个存档都是同样的结果。
+
+      这是代码/存档问题，与着色器、驱动或显卡无关：重建着色器缓存改变不了它。这类事件通常
+      是由创建或结束战斗的模组留下的（增援、军队、外交与攻城类模组是常见的一类），也可能是
+      在战斗进行中移除了这类模组。
+    zht: |
+      當機是 MapEvent.Update 內部的 NullReferenceException——戰役時鐘在推進一個仍在進行的
+      地圖事件（戰鬥、劫掠或攻城），而它在存檔裡缺了一部分。它在地圖出現後的最初幾個 tick
+      就觸發，所以每次載入這個存檔都是同樣的結果。
+
+      這是程式碼／存檔問題，與著色器、驅動或顯示卡無關：重建著色器快取改變不了它。這類事件
+      通常是由建立或結束戰鬥的模組留下的（增援、軍隊、外交與攻城類模組是常見的一類），也可能
+      是在戰鬥進行中移除了這類模組。
+    tr: |
+      Çökme, MapEvent.Update içindeki bir NullReferenceException — kampanya saati, kayıtta
+      eksik bir parçayla duran devam eden bir harita olayını (savaş, baskın ya da kuşatma)
+      işletiyor. Harita göründükten sonraki ilk tiklerde patlıyor; bu yüzden bu kaydı yükleme
+      denemelerinin hepsi aynı şekilde bitiyor.
+
+      Bu bir kod/kayıt sorunudur; gölgelendirici, sürücü ya da ekran kartı değil: gölgelendirici
+      önbelleğini yeniden oluşturmak bunu değiştirmez. Olayı genellikle savaş oluşturan ya da
+      bitiren bir mod bırakır (takviye, ordu, diplomasi ve kuşatma modları tipik ailedir) veya
+      savaş sürerken böyle bir modun kaldırılması.
+  fix:
+    en:
+      - "Load an EARLIER save — one made before that battle/siege started. Autosaves from the previous in-game day are the usual rescue; this particular save cannot be repaired from outside."
+      - "If every recent save crashes the same way, the battle is in all of them: go back further, or start the campaign from the last clean point."
+      - "Suspect the mods that create or end battles — reinforcement/army/diplomacy/siege mods. If one was updated or removed recently, that is the first to try without."
+      - "Do NOT rebuild shaders or change drivers for this crash — the exception is in campaign code, none of that touches it."
+    ru:
+      - "Загрузи БОЛЕЕ РАННИЙ сейв — сделанный до начала этого боя/осады. Обычно спасают автосейвы прошлого игрового дня; конкретно этот сейв снаружи не чинится."
+      - "Если так падают все свежие сейвы — сломанный бой есть в каждом: отходи дальше назад или продолжай с последней чистой точки."
+      - "Смотри на моды, которые создают и завершают бои: подкрепления, армии, дипломатия, осады. Если какой-то из них недавно обновляли или удаляли — начни с него."
+      - "НЕ пересобирай шейдеры и не меняй драйвер — исключение в коде кампании, к ним оно отношения не имеет."
+    zh:
+      - "加载更早的存档——那场战斗/攻城开始之前的。上一个游戏日的自动存档通常能救；这个存档本身无法从外部修复。"
+      - "如果最近的存档都以同样方式崩溃，说明每个存档里都有这场战斗：请再往前回退，或从最后一个正常的点继续。"
+      - "重点怀疑创建或结束战斗的模组——增援／军队／外交／攻城类。若其中某个最近更新或移除过，先从它开始排查。"
+      - "不要为此重建着色器或更换驱动——异常发生在战役代码里，与它们无关。"
+    zht:
+      - "載入更早的存檔——那場戰鬥／攻城開始之前的。上一個遊戲日的自動存檔通常能救；這個存檔本身無法從外部修復。"
+      - "如果最近的存檔都以同樣方式當機，代表每個存檔裡都有這場戰鬥：請再往前回退，或從最後一個正常的點繼續。"
+      - "重點懷疑建立或結束戰鬥的模組——增援／軍隊／外交／攻城類。若其中某個最近更新或移除過，先從它開始排查。"
+      - "不要為此重建著色器或更換驅動程式——例外發生在戰役程式碼裡，與它們無關。"
+    tr:
+      - "DAHA ESKİ bir kayıt yükleyin — o savaş/kuşatma başlamadan önce alınmış olanı. Genellikle bir önceki oyun gününün otomatik kayıtları kurtarır; bu kaydın kendisi dışarıdan onarılamaz."
+      - "Son kayıtların hepsi aynı şekilde çöküyorsa savaş hepsinde var demektir: daha geriye gidin ya da son temiz noktadan devam edin."
+      - "Savaş oluşturan ya da bitiren modlardan şüphelenin — takviye/ordu/diplomasi/kuşatma modları. Biri yakın zamanda güncellendi ya da kaldırıldıysa önce onsuz deneyin."
+      - "Bu çökme için gölgelendiricileri yeniden oluşturmayın, sürücü değiştirmeyin — istisna kampanya kodunda, ikisi de ona dokunmuyor."
+  match:
+    all:
+      - managed_exception: { frame_contains: "MapEvents.MapEvent.Update" }
+      - managed_exception: { type_contains: "NullReference" }
+      # Deeper, already-owned signatures: a settlement handover or a party leaving the event
+      # unwinds THROUGH MapEvent.Update, and those crashes have their own verdicts.
+      - none:
+          - managed_exception: { frame_contains: "ChangeOwnerOfSettlementAction" }
+          - managed_exception: { frame_contains: "HandleMapEventEndForPartyInternal" }
+          - managed_exception: { frame_contains: "FinalizeEventAux" }
+          # The factionless-leading-party signature (campaign.map_event_null_faction_nre) is a
+          # STRICT SUBSET of this rule and carries the opposite verdict: Crash Doctor's guard ends
+          # that battle and thereby repairs the save, whereas this card tells the player the save
+          # is beyond repair. Matching both would show two cards with contradictory advice, so the
+          # narrower one owns that stack. Its signature is "thrown in the body of Update, reached
+          # from the map-event heartbeat" — Update called from MapEventManager.Tick with no frame
+          # that can only sit ABOVE Update. This rule keeps every other caller of Update
+          # (ChangeOwnerOfSettlementAction, FactionHelper's war/peace path) and every throw that
+          # happens deeper inside the tick.
+          - all:
+              - managed_exception: { frame_contains: "MapEventManager.Tick" }
+              - none:
+                  - managed_exception: { frame_contains: "MapEvent.FinishBattle" }
+                  - managed_exception: { frame_contains: "MapEvent.Simulate" }
+                  - managed_exception: { frame_contains: "MapEvent.CheckRunAway" }
+                  - managed_exception: { frame_contains: "MapEvent.Loot" }
+                  - managed_exception: { frame_contains: "MapEvent.CalculateAndCommitMapEventResults" }
+                  - managed_exception: { frame_contains: "MapEvent.set_BattleState" }
+                  - managed_exception: { frame_contains: "MapEventSide" }
+                  - managed_exception: { frame_contains: "MapEventParty" }
+                  - managed_exception: { frame_contains: "MapEventComponent" }
+                  - managed_exception: { frame_contains: "CampaignEventDispatcher" }
+                  - managed_exception: { frame_contains: "RecalculateShortTermBehavior" }
+
+# Battle TEARDOWN crash, sibling of campaign.map_event_null_faction_nre: the side's leading party is
+# not merely factionless, it is GONE. NullReferenceException in
+# AiMilitaryBehavior.OnMapEventEnded <- CampaignEventDispatcher.OnMapEventEnded <-
+# MapEvent.FinalizeEventAux. That listener opens its non-retreat branch with
+# `mapEvent.AttackerSide.LeaderParty.MobileParty` and never null-checks LeaderParty, although the
+# engine checks for exactly that elsewhere (MapEvent.Update's `_sides[0].LeaderParty == null ||
+# _sides[1].LeaderParty == null`, MapEvent.ToString's `AttackerSide.LeaderParty?.Name`). Verified
+# against the shipped 1.4.7 CampaignSystem.dll and the decompiled 1.3.15 sources; the listener does
+# not exist on 1.2. Two routes reach the line, which is why such a save dies over and over:
+#   1. MapEvent.Update sees the null leader -> DiplomaticallyFinished -> FinishBattle ->
+#      FinalizeEventAux -> OnMapEventEnded. No mod needed.
+#   2. Anything that pulls the last party off a side (PartyBase.set_MapEventSide ->
+#      MapEventSide.RemovePartyInternal) finalizes the event mid-tick and lands on the same line.
+- id: campaign.map_event_leaderless_side_nre
+  category: managed
+  severity: critical
+  confidence: high
+  evidence_source: "Client crash 2026-08-17 report (2).txt, crash id 10fecd0b, seen 2x (Bannerlord 1.4.8, ~60 mods incl. SiegeFix, ClanArmies, ArmyFleets, HordeKingdomMod, PartyAI, Retinues, ImprovedGarrisons, Diplomacy; CrashDoctor 1.8.4.4). NullReferenceException AiMilitaryBehavior.OnMapEventEnded <- MbEvent.InvokeList <- CampaignEvents.OnMapEventEnded <- CampaignEventDispatcher.OnMapEventEnded <- MapEvent.FinalizeEventAux <- MapEventSide.RemovePartyInternal <- PartyBase.set_MapEventSide <- EncounterManager.StartSettlementEncounter <- SiegeFix.HarmonyPatches.Patch_StartSiegeAssault.Prefix <- Settlement.OnPartyInteraction <- EncounterManager.HandleEncounters <- Campaign.Tick. Verified line by line against the shipped 1.4.7 TaleWorlds.CampaignSystem.dll (AiMilitaryBehavior.OnMapEventEnded, MapEvent.Update/FinishBattle/FinalizeEventAux, MapEventSide.RemovePartyInternal/HandleMapEventEndForPartyInternal, EncounterManager.StartSettlementEncounter, PartyBase.set_MapEventSide)."
+  requires_sources: [managed_exception]
+  title:
+    en: "World-map crash when a battle ends: a side lost its leading party — guarded by Crash Doctor"
+    ru: "Вылет на карте при завершении битвы: сторона осталась без ведущего отряда — перехвачено Crash Doctor"
+    zh: "战斗结束时大地图崩溃：一方失去了主导队伍——已被 Crash Doctor 拦截"
+    zht: "戰鬥結束時大地圖當機：一方失去了主導隊伍——已被 Crash Doctor 攔截"
+    tr: "Savaş biterken dünya haritası çökmesi: bir taraf öncü grubunu kaybetti — Crash Doctor koruyor"
+  description:
+    en: |
+      NullReferenceException while a battle is being closed. The game's AI reaction to a finished
+      battle reads the attacking side's leading party — `AttackerSide.LeaderParty.MobileParty` — with
+      no null-check, and on this save that leading party is gone: it was destroyed or removed while
+      the battle was still running. The engine knows the state is possible (it null-checks the very
+      same field in MapEvent.Update and in MapEvent.ToString), it just does not check it here, and
+      the closing code reads that party in several more places — siege completion and hero deaths
+      among them.
+      Two independent routes reach the crash, so the save keeps dying: the map-event heartbeat sees
+      the missing leader, declares the battle over and closes it; and anything that moves the last
+      party off a side closes the battle mid-tick as well. A mod visible in the stack (a siege,
+      encounter or army mod) is usually only the second route's trigger, not the cause — the battle
+      was already broken when it got there. NOT a shader or driver problem.
+    ru: |
+      NullReferenceException при закрытии битвы. Реакция ИИ на завершённую битву читает ведущий отряд
+      атакующей стороны — `AttackerSide.LeaderParty.MobileParty` — без проверки на пустоту, а в этом
+      сохранении такого отряда уже нет: его уничтожили или убрали, пока битва ещё шла. Движок про это
+      состояние знает — то же самое поле он проверяет в `MapEvent.Update` и в `MapEvent.ToString`, —
+      просто здесь не проверяет; а код закрытия битвы читает этот отряд ещё в нескольких местах, в
+      том числе при завершении осады и гибели героев.
+      К вылету ведут два независимых маршрута, поэтому сейв умирает снова и снова: тик битв видит
+      пропавшего лидера, объявляет битву законченной и закрывает её; и любое действие, уводящее со
+      стороны последний отряд, тоже закрывает битву прямо посреди тика. Мод, видный в стеке (осадный,
+      про столкновения или про армии), обычно лишь спусковой крючок второго маршрута, а не причина —
+      битва была сломана до него. НЕ проблема шейдеров или драйвера.
+    zh: |
+      战斗关闭过程中的空引用异常。游戏中 AI 对已结束战斗的反应会读取进攻方的主导队伍
+      —— `AttackerSide.LeaderParty.MobileParty` —— 且不作空检查，而在此存档中该队伍已不存在：它在战斗
+      仍在进行时被消灭或移除。引擎知道这种状态可能出现（它在 MapEvent.Update 和 MapEvent.ToString 中
+      对同一字段做了空检查），只是此处没有检查；而关闭战斗的代码还会在另外几处读取该队伍，包括攻城结算
+      与英雄阵亡。
+      有两条独立路径会触发该崩溃，因此存档会不断崩溃：战斗心跳发现首领缺失，宣布战斗结束并关闭它；此外，
+      任何将最后一支队伍移出某一方的操作也会在结算中途关闭战斗。堆栈中出现的模组（攻城、遭遇或军队类）
+      通常只是第二条路径的触发器，而非原因——战斗在它介入之前就已损坏。不是着色器或驱动问题。
+    zht: |
+      戰鬥關閉過程中的空參考例外。遊戲中 AI 對已結束戰鬥的反應會讀取進攻方的主導隊伍
+      —— `AttackerSide.LeaderParty.MobileParty` —— 且不作空值檢查，而在此存檔中該隊伍已不存在：它在戰鬥
+      仍在進行時被消滅或移除。引擎知道這種狀態可能出現（它在 MapEvent.Update 和 MapEvent.ToString 中
+      對同一欄位做了空值檢查），只是此處沒有檢查；而關閉戰鬥的程式碼還會在另外幾處讀取該隊伍，包括攻城
+      結算與英雄陣亡。
+      有兩條獨立路徑會觸發該當機，因此存檔會不斷當機：戰鬥心跳發現首領缺失，宣布戰鬥結束並關閉它；此外，
+      任何將最後一支隊伍移出某一方的操作也會在結算中途關閉戰鬥。堆疊中出現的模組（攻城、遭遇或軍隊類）
+      通常只是第二條路徑的觸發器，而非原因——戰鬥在它介入之前就已損壞。不是著色器或驅動問題。
+    tr: |
+      Bir savaş kapatılırken NullReferenceException. Oyunun biten savaşa yapay zekâ tepkisi, saldıran
+      tarafın öncü grubunu — `AttackerSide.LeaderParty.MobileParty` — null denetimi yapmadan okur;
+      bu kayıtta ise o grup artık yok: savaş sürerken yok edilmiş ya da kaldırılmış. Motor bu durumun
+      mümkün olduğunu bilir (aynı alanı MapEvent.Update ve MapEvent.ToString içinde null'a karşı
+      denetler), sadece burada denetlemez; üstelik savaşı kapatan kod bu grubu birkaç yerde daha okur
+      — kuşatmanın tamamlanması ve kahraman ölümleri dâhil.
+      Çökmeye iki bağımsız yol çıkar, bu yüzden kayıt tekrar tekrar ölür: savaş nabzı eksik lideri
+      görür, savaşı bitmiş sayar ve kapatır; ayrıca son grubu bir taraftan çeken herhangi bir işlem de
+      savaşı tick'in ortasında kapatır. Yığında görünen mod (kuşatma, karşılaşma ya da ordu modu)
+      genelde yalnızca ikinci yolun tetikleyicisidir, nedeni değil — savaş oraya gelmeden önce zaten
+      bozulmuştu. Gölgelendirici veya sürücü sorunu DEĞİL.
+  fix:
+    en:
+      - "Crash Doctor already guards this — it applies the game's own rule and lets the first party still standing on that side take over as leader, so the battle closes normally. Keep the «Battle-end crash guard (side with no leading party)» fix ON (Crash Fixes tab). Update Crash Doctor to the latest version — older builds don't have this guard."
+      - "Also keep «Battle crash guard (factionless leading party)» ON — it is the same family through a different path, and both together make such a save playable again."
+      - "crashdoctor.log records which side lost its leader and which party took over; the game log's OnMobilePartyDestroyed line just before the crash usually identifies the mod that destroyed the party mid-battle."
+      - "Prime suspects are mods that create or destroy parties in bulk: army, reinforcement, garrison, diplomacy and siege mods. If one of them was updated or removed recently, start there."
+      - "Do NOT rebuild shaders or change drivers — the exception is in campaign code, neither touches it."
+    ru:
+      - "Crash Doctor уже это перехватывает — он применяет собственное правило игры и ставит ведущим первый оставшийся на этой стороне отряд, так что битва закрывается штатно. Держи фикс «Защита от вылета при завершении битвы (сторона без ведущего отряда)» ВКЛЮЧЁННЫМ (вкладка «Фиксы крашей»). Обнови Crash Doctor до последней версии — в старых сборках этой защиты нет."
+      - "Держи включённым и «Защиту от вылета в битве (ведущий отряд без фракции)» — это та же семья, только другим путём; вдвоём они возвращают такому сейву работоспособность."
+      - "В crashdoctor.log пишется, какая сторона осталась без лидера и какой отряд его заменил; а строка OnMobilePartyDestroyed в логе игры прямо перед вылетом обычно указывает на мод, уничтоживший отряд посреди битвы."
+      - "Главные подозреваемые — моды, которые пачками создают и уничтожают отряды: армии, подкрепления, гарнизоны, дипломатия, осады. Если что-то из этого недавно обновлялось или сносилось — начинай оттуда."
+      - "НЕ пересобирай шейдеры и не меняй драйвер — исключение в коде кампании, они его не касаются."
+    zh:
+      - "Crash Doctor 已经拦截了它——它采用游戏自身的规则，让该方仍在场的第一支队伍接任首领，因此战斗正常结束。在「崩溃修复」页保持「战斗结束崩溃防护（一方没有主导队伍）」为开。请将 Crash Doctor 更新到最新版本——旧版本没有此防护。"
+      - "同时保持「战斗崩溃防护（无势力的主导队伍）」为开——那是同一家族的另一条路径，两者一起才能让这类存档重新可玩。"
+      - "crashdoctor.log 会记录哪一方失去了首领以及由哪支队伍接任；崩溃前游戏日志中的 OnMobilePartyDestroyed 一行通常能指出是哪个模组在战斗中消灭了该队伍。"
+      - "首要嫌疑是会批量创建和消灭队伍的模组：军队、增援、驻军、外交与攻城类。若其中之一最近更新或移除过，先从它查起。"
+      - "不要重建着色器或更换驱动——异常出现在战役代码中，二者都与之无关。"
+    zht:
+      - "Crash Doctor 已經攔截了它——它採用遊戲自身的規則，讓該方仍在場的第一支隊伍接任首領，因此戰鬥正常結束。在「崩潰修復」頁保持「戰鬥結束崩潰防護（一方沒有主導隊伍）」為開。請將 Crash Doctor 更新到最新版本——舊版本沒有此防護。"
+      - "同時保持「戰鬥崩潰防護（無勢力的主導隊伍）」為開——那是同一家族的另一條路徑，兩者一起才能讓這類存檔重新可玩。"
+      - "crashdoctor.log 會記錄哪一方失去了首領以及由哪支隊伍接任；當機前遊戲日誌中的 OnMobilePartyDestroyed 一行通常能指出是哪個模組在戰鬥中消滅了該隊伍。"
+      - "首要嫌疑是會批量建立和消滅隊伍的模組：軍隊、增援、駐軍、外交與攻城類。若其中之一最近更新或移除過，先從它查起。"
+      - "不要重建著色器或更換驅動——例外出現在戰役程式碼中，兩者都與之無關。"
+    tr:
+      - "Crash Doctor bunu zaten koruyor — oyunun kendi kuralını uygulayıp o tarafta hâlâ duran ilk grubun lider olmasını sağlar, böylece savaş normal şekilde kapanır. «Savaş bitişi çökme koruması (öncü grubu olmayan taraf)» düzeltmesini AÇIK tut (Çökme Düzeltmeleri sekmesi). Crash Doctor'ı en son sürüme güncelle — eski sürümlerde bu koruma yok."
+      - "«Savaş çökme koruması (hizipsiz öncü grup)» düzeltmesini de AÇIK tut — aynı ailenin farklı bir yolu; ikisi birlikte böyle bir kaydı yeniden oynanabilir yapar."
+      - "crashdoctor.log hangi tarafın liderini kaybettiğini ve yerine hangi grubun geçtiğini yazar; çökmeden hemen önceki oyun günlüğündeki OnMobilePartyDestroyed satırı genelde grubu savaşın ortasında yok eden modu gösterir."
+      - "Baş şüpheliler toplu hâlde grup oluşturan ve yok eden modlardır: ordu, takviye, garnizon, diplomasi ve kuşatma modları. Bunlardan biri yakın zamanda güncellendi ya da kaldırıldıysa oradan başla."
+      - "Gölgelendiricileri yeniden oluşturma veya sürücü değiştirme — istisna kampanya kodunda, ikisi de ona dokunmuyor."
+  match:
+    all:
+      - managed_exception: { frame_contains: "AiMilitaryBehavior.OnMapEventEnded" }
+      - managed_exception: { type_contains: "NullReference" }
+
+# Deployment-screen (Order of Battle) crash: a formation's banner item has no banner EFFECT.
+# NullReferenceException in OrderOfBattleVM.GetAgentTooltip <- SPOrderOfBattleVM.GetAgentTooltip
+# (SandBox override, only delegates) <- OrderOfBattleHeroItemVM.RefreshValues <- OrderOfBattleVM.Initialize
+# <- MissionGauntletOrderOfBattleUIHandler.OnPlayerTurnToChooseFormationToLead <- ... <- Mission.OnTick.
+# The method null-checks the agent and the banner, then reads the effect with no check:
+#   GameTexts.SetVariable("RANK", bannerComponent.BannerEffect.Name);  ... bannerComponent.GetBannerEffectBonus()
+# BannerComponent.Deserialize builds it as
+#   BannerEffect = MBObjectManager.Instance.GetObject<BannerEffect>(node.Attributes["effect"].Value)
+# and MBObjectManager returns null for an unknown id, so a banner item naming an effect that no loaded
+# module defines gets a null effect. On 1.2 the same block also reads FormationBanner.Name unguarded;
+# 1.3+ wrap it in `if (!TextObject.IsNullOrEmpty(agent.FormationBanner.Name))`. Verified against the
+# shipped 1.2.10, 1.3.15 and 1.4.7 assemblies: this tooltip is the ONLY unguarded read of BannerEffect
+# in the game — every other user compares it and survives a null.
+- id: mission.order_of_battle_banner_effect_nre
+  category: managed
+  severity: critical
+  confidence: high
+  evidence_source: "Client crash 2026-08-15 report.txt, crash id 99664432, seen 2x within three minutes (Bannerlord 1.2.12, ~20 mods incl. OpenSourceArmory, swadian armoury, XorberaxLegacy, BannerEditor, HistoricalBannerIcons, ImprovedGarrisons, RTSCamera). NullReferenceException OrderOfBattleVM.GetAgentTooltip <- SPOrderOfBattleVM.GetAgentTooltip <- OrderOfBattleHeroItemVM.RefreshValues <- OrderOfBattleVM.Initialize <- MissionGauntletOrderOfBattleUIHandler.OnPlayerTurnToChooseFormationToLead <- AssignPlayerRoleInTeamMissionController.OnPlayerTeamDeployed <- MissionOrderDeploymentControllerVM.DeployFormationsOfPlayer <- Team.OnDeployed <- MissionAgentSpawnLogic.OnBattleSideDeployed <- DeploymentMissionController.SetupTeams <- Mission.OnTick. Verified against the shipped 1.2.10 / 1.3.15 / 1.4.7 TaleWorlds.MountAndBlade.ViewModelCollection.dll, TaleWorlds.Core.BannerComponent.Deserialize and SandBox.ViewModelCollection.SPOrderOfBattleVM."
+  requires_sources: [managed_exception]
+  title:
+    en: "Deployment screen crashes: a banner item has no banner effect — guarded by Crash Doctor"
+    ru: "Вылет на экране расстановки: у знамени нет эффекта — перехвачено Crash Doctor"
+    zh: "布阵界面崩溃：旗帜物品没有旗帜效果——已被 Crash Doctor 拦截"
+    zht: "佈陣介面當機：旗幟物品沒有旗幟效果——已被 Crash Doctor 攔截"
+    tr: "Yerleştirme ekranı çöküyor: sancak eşyasının sancak etkisi yok — Crash Doctor koruyor"
+  description:
+    en: |
+      NullReferenceException on the deployment screen, at the moment the game asks which formation you
+      will lead. While building a commander's tooltip it reads the effect of that formation's banner —
+      `bannerComponent.BannerEffect.Name` — without ever checking the effect exists.
+      A banner item ends up with no effect when its data names one that no installed module defines:
+      a typo in the id, an effect that lived in a module which was removed, or an item file made for a
+      different game version. The engine resolves that id through MBObjectManager, which simply returns
+      null for something it does not know, and nothing checks the result. Such a banner is otherwise
+      completely normal — it appears in the inventory and troops carry it — so this crash is the only
+      place it ever shows, and it repeats in every battle where the banner is carried: the fight never
+      starts.
+      Suspect the mods that ADD or EDIT items, not the ones that only change how banners look. NOT a
+      shader or driver problem.
+    ru: |
+      NullReferenceException на экране расстановки, ровно в тот момент, когда игра спрашивает, каким
+      отрядом ты будешь командовать. Собирая подсказку о командире, она читает эффект знамени его
+      отряда — `bannerComponent.BannerEffect.Name` — ни разу не проверив, есть ли этот эффект.
+      Эффекта у знамени не оказывается, когда в его данных указан эффект, которого нет ни в одном
+      установленном моде: опечатка в id, эффект из снесённого мода или файл предмета, сделанный под
+      другую версию игры. Движок ищет этот id через MBObjectManager, тот для незнакомого id просто
+      возвращает пустоту, а проверки за этим нет. Во всём остальном такое знамя совершенно обычное —
+      оно есть в инвентаре, его носят войска, — поэтому проявляется оно только этим вылетом и
+      повторяется в каждом бою, где это знамя несут: бой попросту не начинается.
+      Подозревать надо моды, которые ДОБАВЛЯЮТ или ПРАВЯТ предметы, а не те, что меняют лишь внешний
+      вид знамён. НЕ проблема шейдеров или драйвера.
+    zh: |
+      布阵界面上的空引用异常，恰好发生在游戏询问你将指挥哪支编队时。构建指挥官提示时，它会读取该编队
+      旗帜的效果 —— `bannerComponent.BannerEffect.Name` —— 却从不检查该效果是否存在。
+      当旗帜物品的数据指向了任何已安装模组都未定义的效果时，它就会没有效果：id 拼写错误、效果来自已被
+      移除的模组，或物品文件是为其他游戏版本制作的。引擎通过 MBObjectManager 查找该 id，而后者对不认识
+      的 id 只会返回空值，之后没有任何检查。这样的旗帜在其他方面完全正常——它出现在库存中、部队会携带
+      它——因此它唯一的表现就是这次崩溃，并在每场携带该旗帜的战斗中重演：战斗根本无法开始。
+      应当怀疑那些添加或修改物品的模组，而不是只改变旗帜外观的模组。不是着色器或驱动问题。
+    zht: |
+      佈陣介面上的空參考例外，恰好發生在遊戲詢問你將指揮哪支編隊時。建立指揮官提示時，它會讀取該編隊
+      旗幟的效果 —— `bannerComponent.BannerEffect.Name` —— 卻從不檢查該效果是否存在。
+      當旗幟物品的資料指向了任何已安裝模組都未定義的效果時，它就會沒有效果：id 拼寫錯誤、效果來自已被
+      移除的模組，或物品檔案是為其他遊戲版本製作的。引擎透過 MBObjectManager 查找該 id，而後者對不認識
+      的 id 只會回傳空值，之後沒有任何檢查。這樣的旗幟在其他方面完全正常——它出現在庫存中、部隊會攜帶
+      它——因此它唯一的表現就是這次當機，並在每場攜帶該旗幟的戰鬥中重演：戰鬥根本無法開始。
+      應當懷疑那些新增或修改物品的模組，而不是只改變旗幟外觀的模組。不是著色器或驅動問題。
+    tr: |
+      Yerleştirme ekranında, oyunun hangi birliği yöneteceğini sorduğu anda NullReferenceException.
+      Bir komutanın ipucunu oluştururken o birliğin sancağının etkisini —
+      `bannerComponent.BannerEffect.Name` — etkinin var olup olmadığını hiç denetlemeden okur.
+      Bir sancak eşyası, verisi kurulu hiçbir modülün tanımlamadığı bir etkiyi işaret ettiğinde etkisiz
+      kalır: id'de yazım hatası, kaldırılmış bir modülde bulunan bir etki ya da başka bir oyun sürümü
+      için hazırlanmış bir eşya dosyası. Motor bu id'yi MBObjectManager üzerinden arar; o da tanımadığı
+      bir id için yalnızca boş döner ve sonucu kimse denetlemez. Böyle bir sancak diğer her açıdan
+      tamamen normaldir — envanterde görünür, birlikler taşır — bu yüzden kendini yalnızca bu çökmeyle
+      gösterir ve sancağın taşındığı her savaşta tekrarlanır: savaş hiç başlamaz.
+      Eşya EKLEYEN ya da DEĞİŞTİREN modlardan şüphelenin; yalnızca sancakların görünümünü değiştirenlerden
+      değil. Gölgelendirici veya sürücü sorunu DEĞİL.
+  fix:
+    en:
+      - "Crash Doctor already guards this — the commander's tooltip is shown without the banner section and the deployment screen opens normally. Keep the «Deployment-screen crash guard (banner with broken data)» fix ON (Crash Fixes tab). Update Crash Doctor to the latest version — older builds don't have this guard."
+      - "crashdoctor.log names the banner item by its id every time the guard fires — that id tells you which mod shipped it."
+      - "To remove the cause rather than survive it: update the mod that adds that banner, or ask its author — the item's XML names a banner effect that no installed module defines."
+      - "If the mod that defined the effect was removed mid-campaign, putting it back also fixes it."
+      - "Do NOT rebuild shaders or change drivers — the exception is in the interface code, neither touches it."
+    ru:
+      - "Crash Doctor уже это перехватывает — подсказка о командире показывается без раздела о знамени, экран расстановки открывается нормально. Держи фикс «Защита от вылета на экране расстановки (знамя с битыми данными)» ВКЛЮЧЁННЫМ (вкладка «Фиксы крашей»). Обнови Crash Doctor до последней версии — в старых сборках этой защиты нет."
+      - "В crashdoctor.log при каждом срабатывании пишется id самого знамени — по нему видно, из какого оно мода."
+      - "Чтобы убрать причину, а не жить с ней: обнови мод, добавляющий это знамя, или напиши его автору — в XML предмета указан эффект знамени, которого нет ни в одном установленном моде."
+      - "Если мод, задававший этот эффект, снесли посреди кампании — вернуть его тоже достаточно."
+      - "НЕ пересобирай шейдеры и не меняй драйвер — исключение в коде интерфейса, они его не касаются."
+    zh:
+      - "Crash Doctor 已经拦截了它——指挥官提示会在不含旗帜部分的情况下显示，布阵界面正常打开。在「崩溃修复」页保持「布阵界面崩溃防护（数据损坏的旗帜）」为开。请将 Crash Doctor 更新到最新版本——旧版本没有此防护。"
+      - "每次防护触发都会把该旗帜物品的 id 写入 crashdoctor.log——凭该 id 即可判断它来自哪个模组。"
+      - "若想根除而非忍受：更新添加该旗帜的模组，或联系其作者——该物品的 XML 指向了任何已安装模组都未定义的旗帜效果。"
+      - "如果定义该效果的模组是在战役中途被移除的，把它装回去同样可以解决。"
+      - "不要重建着色器或更换驱动——异常出现在界面代码中，二者都与之无关。"
+    zht:
+      - "Crash Doctor 已經攔截了它——指揮官提示會在不含旗幟部分的情況下顯示，佈陣介面正常開啟。在「崩潰修復」頁保持「佈陣介面崩潰防護（資料損壞的旗幟）」為開。請將 Crash Doctor 更新到最新版本——舊版本沒有此防護。"
+      - "每次防護觸發都會把該旗幟物品的 id 寫入 crashdoctor.log——憑該 id 即可判斷它來自哪個模組。"
+      - "若想根除而非忍受：更新新增該旗幟的模組，或聯絡其作者——該物品的 XML 指向了任何已安裝模組都未定義的旗幟效果。"
+      - "如果定義該效果的模組是在戰役中途被移除的，把它裝回去同樣可以解決。"
+      - "不要重建著色器或更換驅動——例外出現在介面程式碼中，兩者都與之無關。"
+    tr:
+      - "Crash Doctor bunu zaten koruyor — komutan ipucu sancak bölümü olmadan gösterilir ve yerleştirme ekranı normal şekilde açılır. «Yerleştirme ekranı çökme koruması (verisi bozuk sancak)» düzeltmesini AÇIK tut (Çökme Düzeltmeleri sekmesi). Crash Doctor'ı en son sürüme güncelle — eski sürümlerde bu koruma yok."
+      - "Koruma her tetiklendiğinde sancak eşyasını id'siyle crashdoctor.log dosyasına yazar — o id hangi modun onu getirdiğini gösterir."
+      - "Nedeni yaşamak yerine ortadan kaldırmak için: o sancağı ekleyen modu güncelle ya da yazarına bildir — eşyanın XML'i, kurulu hiçbir modülün tanımlamadığı bir sancak etkisini işaret ediyor."
+      - "Etkiyi tanımlayan mod kampanya ortasında kaldırıldıysa geri kurmak da sorunu çözer."
+      - "Gölgelendiricileri yeniden oluşturma veya sürücü değiştirme — istisna arayüz kodunda, ikisi de ona dokunmuyor."
+  match:
+    all:
+      - managed_exception: { frame_contains: "OrderOfBattleVM.GetAgentTooltip" }
       - managed_exception: { type_contains: "NullReference" }

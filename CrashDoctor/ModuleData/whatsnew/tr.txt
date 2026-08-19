@@ -1,55 +1,31 @@
-﻿Crash Doctor'ı kullandığın için teşekkürler!
+Crash Doctor'ı kullandığın için teşekkürler!
 
 YENİLİKLER
 
-• Yeni "bu mod gerçekten çalışıyor mu" denetimi: eksik bir kütüphane (ButterLib, MCM, UIExtenderEx, Harmony, BLSE) ya da yarım çıkarılmış bir arşiv artık Modlar sekmesinde işaretlenir ve eksik dosyanın tam adı yazılır — daha bir soruna dönüşmeden.
+• Yeni koruma: kaldırılan grubun klanı kalmadığında savaş sonu çökmesi. Oyunun dünyadan ayrılan bir grupla yaptığı son iş, onu klanının savaş grupları listesinden düşürmektir — ve bunu klan üzerinde, öyle bir klan var mı diye hiç denetlemeden çağırır. Bir grup, bir mod zaten kaldırılmış bir grubu yok ettiğinde ya da dağıttığında veya klanını elle temizlediğinde klansız kalır. Yeni "Grup kaldırma çökme koruması (klansız grup)" imkânsız çağrıyı atlar ve grubu kayıttan kendisi düşürür; kaldırma tamamlanır, sefer devam eder.
 
-• Yeni "Önlenenler" sekmesi — durdurulan çökmelerin birikimli kaydı: tam olarak ne, kaç kez, hangi mod ve hangi oyun verisi üzerinde. Seferde aynı listeyi Ctrl+Alt+D açar.
+• Yeni koruma: etkisi olmayan bir sancak yüzünden yerleştirme ekranı çökmesi. Oyun komutan ipucunu hazırlarken o birliğin sancak etkisini, var olup olmadığını denetlemeden okur — kurulu hiçbir modun tanımlamadığı bir etkiyi adlandıran sancakta ise böyle bir etki yoktur ve savaş hiç başlamaz. Yeni "Yerleştirme ekranı çökme koruması (bozuk verili sancak)" ipucunu sancak bölümü olmadan gösterir ve sancağın id'sini günlüğe yazar.
 
-• Önlenen çökme mesajları artık oyunun takıldığı nesneyi adıyla yazar: birlik ve eksik kültürü, grup, kahraman, hane, yerleşim.
+• Yeni koruma: taraflardan biri öncü grubunu kaybetmişken savaş bittiğinde çökme. Oyun savaşı kapatırken bu grubu arka arkaya yarım düzine yerde okur ve hâlâ orada mı diye hiç bakmaz. Yeni "Savaş sonu çökme koruması (öncü grubu olmayan taraf)" oyunun kendi kuralını uygular: o tarafta ayakta kalan ilk grup lideri devralır — bu da bütün o yerleri tek seferde kapatır.
 
-• Hatayı fırlatan modu da yazar — ama yalnızca bu dürüstçe belirlenebiliyorsa. Fırlatan oyunun kendi koduysa hiçbir mod adlandırılmaz: yanlış bir ad, suçsuz bir modun kaldırılmasına yol açar.
+• Yeni koruma: yerleşimini kaybetmiş bir garnizon yüzünden birkaç saniyede bir sefer haritası çökmesi. Grup iyileşmesi hesabında yerleşim doğrudan gruptan okunur, bu yüzden öksüz kalmış bir garnizon tüm sefer tikini çökertir — her yüklemeden saniyeler sonra yeniden. Yeni "Grup iyileşmesi çökme koruması (yerleşimi olmayan garnizon)" yalnızca o grubun iyileşmesini ve yalnızca o tikte atlar; öksüz garnizon ise sefere girişte temizlenir.
 
-• Bağış yenilendi: tek bir sayfanın iki biçimi — Telegram gerektirmeyen, kartla ödenebilen normal bir web sayfası ve aynı sayfanın Telegram içindeki hâli — diline göre seçilir, adres tam olarak görünür ve kopyalama düğmesi vardır.
+• Yeni koruma: her yüklemeden yaklaşık bir saniye sonra ölen kayıt. Oyun her tikte devam eden bir savaşın taraflarının savaşta olup olmadığını sorar, ama öncü grubun hâlâ bir hizbe ait olup olmadığını denetlemez — savaşın içindeyken yok edilen bir grup tam da böyle görünür ve bozuk savaş kayda yazılır. Yeni "Savaş çökme koruması (hizipsiz öncü grup)" çökmek yerine o savaşı sonlandırır.
 
-ÇÖKME KORUMALARI
+• Klan gücü için kayıt yükleme koruması artık Bannerlord 1.2'de de çalışıyor. Motorun o bölümü orada farklı adlandırılmış, bu yüzden koruma sessizce hiç kurulmuyordu — oysa çökme birebir aynı.
 
-• Kazananlar arasında bir yerleşim varken savaşın ganimet dağıtması: bir köyün baskını püskürtmesi, bir şehrin saldırıyı püskürtmesi. Tipik belirti: kayıt sorunsuz açılır ve hareket eder etmez oyun çöker.
-
-• Savaştan hemen sonra esirler paylaştırılırken oyunun kadroda artık bulunmayan bir birliği çıkarması. Yalnızca o aktarım atlanır, savaş tamamlanır.
-
-• Vücut verisi olmayan bir ebeveynden çocuk doğması — böyle karakterler bazı modların kodla oluşturduklarında görülür. Yeni doğan ortalama bir yapı alır ve gün geçer.
-
-• Kültüründe isyancı kahraman şablonu olmayan bir şehrin isyan etmesi. O şehir isyan etmez ve ertesi gün için yeniden zar atılır.
-
-• Oyunun hiç kaydetmediği bir isyancı hane hakkındaki günlük hata — genellikle kayıt ortasında eklenen ya da kaldırılan bir modun bıraktığı bir hane. Her gün, hane başına bir kez tekrarlıyordu.
-
-• Gün değişiminde birlik maaşları; sorunlu grubun o günkü maaşı sıfır sayılır.
-
-• Bir AI grubunun birliklerinin otomatik yükseltilmesi — daha yüksek kademeli birlik aynı maaşa mal olduğunda oyunun kendisinde sıfıra bölme.
-
-• Bir şehrin demircilik siparişi oluşturması: sipariş atlanır ve boşluk ertesi gün doldurulur.
-
-• İçinde bir kahramanın öldüğü savaşın sonlanması — geçiş yeniden çalıştırılır, böylece sonuç eksiksiz uygulanır.
-
-• Bir AI hanesinin artık ait olmadığı bir krallıktan ayrılması, genellikle bir mod o hanenin liderini taşıdıktan sonra.
+• Yeni teşhis: gölgelendiriciler derleniyor ama hiç kaydedilmiyor. Motor günlüğüne "Could not write shader cache file" yazıp devam eder; derleme başarılı görünür, bir sonraki açılış baştan başlar. Sorun ne bozuk önbellek ne sürücüdür: ProgramData içindeki gölgelendirici klasörü yok ya da yazılabilir değil.
 
 DÜZELTMELER
 
-• "Yenilikler" penceresi artık ilk açılıştaki parlaklık ayarının üzerinde çıkmıyor ve menüden önce de belirmiyor. Bunu engellemesi gereken denetim, oyunda var olmayan bir özelliği okuyordu; bu yüzden bir kez bile çalışmamıştı.
+• İki hatalı "çökme önlendi" mesajı kaldırıldı. Biri Bannerlord 1.2'de, o sürümde hiç oluşamayacak bir çökme için görünebiliyordu; diğeri gemi verisi olmayan bir hizbi, oyun gayet iyi başa çıkacakken sorun ilan ediyordu. İkisi de oyuncuyu suçsuz bir modu kaldırmaya yolluyordu.
 
-• Windows, Belgeler klasörünü OneDrive'a yönlendirdiğinde mod ayarları ve işaretleri artık kaybolmuyor. Bunlar artık açılışta her zaman okunabilen bir klasörde duruyor ve mevcut içerik bir kereye mahsus taşınıyor.
+• Önlenenler sayacı tek bir takılı savaş yüzünden artık şişmiyor. Savaşın hemen sonlandırılamadığı durumda koruma her karede tetikleniyordu ve tek bir olay sayacı binlere çıkarabiliyordu. Artık bir kez sayılıyor.
 
-• Bir çökme raporu, oyunun kendi kodu yamalanmış olsa bile artık onu üçüncü taraf bir mod olarak adlandırmıyor.
+• Tek çökme, tek karar. Bozuk savaştan kaynaklanan çökme birbirine zıt iki kart gösterebiliyordu. Artık yalnızca gerçekten olanı anlatan kart gösteriliyor.
 
-• İnce Ayar sekmesi artık Geleneksel Çince konuşuyor — yalnızca kartlar değil, tüm durum ve sonuç satırları.
+• "İnce Ayar" sekmesi yönetici hakları metinlerinde de Geleneksel Çince konuşuyor: takas dosyası, TDR gecikmesi ve Game DVR için ipucu ile uygulama/geri alma redleri Basitleştirilmiş Çince gösteriliyordu.
 
-• Bu penceredeki "Haberleri bir daha gösterme" kutusu: işaretleyip kapat, bu sürümde de sonraki sürümlerde de geri gelmez.
-
-• Oyunun yerel sonlandırıcısındaki çökmeler (AccessViolation) doğru teşhis ediliyor; The Old Realms'in "Build Shader Cache" düğmesi çevresindeki durum dâhil.
-
-• Bozuk Windows TEMP yolu için onarım: TMP/TEMP artık var olmayan bir sürücüyü gösteriyorsa, İnce Ayar sekmesi standart yolu tek tıkla geri getirir.
-
-• Çökme raporu artık crashdoctor_at_crash.log ile birlikte geliyor; orada oyunun tam olarak hangi birlik, grup ya da yerleşimde bozulduğu görülür.
+• "Kayıtlar" sekmesi Game Saves içindeki okunamayan tek bir alt klasör yüzünden artık boş kalmıyor — böyle bir klasör atlanıyor.
 
 Çökme bildir: t.me/CodeRickTg — çökme kartındaki "Klasörü aç" düğmesine bas ve İKİ dosyayı da gönder: report.txt ve crashdoctor_at_crash.log.

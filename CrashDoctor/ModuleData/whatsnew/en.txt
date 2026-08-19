@@ -1,55 +1,31 @@
-﻿Thanks for using Crash Doctor!
+Thanks for using Crash Doctor!
 
 WHAT'S NEW
 
-• New "is this mod working at all" check: a missing library (ButterLib, MCM, UIExtenderEx, Harmony, BLSE) or a half-extracted archive now flags the mod on the Mods tab, naming the exact missing file — before it turns into anything.
+• New guard: a battle-end crash when the party being removed has no clan. The last thing the game does with a party leaving the world is take it off its clan's roll of war parties — and it calls that on the clan without ever checking there is one. A party ends up clanless when a mod destroys or disbands one that was already removed, or clears its clan by hand. The new "Party-removal crash guard (party with no clan)" skips the impossible call and unregisters the party itself, so the removal finishes and the campaign carries on.
 
-• New "Prevented" tab — a running journal of the crashes that were stopped: what exactly, how many times, which mod, and on which game data. Press Ctrl+Alt+D for the same list in a campaign.
+• New guard: a deployment-screen crash caused by a banner with no effect. Building the commander's tooltip, the game reads that formation's banner effect without checking it is there — and a banner naming an effect no installed module defines has none, so the battle never starts. The new "Deployment-screen crash guard (banner with broken data)" shows the tooltip without the banner section and logs the banner's id.
 
-• Prevented-crash messages now name the object the game tripped over: the troop and its missing culture, the party, hero, clan or settlement.
+• New guard: a crash when a battle ends while one of its sides has lost its leading party. Closing a battle reads that party in half a dozen places in a row and never checks it is still there. The new "Battle-end crash guard (side with no leading party)" applies the game's own rule — the first party still standing on that side takes over — which covers every one of those places at once.
 
-• They also name the mod whose code threw — but only when that can be determined honestly. If the game's own code threw, no mod is named; a wrong name gets an innocent mod uninstalled.
+• New guard: a campaign-map crash every few seconds caused by a garrison that lost its settlement. Party healing reads the settlement straight off the party in the garrison branch, so an orphaned garrison brings down the whole campaign tick, seconds after every load. The new "Party-healing crash guard (garrison with no settlement)" skips just that one party's healing for that tick; the orphan is then cleaned up on entering the campaign.
 
-• Donations reworked: one page in two forms — a normal web page that takes a card without Telegram, and the same page inside Telegram — picked for your language, with the address shown in full and a copy button.
+• New guard: a save that dies about a second after every load. Every tick the game asks an ongoing battle whether its sides are at war, without checking the leading party still belongs to a faction — which is exactly what a party destroyed mid-battle looks like, and the broken battle is stored in the save. The new "Battle crash guard (factionless leading party)" ends that battle instead of crashing.
 
-GUARDS AGAINST CRASHES
+• The save-loading guard for clan strength now works on Bannerlord 1.2 too. That part of the engine is named differently there, so the guard silently never installed — even though the crash is identical.
 
-• A battle handing out loot with a settlement among the winners — a village repelling a raid, a town repelling an assault. Typical symptom: the save loads fine and the game crashes the moment you start moving.
-
-• Sharing out prisoners right after a battle, when the game removes a troop that is no longer in the roster. That one transfer is skipped and the battle finishes.
-
-• A child being born to a parent that has no body-shape data — a character some mod created in code. The newborn gets an average build and the day passes.
-
-• A town raising a rebellion when its culture has no rebel-hero templates. That town does not rebel and is rolled for again the next day.
-
-• The daily error about a rebel clan the game never registered — usually a clan left behind by a mod added or removed mid-save. It repeated every single day, once per clan.
-
-• Party wages on the day change; the wage of the problem party counts as zero for that day.
-
-• Auto-upgrading an AI party's troops — a divide-by-zero in the game itself when a higher-tier troop is paid the same wage.
-
-• A town creating a smithing order; the order is skipped and the slot is filled the next day.
-
-• A battle ending with a hero killed in it — the pass is restarted, so the result is applied in full.
-
-• An AI clan leaving a kingdom it no longer belonged to, usually after a mod moved that clan's leader.
+• New diagnosis: shaders compile but are never saved. The engine writes "Could not write shader cache file" into its log and carries on, so it looks like the build worked and the next launch starts over. Neither a corrupt cache nor the driver — the ProgramData shaders folder is missing or not writable.
 
 FIXES
 
-• The "What's new" window no longer appears over the first-launch brightness setup, and no longer beats the menu to the screen. The check that was supposed to prevent this was reading a property the game does not have, so it never once ran.
+• Two false "crash prevented" messages removed. One could appear on Bannerlord 1.2 for a crash that cannot happen there at all; the other flagged a faction with no ship data even where the game would have coped. Both sent players off to uninstall an innocent mod.
 
-• Mod settings and markers are no longer lost when Windows has redirected Documents into OneDrive. They now live in a folder that is always readable at startup, and what you already had is moved across once.
+• The Prevented counter is no longer inflated by a single stuck battle. Where a battle cannot be ended right away, the guard fired on every frame and one event could run the counter into the thousands. It is counted once now.
 
-• A crash report no longer calls the game's own code a third-party mod when that code happens to be patched.
+• One crash, one verdict. A broken-battle crash could show two cards with contradictory advice. Only the card that matches what actually happened is shown.
 
-• The Tune-Up tab now speaks Traditional Chinese — every status and result line, not just the cards.
+• The Tune-Up tab speaks Traditional Chinese in the administrator-rights texts too: the hint and the apply/rollback refusals for the pagefile, the TDR delay and Game DVR were shown in Simplified Chinese.
 
-• "Don't show news again" checkbox on this window: tick it and close, and it will not return on this version or any future one.
-
-• Crashes in the game's native finalizer (AccessViolation) are diagnosed correctly, including the case around The Old Realms' "Build Shader Cache" button.
-
-• Repair for a broken Windows TEMP path: if TMP/TEMP point at a drive that is gone, the Tune-Up tab restores the standard path in one click.
-
-• The crash report now ships with crashdoctor_at_crash.log, which shows the exact troop, party or settlement the game broke on.
+• The Saves tab no longer comes up empty because of one unreadable subfolder inside Game Saves. Such a folder is skipped instead of aborting the whole scan.
 
 Report a crash: t.me/CodeRickTg — press "Open folder" on the crash card and send BOTH files: report.txt and crashdoctor_at_crash.log.
