@@ -24,6 +24,6 @@ DÜZELTMELER
 
 • Esc açık olan pencereyi kapatır, aracın tamamını değil. Geri alınamaz bir temizleme onayında Esc "iptal" demektir.
 
-• Bir koruma boşuna alarm veriyordu: "bir YZ klanı artık ait olmadığı bir krallıktan ayrıldı" iletisi, bir klan yalnızca bir krallığa KATILDIĞINDA da çıkıyordu — oysa oyun bu durumu çökmeden hallediyor. Kampanyana bir zararı yoktu ama önlenen çökme sayısı yanlıştı. Artık yalnızca yazıldığı gerçek çökmede devreye giriyor.
+• İki koruma boşuna alarm veriyordu. Biri, bir YZ klanı yalnızca bir krallığa KATILDIĞINDA çökme önlendi diyordu; diğeri ise oyun, kadroda artık bulunmayan bir birliği çıkarırken — kimin istediğine hiç bakmadan, böylece kendi hatasını yakalayan bir mod kurtarılmış gibi görünüyordu. Kampanyana bir zararı yoktu ama sayı yanlıştı. Artık ikisi de yalnızca oyun gerçekten ölecek olsaydı kurtarış iddia ediyor.
 
 Çökme bildir: t.me/CodeRickTg / discord.gg/ZDJZFxQeMV — çökme kartında "Klasörü aç"a bas ve HER İKİ dosyayı gönder: report.txt ve crashdoctor_at_crash.log.

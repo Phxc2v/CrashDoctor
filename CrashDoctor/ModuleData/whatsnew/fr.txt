@@ -8,7 +8,7 @@ QUOI DE NEUF
 
 • La carte de plantage vous dit ce qui cloche dans votre installation : les mods activés qui ne sont pas compilés pour votre version du jeu, avec les versions à prendre. Ce n'est pas une accusation — désigner un coupable demande la première ligne de la pile d'appels — mais cela répond à la question « cette installation est-elle seulement censée fonctionner ? ».
 
-• report.txt a été refondu. Le verdict sur l'installation tient dans les dix premières lignes, avant tout ce qui est long. Ajoutés : les versions du jeu et du mod, l'exception managée avec son lieu de déclenchement et sa pile, et la liste des protections actives (une protection qui se déclenche retire une ligne de la pile, et sans cette liste la trace se lit de travers). La liste des modules n'est plus coupée à douze.
+• report.txt a été refondu. Le verdict sur l'installation tient dans les dix premières lignes. Ajoutés : les versions du jeu et du mod, l'exception avec sa pile, et la liste des protections actives — une protection déclenchée retire une image de la pile, et sans cette liste la trace se lit mal. La liste des modules n'est plus tronquée.
 
 • Une nouvelle fenêtre « Nos autres mods » dans l'onglet Paramètres. Lancé depuis Steam, le bouton Workshop passe en premier — un clic pour s'abonner au lieu de décompresser une archive à la main. Rien ne s'installe depuis cette fenêtre ; tout s'ouvre dans votre navigateur.
 
@@ -24,6 +24,6 @@ CORRECTIFS
 
 • Échap ferme la fenêtre ouverte, pas l'outil entier. Sur une confirmation irréversible, Échap veut dire annuler.
 
-• Une protection criait au loup : « un clan IA a quitté un royaume auquel il n'appartenait plus » apparaissait chaque fois qu'un clan REJOIGNAIT simplement un royaume — un cas que le jeu gère sans planter. Aucun mal pour votre campagne, mais le compteur de plantages évités était faux. Elle ne se déclenche plus que sur le vrai plantage.
+• Deux protections criaient au loup. L'une annonçait un plantage évité dès qu'un clan IA REJOIGNAIT un royaume ; l'autre quand le jeu retirait une troupe absente du groupe — sans jamais vérifier qui l'avait demandé, si bien qu'un mod rattrapant sa propre erreur passait pour un sauvetage. Aucun mal pour votre campagne, mais le compteur était faux. Les deux n'annoncent plus un sauvetage que si le jeu serait réellement mort.
 
 Signaler un plantage : t.me/CodeRickTg / discord.gg/ZDJZFxQeMV — appuyez sur « Ouvrir le dossier » sur la carte de plantage et envoyez LES DEUX fichiers : report.txt et crashdoctor_at_crash.log.

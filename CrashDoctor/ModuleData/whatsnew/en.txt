@@ -24,6 +24,6 @@ FIXES
 
 • Esc closes the window that is open, not the whole tool. On a destructive confirmation, Esc means cancel.
 
-• One guard used to cry wolf: "an AI clan left a kingdom it no longer belonged to" appeared every time a clan simply JOINED one — a case the game handles without crashing. No harm done to your campaign, but the prevented-crash count was wrong. It now fires only on the real crash it was written for.
+• Two guards used to cry wolf. One announced a prevented crash every time an AI clan simply JOINED a kingdom; the other did it whenever the game removed a troop that was no longer in the roster — without ever checking who asked, so a mod that catches its own error looked like a rescue. No harm was done to your campaign, but the prevented-crash count was wrong. Both now claim a save only when the game itself would really have died.
 
 Report a crash: t.me/CodeRickTg / discord.gg/ZDJZFxQeMV — press "Open folder" on the crash card and send BOTH files: report.txt and crashdoctor_at_crash.log.
