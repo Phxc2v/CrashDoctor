@@ -5,6 +5,7 @@
     zh: "为 Bannerlord.exe 禁用全屏优化"
     zht: "為 Bannerlord.exe 停用全螢幕最佳化"
     tr: "Bannerlord.exe için Tam Ekran Optimizasyonlarını devre dışı bırak"
+    fr: "Désactiver les optimisations plein écran pour Bannerlord.exe"
   description:
     en: |
       "Fullscreen optimizations" is a Windows feature that quietly turns "exclusive fullscreen"
@@ -30,6 +31,9 @@
       giriş gecikmesi ekler ve Bannerlord'da Alt-Tab'i birkaç saniye dondurur.
       AppCompatFlags kayıt defteri anahtarı aracılığıyla devre dışı bırakmak, gerçek tam
       ekran davranışını geri yükler.
+    fr: |
+      "Les optimisations plein écran" sont une fonctionnalité Windows qui transforme discrètement le "plein écran exclusif" en un passage de composition en fenêtre sans bordure. Cela ajoute 1 à 2 images de latence d'entrée et bloque
+      Alt-Tab pendant plusieurs secondes dans Bannerlord. La désactivation via la clé de registre AppCompatFlags restaure le comportement plein écran réel.
   details:
     en:
       - "No UAC needed — writes to HKCU only."
@@ -56,3 +60,9 @@
       - "Bannerlord.exe'ye sağ tıklayıp → Özellikler → Uyumluluk → 'Tam ekran optimizasyonlarını devre dışı bırak' ile aynı etki."
       - "Bir sonraki başlatmada etkili olur."
       - "Geçmiş sekmesinden geri alınabilir."
+
+    fr:
+      - "Aucune UAC requise — écrit uniquement dans HKCU."
+      - "Même effet qu'un clic droit sur Bannerlord.exe → Propriétés → Compatibilité → \"Désactiver les optimisations plein écran\"."
+      - "Efficace au prochain lancement."
+      - "Réversible depuis l'onglet Historique."

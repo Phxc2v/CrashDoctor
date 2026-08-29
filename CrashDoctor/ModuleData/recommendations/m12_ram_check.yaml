@@ -5,6 +5,7 @@
     zh: "内存检查 — TOR 需要 16 GB 以上"
     zht: "記憶體檢查 — TOR 需要 16 GB 以上"
     tr: "RAM kontrolü — TOR 16 GB+ ister"
+    fr: "Vérification de la RAM — TOR nécessite 16 Go+"
   description:
     en: |
       Read-only check. Bannerlord docs say 6 GB minimum / 8 GB recommended for vanilla,
@@ -45,6 +46,14 @@
 
       Crash Doctor donanımı yükseltemez. Bu kart yalnızca makinenin eşiği geçip
       geçmediğini söyler.
+    fr: |
+      Vérification en lecture seule. La documentation de Bannerlord indique 6 Go minimum / 8 Go recommandés pour la version vanilla,
+      mais TOR (The Old Realms) nécessite de manière fiable 16 Go ou plus — les batailles de siège atteignent un pic de
+      14 Go d'ensemble de travail, les zones de grande carte entre 10 et 12 Go. En dessous, vous subirez des problèmes de pagefile
+      et des plantages OOM de compilation de shaders qu'aucun Tune-Up ne peut corriger.
+
+      Crash Doctor ne peut pas améliorer le matériel. Cette carte vous indique simplement si votre
+      machine atteint le seuil requis.
   details:
     en:
       - "Source: Win32_PhysicalMemory + GlobalMemoryStatusEx."
@@ -71,3 +80,9 @@
       - "Eşik: 8 GB (orijinal) / 16 GB (TOR algılandı)."
       - "«Uygula» Microsoft'un RAM yükseltme belgelerini açar — Crash Doctor asla donanım kurmaz."
       - "Geri alınamaz (salt okunur)."
+
+    fr:
+      - "Source : Win32_PhysicalMemory + GlobalMemoryStatusEx."
+      - "Seuil : 8 Go (vanilla) / 16 Go (TOR détecté)."
+      - "Appliquer ouvre la documentation de mise à niveau de RAM de Microsoft — Crash Doctor n'installe jamais de matériel."
+      - "Non réversible (lecture seule)."

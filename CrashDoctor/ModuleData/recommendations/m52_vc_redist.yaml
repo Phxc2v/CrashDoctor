@@ -5,6 +5,7 @@
     zh: "检查 Visual C++ 2015-2022 x64 Redistributable"
     zht: "檢查 Visual C++ 2015-2022 x64 Redistributable"
     tr: "Visual C++ 2015-2022 x64 Redistributable kontrolü"
+    fr: "Vérification du redistribuable Visual C++ 2015-2022 x64"
   description:
     en: |
       Bannerlord ships native DLLs (TaleWorlds.Native.dll, FMOD, libcrypto) that link
@@ -49,6 +50,14 @@
 
       Kart yalnızca x64 redist eksik olduğunda veya 14.30'dan (Bannerlord 1.3.x'in
       derlendiği VS2022 temeli) eski olduğunda görünür.
+    fr: |
+      Bannerlord inclut des DLL natives (TaleWorlds.Native.dll, FMOD, libcrypto) qui lient
+      contre vcruntime140.dll et msvcp140.dll du runtime Visual C++ 2015-2022 x64. Si le système ne dispose que du redistribuable x86 ou aucun, le lanceur échoue à
+      charger TaleWorlds.MountAndBlade.dll avec BadImageFormatException — les joueurs pensent
+      qu'il s'agit d'un conflit de mod et commencent à désinstaller des éléments au hasard.
+
+      La carte n'apparaît que si le redistribuable x64 est manquant ou antérieur à la version 14.30 (la base VS2022
+      contre laquelle Bannerlord 1.3.x est compilé).
   details:
     en:
       - "Read-only. Apply opens https://aka.ms/vs/17/release/vc_redist.x64.exe in your browser."
@@ -75,3 +84,9 @@
       - "Crash Doctor kendisi asla yazılım indirmez veya kurmaz."
       - "Kaynak: HKLM\\SOFTWARE\\Microsoft\\VisualStudio\\14.0\\VC\\Runtimes\\x64."
       - "Geri alınamaz."
+
+    fr:
+      - "Lecture seule. Appliquer ouvre https://aka.ms/vs/17/release/vc_redist.x64.exe dans votre navigateur."
+      - "Crash Doctor ne télécharge ni n'installe aucun logiciel lui-même."
+      - "Source : HKLM\\\\SOFTWARE\\\\Microsoft\\\\VisualStudio\\\\14.0\\\\VC\\\\Runtimes\\\\x64."
+      - "Non réversible."

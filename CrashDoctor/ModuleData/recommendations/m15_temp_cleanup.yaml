@@ -5,6 +5,7 @@
     zh: "清理 %TEMP% 中的陈旧文件"
     zht: "清理 %TEMP% 中的陳舊檔案"
     tr: "%TEMP% içindeki eski dosyaları temizle"
+    fr: "Nettoyer les fichiers %TEMP% obsolètes"
   description:
     en: |
       Bannerlord's shader compiler and TaleWorlds.Native FMOD layer write intermediate
@@ -54,6 +55,10 @@
       dokunulur. Diğer uygulamalar açıkken çalıştırmak güvenlidir. Bannerlord kapalı
       olmalıdır (başlatıcının kendisi /Temp/RGL_*.tmp gölgelendirici geçici
       dosyalarının tutamaçlarını tutabilir).
+    fr: |
+      Le compilateur de shaders de Bannerlord et la couche FMOD TaleWorlds.Native écrivent des fichiers temporaires intermédiaires dans le dossier %TEMP% de l'utilisateur. Sur une installation de longue durée, %TEMP% atteint 5–20 Go et Windows commence à manquer d'espace temporaire — c'est là que les plantages OOM (manque de mémoire) lors de la compilation des shaders apparaissent aux moments les plus imprévisibles.
+
+      Suppression fichier par fichier uniquement : ignore les fichiers verrouillés par un autre processus (Steam, Edge, Office, OneDrive). Seuls les fichiers âgés de plus de 7 jours sont traités. Sûr à exécuter pendant que d'autres applications sont ouvertes. Bannerlord doit être fermé (le lanceur lui-même peut conserver des descripteurs sur les fichiers temporaires de shaders /Temp/RGL_*.tmp).
   details:
     en:
       - "Path: $env:TEMP (typically %LOCALAPPDATA%\\Temp)."
@@ -85,3 +90,10 @@
       - "Yalnızca 7 günden eski dosyalar silinir; daha yeni dosyalar etkin uygulamaların geçici verisidir."
       - "Mümkün olduğunda dosyalar Geri Dönüşüm Kutusu'na gider (Shell tarafından kilitli bazı öğeler doğrudan silinir)."
       - "Crash Doctor üzerinden geri alınamaz."
+
+    fr:
+      - "Chemin : $env:TEMP (généralement %LOCALAPPDATA%\\\\Temp)."
+      - "Seuil pour la carte 'NeedsAction' : total %TEMP% > 1 Go."
+      - "Seuls les fichiers âgés de plus de 7 jours sont supprimés ; les fichiers plus récents sont des temporaires d'applications actives."
+      - "Les fichiers vont vers la Corbeille dans la mesure du possible (certains éléments verrouillés par le Shell vont directement dans /dev/null)."
+      - "Non réversible depuis Crash Doctor."

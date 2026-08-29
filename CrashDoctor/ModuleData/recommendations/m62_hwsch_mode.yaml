@@ -5,6 +5,7 @@
     zh: "硬件加速GPU计划（HAGS）状态"
     zht: "硬體加速GPU排程（HAGS）狀態"
     tr: "Donanım Hızlandırmalı GPU Zamanlaması (HAGS) durumu"
+    fr: "État de l'ordonnancement GPU accéléré par le matériel (HAGS)"
   description:
     en: |
       HAGS is a Win10 2004+ / Win11 feature that hands GPU command-queue management
@@ -48,6 +49,15 @@
 
       Kart yalnızca HAGS AÇIK olduğunda ve TOR kurulu olduğunda görünür — riskli
       kombinasyon. Düz vanilla veya HAGS=Off kartı gizli bırakır.
+    fr: |
+      HAGS est une fonctionnalité de Win10 2004+ / Win11 qui délègue la gestion des files d'attente de commandes GPU
+      au pilote. Sur les pilotes récents (NVIDIA 535+, AMD Adrenalin 24.x), c'est
+      stable ; sur les anciens pilotes combinés à la lourde charge de compilation de shaders de TOR,
+      il provoque des cascades TDR / DXGI_ERROR_DEVICE_HUNG et des plantages OOM de shaders
+      pendant la phase "Build Shader Cache".
+
+      La carte n'apparaît que lorsque HAGS est activé et TOR installé — la combinaison risquée.
+      En configuration standard, ou avec HAGS=Off, la carte reste masquée.
   details:
     en:
       - "Source: HKLM\\SYSTEM\\CurrentControlSet\\Control\\GraphicsDrivers\\HwSchMode (1=Off, 2=On)."
@@ -79,3 +89,10 @@
       - "Geçiş YENİDEN BAŞLATMA gerektirir — bir sonraki açılışa kadar etkin olmaz."
       - "Crash Doctor kayıt defterine asla yazmaz — bu geçiş Windows'a aittir."
       - "Geri alınamaz (biz ona dokunmuyoruz)."
+
+    fr:
+      - "Source : HKLM\\\\SYSTEM\\\\CurrentControlSet\\\\Control\\\\GraphicsDrivers\\\\HwSchMode (1=Off, 2=On)."
+      - "Appliquer ouvre Paramètres → Système → Affichage → Graphiques → Paramètres graphiques par défaut."
+      - "La bascule nécessite un REDÉMARRAGE — le changement n'est effectif qu'au prochain démarrage."
+      - "Crash Doctor n'écrit jamais dans le registre — Windows gère cette bascule."
+      - "Non réversible (nous n'y touchons pas)."

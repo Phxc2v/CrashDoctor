@@ -5,6 +5,7 @@
     zh: "清理显卡厂商着色器缓存（NVIDIA / AMD / Intel）"
     zht: "清理顯示卡廠商著色器快取（NVIDIA / AMD / Intel）"
     tr: "Ekran kartı üretici gölgelendirici önbelleğini temizle (NVIDIA / AMD / Intel)"
+    fr: "Vider le cache de shaders du fournisseur GPU (NVIDIA / AMD / Intel)"
   description:
     en: |
       Complements M2.1 (which cleans Bannerlord's own shader cache). This module clears
@@ -59,6 +60,10 @@
       DXGI_ERROR_DEVICE_REMOVED durumuna yol açar — bir Bannerlord önbellek sorunuyla
       birebir aynı görünen ancak Bannerlord tarafını temizlemekle DÜZELMEYEN belirtiler.
       M2.1 işe yaramadıysa ve hâlâ device-removed çökmeleri görüyorsanız, bunu da deneyin.
+    fr: |
+      Complète M2.1 (qui nettoie le cache de shaders propre à Bannerlord). Ce module vide le cache de shaders propre au pilote GPU, situé dans `%LOCALAPPDATA%\NVIDIA\DXCache` (NVIDIA), `%LOCALAPPDATA%\AMD\DxCache` et `\AMD\DXC` (AMD), ou `%LOCALAPPDATA%\Intel\ShaderCache` (Intel).
+
+      Après une mise à jour du pilote ou un changement majeur de GPU, ces caches deviennent obsolètes et provoquent des échecs CreateShaderResourceView et DXGI_ERROR_DEVICE_REMOVED — des symptômes qui ressemblent exactement à un problème de cache Bannerlord mais NE sont PAS résolus en vidant le côté Bannerlord. Si M2.1 n'a pas aidé et que vous voyez toujours des plantages de type device-removed, essayez celui-ci aussi.
   details:
     en:
       - "Threshold for 'NeedsAction': vendor-cache symptom strings in recent crash logs OR cache > 2 GB."
@@ -85,3 +90,9 @@
       - "Dosyalar Geri Dönüşüm Kutusu'na gider ve geri yüklenebilir."
       - "Sistemdeki TÜM DirectX oyunlarını etkiler (yalnızca Bannerlord'u değil) — bir sonraki açılışta üretici önbelleklerini yeniden oluşturmak için birkaç saniye fazladan harcarlar. Kabul edilebilir bir ödünleşim."
       - "Crash Doctor'dan geri alınamaz."
+
+    fr:
+      - "Seuil pour 'NeedsAction' : chaînes de symptômes de cache fournisseur dans les journaux de plantage récents OU cache > 2 Go."
+      - "Les fichiers vont à la Corbeille et peuvent être restaurés."
+      - "Affecte TOUS les jeux DirectX sur le système (pas seulement Bannerlord) — ils passeront quelques secondes supplémentaires au prochain lancement à reconstruire leurs caches fournisseurs. Compromis acceptable."
+      - "Non réversible depuis Crash Doctor."

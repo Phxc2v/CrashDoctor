@@ -10,6 +10,7 @@
     zh: "无法加载某个必需模组的 DLL"
     zht: "無法載入某個必需模組的 DLL"
     tr: "Gerekli bir modül DLL'i yüklenemedi"
+    fr: "Un module DLL requis n'a pas pu être chargé"
   description:
     en: |
       Bannerlord could not load the DLL of one of the active modules. The mod is
@@ -29,6 +30,10 @@
       Bannerlord, etkin modüllerden birinin DLL'ini yükleyemedi. Modun ya
       dosyaları eksik, ya Windows tarafından engellenmiş ('blocked file' indirme
       sonrası), ya da farklı bir oyun sürümü için kurulmuş.
+    fr: |
+      Bannerlord n'a pas pu charger la DLL de l'un des modules actifs. Le mod
+      manque de fichiers, est bloqué par Windows (« fichier bloqué » au téléchargement), ou
+      est installé pour une version différente du jeu.
   fix:
     en:
       - "Check that the mod is installed in <Bannerlord>/Modules/<ModId>/, not nested."
@@ -50,6 +55,10 @@
       - "Modun <Bannerlord>/Modules/<ModId>/ içinde, iç içe olmadan kurulu olduğunu doğrulayın."
       - "Modun .dll dosyasına sağ tıklayın → Özellikler → Engellemeyi kaldır (görünüyorsa)."
       - "Modu mevcut Bannerlord sürümü için yeniden yükleyin."
+    fr:
+      - "Vérifiez que le mod est installé dans <Bannerlord>/Modules/<ModId>/, et non imbriqué."
+      - "Clic droit sur le .dll du mod → Propriétés → Débloquer (si affiché)."
+      - "Réinstallez le mod pour la version actuelle de Bannerlord."
   match:
     # Narrow on "module" so we don't false-positive on the engine's "Cannot load
     # font", "Couldn't load shader", "Couldn't load icon" which are unrelated
@@ -73,6 +82,7 @@
     zh: "BadImageFormatException — DLL 位数不匹配"
     zht: "BadImageFormatException — DLL 位數不相符"
     tr: "BadImageFormatException — DLL bit uyumsuzluğu"
+    fr: "BadImageFormatException — Incompatibilité de bitness de la DLL"
   description:
     en: |
       A mod's DLL was compiled for a different bitness or runtime than the game.
@@ -90,6 +100,9 @@
       Bir modun DLL'i oyundan farklı bir bit yapısı veya çalışma zamanı için
       derlenmiş. Neredeyse her zaman önceki bir Bannerlord sürümünü hedefleyen
       eski bir mod nedeniyledir.
+    fr: |
+      La DLL d'un mod a été compilée pour un bitness ou un runtime différent de celui du jeu.
+      Cela est presque toujours causé par un mod obsolète ciblant une version précédente de Bannerlord.
   fix:
     en:
       - "Update the mod to the version compatible with the current Bannerlord."
@@ -111,6 +124,10 @@
       - "Modu mevcut Bannerlord ile uyumlu sürüme güncelleyin."
       - "Modun NexusMods sayfasında gereken Bannerlord sürümünü kontrol edin."
       - "Güncelleme yoksa modu devre dışı bırakın."
+    fr:
+      - "Mettez à jour le mod vers la version compatible avec la version actuelle de Bannerlord."
+      - "Vérifiez la version de Bannerlord requise par le mod sur sa page NexusMods."
+      - "Désactivez le mod si aucune mise à jour n'est disponible."
   match:
     all:
       - log_line:
@@ -128,6 +145,7 @@
     zh: "模组依赖版本不匹配"
     zht: "模組相依版本不相符"
     tr: "Mod bağımlılık sürümü uyuşmazlığı"
+    fr: "Incompatibilité de version des dépendances du mod"
   description:
     en: |
       A mod requires another mod at a specific version, and the version installed
@@ -144,6 +162,9 @@
     tr: |
       Bir mod, başka bir modun belirli bir sürümünü gerektiriyor ama kurulu sürüm
       farklı. Başlatıcı bunu açılışta kırmızıyla işaretler.
+    fr: |
+      Un mod nécessite un autre mod à une version spécifique, et la version installée
+      diffère. Le lanceur signale ce conflit en rouge au démarrage.
   fix:
     en:
       - "Open the launcher and read which mod has the version conflict."
@@ -165,6 +186,10 @@
       - "Başlatıcıyı açın ve hangi modda sürüm çakışması olduğunu okuyun."
       - "Bağımlılığı gereken sürüme güncelleyin."
       - "Daha yeni sürüm uyumlu değilse, bağımlı modu eski sürüme düşürün."
+    fr:
+      - "Ouvrez le lanceur et lisez quel mod présente le conflit de version."
+      - "Mettez à jour la dépendance vers la version requise."
+      - "Si la version plus récente n'est pas compatible, rétrogradez le mod dépendant."
   match:
     any:
       - log_line:
@@ -184,6 +209,7 @@
     zh: "TypeLoadException — 类签名不匹配"
     zht: "TypeLoadException — 類別簽章不相符"
     tr: "TypeLoadException — sınıf imzası uyuşmazlığı"
+    fr: "TypeLoadException — Incompatibilité de signature de classe"
   description:
     en: |
       A mod tried to use a TaleWorlds type that has changed between game versions.
@@ -200,6 +226,9 @@
     tr: |
       Bir mod, oyun sürümleri arasında değişmiş bir TaleWorlds türünü kullanmaya
       çalıştı. Mod farklı bir Bannerlord sürümüne göre derlenmiş.
+    fr: |
+      Un mod a tenté d'utiliser un type TaleWorlds qui a changé entre les versions du jeu.
+      Le mod est compilé contre une version différente de Bannerlord.
   fix:
     en:
       - "Read the next stack frames after TypeLoadException — they name the offending mod."
@@ -216,6 +245,9 @@
     tr:
       - "TypeLoadException'dan sonraki yığın çerçevelerini okuyun — sorunlu modun adını verirler."
       - "Modu güncelleyin ya da Bannerlord'u hedef sürümüne düşürün."
+    fr:
+      - "Lisez les trames de pile suivantes après TypeLoadException — elles nomment le mod fautif."
+      - "Mettez à jour le mod ou rétrogradez Bannerlord vers sa version cible."
   # Defers to mod.api_version_mismatch (managed.yaml) whenever we captured the actual exception:
   # that card names the mod, the missing type and the target build instead of "read the frames".
   # A non-applicable matcher evaluates to false, so on log-only crashes this rule still fires.
@@ -239,6 +271,7 @@
     zh: "MissingMethodException — 模组已过时"
     zht: "MissingMethodException — 模組已過時"
     tr: "MissingMethodException — eski mod"
+    fr: "MissingMethodException — mod obsolète"
   description:
     en: |
       A mod called a TaleWorlds method that no longer exists. Same root cause as
@@ -255,6 +288,9 @@
     tr: |
       Bir mod, artık var olmayan bir TaleWorlds yöntemini çağırdı. Kök neden
       TypeLoadException ile aynı — mod eski bir Bannerlord'a göre derlenmiş.
+    fr: |
+      Un mod a appelé une méthode TaleWorlds qui n'existe plus. Même cause racine que
+      TypeLoadException — mod compilé contre une ancienne version de Bannerlord.
   fix:
     en:
       - "Read the next stack frames — they name the offending mod and method."
@@ -276,6 +312,10 @@
       - "Sonraki yığın çerçevelerini okuyun — sorunlu modu ve yöntemi adlandırırlar."
       - "Modu NexusMods'tan güncelleyin."
       - "Güncelleme yoksa modu devre dışı bırakın."
+    fr:
+      - "Lisez les trames de pile suivantes — elles nomment le mod fautif et la méthode."
+      - "Mettez à jour le mod depuis NexusMods."
+      - "Désactivez le mod s'il n'y a pas de mise à jour."
   # Same deferral as mod.type_load_exception above.
   match:
     all:
@@ -297,6 +337,7 @@
     zh: "游戏主 bin 文件夹中有多余的 0Harmony.dll"
     zht: "遊戲主 bin 資料夾中有多餘的 0Harmony.dll"
     tr: "Oyunun ana bin klasöründe fazladan 0Harmony.dll"
+    fr: "Fichier 0Harmony.dll erroné dans le dossier bin principal du jeu"
   description:
     en: |
       Cannot load: Bannerlord.Harmony.dll. A stray copy of 0Harmony.dll has
@@ -325,6 +366,12 @@
       (Modules/Bannerlord.Harmony/bin/... yerine). Yerel yükleyici önce o kopyayı
       alır ve sürüm denetiminde başarısız olur. Genelde elle Harmony kurulumu
       ya da Vortex dağıtım hatalarından sonra görülür.
+    fr: |
+      Impossible de charger : Bannerlord.Harmony.dll. Une copie isolée de 0Harmony.dll a
+      été placée dans <Bannerlord>/bin/Win64_Shipping_Client/ (au lieu de
+      Modules/Bannerlord.Harmony/bin/...). Le chargeur natif détecte cette
+      copie en premier et échoue au contrôle de version. Fréquent après des
+      installations manuelles de Harmony ou des bugs de déploiement avec Vortex.
   fix:
     en:
       - "Open <Bannerlord install>/bin/Win64_Shipping_Client/ in Explorer."
@@ -351,6 +398,11 @@
       - "Varsa 0Harmony.dll dosyasını silin (doğrusu Modules/Bannerlord.Harmony/bin/Win64_Shipping_Client/ altındadır)."
       - "Oyunu yeniden başlatın."
       - "Vortex kullanıyorsanız — Bannerlord.Harmony için elle kuruluma geçin."
+    fr:
+      - "Ouvrez <Bannerlord install>/bin/Win64_Shipping_Client/ dans l'Explorateur."
+      - "Supprimez 0Harmony.dll s'il est présent (la version légitime se trouve dans Modules/Bannerlord.Harmony/bin/Win64_Shipping_Client/)."
+      - "Relancez le jeu."
+      - "Si vous utilisez Vortex — passez en installation manuelle pour Bannerlord.Harmony."
   match:
     all:
       - log_line:
@@ -373,6 +425,7 @@
     zh: "BLSE 1.6.4 启动时 FormatException — 区域设置回归问题"
     zht: "BLSE 1.6.4 啟動時 FormatException — 區域設定回歸問題"
     tr: "BLSE 1.6.4 başlangıç FormatException — bölge ayarı gerilemesi"
+    fr: "BLSE 1.6.4 démarrage FormatException — régression de localisation"
   description:
     en: |
       FormatException inside TaleWorlds.GauntletUI.PrefabSystem.ConstantDefinition.GetValue_Patch2.
@@ -397,6 +450,11 @@
       FormatException. en-US dışı bölgelerde (Rusça, AB) bilinen bir BLSE 1.6.4
       gerilemesidir. Yamalı yöntem, bir sayıyı sistem kültürüne göre ayrıştırmaya
       çalışır ve patlar. BLSE'yi eski sürüme düşürmek çözer.
+    fr: |
+      FormatException dans TaleWorlds.GauntletUI.PrefabSystem.ConstantDefinition.GetValue_Patch2.
+      Régression connue de BLSE 1.6.4 avec les locales non en-US (russe, UE). La
+      méthode patchée tente d'analyser un nombre en utilisant la culture système et
+      effectue un dépassement par le bas. Résolu en rétrogradant BLSE.
   fix:
     en:
       - "Downgrade BLSE to 1.6.3 from butr.link/butrloader (the previous release)."
@@ -418,6 +476,10 @@
       - "BLSE'yi butr.link/butrloader üzerinden 1.6.3'e (önceki sürüm) düşürün."
       - "Ya da Windows bölgesini geçici olarak English (US) yapın — Sistem Ayarları → Saat ve Dil → Bölge → English."
       - "Düzeltmeli BLSE 1.6.5+ sürümünü bekleyin."
+    fr:
+      - "Rétrogradez BLSE en 1.6.3 depuis butr.link/butrloader (la version précédente)."
+      - "Ou modifiez temporairement la région Windows en anglais (US) — Paramètres système → Heure et langue → Région → Anglais."
+      - "Surveillez BLSE 1.6.5+ avec le correctif."
   match:
     all:
       - log_line:
@@ -440,6 +502,7 @@
     zh: "ButterLib 设置文件已损坏"
     zht: "ButterLib 設定檔案已損壞"
     tr: "ButterLib ayar dosyası bozuk"
+    fr: "Le fichier de paramètres de ButterLib est corrompu"
   description:
     en: |
       System.IO.StringReader..ctor inside ButterLib.Options.SettingsProvider.
@@ -463,6 +526,10 @@
       Kullanıcının ButterLib için ModSettings JSON dosyası bozulmuş (genelde
       başarısız bir mod kaldırma ya da yarım kaydetme sonrası). ButterLib
       yüklemede tamamen başarısız olur.
+    fr: |
+      System.IO.StringReader..ctor dans ButterLib.Options.SettingsProvider.
+      Le JSON par-mod ModSettings de l'utilisateur pour ButterLib a été corrompu (souvent
+      après une désinstallation de mod ratée ou une sauvegarde partielle). ButterLib échoue systématiquement au chargement.
   fix:
     en:
       - "Delete the folder Documents/Mount and Blade II Bannerlord/Configs/ModSettings/ButterLib/ ."
@@ -479,6 +546,9 @@
     tr:
       - "Documents/Mount and Blade II Bannerlord/Configs/ModSettings/ButterLib/ klasörünü silin."
       - "Oyunu başlatın — ButterLib varsayılanları yeniden oluşturur."
+    fr:
+      - "Supprimez le dossier Documents/Mount and Blade II Bannerlord/Configs/ModSettings/ButterLib/ ."
+      - "Lancez le jeu — ButterLib recréera les valeurs par défaut."
   match:
     all:
       - log_line:
@@ -498,6 +568,7 @@
     zh: "MCM 构建模组设置界面时崩溃（MCM 版本过旧）"
     zht: "MCM 建構模組設定介面時崩潰（MCM 版本過舊）"
     tr: "MCM bir modun ayarlar ekranını oluştururken çöküyor (eski MCM)"
+    fr: "Plantages MCM lors de la construction de l'écran des paramètres d'un mod (MCM obsolète)"
   description:
     en: |
       MCM.UI.Functionality.Injectors.PrefabInjector throws ArgumentNullException
@@ -519,6 +590,10 @@
       MCM.UI.Functionality.Injectors.PrefabInjector, 'fieldInfo' parametre adıyla
       ArgumentNullException fırlatır. MCM 4.0.7'ye (eski ModLib biçimli ayarlarda
       TypeInit zinciri) ve MCM 5.0.4 ön ayar yükleme gerilemesine özgüdür.
+    fr: |
+      MCM.UI.Functionality.Injectors.PrefabInjector lance ArgumentNullException
+      avec le nom de paramètre 'fieldInfo'. Spécifique à MCM 4.0.7 (chaîne TypeInit sur
+      des paramètres de forme ancienne ModLib) et régression de chargement de préréglage MCM 5.0.4.
   fix:
     en:
       - "Update MCM to 4.3.13 or 5.0.5+ from NexusMods."
@@ -540,6 +615,10 @@
       - "MCM'yi NexusMods'tan 4.3.13 veya 5.0.5+ sürümüne güncelleyin."
       - "Eski ModLib modlarıyla MCM 4.0.7 kullanıyorsanız — tüm ModLib biçimli ayarları kaldırın."
       - "MCM ile birlikte UIExtenderEx'i de güncelleyin (prefab hattını paylaşırlar)."
+    fr:
+      - "Mettez à jour MCM vers 4.3.13 ou 5.0.5+ depuis NexusMods."
+      - "Si vous utilisez MCM 4.0.7 avec des mods ModLib anciens — désinstallez tous les paramètres de forme ModLib."
+      - "Mettez à jour UIExtenderEx en même temps que MCM (ils partagent le pipeline de prefab)."
   match:
     all:
       - log_line:
@@ -562,6 +641,7 @@
     zh: "Harmony 补丁应用失败"
     zht: "Harmony 修補程式套用失敗"
     tr: "Harmony yaması uygulanamadı"
+    fr: "Le patch Harmony a échoué à s'appliquer"
   description:
     en: |
       A Harmony patch threw during apply. Two patches from different mods are
@@ -578,6 +658,9 @@
     tr: |
       Bir Harmony yaması uygulanırken hata fırlattı. Muhtemelen farklı modlardan
       gelen iki yama aynı yöntemi uyumsuz şekilde değiştiriyor.
+    fr: |
+      Un patch Harmony a planté lors de l'application. Deux patches de mods différents
+      touchent probablement la même méthode de manière incompatible.
   fix:
     en:
       - "Read the next lines after Harmony.PatchException — they name the patcher mod."
@@ -599,6 +682,10 @@
       - "Harmony.PatchException'dan sonraki satırları okuyun — yamayı uygulayan modu adlandırırlar."
       - "Yamayı uygulayan modu en son sürüme güncelleyin."
       - "Çakışmayı yerelleştirmek için modları tek tek devre dışı bırakın."
+    fr:
+      - "Lisez les lignes suivantes après Harmony.PatchException — elles indiquent le mod patcher."
+      - "Mettez à jour le mod patcher vers la dernière version."
+      - "Désactivez les mods un par un pour localiser le conflit."
   match:
     any:
       - log_line:
@@ -628,6 +715,7 @@
     zh: "某模组无法加载它所需的库（缺少必需的前置模组）"
     zht: "某模組無法載入它所需的程式庫（缺少必要的前置模組）"
     tr: "Bir mod ihtiyaç duyduğu kütüphaneyi yükleyemedi (eksik ön koşul modu)"
+    fr: "Un mod n'a pas pu charger une bibliothèque dont il a besoin (module de prérequis manquant)"
   description:
     en: |
       The .NET runtime could not find or load an assembly a mod asked for ("Could not load file or
@@ -667,6 +755,9 @@
       Bu bir KURULUM sorunudur; modun hatası ya da donanım arızası değildir. En sık eksik olanlar
       ortak ön koşul modlarıdır: ButterLib, MCM (Mod Configuration Menu), UIExtenderEx, Harmony
       veya BLSE.
+    fr: |
+      Le runtime .NET n'a pas pu trouver ou charger une assembly demandée par un mod (« Impossible de charger le fichier ou l'assembly »). Le code d'un mod réside dans un fichier DLL, et cette DLL indique les bibliothèques avec lesquelles elle a été compilée ; si l'une d'elles n'est pas installée, désactivée dans le lanceur, ou n'a jamais été extraite de l'archive, le mod ne peut pas être chargé et le jeu plante — généralement au démarrage, avant le menu principal, sans laisser de dossier de plantage ni de journal à consulter.
+      Ceci est un problème de CONFIGURATION, pas un bug du mod ni un défaut matériel. Les composants manquants habituels sont les modules de prérequis partagés : ButterLib, MCM (Mod Configuration Menu), UIExtenderEx, Harmony ou BLSE.
   fix:
     en:
       - "Read the assembly name in the message — that IS the answer. 'Bannerlord.ButterLib' means install ButterLib; 'MCMv5'/'MCMv4' means Mod Configuration Menu (MCM); 'Bannerlord.UIExtenderEx' means UIExtenderEx; '0Harmony' means Harmony; 'Bannerlord.BLSE…' means BLSE."
@@ -698,6 +789,12 @@
       - "Crash Doctor'da Modlar sekmesini aç: yüklenemeyen modlar kırmızı işaretlenir ve ihtiyaç duydukları dosya ya da kütüphane adıyla yazılır."
       - "Kütüphane modun kendi getirdiği bir dosyaysa arşivi yeniden çıkar — eksik çıkarılmış bir mod DLL'siz kalır. Sonra DLL'lerin engelini kaldır (Crash Doctor, Sistem İnce Ayar, «DLL engelini kaldır»), çünkü Windows indirilen dosyaları engeller."
       - "Oyunu yeniden KURMA ve gölgelendiricileri yeniden oluşturma — oyun dosyalarında bir sorun yok."
+    fr:
+      - "Lisez le nom de l'assembly dans le message — c'est LA réponse. 'Bannerlord.ButterLib' signifie installer ButterLib ; 'MCMv5'/'MCMv4' signifie Mod Configuration Menu (MCM) ; 'Bannerlord.UIExtenderEx' signifie UIExtenderEx ; '0Harmony' signifie Harmony ; 'Bannerlord.BLSE…' signifie BLSE."
+      - "Vérifiez que le module n'est pas seulement INSTALLÉ mais aussi COCHÉ dans le lanceur — une bibliothèque désactivée échoue exactement comme une bibliothèque manquante."
+      - "Ouvrez Crash Doctor, onglet Mods : les mods qui ne peuvent pas être chargés sont marqués en rouge avec le fichier ou la bibliothèque exacte dont ils ont besoin."
+      - "Si la bibliothèque est un fichier fourni par le mod lui-même, réextrait l'archive — un mod partiellement décompressé manque des DLL. Puis débloquez les DLL (Crash Doctor, Optimisation système, « Débloquer les DLL »), car Windows bloque les fichiers téléchargés."
+      - "NE réinstallez PAS le jeu et NE reconstruisez PAS les shaders — rien dans les fichiers du jeu n'est endommagé."
   match:
     all:
       - any:

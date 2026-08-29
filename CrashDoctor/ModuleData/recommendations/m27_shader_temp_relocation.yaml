@@ -5,6 +5,7 @@
     zh: "将 Windows TEMP 移到更大的磁盘"
     zht: "將 Windows TEMP 移到更大的磁碟"
     tr: "Windows TEMP'i daha büyük bir sürücüye taşı"
+    fr: "Déplacez le dossier TEMP de Windows vers un lecteur plus grand"
   description:
     en: |
       Windows TEMP (C:\Users\<you>\AppData\Local\Temp) lives on the system
@@ -130,6 +131,32 @@
       değildir.
 
       Geri alınabilir: Geri Al, önceki TMP/TEMP değerini geri yükler.
+    fr: |
+      Le dossier TEMP de Windows (C:\Users\<vous>\AppData\Local\Temp) se trouve sur le
+      disque système. Le compilateur de shaders de Bannerlord y écrit des fichiers
+      intermédiaires pendant la phase 'Build Shader Cache' et lors des recompilations
+      de shaders en cours d'exécution. Sur un disque système saturé, cette opération
+      echoue avec des erreurs d'espace disque insuffisant qui se manifestent par
+      des plantages 'pdb append failed' / 'debug info append failed' / OOM de
+      shaders — ils ressemblent à des bugs de shaders mais signifient en réalité
+      que le dossier TEMP est plein.
+
+      Cette carte s'affiche lorsque :
+        1. Le lecteur contenant %TEMP% a moins de 40 Go d'espace libre.
+        2. Un autre lecteur fixe dispose de plus de 100 Go d'espace libre (le plus grand est sélectionné automatiquement).
+
+      L'application effectuera :
+        1. La création de <BiggerDrive>:\Temp\<votre nom d'utilisateur>.
+        2. La mise à jour des variables d'environnement TMP et TEMP dans HKCU vers le nouveau chemin.
+           Modification uniquement pour l'utilisateur — le TEMP système (HKLM) n'est pas modifié,
+           aucun droit d'administration n'est requis.
+        3. L'ancien dossier %TEMP% est laissé tel quel (Windows le gère).
+
+      OBLIGATOIRE après l'application : DÉCONNEXION de Windows (ou redémarrage). La modification
+      ne prend effet que pour les nouvelles sessions de connexion. Bannerlord lancé dans la
+      session en cours conserve l'ancien TEMP — fermer Bannerlord seul ne suffit pas.
+
+      Réversible : Le rollback restaure la valeur précédente de TMP/TEMP.
   details:
     en:
       - "Source: HKCU\\Environment\\TEMP (or %USERPROFILE%\\AppData\\Local\\Temp if unset)"
@@ -166,3 +193,11 @@
       - "Geri alınabilir: Geri Al, önceki değeri geri yazar."
       - "Uygula'dan sonra: yeni TEMP'in geçerli olması için Windows oturum kapatma (ya da yeniden başlatma) gerekir."
       - "TEMP sürücüsünde 40+ GB boş alan olduğunda ya da başka hiçbir sürücüde 100+ GB boş alan olmadığında kart gizlenir."
+
+    fr:
+      - "Source : HKCU\\\\Environment\\\\TEMP (ou %USERPROFILE%\\\\AppData\\\\Local\\\\Temp si non défini)"
+      - "Cible : <BigDrive>:\\\\Temp\\\\<nom d'utilisateur>"
+      - "Utilisateur uniquement : HKLM (TEMP système) n'est pas modifié. Aucun droit d'administration requis."
+      - "Réversible : Le rollback réécrit la valeur précédente."
+      - "Après l'application : La déconnexion de Windows (ou un redémarrage) est nécessaire pour que le nouveau TEMP prenne effet."
+      - "La carte se masque lorsque le lecteur TEMP dispose de 40+ Go d'espace libre, ou qu'aucun autre lecteur n'a 100+ Go d'espace libre."

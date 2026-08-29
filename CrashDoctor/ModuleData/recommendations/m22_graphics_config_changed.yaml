@@ -5,6 +5,7 @@
     zh: "图形设置已更改 — 下次启动前请清理着色器缓存"
     zht: "圖形設定已變更 — 下次啟動前請清理著色器快取"
     tr: "Grafik ayarları değişti — bir sonraki açılıştan önce gölgelendirici önbelleğini temizle"
+    fr: "Paramètres graphiques modifiés — videz le cache de shaders avant le prochain lancement"
   description:
     en: |
       Auto-detector for the user-driven case: you opened in-game Options → Graphics,
@@ -119,6 +120,29 @@
       İlk çalıştırma notu: henüz bir anlık görüntü yoksa, Crash Doctor temel değeri sessizce
       kaydeder ve Healthy kalır. Kart yalnızca grafik anahtarları oturumlar arasında gerçekten
       değiştiğinde tetiklenir.
+    fr: |
+      Détecteur automatique pour le cas déclenché par l'utilisateur : vous avez ouvert les Options du jeu → Graphismes,
+      abaissé la qualité des textures / shaders / ombres / terrain (ou toute autre option graphique),
+      enregistré, puis quitté. Les nouvelles valeurs sont désormais dans engine_config.txt, mais le cache
+      précompilé des shaders est toujours celui construit avec les ANCIENNES valeurs. Au prochain lancement,
+      il tentera de le charger, rencontrera une incompatibilité, et plantera sur l'écran de présentation du soldat impérial —
+      même type de plantage que ceux que les utilisateurs ont signalés après notre conseil « baisser la qualité des textures ».
+
+      Crash Doctor enregistre un instantané des paramètres graphiques pertinents dans son dossier d'état
+      à chaque exécution. Lorsque cet instantané diverge des valeurs actuelles de engine_config, cette
+      carte apparaît avec un correctif en un seul clic : vider le cache des shaders + synchroniser
+      l'instantané. Appliquez ceci AVANT de redémarrer et de reconstruire le cache depuis
+      le menu principal.
+
+      SÉQUENCE OBLIGATOIRE après Application (ignorer → plantage sur l'écran de présentation) :
+        1. REDÉMARRER le PC.
+        2. Lancer Bannerlord.
+        3. Menu principal → « Build Shader Cache » → attendre 20 à 60 minutes.
+        4. Ne fermez pas le jeu pendant la compilation, n'ouvrez pas Chrome / Discord.
+
+      Note pour la première exécution : si aucun instantané n'existe encore, Crash Doctor enregistre la valeur de référence
+      silencieusement et reste en état « Healthy ». La carte ne se déclenche que lorsque les paramètres graphiques changent réellement
+      entre les sessions.
   details:
     en:
       - "Snapshot file: <Documents>/Mount and Blade II Bannerlord/CrashDoctor/state/engine_config_snapshot.txt"
@@ -150,3 +174,10 @@
       - "Uygula'dan sonra anlık görüntü mevcut değerlere güncellenir — bir sonraki Detect Healthy döner."
       - "İzlenen anahtarlar: texture / shader / terrain / shadow / particle / postfx / DLSS / antialiasing / çözünürlük. Ses, fare, gamma anahtarları İZLENMEZ."
       - "Geri alınamaz: gölgelendirici önbelleği gerçekten geri lazımsa Geri Dönüşüm Kutusu'nda; aksi halde oyun onu yeniden oluşturur."
+
+    fr:
+      - "Fichier d'instantané : <Documents>/Mount and Blade II Bannerlord/CrashDoctor/state/engine_config_snapshot.txt"
+      - "Appliquer l'effacement : ProgramData/Shaders + jeu/Shaders/D3D11/compressed_shaders_cache.sack + fichiers .sack par module (tout vers la Corbeille)."
+      - "L'instantané est mis à jour avec les valeurs actuelles après l'application — la prochaine détection retourne « Sain »."
+      - "Clés suivies : texture / shader / terrain / ombre / particule / postfx / DLSS / antialiasing / résolution. Les clés son, souris, gamma ne sont PAS suivies."
+      - "Action irréversible : le cache de shaders est dans la Corbeille si vous en avez absolument besoin ; sinon, le jeu le reconstruit simplement."

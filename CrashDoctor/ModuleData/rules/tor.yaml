@@ -10,12 +10,14 @@
     zh: "启用了 TOR 但缺少 Bannerlord.Harmony"
     zht: "啟用了 TOR 但缺少 Bannerlord.Harmony"
     tr: "TOR etkin ama Bannerlord.Harmony yok"
+    fr: "TOR est activé sans Bannerlord.Harmony"
   description:
     en: "The Old Realms requires Harmony to load. Without it the game crashes during module init."
     ru: "The Old Realms требует Harmony для загрузки. Без него игра падает на старте инициализации модов."
     zh: "The Old Realms 需要 Harmony 才能加载。缺少它，游戏会在模块初始化时崩溃。"
     zht: "The Old Realms 需要 Harmony 才能載入。缺少它，遊戲會在模組初始化時崩潰。"
     tr: "The Old Realms yüklenmek için Harmony gerektirir. Olmadan oyun, modül başlatılırken çöker."
+    fr: "The Old Realms nécessite Harmony pour se charger. Sans lui, le jeu plante lors de l'initialisation du module."
   fix:
     en:
       - "Install Bannerlord.Harmony from NexusMods (mod 2006)."
@@ -32,6 +34,9 @@
     tr:
       - "NexusMods'tan Bannerlord.Harmony'yi kur (mod 2006)."
       - "Başlatıcıdaki yükleme sırasında onu TOR_Core'un ÜSTÜNE koy."
+    fr:
+      - "Installez Bannerlord.Harmony depuis NexusMods (mod 2006)."
+      - "Placez-le AU-DESSUS de TOR_Core dans l'ordre de chargement du lanceur."
   match:
     all:
       - module_list: { id: "TOR_Core", has: "true" }
@@ -49,12 +54,14 @@
     zh: "启用了 TOR 子模块，但没有 TOR_Core"
     zht: "啟用了 TOR 子模組，但沒有 TOR_Core"
     tr: "TOR alt modülü etkin ama TOR_Core yok"
+    fr: "Sous-module TOR activé sans TOR_Core"
   description:
     en: "TOR_Armory or TOR_Environment are enabled but TOR_Core is missing. They will fail to load anything."
     ru: "TOR_Armory или TOR_Environment активны, но TOR_Core отсутствует. Они не смогут загрузиться."
     zh: "启用了 TOR_Armory 或 TOR_Environment，但缺少 TOR_Core。它们将无法加载任何内容。"
     zht: "啟用了 TOR_Armory 或 TOR_Environment，但缺少 TOR_Core。它們將無法載入任何內容。"
     tr: "TOR_Armory veya TOR_Environment etkin ama TOR_Core eksik. Hiçbir şey yükleyemezler."
+    fr: "TOR_Armory ou TOR_Environment sont activés mais TOR_Core est manquant. Ils ne parviendront à charger aucun contenu."
   fix:
     en:
       - "Enable TOR_Core in the launcher and place it ABOVE TOR_Armory and TOR_Environment."
@@ -66,6 +73,8 @@
       - "在啟動器中啟用 TOR_Core，並把它放在 TOR_Armory 和 TOR_Environment 上面。"
     tr:
       - "Başlatıcıda TOR_Core'u etkinleştir ve onu TOR_Armory ile TOR_Environment'ın ÜSTÜNE koy."
+    fr:
+      - "Activez TOR_Core dans le lanceur et placez-le AU-DESSUS de TOR_Armory et TOR_Environment."
   match:
     all:
       - any:
@@ -89,12 +98,14 @@
     zh: "TOR CareerPerkMissionBehavior 空引用"
     zht: "TOR CareerPerkMissionBehavior 空引用"
     tr: "TOR CareerPerkMissionBehavior boş referans"
+    fr: "Référence nulle CareerPerkMissionBehavior dans TOR"
   description:
     en: "Known TOR bug — CareerPerkMissionBehavior.OnAgentRemoved hits a null when certain career perks fire on an already-dead agent."
     ru: "Известный баг TOR — CareerPerkMissionBehavior.OnAgentRemoved падает на null, когда определённые карьерные перки срабатывают на уже мёртвом агенте."
     zh: "已知的 TOR 缺陷——当某些职业天赋在已经死亡的单位上触发时，CareerPerkMissionBehavior.OnAgentRemoved 会遇到空值。"
     zht: "已知的 TOR 缺陷——當某些職業天賦在已經死亡的單位上觸發時，CareerPerkMissionBehavior.OnAgentRemoved 會遇到空值。"
     tr: "Bilinen bir TOR hatası — bazı kariyer yetenekleri zaten ölmüş bir birim üzerinde tetiklendiğinde CareerPerkMissionBehavior.OnAgentRemoved boş değere takılır."
+    fr: "Bug connu de TOR — CareerPerkMissionBehavior.OnAgentRemoved rencontre une référence nulle lorsque certains avantages de carrière s'activent sur un agent déjà mort."
   fix:
     en:
       - "Update TOR_Core to the latest version on NexusMods."
@@ -111,6 +122,9 @@
     tr:
       - "NexusMods'ta TOR_Core'u en son sürüme güncelle."
       - "Tekrarlanabiliyorsa: onu tetikleyen belirli kariyer yeteneğini kullanma (bkz. TOR Discord #bug-reports)."
+    fr:
+      - "Mettez à jour TOR_Core vers la dernière version sur NexusMods."
+      - "Si reproductible : évitez l'avantage de carrière spécifique qui le déclenche (voir #bug-reports sur le Discord de TOR)."
   match:
     any:
       - log_line: { contains: "CareerPerkMissionBehavior.OnAgentRemoved" }
@@ -128,12 +142,14 @@
     zh: "TOR GraveyardNightWatchPartyComponent 空引用"
     zht: "TOR GraveyardNightWatchPartyComponent 空引用"
     tr: "TOR GraveyardNightWatchPartyComponent boş referans"
+    fr: "Référence nulle GraveyardNightWatchPartyComponent dans TOR"
   description:
     en: "Known TOR bug in the RaiseDead campaign mechanic — the night-watch party loses its name reference."
     ru: "Известный баг TOR в кампанийной механике RaiseDead — ночная стража теряет ссылку на имя."
     zh: "TOR 的 RaiseDead 战役机制中的已知缺陷——守夜队伍丢失了它的名称引用。"
     zht: "TOR 的 RaiseDead 戰役機制中的已知缺陷——守夜隊伍遺失了它的名稱引用。"
     tr: "TOR'un RaiseDead sefer mekaniğindeki bilinen bir hata — gece nöbeti grubu isim referansını kaybeder."
+    fr: "Bug connu de TOR dans la mécanique de campagne RaiseDead — le groupe de garde de nuit perd sa référence de nom."
   fix:
     en:
       - "Update TOR_Core to the latest version."
@@ -150,6 +166,9 @@
     tr:
       - "TOR_Core'u en son sürüme güncelle."
       - "Tekrarlanabiliyorsa: düzeltme gelene kadar etkilenen yerleşimin yakınında ölü diriltme."
+    fr:
+      - "Mettez à jour TOR_Core vers la dernière version."
+      - "Si reproductible : évitez de faire ressusciter des morts-vivants près de la colonie concernée jusqu'à ce que le correctif soit disponible."
   match:
     all:
       - log_line: { contains: "GraveyardNightWatchPartyComponent" }
@@ -166,12 +185,14 @@
     zh: "TOR 伤害模型空引用"
     zht: "TOR 傷害模型空引用"
     tr: "TOR hasar modeli boş referans"
+    fr: "Référence nulle du modèle de dégâts TOR"
   description:
     en: "TORagentApplyDamageModel.CalculateDamage hit a null. Combat-only crash."
     ru: "TORagentApplyDamageModel.CalculateDamage упал на null. Краш только в бою."
     zh: "TORagentApplyDamageModel.CalculateDamage 遇到空值。仅在战斗中崩溃。"
     zht: "TORagentApplyDamageModel.CalculateDamage 遇到空值。僅在戰鬥中崩潰。"
     tr: "TORagentApplyDamageModel.CalculateDamage boş değere takıldı. Yalnızca savaşta çökme."
+    fr: "TORagentApplyDamageModel.CalculateDamage a rencontré une référence nulle. Plantage uniquement en combat."
   fix:
     en:
       - "Update TOR_Core."
@@ -188,6 +209,9 @@
     tr:
       - "TOR_Core'u güncelle."
       - "Savaşı değiştiren modları devre dışı bırak (RBM Combat, Bannerlord Combat Overhaul) — TOR hasarıyla çakışıyorlar."
+    fr:
+      - "Mettez à jour TOR_Core."
+      - "Désactivez les mods modifiant le combat (RBM Combat, Bannerlord Combat Overhaul) — ils entrent en conflit avec le système de dégâts de TOR."
   match:
     all:
       - log_line: { contains: "TORagentApplyDamageModel" }
@@ -204,12 +228,14 @@
     zh: "TOR DLL 被 Windows / 杀毒软件阻止"
     zht: "TOR DLL 被 Windows / 防毒軟體阻止"
     tr: "TOR DLL'i Windows / antivirüs tarafından engellendi"
+    fr: "DLL de TOR bloquée par Windows / antivirus"
   description:
     en: "Cannot load TOR_Core.dll — Windows marks downloads from the Internet as 'blocked' until you unblock them, or your antivirus quarantined it."
     ru: "Не загружается TOR_Core.dll — Windows помечает скачанные файлы как 'blocked' пока их не разблокировать; или антивирус посадил DLL в карантин."
     zh: "无法加载 TOR_Core.dll——Windows 会把从网上下载的文件标记为“已阻止”，直到你解除阻止；或者杀毒软件把它隔离了。"
     zht: "無法載入 TOR_Core.dll——Windows 會把從網上下載的檔案標記為「已阻止」，直到你解除阻止；或者防毒軟體把它隔離了。"
     tr: "TOR_Core.dll yüklenemiyor — Windows, internetten indirilen dosyaları sen engeli kaldırana kadar 'engellenmiş' olarak işaretler veya antivirüsün onu karantinaya aldı."
+    fr: "Impossible de charger TOR_Core.dll — Windows marque les téléchargements provenant d'Internet comme 'bloqués' jusqu'à ce que vous les débloquiez, ou votre antivirus les a mis en quarantaine."
   fix:
     en:
       - "Modules/TOR_Core/bin/Win64_Shipping_Client/TOR_Core.dll → right click → Properties → check 'Unblock' → OK. Repeat for the other TOR DLLs."
@@ -231,6 +257,10 @@
       - "Modules/TOR_Core/bin/Win64_Shipping_Client/TOR_Core.dll → sağ tık → Özellikler → 'Engellemeyi kaldır'ı işaretle → Tamam. Diğer TOR DLL'leri için tekrarla."
       - "Modules/TOR_Core klasörünü antivirüs istisnalarına ekle."
       - "DLL'ler tamamen eksikse modu NexusMods'tan yeniden indir."
+    fr:
+      - "Modules/TOR_Core/bin/Win64_Shipping_Client/TOR_Core.dll → clic droit → Propriétés → cochez 'Débloquer' → OK. Répétez l'opération pour les autres DLL de TOR."
+      - "Ajoutez le dossier Modules/TOR_Core aux exclusions de votre antivirus."
+      - "Téléchargez à nouveau le mod depuis NexusMods si ses DLL sont entièrement manquantes."
   match:
     all:
       - log_line: { contains: "TOR_Core" }
@@ -251,12 +281,14 @@
     zh: "TOR GPU 纹理数组分配失败"
     zht: "TOR GPU 紋理陣列分配失敗"
     tr: "TOR GPU doku dizisi tahsisi başarısız"
+    fr: "Échec de l'allocation du tableau de textures GPU pour TOR"
   description:
     en: "rglGPU_device::create_texture_array failed. TOR loads many high-res textures at once; on a low-VRAM GPU the call returns an error and the game crashes."
     ru: "rglGPU_device::create_texture_array упал. TOR подгружает много текстур разом; на видеокарте с малым VRAM вызов возвращает ошибку и игра крашится."
     zh: "rglGPU_device::create_texture_array 失败。TOR 会一次性加载许多高分辨率纹理；在显存较小的显卡上，该调用返回错误，游戏崩溃。"
     zht: "rglGPU_device::create_texture_array 失敗。TOR 會一次性載入許多高解析度紋理；在顯示記憶體較小的顯示卡上，該呼叫返回錯誤，遊戲崩潰。"
     tr: "rglGPU_device::create_texture_array başarısız oldu. TOR aynı anda birçok yüksek çözünürlüklü doku yükler; düşük VRAM'li bir ekran kartında çağrı hata döndürür ve oyun çöker."
+    fr: "Échec de rglGPU_device::create_texture_array. TOR charge de nombreuses textures haute résolution en une fois ; sur un GPU avec peu de VRAM, l'appel renvoie une erreur et le jeu plante."
   fix:
     en:
       - "In-game: Options → Graphics → set Texture Quality to Low and Texture Budget to 1."
@@ -278,6 +310,10 @@
       - "Oyun içi: Seçenekler → Grafikler → Texture Quality'yi Low, Texture Budget'ı 1 yap."
       - "Oyunu yeniden başlat; hâlâ çöküyorsa — TOR_Environment'ı geçici olarak devre dışı bırak."
       - "Ayrı bir ekran kartın varsa, oyunun onun üzerinde çalıştığından emin ol (bkz. gpu.amd_integrated_default)."
+    fr:
+      - "En jeu : Options → Graphismes → définissez la Qualité des textures sur Faible et le Budget des textures sur 1."
+      - "Redémarrez le jeu ; s'il plante toujours — désactivez TOR_Environment temporairement."
+      - "Si vous avez un GPU dédié, assurez-vous que le jeu s'exécute dessus (voir gpu.amd_integrated_default)."
   match:
     all:
       - log_line: { contains: "rglGPU_device::create_texture_array" }
@@ -295,12 +331,14 @@
     zh: "TOR 技能类型错误"
     zht: "TOR 技能類型錯誤"
     tr: "TOR yeteneği yanlış türde"
+    fr: "Capacité TOR de type incorrect"
   description:
     en: "An ability XML doesn't inherit from BaseAbility. The mod has a malformed ability definition."
     ru: "XML абилки не наследует BaseAbility. У мода битое определение."
     zh: "某个技能 XML 没有继承 BaseAbility。该模组的技能定义有错误。"
     zht: "某個技能 XML 沒有繼承 BaseAbility。該模組的技能定義有錯誤。"
     tr: "Bir yetenek XML'i BaseAbility'den türemiyor. Modda hatalı biçimlendirilmiş bir yetenek tanımı var."
+    fr: "Un XML de capacité n'hérite pas de BaseAbility. Le mod contient une définition de capacité malformée."
   fix:
     en:
       - "Update TOR or the affected ability mod."
@@ -317,6 +355,9 @@
     tr:
       - "TOR'u veya bu yeteneği sağlayan modu güncelle."
       - "Yeteneği kendin yazdıysan — XML'ini BaseAbility'den türeyecek şekilde düzelt."
+    fr:
+      - "Mettez à jour TOR ou le mod de capacité concerné."
+      - "Si vous avez créé une capacité personnalisée — corrigez son XML pour qu'il hérite de BaseAbility."
   match:
     all:
       - log_line: { contains: "wasn't of type BaseAbility" }
@@ -333,12 +374,14 @@
     zh: "TOR 触发脚本未能生成"
     zht: "TOR 觸發指令稿未能生成"
     tr: "TOR tetiklenen betiği oluşturulamadı"
+    fr: "Le script déclenché par TOR a échoué à se générer"
   description:
     en: "TOR_Core.BattleMechanics.TriggeredEffect.Scripts could not spawn a script — usually missing asset or version mismatch."
     ru: "TOR_Core.BattleMechanics.TriggeredEffect.Scripts не смог запустить скрипт — обычно нет ассета или несовпадение версий."
     zh: "TOR_Core.BattleMechanics.TriggeredEffect.Scripts 无法生成脚本——通常是资源缺失或版本不匹配。"
     zht: "TOR_Core.BattleMechanics.TriggeredEffect.Scripts 無法生成指令稿——通常是資源缺失或版本不匹配。"
     tr: "TOR_Core.BattleMechanics.TriggeredEffect.Scripts bir betik oluşturamadı — genellikle eksik varlık veya sürüm uyuşmazlığı."
+    fr: "TOR_Core.BattleMechanics.TriggeredEffect.Scripts n'a pas pu générer un script — généralement un actif manquant ou une incompatibilité de version."
   fix:
     en:
       - "Update TOR_Core."
@@ -355,6 +398,9 @@
     tr:
       - "TOR_Core'u güncelle."
       - "Steam → Dosya bütünlüğünü doğrula (varlık kaybı ihtimaline karşı)."
+    fr:
+      - "Mettez à jour TOR_Core."
+      - "Steam → Vérifier l'intégrité (en cas de perte d'actifs)."
   match:
     all:
       - log_line: { contains: "Tried to spawn TriggeredScript" }
@@ -371,12 +417,14 @@
     zh: "TOR 单位骨骼上的空粒子"
     zht: "TOR 單位骨骼上的空粒子"
     tr: "TOR birim kemiğinde boş parçacık"
+    fr: "Particule nulle TOR sur l'os de l'agent"
   description:
     en: "Particle ID is empty — usually only a visual glitch, but spam in the log can hide other problems."
     ru: "Particle ID пустой — обычно это просто визуальный баг, но спам в логе может прятать другие проблемы."
     zh: "粒子 ID 为空——通常只是视觉小问题，但日志里大量刷屏可能掩盖其他问题。"
     zht: "粒子 ID 為空——通常只是視覺小問題，但日誌裡大量洗版可能掩蓋其他問題。"
     tr: "Parçacık kimliği boş — genellikle yalnızca görsel bir aksaklık, ama günlükteki spam başka sorunları gizleyebilir."
+    fr: "L'ID de la particule est vide — généralement un simple bug visuel, mais les répétitions dans le journal peuvent masquer d'autres problèmes."
   fix:
     en:
       - "Update TOR_Core."
@@ -393,6 +441,9 @@
     tr:
       - "TOR_Core'u güncelle."
       - "Bir çökmeyle birlikte gelmediği sürece genellikle görmezden gelmek güvenlidir."
+    fr:
+      - "Mettez à jour TOR_Core."
+      - "Souvent sûr d'ignorer sauf si cela accompagne un plantage."
   match:
     all:
       - log_line: { contains: "Attempted to apply a null particle to agent bone" }
@@ -409,12 +460,14 @@
     zh: "TOR 无法在 Microsoft Store / Game Pass 版本上运行"
     zht: "TOR 無法在 Microsoft Store / Game Pass 版本上執行"
     tr: "TOR, Microsoft Store / Game Pass üzerinde çalışmaz"
+    fr: "TOR ne fonctionne pas sur Microsoft Store / Game Pass"
   description:
     en: "TOR is built for the Steam version. The MS Store / Game Pass build of Bannerlord uses different binaries."
     ru: "TOR собран под Steam-версию. Версия Microsoft Store / Game Pass использует другие бинарники."
     zh: "TOR 是为 Steam 版本构建的。Bannerlord 的 MS Store / Game Pass 版本使用不同的二进制文件。"
     zht: "TOR 是為 Steam 版本建置的。Bannerlord 的 MS Store / Game Pass 版本使用不同的二進位檔案。"
     tr: "TOR, Steam sürümü için yapılmıştır. Bannerlord'un MS Store / Game Pass sürümü farklı ikili dosyalar kullanır."
+    fr: "TOR est conçu pour la version Steam. La version MS Store / Game Pass de Bannerlord utilise des binaires différents."
   fix:
     en:
       - "Buy Bannerlord on Steam to play TOR."
@@ -431,6 +484,9 @@
     tr:
       - "TOR oynamak için Bannerlord'u Steam'den satın al."
       - "MS Store sürümü için bir çözüm yok — TaleWorlds ve TOR onu desteklemiyor."
+    fr:
+      - "Achetez Bannerlord sur Steam pour jouer avec TOR."
+      - "Il n'y a pas de correctif pour la version MS Store — TaleWorlds et TOR ne la supportent pas."
   match:
     any:
       - log_line: { contains: "gaming.desktop.x64_shipping_client" }
@@ -453,6 +509,7 @@
     zh: "TOR 同化崩溃 — IndexOutOfRange（Hunger Woods / 绑定怨灵 / 定居点势力转换）"
     zht: "TOR 同化崩潰 — IndexOutOfRange（Hunger Woods / 綁定怨靈 / 定居點勢力轉換）"
     tr: "TOR Asimilasyon çökmesi — IndexOutOfRange (Hunger Woods / hayalet bağlama / yerleşim geçişi)"
+    fr: "Plantage d'assimilation TOR — IndexOutOfRange (Hunger Woods / wraith bind / transition de colonie)"
   description:
     en: |
       AssimilationCampaignBehavior throws System.IndexOutOfRangeException /
@@ -497,6 +554,16 @@
         - Geç oyun yerleşim hizip geçişi; burada kültür dizesi listesinde yeni
           hizip için bir kayıt yoktur.
       İkisi de aynı çökme imzasıyla biter; durumuna uyan Nexus yamasını seç.
+    fr: |
+      AssimilationCampaignBehavior lance System.IndexOutOfRangeException /
+      ArgumentOutOfRangeException. Deux déclencheurs connus partagent le même chemin de code :
+        - "invoquer des spectres" / "lier des spectres" dans les Forêts de la Faim (toute assimilation d'armée vampire
+          où l'index du roster des compagnons sort des limites),
+          via TroopRoster.AddToCountsAtIndex → SwapTroopsIfNeeded.
+        - Transition de faction de colonie en fin de jeu, où la liste de chaînes de culture
+          n'a pas d'entrée pour la nouvelle faction.
+      Les deux se terminent par la même signature de plantage ; choisissez le correctif Nexus correspondant
+      à votre situation.
   fix:
     en:
       - "Install TOR Assimilation Crash Fix from NexusMods (mod 8872) — patches SwapTroopsIfNeeded directly. Covers the Hunger Woods / wraith-bind path."
@@ -523,6 +590,11 @@
       - "Ya da TOR Assimilation Fix'i kur (NexusMods mod #5512) — kültür indeksi aramasını, kayıt bulunamazsa kaynak kültüre dönecek şekilde yamalar. Yerleşim geçişi yolunu kapsar."
       - "Kurana kadar: 'hayalet çağır' / 'hayalet bağla' yapma; vampir orduları + yoldaşlarla Hunger Woods'a gitme."
       - "Kayıt yüklenirken tekrarlanabiliyorsa — ilk hayalet bağlamadan ya da yerleşim el değiştirmeden önceki bir kayda dön."
+    fr:
+      - "Installez le correctif de plantage TOR Assimilation de NexusMods (mod 8872) — corrige SwapTroopsIfNeeded directement. Couvre le chemin Forêts de la Faim / liaison spectre."
+      - "Ou installez le correctif TOR Assimilation de NexusMods (mod #5512) — corrige la recherche d'index de culture pour revenir à la culture source. Couvre le chemin de transition de colonie."
+      - "Jusqu'à installation : évitez 'invoquer des spectres' / 'lier des spectres' ; ne visitez pas les Forêts de la Faim avec des armées vampires + des compagnons."
+      - "Si le problème est reproductible au chargement d'une sauvegarde — restaurez une sauvegarde avant le premier lien avec un spectre ou avant que la colonie n'ait changé de mains."
   match:
     all:
       - log_line:
@@ -547,6 +619,7 @@
     zh: "TOR + Improved Garrisons — PartySizeLimitModel 空引用 / 静默丢失加成"
     zht: "TOR + Improved Garrisons — PartySizeLimitModel 空引用 / 靜默遺失加成"
     tr: "TOR + Improved Garrisons — PartySizeLimitModel boş referans / sessizce bonus kaybı"
+    fr: "TOR + Improved Garrisons — PartySizeLimitModel NRE / perte silencieuse des bonus"
   description:
     en: |
       NullReferenceException in PartySizeLimitModel.GetPartyMemberSizeLimit. The
@@ -574,6 +647,8 @@
       modelini değiştirir ve birbirinin üzerine yazar. Ya tick sırasında çökme
       olur ya da tüm TOR grup boyutu bonusları sessizce kaybolur (Skirmisher /
       Knight tarikat yetenekleri).
+    fr: |
+      NullReferenceException dans PartySizeLimitModel.GetPartyMemberSizeLimit. L'interaction bien connue entre TOR et Improved Garrisons : les deux mods remplacent le modèle de taille de groupe et entrent en conflit. Plantage au tick ou perte silencieuse de tous les bonus de taille de groupe TOR (avantages des ordres Skirmisher / Knight).
   fix:
     en:
       - "Install TOR-IG Party Size Fix from NexusMods (mod 8884)."
@@ -590,6 +665,9 @@
     tr:
       - "NexusMods'tan TOR-IG Party Size Fix'i kur (mod 8884)."
       - "Alternatif: Improved Garrisons'ı devre dışı bırak (TOR'un kendi garnizon dengesi var)."
+    fr:
+      - "Installez TOR-IG Party Size Fix depuis NexusMods (mod 8884)."
+      - "Alternative : désactivez Improved Garrisons (TOR dispose de son propre équilibrage des garnisons)."
   match:
     all:
       - log_line:
@@ -612,6 +690,7 @@
     zh: "TOR + Distinguished Service — 战斗结算时 InvalidCast"
     zht: "TOR + Distinguished Service — 戰鬥結算時 InvalidCast"
     tr: "TOR + Distinguished Service — savaş sonucunda InvalidCast"
+    fr: "TOR + Distinguished Service — InvalidCast sur les résultats de bataille"
   description:
     en: |
       InvalidCastException inside DSBattleLogic.ShowBattleResults — Distinguished
@@ -633,6 +712,10 @@
       DSBattleLogic.ShowBattleResults içinde InvalidCastException — Distinguished
       Service, TOR ile genişletilmiş bir PartyBase'i orijinal türüne dönüştürür
       ve başarısız olur. Savaş sonrası ekranında çökme; kayıt sağlam.
+    fr: |
+      InvalidCastException dans DSBattleLogic.ShowBattleResults — Distinguished
+      Service effectue un cast d'un PartyBase étendu par TOR vers son type vanilla et échoue. Plantage
+      sur l'écran post-bataille, la sauvegarde est correcte.
   fix:
     en:
       - "Install DS Compatibility Patch for TOR from NexusMods (mod 8874)."
@@ -649,6 +732,9 @@
     tr:
       - "NexusMods'tan DS Compatibility Patch for TOR'u kur (mod 8874)."
       - "Alternatif: TOR oynarken Distinguished Service'i devre dışı bırak."
+    fr:
+      - "Installez le correctif de compatibilité DS pour TOR depuis NexusMods (mod 8874)."
+      - "Alternative : désactivez Distinguished Service lors de l'utilisation de TOR."
   match:
     all:
       - log_line:
@@ -671,6 +757,7 @@
     zh: "TOR Winds of Magic / 施法访问冲突"
     zht: "TOR Winds of Magic / 施法存取違規"
     tr: "TOR Winds of Magic / büyü-yapma erişim ihlali"
+    fr: "TOR Winds of Magic / violation d'accès lors du lancement de sorts"
   description:
     en: |
       0xC0000005 access violation in / near WindsOfMagic / SpellCast code paths.
@@ -694,6 +781,10 @@
       ihlali. Büyük bir orduyla toplu vampir / necrarch kuşatma büyüleri
       yapılırken ~%95 tekrarlanabilir. Yerel motor + büyü parçacığı etkileşim
       sorunu.
+    fr: |
+      Violation d'accès 0xC0000005 dans / près des chemins de code WindsOfMagic / SpellCast.
+      ~95 % reproductible lors de sorts de siège de vampires / necrarchs à lancement massif avec une
+      grande armée. Problème d'interaction entre le moteur natif et les particules magiques.
   fix:
     en:
       - "In-game Options → Graphics: lower Particle Detail and Particle Quality to Low."
@@ -720,6 +811,11 @@
       - "Kuruluysa RTS Camera modunu kaldır — alan büyülerinde çökmeyi şiddetlendirir."
       - "Toplu vampir kuşatma büyülerinden kaçın; büyücü lordun büyü seçimini yönet."
       - "TOR_Core'u güncelle (WITM 1.13a bunun bir kısmını düzeltir)."
+    fr:
+      - "Options en jeu → Graphismes : baissez le Détail des particules et la Qualité des particules sur Faible."
+      - "Supprimez le mod RTS Camera s'il est installé — il amplifie le plantage lors des lancements en zone d'effet."
+      - "Évitez les sorts de siège de vampires à lancement massif ; gérez la sélection de sorts du seigneur lanceur."
+      - "Mettez à jour TOR_Core (WITM 1.13a corrige une partie de ce problème)."
   match:
     all:
       - log_line:
@@ -742,6 +838,7 @@
     zh: "Naval DLC（War Sails）与 TOR 不兼容"
     zht: "Naval DLC（War Sails）與 TOR 不相容"
     tr: "Naval DLC (War Sails) ile TOR uyumsuz"
+    fr: "Le DLC Naval (War Sails) est incompatible avec TOR"
   description:
     en: |
       The Naval DLC (TaleWorlds' "War Sails" content; ships as a SubModule with
@@ -788,6 +885,11 @@
       Birini devre dışı bırakmaktan başka bir çözüm yok. TOR ekibi Naval DLC
       uyumluluğu eklemeyi PLANLAMADIKLARINI belirtti (sefer haritası yeniden
       yazımı çok derin).
+    fr: |
+      Le DLC Naval (contenu TaleWorlds "War Sails" ; les navires en tant que SubModule avec
+      Id="NavalDLC") remplace la carte de campagne vanilla par une version maritime et retravaille le mouvement des groupes, les transitions de scène et plusieurs comportements de campagne codés en dur. Old Realms remplace complètement la carte de campagne via TOR_Environment + TOR_Core. Les deux ne peuvent pas partager une sauvegarde : les lectures de position du groupe, les noms de scène et les liaisons de territoire de faction divergent — le jeu plante soit lors du chargement initial de la sauvegarde, lors de la première scène de rencontre sur la carte, ou se termine silencieusement sans écrire de trace de pile gérée.
+
+      Aucun correctif n'existe à part désactiver l'un des deux. L'équipe TOR a déclaré qu'elle ne prévoyait PAS d'ajouter la compatibilité avec le DLC Naval (la réécriture de la carte de campagne est trop profonde).
     ru: |
       Naval DLC (контент TaleWorlds «War Sails»; в лаунчере проходит как
       SubModule с Id="NavalDLC") меняет ванильную карту кампании на версию
@@ -832,6 +934,12 @@
       - "Naval DLC oynamak istiyorsan başlatıcıda TOR_Core, TOR_Environment, TOR_Armory ve tüm TOR_* alt modüllerinin işaretini kaldır."
       - "Bir mod setiyle başlatılmış bir kaydı diğerinin altında YÜKLEME — kayıt ortasında yükleme sırasını değiştirmek sefer durumunu bozar."
       - "Kayıt zaten bozulduysa (TOR ile başladın, Naval ekledin, geri dönemiyorsun): uygun yapılandırmayla yeni bir sefer başlat."
+    fr:
+      - "Choisissez-en un : TOR ou le DLC Naval. Ils ne peuvent pas coexister."
+      - "Lanceur → décochez NavalDLC si vous souhaitez jouer avec TOR."
+      - "Lanceur → décochez TOR_Core, TOR_Environment, TOR_Armory et tous les sous-modules TOR_* si vous souhaitez jouer au DLC Naval."
+      - "NE chargez PAS une sauvegarde commencée avec un ensemble de mods sous un autre — changer l'ordre de chargement en cours de sauvegarde corrompra l'état de la campagne."
+      - "Si une sauvegarde est déjà corrompue (début TOR, DLC Naval ajouté, impossible de revenir en arrière) : lancez une nouvelle campagne depuis la configuration appropriée."
   match:
     all:
       - module_list: { id: "TOR_Core", has: "true" }
@@ -855,6 +963,7 @@
     zh: "TOR 角色创建界面按“返回”时崩溃"
     zht: "TOR 角色創建界面按「返回」時崩潰"
     tr: "TOR karakter oluşturmada Geri düğmesinde çökme"
+    fr: "Plantage de TOR lors de la création de personnage sur le bouton Retour"
   description:
     en: |
       Bannerlord crashes (0xC0000005, access violation in native) when the
@@ -957,6 +1066,12 @@
       Geri'yi doğru işler. Çökmeden hemen önceki satır tutarlı şekilde
       'Unregister tooltip for type: ExplainedNumber' (ya da etrafındaki tooltip
       türlerinden biri) olur.
+    fr: |
+      Bannerlord plante (0xC0000005, violation d'accès dans le code natif) lorsque le joueur ouvre « Nouvelle Campagne », atterrit sur l'écran de création de personnage TOR, et appuie sur Retour au lieu de continuer. Le plantage se produit une fraction de seconde après l'appui, sans message d'erreur en jeu.
+
+      Ce qui se passe sous le capot : au moment où le joueur voit l'écran de création de personnage, le moteur a déjà instancié une série d'objets Hero (les vagabonds pré-générés de TOR — le journal contient de nombreuses lignes « creating hero from template with id: tor_wanderer_greenskins_* »). Lorsque le joueur appuie sur Retour, Bannerlord invoque « Start Game Final Cleanup. » pour revenir en arrière dans cet état de campagne à moitié construit. TOR réactive simultanément son propre écran initial par-dessus le nettoyage, si bien que le nettoyage démonte l'état des héros / infobulles / scènes alors que TOR vient de s'y réattacher. La cascade finale « Unregister tooltip for type: » rencontre une référence orpheline et le moteur de rendu plante.
+
+      Il s'agit d'un bug de TOR, pas d'un bug de Bannerlord — la création de personnage vanilla gère correctement le bouton Retour. La ligne exacte juste avant le plantage est systématiquement « Unregister tooltip for type: ExplainedNumber » (ou l'un des types d'infobulles adjacents).
   fix:
     en:
       - "Workaround: do NOT use the in-screen Back button from the TOR character creation screen. To get out of new-campaign setup, use Escape → 'Exit to Main Menu' (or the corner Quit button if visible). That path tears the half-built state down cleanly and does not crash."
@@ -983,6 +1098,11 @@
       - "Sadece zaten yaptığın kültür seçimini değiştirmek istiyorsan, ekran yığınında geri gitmek için Geri'ye basma — bunun yerine doğrudan gerçekten istediğin kültüre tıkla. Ekran, onaylamadan önce yeniden seçmene izin verir."
       - "Bir kez çöktüyse, sadece Bannerlord'u yeniden başlat ve Geri'ye basmadan yeni seferi başlat. Çökme diskte hiçbir şeyi bozmaz (kayıt yazılmadı), bu yüzden temiz bir yeniden başlatma yeterlidir."
       - "Hata TOR_Core'da, Bannerlord'da değil — mod yazarının temizleme sırasını düzeltebilmesi için TOR Discord / Steam Workshop yorumlarında bildir."
+    fr:
+      - "Solution de contournement : n'utilisez PAS le bouton Retour dans l'écran de création de personnage TOR. Pour quitter la configuration de nouvelle campagne, utilisez Échap → 'Quitter vers le menu principal' (ou le bouton Quitter en haut à droite s'il est visible). Ce chemin détruit proprement l'état à moitié construit et ne provoque pas de plantage."
+      - "Si vous souhaitez uniquement modifier le choix de culture que vous avez déjà fait, n'appuyez pas sur Retour pour remonter la pile d'écrans — cliquez plutôt directement sur la culture que vous voulez. L'écran vous permet de changer d'avis avant de confirmer."
+      - "Si vous avez déjà planté une fois, redémarrez simplement Bannerlord et lancez la nouvelle campagne sans passer par Retour. Le plantage ne corrompt rien sur le disque (aucune sauvegarde n'a été écrite), donc un redémarrage propre suffit."
+      - "Le bug se trouve dans TOR_Core, pas dans Bannerlord — signalez-le sur le Discord de TOR ou dans les commentaires du Workshop Steam afin que l'auteur du mod puisse corriger l'ordre du nettoyage."
   match:
     all:
       - module_list: { id: "TOR_Core", has: "true" }
@@ -1003,6 +1123,7 @@
     zh: "TOR 坐骑速度状态效果崩溃（缺少基准值）——已被 Crash Doctor 拦截"
     zht: "TOR 坐騎速度狀態效果崩潰（缺少基準值）——已被 Crash Doctor 攔截"
     tr: "TOR at hızı durum efekti çökmesi (eksik temel değer) — Crash Doctor tarafından korunuyor"
+    fr: "Plantage lié à l'effet de statut de vitesse de monture TOR (valeur de base manquante) — protégé par Crash Doctor"
   description:
     en: |
       System.ArgumentException ("The property was not defined in the status effect
@@ -1073,6 +1194,20 @@
       hesaplandığında TOR MountSpeed'i ister, kayıt bulamaz ve hata fırlatır — kare
       başına stat güncellemesinden geldiği için tekrar tekrar. Bu bir TOR_Core
       hatasıdır, gölgelendirici/sürücü sorunu değil.
+    fr: |
+      System.ArgumentException (« La propriété n'était pas définie dans le système d'effet de statut
+      », paramètre MountSpeed) levé à chaque tick de mission depuis
+      TOR_Core StatusEffectComponent.GetBaseValueForDrivenProperty, via
+      AgentDrivenPropertiesExtensions.SetDynamicMountMovementProperties et
+      TORAgentStatCalculateModel.UpdateDynamicAgentDrivenProperties.
+
+      TOR met en cache les « valeurs de base » du cavalier pour les effets de statut de vitesse/manœuvre, mais
+      les clés spécifiques à la monture (MountSpeed / MountDash / MountManeuver) ne sont
+      stockées que lorsque le cavalier possède déjà une monture au moment de la mise en cache. Si les valeurs ont été
+      capturées avant que l'unité ne monte (timing de spawn / montée), le cache manque
+      des clés de monture, et une fois l'unité maintenant montée recalculée, TOR demande
+      MountSpeed, ne trouve aucune entrée et lève une exception — de manière répétée, car cela s'exécute lors de
+      la mise à jour des statistiques par image. Il s'agit d'un bug TOR_Core, pas d'un problème de shader/driver.
   fix:
     en:
       - "Crash Doctor already guards this — its safety net re-syncs the mount values and swallows the leftover error so the battle continues. Keep the «exception guards» setting ON."
@@ -1099,6 +1234,11 @@
       - "Hâlâ spam yapıyorsa: TOR_Core'u en son sürüme güncelle (önbellek zamanlama hatası TOR tarafında)."
       - "Oynanış açısından zararsız — en kötü ihtimalle atlı bir birimin hız efekti bir kare eskidir; hiçbir şey kaybolmaz."
       - "Bunun için gölgelendiricileri yeniden oluşturma veya sürücü değiştirme — bu bir kod hatası, yardımcı olmaz."
+    fr:
+      - "Crash Doctor protège déjà ce cas — son filet de sécurité resynchronise les valeurs de monture et absorbe l'erreur résiduelle pour que la bataille continue. Gardez le paramètre « protections contre les exceptions » activé."
+      - "Si les messages continuent : mettez à jour TOR_Core vers la dernière version (le bug de timing de cache est du côté de TOR)."
+      - "Sans impact sur le gameplay — au pire, l'effet de vitesse d'une unité montée est en retard d'une image ; rien n'est perdu."
+      - "NE reconstruisez PAS les shaders ni ne changez les drivers pour cela — il s'agit d'un bug de code, cela n'aidera pas."
   match:
     all:
       - managed_exception: { frame_contains: "SetDynamicMountMovementProperties" }
@@ -1116,6 +1256,7 @@
     zh: "TOR 在 RTS／自由镜头下施法崩溃——已被 Crash Doctor 拦截"
     zht: "TOR 在 RTS／自由鏡頭下施法崩潰——已被 Crash Doctor 攔截"
     tr: "RTS / serbest kameradan TOR büyü-yapma çökmesi — Crash Doctor tarafından korunuyor"
+    fr: "Plantage de lancer de sort TOR depuis la caméra RTS / libre — protégé par Crash Doctor"
   description:
     en: |
       System.NullReferenceException thrown from TOR_Core
@@ -1179,6 +1320,17 @@
       bulunan bir WizardAIComponent'i hemen okur — kahramanında yoktur, dolayısıyla
       null'dır ve büyü null başvurusuyla çöker. Bu bir TOR + RTS Camera etkileşim
       hatasıdır, gölgelendirici / sürücü sorunu değil.
+    fr: |
+      System.NullReferenceException levé depuis TOR_Core
+      Ability.CalculateAICastMatrixFrame ← Ability.GetSpawnFrame ← ActivateAbility /
+      DoCast ← AgentExtensions.TryCastCurrentAbility ←
+      AbilityManagerMissionLogic.HandleInput lorsque vous lancez un sort en bataille.
+
+      Déclencheur : lancer un sort TOR pendant que vous êtes en caméra RTS / libre (commandement). La caméra
+      RTS détache le contrôle de votre héros, donc le moteur ne le signale plus comme contrôlé par le joueur. Le GetSpawnFrame de TOR
+      route alors le lancer vers sa branche IA (CalculateAICastMatrixFrame), qui lit immédiatement un WizardAIComponent que
+      seuls les sorciers contrôlés par l'IA obtiennent — votre héros n'en a aucun, donc il est null et le
+      lancer déréférence null et plante la bataille. Il s'agit d'un bug d'interaction TOR + Caméra RTS, pas d'un problème de shader / driver.
   fix:
     en:
       - "Crash Doctor already guards this — its safety net reroutes the cast to your hero and the battle continues. Keep the «Spell-cast crash guard — RTS/free camera» fix ON (Crash Fixes tab)."
@@ -1205,6 +1357,11 @@
       - "Geçici çözüm: büyü yapmadan önce RTS / serbest kameradan çık ve kahramanının doğrudan kontrolünü al — ayrık durumdayken büyü yapmak tetikleyicidir."
       - "Bunun için gölgelendiricileri yeniden oluşturma veya sürücü değiştirme — bu bir kod-etkileşim hatasıdır, yardımcı olmaz."
       - "Kaynağında düzeltilmesi için RTS Camera / TOR yazarlarına bildir."
+    fr:
+      - "Crash Doctor protège déjà cet élément — son filet de sécurité redirige le lancer vers votre héros et la bataille se poursuit. Laissez le correctif « Protection contre les plantages de lancer de sorts — RTS/caméra libre » ACTIVÉ (onglet Crash Fixes)."
+      - "Solution de contournement : quittez la vue RTS / caméra libre et prenez le contrôle direct de votre héros avant de lancer un sort — le lancement de sort en étant détaché est ce qui déclenche le problème."
+      - "NE reconstruisez PAS les shaders ni ne changez les pilotes pour cela — il s'agit d'un bug d'interaction de code, cela n'aidera pas."
+      - "Signalez-le aux auteurs de RTS Camera / TOR afin qu'il soit corrigé à la source."
   match:
     all:
       - managed_exception: { frame_contains: "CalculateAICastMatrixFrame" }

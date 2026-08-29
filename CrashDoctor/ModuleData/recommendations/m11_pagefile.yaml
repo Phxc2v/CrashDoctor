@@ -5,6 +5,7 @@
     zh: "为 TOR 将页面文件增大到 40 / 60 GB"
     zht: "為 TOR 將分頁檔增大到 40 / 60 GB"
     tr: "TOR için sayfa dosyasını 40 / 60 GB'a çıkar"
+    fr: "Augmenter le fichier d'échange à 40 / 60 Go pour TOR"
   description:
     en: |
       TOR ships ~30 GB of assets and recompiles thousands of shader variants on the
@@ -64,6 +65,14 @@
       bir 800 / 4096 MB girdi kalır (böylece mavi ekranda Windows yine de çekirdek
       bellek dökümü yazabilir), TOR boyutundaki büyük girdi ise diğer sürücüye gider.
       C: sayfa dosyası asla sessizce kaldırılmaz.
+    fr: |
+      TOR embarque ~30 Go d'assets et recompile des milliers de variantes de shaders lors de la première exécution. Avec un fichier d'échange géré par Windows, cela manque souvent de mémoire engagée et plante avec « L'application a planté car elle n'a pas pu obtenir de nouvelle mémoire ». Définir le fichier d'échange à 40000 / 60000 Mo (initial / max) corrige le problème.
+
+      L'emplacement du disque est automatique. Si C: dispose d'au moins 65 Go d'espace libre, le fichier d'échange reste sur C:
+      (natif Windows). Si C: est trop petit mais qu'un autre disque fixe dispose d'au moins 65 Go d'espace libre,
+      Crash Doctor répartit : une petite entrée de 800 / 4096 Mo reste sur C: (pour que Windows puisse
+      toujours écrire des dumps de mémoire kernel en cas de BSOD), et la grande entrée de taille TOR va sur
+      le disque alternatif. Le fichier d'échange de C: n'est jamais supprimé silencieusement.
   details:
     en:
       - "Click Apply: Windows shows one UAC consent dialog — click Yes."
@@ -95,3 +104,10 @@
       - "Yeniden yazmadan önce HKLM kayıt defteri dalı bir .reg yedeğine aktarılır."
       - "Geçmiş sekmesinden geri alınabilir."
       - "Herhangi bir sabit sürücüde ≥ 65 GB boş alan gerekir. Bu sürücü C: değilse, çekirdek bellek dökümleri için C: üzerinde küçük bir 800 / 4096 MB sayfa dosyası tutulur."
+
+    fr:
+      - "Cliquez sur Appliquer : Windows affiche une boîte de dialogue de consentement UAC — cliquez sur Oui."
+      - "Requiert un redémarrage — Windows ne lit les paramètres du fichier d'échange qu'au démarrage."
+      - "La branche de registre HKLM est exportée vers une sauvegarde .reg avant la réécriture."
+      - "Réversible depuis l'onglet Historique."
+      - "Nécessite ≥ 65 Go d'espace libre sur n'importe quel disque fixe. Lorsque ce disque n'est pas C:, un petit fichier d'échange de 800 / 4096 Mo est conservé sur C: pour les dumps de mémoire kernel."

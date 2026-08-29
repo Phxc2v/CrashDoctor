@@ -1,5 +1,5 @@
 {
-  "_comment": "Known-bad GPU driver versions for Bannerlord+TOR. Match by vendor (substring of GPU.Name) and exact driver version (Win32_VideoController.DriverVersion). When a row matches, surface the card with severity='warning' and the human-readable reason. Update this list when new bad drivers come out — bug report channel: t.me/CodeRickTg.",
+  "_comment": "Known-bad GPU driver versions for Bannerlord+TOR. Match by vendor (substring of GPU.Name) and exact driver version (Win32_VideoController.DriverVersion). When a row matches, surface the card with severity='warning' and the human-readable reason. Update this list when new bad drivers come out — bug report channel: t.me/CodeRickTg / discord.gg/ZDJZFxQeMV.",
   "_source_format": {
     "vendor_match": "Substring case-insensitive matched against GPU.Name. Use 'NVIDIA' / 'AMD' / 'Intel'.",
     "driver_version": "Exact match against Win32_VideoController.DriverVersion (e.g. '31.0.15.5222'). For range matches use a list of versions.",

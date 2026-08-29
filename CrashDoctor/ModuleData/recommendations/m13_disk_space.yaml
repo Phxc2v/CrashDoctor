@@ -5,6 +5,7 @@
     zh: "释放磁盘空间（系统盘 + 安装盘）"
     zht: "釋放磁碟空間（系統磁碟 + 安裝磁碟）"
     tr: "Disk alanı boşalt (sistem + kurulum sürücüsü)"
+    fr: "Libérez de l'espace disque (système + lecteur d'installation)"
   description:
     en: |
       Bannerlord with TOR needs serious headroom: 50+ GB on C: for shader compile + pagefile
@@ -30,6 +31,8 @@
       kendisi için oyunun kurulu olduğu sürücüde 20+ GB. «Build Shader Cache»
       sırasında alan tükenirse «out of memory during compilation» zincirleri ve
       bozuk kayıt dosyaları ortaya çıkar.
+    fr: |
+      Bannerlord avec TOR a besoin de beaucoup d'espace libre : 50+ Go sur C: pour la compilation des shaders + la croissance du fichier d'échange, plus 20+ Go sur le disque d'installation du jeu pour le cache des shaders lui-même. Manquer d'espace pendant "Build Shader Cache" provoque des cascades d'erreurs "out of memory during compilation" et corrompt les fichiers de sauvegarde.
   details:
     en:
       - "Apply opens Windows Disk Cleanup — Crash Doctor doesn't touch user files itself."
@@ -56,3 +59,9 @@
       - "Geçici dosyaları, eski Windows güncellemelerini ve Geri Dönüşüm Kutusu'nu temizle."
       - "Steam → Bannerlord → Özellikler → Kurulu Dosyalar → Bütünlüğü doğrula da artık kalmış gölgelendirici önbelleğini boşaltabilir."
       - "Bitirdiğinde Crash Doctor'u yeniden tara."
+
+    fr:
+      - "Appliquer ouvre le Nettoyage de disque de Windows — Crash Doctor ne touche pas aux fichiers utilisateur lui-même."
+      - "Nettoyez les fichiers temporaires, les anciennes mises à jour de Windows, la Corbeille."
+      - "Steam → Bannerlord → Propriétés → Fichiers installés → Vérifier l'intégrité peut également libérer le cache des shaders orphelin."
+      - "Scannez à nouveau Crash Doctor une fois que vous avez terminé."

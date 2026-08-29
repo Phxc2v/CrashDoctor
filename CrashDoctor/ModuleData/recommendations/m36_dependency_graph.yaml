@@ -5,9 +5,12 @@
     zh: "模组依赖"
     zht: "模組相依"
     tr: "Mod bağımlılıkları"
+    fr: "Dépendances des mods"
   description:
     en: "Checks installed mods for missing dependencies, version mismatches, duplicates and declared conflicts — and tells you, for each one, what to do."
     ru: "Проверяет установленные моды на недостающие зависимости, несовпадение версий, дубликаты и заявленные конфликты — и по каждому пункту говорит, что сделать."
     zh: "检查已安装的模组是否缺少依赖、版本不匹配、重复或声明冲突——并针对每一项告诉你该怎么做。"
     zht: "檢查已安裝的模組是否缺少相依、版本不符、重複或宣告衝突——並針對每一項告訴你該怎麼做。"
     tr: "Yüklü modları eksik bağımlılık, sürüm uyumsuzluğu, yineleme ve bildirilen çakışmalar için denetler — ve her biri için ne yapmanız gerektiğini söyler."
+
+    fr: "Vérifie les mods installés pour détecter les dépendances manquantes, les incompatibilités de version, les doublons et les conflits déclarés — et vous indique, pour chacun, la marche à suivre."

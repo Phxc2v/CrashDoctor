@@ -1,0 +1,29 @@
+Merci d'utiliser Crash Doctor !
+
+QUOI DE NEUF
+
+• Le mod sait désormais quelle version d'un autre mod votre jeu réclame. Il embarque une référence de compatibilité : quelle version de chaque mod a été faite pour quelle branche de Bannerlord, quoi installer à la place d'une version inadaptée, et la page où la prendre. Aucun réseau — les données sont lues depuis le mod lui-même.
+
+• L'onglet Mods coche en vert les mods dont le code a été confronté à votre version exacte du jeu, et met en rouge ceux qui n'ont pas été compilés pour elle — avec la version qu'il vous faut et un bouton vers sa page. « OK » signifiait à la fois « vérifié, tout va bien » et « jamais entendu parler de ce mod » ; ce sont deux réponses distinctes maintenant. Les mods désactivés sont couverts aussi.
+
+• La carte de plantage vous dit ce qui cloche dans votre installation : les mods activés qui ne sont pas compilés pour votre version du jeu, avec les versions à prendre. Ce n'est pas une accusation — désigner un coupable demande la première ligne de la pile d'appels — mais cela répond à la question « cette installation est-elle seulement censée fonctionner ? ».
+
+• report.txt a été refondu. Le verdict sur l'installation tient dans les dix premières lignes, avant tout ce qui est long. Ajoutés : les versions du jeu et du mod, l'exception managée avec son lieu de déclenchement et sa pile, et la liste des protections actives (une protection qui se déclenche retire une ligne de la pile, et sans cette liste la trace se lit de travers). La liste des modules n'est plus coupée à douze.
+
+• Une nouvelle fenêtre « Nos autres mods » dans l'onglet Paramètres. Lancé depuis Steam, le bouton Workshop passe en premier — un clic pour s'abonner au lieu de décompresser une archive à la main. Rien ne s'installe depuis cette fenêtre ; tout s'ouvre dans votre navigateur.
+
+CORRECTIFS
+
+• Nouvelle protection : plantage au changement de jour quand un seigneur n'a nulle part où lever son groupe. Une fois par jour, le jeu attribue à chaque seigneur un lieu de rassemblement. Il tombe parfois sur un seigneur qui n'a nulle part où aller — ni ville, ni château, ni même un village de son peuple sur la carte — et abandonne, emportant la journée avec lui. C'est un trou du jeu lui-même, pas un bogue de mod. La protection le rassemble ailleurs et la journée s'achève ; son nom, sa famille et sa culture vont dans le journal, ce qui montre d'où viennent ces seigneurs sans terre.
+
+• Deux nouvelles protections pour les campagnes qui refusent de démarrer. Un fichier de faction citant un personnage qu'aucun mod installé ne définit, et un fichier d'équipement écrit pour un Bannerlord plus ancien : chacun tue tout le chargement, sans qu'aucun mod n'apparaisse dans le plantage. Seule l'entrée cassée est ignorée, la campagne démarre, et l'onglet Mods nomme d'avance le mod à mettre à jour.
+
+• L'onglet Réglages système ne fige plus l'interface. Les vérifications de disque, de registre et de processus sont passées sur un fil d'arrière-plan, et l'écran indique quelle vérification tourne et depuis combien de temps.
+
+• L'onglet Prévenus n'apparaît que lorsque le journal contient quelque chose : sur une installation saine, aucune protection ne se déclenche jamais, et l'onglet était un bouton derrière lequel il n'y avait rien.
+
+• Échap ferme la fenêtre ouverte, pas l'outil entier. Sur une confirmation irréversible, Échap veut dire annuler.
+
+• Une protection criait au loup : « un clan IA a quitté un royaume auquel il n'appartenait plus » apparaissait chaque fois qu'un clan REJOIGNAIT simplement un royaume — un cas que le jeu gère sans planter. Aucun mal pour votre campagne, mais le compteur de plantages évités était faux. Elle ne se déclenche plus que sur le vrai plantage.
+
+Signaler un plantage : t.me/CodeRickTg / discord.gg/ZDJZFxQeMV — appuyez sur « Ouvrir le dossier » sur la carte de plantage et envoyez LES DEUX fichiers : report.txt et crashdoctor_at_crash.log.

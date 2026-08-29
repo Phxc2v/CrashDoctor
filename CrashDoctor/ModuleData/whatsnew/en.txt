@@ -2,30 +2,28 @@ Thanks for using Crash Doctor!
 
 WHAT'S NEW
 
-• New guard: a battle-end crash when the party being removed has no clan. The last thing the game does with a party leaving the world is take it off its clan's roll of war parties — and it calls that on the clan without ever checking there is one. A party ends up clanless when a mod destroys or disbands one that was already removed, or clears its clan by hand. The new "Party-removal crash guard (party with no clan)" skips the impossible call and unregisters the party itself, so the removal finishes and the campaign carries on.
+• The mod now knows which build of another mod your game needs. It ships a compatibility reference: which build of each mod was made for which Bannerlord branch, what to install instead of a mismatched one, and the page to get it from. No network — the data is read from inside the mod.
 
-• New guard: a deployment-screen crash caused by a banner with no effect. Building the commander's tooltip, the game reads that formation's banner effect without checking it is there — and a banner naming an effect no installed module defines has none, so the battle never starts. The new "Deployment-screen crash guard (banner with broken data)" shows the tooltip without the banner section and logs the banner's id.
+• The Mods tab marks mods whose own code was checked against your exact game build with a green "checked" tick, and mods that were not built for it in red — with the version you need and a button to its file page. "OK" used to mean both "checked, fine" and "we have never heard of this mod"; those are two different answers now. It also covers disabled mods, because warning you before you switch one on is the only way to catch this in time.
 
-• New guard: a crash when a battle ends while one of its sides has lost its leading party. Closing a battle reads that party in half a dozen places in a row and never checks it is still there. The new "Battle-end crash guard (side with no leading party)" applies the game's own rule — the first party still standing on that side takes over — which covers every one of those places at once.
+• The crash card tells you what is wrong with your setup: the enabled mods that are not built for your game version, with the versions you want. This is not a claim that any of them caused the crash — naming a culprit needs the top stack frame — but it answers "is this setup even supposed to work?".
 
-• New guard: a campaign-map crash every few seconds caused by a garrison that lost its settlement. Party healing reads the settlement straight off the party in the garrison branch, so an orphaned garrison brings down the whole campaign tick, seconds after every load. The new "Party-healing crash guard (garrison with no settlement)" skips just that one party's healing for that tick; the orphan is then cleaned up on entering the campaign.
+• report.txt has been rebuilt. The setup verdict is in the first ten lines, ahead of anything long. Added: the game and mod versions, the managed exception with its throw site and stack, and the list of active guards (a guard that fires removes a frame from the stack, and without that list the trace reads wrong). The module list is no longer cut off at twelve.
 
-• New guard: a save that dies about a second after every load. Every tick the game asks an ongoing battle whether its sides are at war, without checking the leading party still belongs to a faction — which is exactly what a party destroyed mid-battle looks like, and the broken battle is stored in the save. The new "Battle crash guard (factionless leading party)" ends that battle instead of crashing.
-
-• The save-loading guard for clan strength now works on Bannerlord 1.2 too. That part of the engine is named differently there, so the guard silently never installed — even though the crash is identical.
-
-• New diagnosis: shaders compile but are never saved. The engine writes "Could not write shader cache file" into its log and carries on, so it looks like the build worked and the next launch starts over. Neither a corrupt cache nor the driver — the ProgramData shaders folder is missing or not writable.
+• A new "Our other mods" window on the Settings tab. When the game runs from Steam the Workshop button leads — one click to subscribe instead of unpacking an archive by hand. Nothing is installed from the window; everything opens in your own browser.
 
 FIXES
 
-• Two false "crash prevented" messages removed. One could appear on Bannerlord 1.2 for a crash that cannot happen there at all; the other flagged a faction with no ship data even where the game would have coped. Both sent players off to uninstall an innocent mod.
+• New guard: a day-change crash when a lord has nowhere to raise his party. Once a day the game gives a lord a place to gather his men, and sometimes it meets one with nowhere at all to start from — no town, no castle, not even a village of his own people. It gives up, taking the day with it. That is a hole in the game itself, not a mod bug. The guard musters him somewhere sensible instead; the lord and his culture go into the log, which shows where these homeless lords come from.
 
-• The Prevented counter is no longer inflated by a single stuck battle. Where a battle cannot be ended right away, the guard fired on every frame and one event could run the counter into the thousands. It is counted once now.
+• Two new guards for campaigns that refuse to start at all. A faction file naming a character no installed mod defines, and an equipment file written for an older Bannerlord — either one kills the whole load, and no mod appears anywhere in the crash. The guards skip only the broken entry, so the campaign starts; and the Mods tab now finds both in the files beforehand and names the mod to update.
 
-• One crash, one verdict. A broken-battle crash could show two cards with contradictory advice. Only the card that matches what actually happened is shown.
+• The System Tune-Up tab no longer freezes the interface. Disk, registry and process checks moved to a background thread, and the screen shows which check is running and how long it has been going. One walk of a multi-gigabyte temp folder used to freeze the window for seconds and made the mod look hung.
 
-• The Tune-Up tab speaks Traditional Chinese in the administrator-rights texts too: the hint and the apply/rollback refusals for the pagefile, the TDR delay and Game DVR were shown in Simplified Chinese.
+• The Prevented tab appears only when the journal has something in it: on a healthy setup no guard ever fires, and the tab was a button with nothing behind it.
 
-• The Saves tab no longer comes up empty because of one unreadable subfolder inside Game Saves. Such a folder is skipped instead of aborting the whole scan.
+• Esc closes the window that is open, not the whole tool. On a destructive confirmation, Esc means cancel.
 
-Report a crash: t.me/CodeRickTg — press "Open folder" on the crash card and send BOTH files: report.txt and crashdoctor_at_crash.log.
+• One guard used to cry wolf: "an AI clan left a kingdom it no longer belonged to" appeared every time a clan simply JOINED one — a case the game handles without crashing. No harm done to your campaign, but the prevented-crash count was wrong. It now fires only on the real crash it was written for.
+
+Report a crash: t.me/CodeRickTg / discord.gg/ZDJZFxQeMV — press "Open folder" on the crash card and send BOTH files: report.txt and crashdoctor_at_crash.log.

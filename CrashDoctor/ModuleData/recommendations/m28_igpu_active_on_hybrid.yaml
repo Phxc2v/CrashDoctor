@@ -5,6 +5,7 @@
     zh: "将 Bannerlord 绑定到高性能显卡（混合显卡笔记本）"
     zht: "將 Bannerlord 繫結到高效能顯示卡（混合顯示卡筆記型電腦）"
     tr: "Bannerlord'u yüksek performanslı ekran kartına sabitle (hibrit dizüstü)"
+    fr: "Forcer Bannerlord à utiliser le GPU haute performance (PC portable hybride)"
   description:
     en: |
       Hybrid-graphics laptops ship with two GPUs: a low-power integrated
@@ -174,6 +175,41 @@
 
       Geri alınabilir: Geri Al, önceki kayıt defteri değerini geri yükler (ya da önceden
       yoksa girişi kaldırır).
+    fr: |
+      Les ordinateurs portables à graphiques hybrides sont livrés avec deux GPU : un GPU intégré basse consommation
+      (Intel UHD / Iris, AMD Vega / Radeon Graphics) et un GPU dédié
+      (NVIDIA GeForce / RTX / GTX, AMD Radeon RX / Pro, Intel Arc).
+      La sortie vers l'écran est souvent câblée via le GPU intégré,
+      et sans une préférence explicite par application, Windows exécutera
+      Bannerlord dessus — même s'il y a un puissant GPU dédié
+      qui reste inactif juste à côté. Le GPU intégré ne peut pas gérer
+      les shaders de terrain de The Old Realms ; lors de la première grande bataille ou du premier
+      siège, vous obtenez un plantage sur Bake Terrain (0xC0000005), et le plantage
+      intercepte le jeu pendant l'écriture de la sauvegarde, ce qui corrompt aussi la sauvegarde.
+
+      Cette carte apparaît lorsque TOUTES ces conditions sont vraies :
+        1. Le PC possède à la fois un GPU intégré et un GPU dédié.
+        2. La préférence haute performance n'est PAS déjà épinglée dans
+           HKCU\Software\Microsoft\DirectX\UserGpuPreferences.
+        3. Les journaux de plantage récents prouvent que le jeu a tourné sur le GPU intégré :
+           soit crash_tags montre le iGPU avec un Current Mode
+           actif et le dGPU avec Current Mode=Unknown, soit rgl_log inonde
+           "Missing shader from sack: pbr_terrain" au-dessus du seuil.
+
+      Apply écrit une seule valeur de registre par utilisateur :
+        HKCU\Software\Microsoft\DirectX\UserGpuPreferences\<Bannerlord.exe>
+          = "GpuPreference=2;"
+      Identique à Paramètres → Système → Affichage → Graphiques → Bannerlord →
+      Hautes performances, sauf que vous n'avez pas besoin de chercher l'exécutable.
+      Pas de droits administrateur, pas de redémarrage de Windows. Redémarrez Bannerlord pour que le
+      nouveau GPU prenne effet.
+
+      Si après Apply le GPU dédié ne s'active toujours pas, le BIOS
+      de l'ordinateur portable peut avoir un commutateur MUX matériel ou un mode "dédié uniquement" qui
+      remplace la préférence Windows — vérifiez la page Graphiques du BIOS.
+
+      Réversible : Rollback restaure la valeur de registre précédente (ou
+      supprime l'entrée s'il n'y en avait aucune auparavant).
   details:
     en:
       - "Source: HKCU\\Software\\Microsoft\\DirectX\\UserGpuPreferences\\<Bannerlord.exe path>"
@@ -215,3 +251,12 @@
       - "Geri alınabilir: Geri Al, önceki değeri geri yazar (ya da girişi kaldırır)."
       - "Tek ekran kartlı masaüstlerinde, ayrık kartın zaten etkin olduğu dizüstülerde ve yüksek performans tercihi zaten sabitlenmişse kart gizlenir."
       - "BIOS'ta bir MUX anahtarı ya da 'yalnızca ayrık' modu varsa, bu Windows tercihini geçersiz kılar."
+
+    fr:
+      - "Source : HKCU\\\\Software\\\\Microsoft\\\\DirectX\\\\UserGpuPreferences\\\\<chemin Bannerlord.exe>"
+      - "Cible : \"GpuPreference=2;\" (GPU haute performance)"
+      - "Par utilisateur uniquement : pas de droits d'administration, pas d'invite UAC, pas de changement système."
+      - "Pas de redémarrage : redémarrez Bannerlord et le nouveau GPU sera utilisé au prochain lancement."
+      - "Réversible : Le retour en arrière réécrit la valeur précédente (ou supprime l'entrée)."
+      - "La carte est masquée sur les PC de bureau à GPU unique, sur les portables où le dGPU est déjà actif, et lorsque la préférence haute performance est déjà définie."
+      - "Si le BIOS dispose d'un commutateur MUX ou d'un mode 'discret uniquement', cela remplace la préférence de Windows."

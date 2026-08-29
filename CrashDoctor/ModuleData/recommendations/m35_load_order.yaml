@@ -5,6 +5,7 @@
     zh: "修复 LauncherData.xml 中的模组加载顺序"
     zht: "修復 LauncherData.xml 中的模組載入順序"
     tr: "LauncherData.xml içindeki mod yükleme sırasını düzelt"
+    fr: "Corriger l'ordre de chargement des mods dans LauncherData.xml"
   description:
     en: |
       Bannerlord crashes on startup or modules silently fail when the load order
@@ -27,6 +28,10 @@
       Yükleme sırası standart TOR sırasıyla eşleşmediğinde Bannerlord başlangıçta çöker
       veya modüller sessizce çalışmaz. Önce yerel oyun modülleri, ardından
       Harmony / ButterLib / UIExtenderEx / MCM, sonra topluluk modları, en son TOR_*.
+    fr: |
+      Bannerlord plante au démarrage ou les modules échouent silencieusement lorsque l'ordre de chargement
+      ne correspond pas à la séquence TOR canonique. Les modules natifs du jeu en premier, puis
+      Harmony / ButterLib / UIExtenderEx / MCM, ensuite les mods communautaires, puis TOR_*.
   details:
     en:
       - "LauncherData.xml is backed up before rewriting."
@@ -63,3 +68,11 @@
       - "Uyguladıktan sonra: oyunu doğrudan Play ile başlatın. Modları TaleWorlds başlatıcı"
       - "penceresinde elle yukarı/aşağı SÜRÜKLEMEYİN — bu, sırayı başlatıcının doğru sandığı"
       - "haline geri yazar. BLSE Launcher kuruluysa sıra ne olursa olsun korunur."
+
+    fr:
+      - "LauncherData.xml est sauvegardé avant d'être réécrit."
+      - "Seul l'ordre change — aucun mod n'est ajouté, supprimé ou désactivé."
+      - "Réversible depuis l'onglet Historique si quelque chose semble incorrect."
+      - "Après application : lancez le jeu DIRECTEMENT via Jouer. Ne faites PAS glisser manuellement les mods vers le haut/le bas"
+      - "dans la fenêtre du lanceur TaleWorlds — cela écraserait l'ordre par celui que le lanceur"
+      - "considère comme correct. Avec BLSE Launcher installé, l'ordre reste stable."

@@ -5,6 +5,7 @@
     zh: "后期战役健康检查"
     zht: "後期戰役健康檢查"
     tr: "Geç oyun kampanya sağlık kontrolü"
+    fr: "Vérification de santé de la campagne en fin de jeu"
   description:
     en: |
       Reads live Campaign.Current to estimate whether the save is heading toward known
@@ -105,6 +106,17 @@
 
       Yalnızca Campaign.Current null olmadığında tetiklenir. Kayıt yüklenmeden yeni bir
       oyun başlangıcından sonra kart gizli kalır.
+    fr: |
+      Lit Campaign.Current en direct pour estimer si la sauvegarde s'oriente vers les zones connues de plantage en fin de jeu. Aucun de ces problèmes ne laisse d'empreinte dans le journal de plantage — ils dégradent la campagne sur plusieurs heures, puis provoquent un crash lors du prochain chargement de sauvegarde. Il s'agit du seul diagnostic « prédictif » de Crash Doctor.
+
+      Seuils (issus du catalogue recueilli des CTD en fin de jeu) :
+
+      * Bloat des héros — 800+ héros vivants. Bloat de la sauvegarde, lag au tick quotidien et cascades de NRE au chargement deviennent quasi inévitables. Heroes Must Die (Nexus 1164) élimine dynamiquement les héros.
+      * Effet boule de neige — 40 %+ des royaumes de départ éliminés avant le jour 200. Provoque des NRE de fusion de factions et des plantages KingdomDestructionAction. Diplomacy (Nexus 832) accorde des NAP et une paix motivée par le coût politique, ralentissant l'effet boule de neige.
+      * Cascade de guerres — 3+ guerres simultanées sur le royaume du joueur. Met l'IA sous tension et accélère l'effondrement économique. Diplomacy + AutoBlocker le gèrent.
+      * Campagne longue — jour 500+ avec 600+ héros. Risque de fuite mémoire ; redémarrez la session toutes les 60–90 minutes ; envisagez une nouvelle campagne.
+
+      Ne se déclenche que si Campaign.Current n'est pas null. Après un nouveau départ sans sauvegarde chargée, la carte reste masquée.
   details:
     en:
       - "Apply opens the most relevant fix-mod page on NexusMods (Heroes Must Die / Diplomacy / Death Reduced)."
@@ -131,3 +143,9 @@
       - "Kart bilgilendirme amaçlıdır — otomatik uygulama yok. Modu kurun, oyunu yeniden başlatın, doğrulamak için yeniden tarayın."
       - "Her şey yolundaysa: kart gizli kalır (Healthy / NotApplicable)."
       - "Yalnızca bu oturumda bir kayıt yükledikten SONRA anlamlıdır — Campaign.Current yeni ana menüde null'dur."
+
+    fr:
+      - "Appliquer ouvre la page du correctif-mod la plus pertinente sur NexusMods (Heroes Must Die / Diplomacy / Death Reduced)."
+      - "La carte est informative — aucune application automatique. Installez le mod, redémarrez le jeu, relancez un scan pour vérifier."
+      - "Si tout est bon : la carte reste masquée (Healthy / NotApplicable)."
+      - "N'a du sens qu'APRÈS avoir chargé une sauvegarde dans cette session — Campaign.Current est null dans le menu principal frais."

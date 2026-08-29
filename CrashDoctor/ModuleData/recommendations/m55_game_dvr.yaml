@@ -5,6 +5,7 @@
     zh: "禁用 Game DVR / Xbox Game Bar"
     zht: "停用 Game DVR / Xbox Game Bar"
     tr: "Game DVR / Xbox Game Bar'ı devre dışı bırak"
+    fr: "Désactiver Game DVR / Xbox Game Bar"
   description:
     en: |
       Windows' background recording (Game DVR / Xbox Game Bar) hooks DXGI to record gameplay
@@ -30,6 +31,11 @@
       sırasında "GPU device removed" çökmeleri için belgelenmiş bir tetikleyicidir.
       Microsoft'un kendi performans kılavuzları, herhangi bir zorlu oyun için bunu
       kapatmayı önerir.
+    fr: |
+      L'enregistrement en arrière-plan de Windows (Game DVR / Xbox Game Bar) s'accroche à DXGI pour enregistrer le gameplay
+      et vole 5 à 15 % des FPS dans Bannerlord. C'est également un déclencheur documenté de plantages « GPU device
+      removed » lors de longues batailles TOR. Les guides de performance de Microsoft recommandent de le
+      désactiver pour tout jeu exigeant.
   details:
     en:
       - "Click Apply: Windows shows one UAC consent dialog — click Yes."
@@ -56,3 +62,9 @@
       - "Anında etkili olur — yeniden başlatma gerekmez."
       - "HKLM Policies AllowGameDVR=0, HKCU GameDVR_Enabled=0, AppCaptureEnabled=0 olarak ayarlar."
       - "Geçmiş sekmesinden geri alınabilir."
+
+    fr:
+      - "Cliquez sur Appliquer : Windows affiche une boîte de dialogue de consentement UAC — cliquez sur Oui."
+      - "Effectif immédiatement — aucun redémarrage requis."
+      - "Définit HKLM Policies AllowGameDVR=0, HKCU GameDVR_Enabled=0, AppCaptureEnabled=0."
+      - "Réversible depuis l'onglet Historique."

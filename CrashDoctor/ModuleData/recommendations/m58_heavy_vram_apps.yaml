@@ -5,6 +5,7 @@
     zh: "关闭占用大量显存的后台应用程序"
     zht: "關閉佔用大量顯示記憶體的背景應用程式"
     tr: "Çok fazla VRAM tüketen arka plan uygulamalarını kapat"
+    fr: "Fermez les applications en arrière-plan gourmandes en VRAM"
   description:
     en: |
       A separate scan from M5.7 — focused not on D3D-hooking troublemakers but on apps that
@@ -62,6 +63,17 @@
       Premiere / After Effects, Topaz Video AI). İkinci kademe (0,5–2 GB): donanım
       hızlandırması açık ve çok sayıda sekmesi olan Chrome / Edge / Firefox, Game Capture
       modunda OBS Studio, NVIDIA Broadcast, Epic Games Launcher, Wallpaper Engine.
+    fr: |
+      Un scan distinct de M5.7 — axé non pas sur les problèmes de hook D3D mais sur les applications qui
+      consomment simplement une grande partie de la mémoire vidéo dédiée pendant qu'elles tournent. Avec TOR + Bannerlord
+      déjà à 5–8 Go de VRAM en 1080p+, avoir l'une de ces applications en arrière-plan est
+      suffisant pour faire dépasser CreateTexture2D la limite sur une carte milieu de gamme.
+
+      Les pires contrevenants (1,5 Go+ même au repos) : runtimes VR (Oculus / Meta Quest Link, SteamVR
+      compositor, Windows Mixed Reality), outils IA / LLM (Ollama, LM Studio, Stable Diffusion,
+      ComfyUI), éditeurs vidéo (DaVinci Resolve, Adobe Premiere / After Effects, Topaz Video AI).
+      Deuxième catégorie (0,5–2 Go) : Chrome / Edge / Firefox avec de nombreux onglets et accélération matérielle activée,
+      OBS Studio en mode Game Capture, NVIDIA Broadcast, Epic Games Launcher, Wallpaper Engine.
   details:
     en:
       - "Apply opens Task Manager — close apps via their own UI when possible. Killing VR runtimes cold can lock the headset until reboot."
@@ -108,3 +120,13 @@
       - "Tarayıcılar (HW hızlandırma + çok sayıda sekme): Chrome, Edge, Firefox, Brave, Opera GX."
       - "Diğer: Epic Games Launcher (arka plan videoları), Discord (HW hızlandırma + kaplama), Wallpaper Engine."
       - "Uygulamaları kapattıktan sonra kartın temizlendiğini doğrulamak için yeniden tarayın."
+
+    fr:
+      - "Appliquer ouvre le Gestionnaire des tâches — fermez les applications via leur propre interface quand c'est possible. Tuer les runtimes VR à froid peut bloquer le casque jusqu'au redémarrage."
+      - "Runtimes VR : Oculus / Meta Quest Link, SteamVR (vrcompositor / vrserver), Mixed Reality Portal, Virtual Desktop Streamer."
+      - "IA / LLM : Ollama, LM Studio, Stable Diffusion (A1111 / ComfyUI)."
+      - "Vidéo / 3D : DaVinci Resolve, Adobe Premiere Pro, Adobe After Effects, Topaz Video AI, Blender, Photoshop, Lightroom."
+      - "Streaming / capture : OBS Studio, NVIDIA Broadcast, NVIDIA ShadowPlay, XSplit."
+      - "Navigateurs (accélération matérielle + nombreux onglets) : Chrome, Edge, Firefox, Brave, Opera GX."
+      - "Autres : Epic Games Launcher (vidéos en arrière-plan), Discord (accélération matérielle + overlay), Wallpaper Engine."
+      - "Relancer le scan après avoir fermé les applications pour confirmer que la carte a libéré la mémoire."

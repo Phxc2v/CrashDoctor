@@ -5,6 +5,7 @@
     zh: "修复损坏的 Windows TEMP 路径"
     zht: "修復損壞的 Windows TEMP 路徑"
     tr: "Bozuk Windows TEMP yolunu onar"
+    fr: "Réparer le chemin TEMP Windows cassé"
   description:
     en: |
       Your Windows TMP/TEMP environment variables point at a drive that no
@@ -123,6 +124,25 @@
       Değişiklik yalnızca YENİ oturum açma oturumları için geçerli olur.
 
       Geri alınabilir: Geri Al, önceki TMP/TEMP değerini geri yükler.
+    fr: |
+      Vos variables d'environnement Windows TMP/TEMP pointent vers un lecteur qui n'existe plus ou n'est pas prêt. Cela se produit généralement après qu'une lettre de lecteur a été renommée (e.g. un volume temporaire A:\ renommé en D:\) — TMP/TEMP conservent l'ancienne lettre, donc rien ne peut plus écrire dans %TEMP%.
+
+      Cela casse silencieusement beaucoup de choses : le compilateur de shaders écrit des fichiers intermédiaires dans %TEMP% pendant la 'Construction du cache de shaders', donc la construction se termine 'avec des erreurs' ; les installateurs, les applications .NET et Windows lui-même rencontrent le même problème.
+
+      Cette carte apparaît lorsque HKCU\Environment TMP ou TEMP résout vers un lecteur indisponible.
+
+      Appliquer va :
+        1. Réinitialiser HKCU\Environment TMP et TEMP à la valeur par défaut de Windows
+           %USERPROFILE%\AppData\Local\Temp (toujours sur le lecteur système, ne peut pas
+           disparaître suite à un changement de lettre de lecteur).
+        2. Créer ce dossier s'il manque.
+        Changement uniquement par UTILISATEUR — TEMP système (HKLM) n'est pas touché, aucun droit
+        d'administrateur requis.
+
+      OBLIGATOIRE après Appliquer : SE DÉCONNECTER de Windows (ou redémarrer). Le changement ne prend
+      effet que pour les nouvelles sessions de connexion.
+
+      Réversible : Le retour en arrière restaure la valeur précédente de TMP/TEMP.
   details:
     en:
       - "Source: HKCU\\Environment\\TMP and TEMP"
@@ -159,3 +179,11 @@
       - "Geri alınabilir: Geri Al, önceki değeri geri yazar."
       - "Uygula'dan sonra: yeni TEMP'in geçerli olması için Windows oturum kapatma (ya da yeniden başlatma) gerekir."
       - "TMP ve TEMP'in her ikisi de kullanılabilir bir sürücüye çözümlendiğinde kart gizlenir."
+
+    fr:
+      - "Source : HKCU\\\\Environment\\\\TMP et TEMP"
+      - "Cible : %USERPROFILE%\\\\AppData\\\\Local\\\\Temp (valeur par défaut de Windows)"
+      - "Par utilisateur uniquement : HKLM (TEMP système) n'est pas touché. Aucun droit d'administrateur requis."
+      - "Réversible : Le retour en arrière réécrit la valeur précédente."
+      - "Après Appliquer : La déconnexion de Windows (ou un redémarrage) est requise pour que le nouveau TEMP prenne effet."
+      - "La carte se masque lorsque TMP et TEMP résolvent tous deux vers un lecteur disponible."

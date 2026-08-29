@@ -10,6 +10,7 @@
     zh: "后期 x8 速度下崩溃（原生访问冲突）"
     zht: "後期 x8 速度下崩潰（原生存取違規）"
     tr: "Geç oyunda x8 hızında çökme (yerel erişim ihlali)"
+    fr: "Plantage en fin de partie à vitesse x8 (violation d'accès native)"
   description:
     en: |
       The campaign has grown to a size where TaleWorlds' native HourlyTick races
@@ -51,6 +52,8 @@
       Sahipsiz nesneleri temizlemek bunu düzeltmez — kök sebep grup sayısıdır,
       sahipsiz nesneler değil. Bir sefer bu ölçeğe ulaştığında Crash Doctor hızı
       otomatik olarak sınırlar.
+    fr: |
+      La campagne a atteint une taille telle que le HourlyTick natif de TaleWorlds entre en concurrence avec lui-même en mode UnstoppableFastForward (x8). Une brève fenêtre entre les phases de mise à jour du monde contient un pointeur null transitoire : de x1 à x4, le tick suivant ne tombe presque jamais dans cette fenêtre ; à x8 avec plus de 800 groupes, il y tombe de façon fiable, et le processus meurt avec 0xC0000005 dans du code non managé. Aucun nettoyage des objets orphelins ne corrige ce problème — la cause racine est le nombre de groupes, pas les orphelins. Crash Doctor limite automatiquement la vitesse lorsqu'une campagne atteint cette échelle.
   fix:
     en:
       - "Stay at x4 maximum on the campaign map (don't press the x8 hotkey)."
@@ -77,6 +80,11 @@
       - "Crash Doctor'ın geç oyun hız sınırı zaten etkin — grup sayısı ≥ 800 olduğunda veya bu oturumda ilk yerel erişim ihlalinden sonra Campaign.TimeControlMode setter'ı x8'i x4'e düşürecek şekilde yamalanır."
       - "İsteğe bağlı: x8'i yeniden açmadan önce oyun içi hilelerle grupları azalt (Ctrl+Alt+~ → campaign.kill_random_clan)."
       - "Grupların oluşma hızını sorunlu modun ayarlarından düşür (LoreHardcore türü modlarda ork/trol/goblin oluşma sınırları)."
+    fr:
+      - "Restez à une vitesse maximale de x4 sur la carte de campagne (n'appuyez pas sur le raccourci x8)."
+      - "La limitation de vitesse en fin de partie de Crash Doctor est déjà active — le setter Campaign.TimeControlMode est patché pour passer de x8 à x4 lorsque le nombre de groupes est ≥ 800 ou après le premier plantage natif AV dans cette session."
+      - "Optionnel : réduisez le nombre de groupes avec les triches intégrées au jeu (Ctrl+Alt+~ → campaign.kill_random_clan) avant de réactiver la vitesse x8."
+      - "Réduisez le taux d'apparition des groupes via les paramètres du mod fautif (plafonds d'apparition d'orcs/trolls/gobelins dans les mods de classe LoreHardcore)."
   match:
     all:
       - any:

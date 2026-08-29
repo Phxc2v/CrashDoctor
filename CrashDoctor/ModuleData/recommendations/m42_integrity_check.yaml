@@ -5,6 +5,7 @@
     zh: "根据随附清单进行 SHA-256 完整性检查"
     zht: "根據隨附資訊清單進行 SHA-256 完整性檢查"
     tr: "Birlikte gelen manifestoya karşı SHA-256 bütünlük denetimi"
+    fr: "Vérification d'intégrité SHA-256 par rapport au manifeste fourni"
   description:
     en: |
       Catches: partial Workshop downloads (Steam said "subscribed" but a file is
@@ -68,6 +69,12 @@
 
       Uygula dosyalara dokunmaz; yalnızca kullanıcının etkilenen moda yeniden abone
       olabilmesi için Steam Atölye sayfasını açar (Atölye bozulması için standart düzeltme).
+    fr: |
+      Capture : téléchargements incomplets du Workshop (Steam indique « abonné » mais un fichier est plus court que prévu), DLLs mises en quarantaine par l'antivirus qui reviennent à zéro octet, modifications manuelles des fichiers du mod par l'utilisateur, et DLLs malveillantes de « correctif premium » ou de falsification remplaçant le mod légitime.
+
+      Le manifeste se trouve dans `ModuleData/integrity_manifest.json`. Par défaut, il est vide — il n'est peuplé que lorsque nous disposons d'une installation de référence vérifiée comme propre pour calculer le hachage. Jusqu'à ce moment, la carte reste NotApplicable et masquée, afin d'éviter les faux positifs lors d'une nouvelle installation.
+
+      L'application ne modifie aucun fichier ; elle ouvre simplement la page du Steam Workshop pour que l'utilisateur puisse se réabonner au mod concerné (correctif canonique pour la corruption du Workshop).
   details:
     en:
       - "Read-only check. Hash algorithm: SHA-256."
@@ -94,3 +101,9 @@
       - "Boş manifesto = NotApplicable (kart gizli)."
       - "«Uygula» steam://url/CommunityFilePage/261550 adresini açar."
       - "Geri alınamaz (salt okunur)."
+
+    fr:
+      - "Vérification en lecture seule. Algorithme de hachage : SHA-256."
+      - "Manifeste vide = NotApplicable (carte masquée)."
+      - "L'application ouvre steam://url/CommunityFilePage/261550."
+      - "Non réversible (lecture seule)."

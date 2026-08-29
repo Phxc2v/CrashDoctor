@@ -13,6 +13,7 @@
     zh: "对话“继续”按钮中的 NullReferenceException"
     zht: "對話「繼續」按鈕中的 NullReferenceException"
     tr: "Diyalog Devam düğmesinde NullReferenceException"
+    fr: "NullReferenceException dans le bouton Continuer de la conversation"
   description:
     en: |
       Bannerlord's conversation system crashed inside ExecuteContinue on the VM
@@ -88,6 +89,14 @@
         diyalog akışını bozduğu bilinir)
       - BannerCraft (bazı önemli kişi etkileşim VM'lerini değiştirir)
       - BetterSmithingContinued (demirci diyalog dallarını geçersiz kılar)
+    fr: |
+      Le système de conversation de Bannerlord a planté dans ExecuteContinue sur le VM
+      MissionConversationVM, avec le message interne « La référence d'objet n'est pas définie à une instance d'un objet. ». Symptôme d'un état de machine à états de conversation partiellement initialisé : un comportement de campagne lit une référence à un Héros/CharacterObject qui n'est plus valide (notable supprimé en cours de conversation), ou une ressource vocale manquante dirige la branche de dialogue vers un chemin de code nul.
+
+      Souvent accompagné de lignes « Voice object for text id is not found: <id> » — une ressource vocale manquante peut être un problème de couche de traduction (TOR_RU_Translation, packs de traduction communautaires) mais rarement la cause racine. La cause est généralement un mod qui patche les classes Conversation* :
+      - CharacterReload (connu pour casser le flux de conversation lors du chargement d'une troupe sauvegardée en cours de session)
+      - BannerCraft (remplace certains VMs d'interaction de notables)
+      - BetterSmithingContinued (remplace les branches de dialogue de forge)
   fix:
     en:
       - "Reload an earlier save (before the conversation that crashed) and try a different action — if it works, the conversation context is poisoned, not the build."
@@ -119,6 +128,12 @@
       - "Şüpheli modları en son sürüme güncelle — 2025'in sonunda birkaç diyalog yamalayıcısı için düzeltmeler geldi."
       - "Yoksa BLSE + BetterExceptionWindow kur. Bir sonraki boş referans, yönetilen yığında yamayı adlandıracak."
       - "Aynı NPC için Voice object hataları kalıcıysa — TOR_RU_Translation'a (veya çeviri paketine) yeniden abone ol, ses dizini dosyası kesik olabilir."
+    fr:
+      - "Rechargez une sauvegarde antérieure (avant la conversation qui a planté) et essayez une action différente — si cela fonctionne, le contexte de conversation est corrompu, pas l'installation."
+      - "Désactivez CharacterReload, BannerCraft, BetterSmithingContinued un par un et rejouez. Le mod dont l'absence permet de terminer le dialogue est le coupable."
+      - "Mettez à jour les mods suspects vers la dernière version — des correctifs ont été publiés fin 2025 pour plusieurs patchers de conversation."
+      - "Installez BLSE + BetterExceptionWindow si vous ne les avez pas. Le prochain NRE nommera le patcher dans la pile gérée."
+      - "Si les erreurs Voice object persistent pour le même PNJ : réabonnez-vous à TOR_RU_Translation (ou à votre pack de traduction) — le fichier d'index des voix peut être tronqué."
   match:
     all:
       - log_line:
@@ -141,6 +156,7 @@
     zh: "Bannerlord 正在用集成显卡渲染（rgl_log 的 Selected adapter）"
     zht: "Bannerlord 正在用內建顯示卡算繪（rgl_log 的 Selected adapter）"
     tr: "Bannerlord tümleşik GPU üzerinde render ediyor (rgl_log Selected adapter)"
+    fr: "Bannerlord s'affiche sur le GPU intégré (rgl_log Selected adapter)"
   description:
     en: |
       Bannerlord's rgl_log records "Selected graphics adapter: [N] <name>" on
@@ -206,6 +222,12 @@
 
       Makinende ayrı bir GPU VARSA, Windows / sürücü / monitör kablolaması iGPU'yu
       zorluyor demektir. Aşağıda birkaç ayar var.
+    fr: |
+      rgl_log de Bannerlord enregistre « Selected graphics adapter: [N] <name> » à chaque lancement — c'est la réponse définitive à « quel GPU affiche », indépendamment de la façon dont DxDiag ordonne les Display Devices dans crash_tags.txt.
+
+      Dans ce plantage, l'adaptateur sélectionné est une puce intégrée (Intel UHD/HD/Iris/Xe iGPU, AMD Radeon Graphics/Vega, Apple). Avec TOR + des mods lourds en 1080p, attendez-vous à des plantages lors de la compilation des shaders, du chargement des grandes missions, ou du premier VFX complexe (sortilèges, feu, sang). Vanilla sans TOR peut fonctionner en qualité Faible.
+
+      Si votre machine possède un GPU dédié, Windows / pilote / câblage moniteur force l'iGPU. Plusieurs réglages ci-dessous.
   fix:
     en:
       - "Check if your laptop has a dedicated GPU: Win+R → dxdiag → Display tab — there should be a 'Display Devices 1' with NVIDIA/AMD/Radeon RX/Arc (NOT 'Radeon Graphics' which is the iGPU)."
@@ -242,6 +264,13 @@
       - "Harici monitörünü iGPU portuna değil, dGPU çıkışına tak. Birçok dizüstüde iGPU dahili ekrana sahiptir, HDMI/DP ise dGPU üzerinden gider."
       - "Oynarken pil tasarrufu modunu kapat — dizüstüler pilde dGPU'yu agresif şekilde park eder."
       - "Hiç dGPU yoksa: TOR iGPU'da uygulanabilir değil. Orijinal Bannerlord'u Düşük kalitede çalıştır ya da daha hafif bir mod yığını seç."
+    fr:
+      - "Vérifiez si votre ordinateur portable dispose d'un GPU dédié : Win+R → dxdiag → onglet Affichage — vous devez voir un « Display Devices 1 » avec NVIDIA/AMD/Radeon RX/Arc (et NON pas « Radeon Graphics », qui correspond au GPU intégré)."
+      - "Forcer Bannerlord à utiliser le dGPU : Paramètres → Système → Affichage → Graphiques → Ajouter Bannerlord.exe → « Hautes performances ». Panneau de configuration NVIDIA → Gérer les paramètres 3D → Paramètres du programme → Bannerlord → « Processeur NVIDIA haute performance »."
+      - "Dans le jeu : Options → Graphiques → premier onglet → Adaptateur graphique → sélectionnez le GPU dédié. Si l'option est manquante, modifiez Documents\\Mount and Blade II Bannerlord\\Configs\\engine_config.txt et définissez graphics_adapter de 0 à 1, sauvegardez et redémarrez."
+      - "Branchez votre moniteur externe sur la sortie du GPU dédié, et non sur le port du GPU intégré. Sur de nombreux ordinateurs portables, le GPU intégré gère l'écran interne tandis que la sortie HDMI/DP passe par le GPU dédié."
+      - "Désactivez l'économiseur de batterie pendant que vous jouez — les ordinateurs portables mettent agressivement en veille le GPU dédié sur batterie."
+      - "Aucun GPU dédié : TOR n'est pas viable sur un GPU intégré. Lancez Bannerlord vanilla en qualité faible ou choisissez une pile de mods plus légère."
   match:
     all:
       - log_line:
@@ -259,6 +288,7 @@
     zh: "引擎队伍索引风暴（战斗模组向战斗添加了无效的 team）"
     zht: "引擎隊伍索引風暴（戰鬥模組向戰鬥加入了無效的 team）"
     tr: "Motor takım-indeksi fırtınası (savaş modu savaşa geçersiz takım ekliyor)"
+    fr: "Tempête d'indices d'équipe du moteur (le mod de combat ajoute une équipe invalide à la mission)"
   description:
     en: |
       Bannerlord's mission engine spammed "Condition not satisfied:
@@ -330,6 +360,21 @@
       Hatalar tek başına çökmeye yol açmaz — bunlar belirtilerdir. Asıl çökme,
       genellikle bir sonraki sistem bozuk takım üzerinde işlem yapmaya
       çalıştığında gelir (yol bulma, sancak çizimi, düzen emri, doğuş çözücü).
+    fr: |
+      Le moteur de mission de Bannerlord a spamé « Condition not satisfied:
+      IMono_MBTeam::is_enemy: other_team_index_invalid! » plusieurs dizaines de fois avant
+      le plantage. Le moteur tente d'évaluer l'hostilité pour une Team
+      dont l'index n'est pas enregistré dans la table des équipes de la mission.
+
+      Presque toujours un effet secondaire d'un mod : un mod de bataille/combat ajoute une équipe supplémentaire
+      à la mission sans l'enregistrer via Mission.Teams.Add, ou supprime
+      une équipe alors que la logique IA/UI conserve encore une référence obsolète. Les principaux coupables
+      historiquement : les mods d'amélioration du combat (RBM et ses forks), les mods de factions personnalisées,
+      les mods IA qui scriptent leurs propres équipes de bandits/hostiles. TOR lui-même est propre.
+
+      Les erreurs ne provoquent pas le plantage par elles-mêmes — ce sont des symptômes. Le plantage réel
+      suit généralement lorsque le système suivant tente d'agir sur la mauvaise équipe
+      (pathfinding, affichage de bannière, ordre de formation, résolveur de spawn).
   fix:
     en:
       - "Disable combat-overhaul mods one at a time and replay the same battle: RBM (Realistic Battle Mod), PartialParry, UnblockableThrust, BannerCraft, custom-faction mods. The mod whose removal silences the storm is the culprit."
@@ -356,6 +401,11 @@
       - "Şüpheli modları en son sürüme güncelle — 2025'te takım kaydı etrafında birçok düzeltme geldi."
       - "Güvenilir şekilde tekrarlanabiliyorsa — bir sonraki denemeden önce BLSE + BetterExceptionWindow kur. Yönetilen yığın yamayı adlandıracak."
       - "Bozuk modu belirledikten sonra: çökme paketiyle birlikte mod yazarına bildir."
+    fr:
+      - "Désactivez les mods d'amélioration du combat un par un et rejouez la même bataille : RBM (Realistic Battle Mod), PartialParry, UnblockableThrust, BannerCraft, mods de factions personnalisées. Le mod dont la suppression fait taire la tempête est le coupable."
+      - "Mettez à jour les mods suspects vers la dernière version — de nombreux correctifs concernant l'enregistrement des équipes ont été publiés en 2025."
+      - "Si vous pouvez reproduire le problème de manière fiable : installez BLSE + BetterExceptionWindow avant la prochaine tentative. La pile gérée nommera le patcher."
+      - "Après avoir identifié le mod problématique : signalez-le à l'auteur du mod avec le bundle de plantage."
   match:
     all:
       - log_line:
@@ -373,6 +423,7 @@
     zh: "Bannerlord 自带的完整性检查未通过"
     zht: "Bannerlord 自帶的完整性檢查未通過"
     tr: "Bannerlord'un kendi bütünlük denetimi başarısız oldu"
+    fr: "La vérification d'intégrité propre à Bannerlord a échoué"
   description:
     en: |
       Bannerlord's crash dumper recorded `Game Integrity is Achieved = False`.
@@ -420,27 +471,41 @@
 
       Her durumda, bunu destek ekibinin kendisi incelemelidir; TaleWorlds'ün
       otomatik hattı ona dokunmaz.
+    fr: |
+      Le dump de plantage de Bannerlord a enregistré `Game Integrity is Achieved = False`.
+      La vérification interne du moteur a détecté que l'état de la build n'est pas une
+      installation vanilla propre. Avec des modules non officiels dans le même bloc crash_tags, le drapeau
+      est informatif et attendu — TaleWorlds rejette automatiquement les rapports de plantage moddés.
+      Sans modules non officiels, cela signifie qu'un fichier vanilla a été
+      remplacé ou qu'il y a une incompatibilité de version.
+
+      Dans tous les cas, le support doit trier ces cas manuellement ; le pipeline automatique de
+      TaleWorlds n'interviendra pas.
   fix:
     en:
-      - "If you have mods (you do — check 'Used Modules' in evidence): the flag is normal, don't worry. Send the bundle to t.me/CodeRickTg, the support team handles modded crashes."
+      - "If you have mods (you do — check 'Used Modules' in evidence): the flag is normal, don't worry. Send the bundle to t.me/CodeRickTg / discord.gg/ZDJZFxQeMV, the support team handles modded crashes."
       - "If you DON'T have mods and still see this: Steam Verify integrity (catches replaced vanilla files), then reinstall any conflicting overlay tools (NVIDIA Filters, Reshade, MSI Afterburner OSD)."
       - "Crash Doctor → Tune-Up → 'SHA-256 integrity check' card catches mod-side corruption that Steam Verify misses."
     ru:
-      - "Если есть моды (они в evidence в 'Used Modules' перечислены) — флаг нормальный, не волнуйся. Отправь bundle в t.me/CodeRickTg, поддержка занимается модовыми крэшами."
+      - "Если есть моды (они в evidence в 'Used Modules' перечислены) — флаг нормальный, не волнуйся. Отправь bundle в t.me/CodeRickTg / discord.gg/ZDJZFxQeMV, поддержка занимается модовыми крэшами."
       - "Если модов НЕТ и всё равно видишь — Steam Verify integrity (ловит подменённые ванильные файлы), потом переустанови overlay-инструменты (NVIDIA Filters, Reshade, MSI Afterburner OSD)."
       - "Карточка «SHA-256 integrity check» в Crash Doctor → Tune-Up ловит порчу со стороны модов, которую Steam Verify пропускает."
     zh:
-      - "如果你装了模组（你确实装了——查看 evidence 里的 'Used Modules'）：这个标记是正常的，别担心。把数据包发到 t.me/CodeRickTg，支持团队会处理带模组的崩溃。"
+      - "如果你装了模组（你确实装了——查看 evidence 里的 'Used Modules'）：这个标记是正常的，别担心。把数据包发到 t.me/CodeRickTg / discord.gg/ZDJZFxQeMV，支持团队会处理带模组的崩溃。"
       - "如果你没装模组却仍看到这个：用 Steam 验证文件完整性（能发现被替换的原版文件），然后重新安装任何有冲突的叠加层工具（NVIDIA Filters、Reshade、MSI Afterburner OSD）。"
       - "Crash Doctor → Tune-Up 里的 'SHA-256 integrity check' 卡片能发现 Steam 验证漏掉的模组端损坏。"
     zht:
-      - "如果你裝了模組（你確實裝了——查看 evidence 裡的 'Used Modules'）：這個標記是正常的，別擔心。把資料包發到 t.me/CodeRickTg，支援團隊會處理帶模組的崩潰。"
+      - "如果你裝了模組（你確實裝了——查看 evidence 裡的 'Used Modules'）：這個標記是正常的，別擔心。把資料包發到 t.me/CodeRickTg / discord.gg/ZDJZFxQeMV，支援團隊會處理帶模組的崩潰。"
       - "如果你沒裝模組卻仍看到這個：用 Steam 驗證檔案完整性（能發現被替換的原版檔案），然後重新安裝任何有衝突的覆疊層工具（NVIDIA Filters、Reshade、MSI Afterburner OSD）。"
       - "Crash Doctor → Tune-Up 裡的 'SHA-256 integrity check' 卡片能發現 Steam 驗證漏掉的模組端損壞。"
     tr:
-      - "Modların varsa (var — evidence'taki 'Used Modules'a bak): bayrak normaldir, endişelenme. Paketi t.me/CodeRickTg adresine gönder, destek ekibi modlu çökmelerle ilgilenir."
+      - "Modların varsa (var — evidence'taki 'Used Modules'a bak): bayrak normaldir, endişelenme. Paketi t.me/CodeRickTg / discord.gg/ZDJZFxQeMV adresine gönder, destek ekibi modlu çökmelerle ilgilenir."
       - "Modların YOKSA ve hâlâ görüyorsan: Steam bütünlük doğrulaması yap (değiştirilmiş orijinal dosyaları yakalar), sonra çakışan kaplama araçlarını yeniden kur (NVIDIA Filters, Reshade, MSI Afterburner OSD)."
       - "Crash Doctor → Tune-Up'taki 'SHA-256 integrity check' kartı, Steam doğrulamasının kaçırdığı mod tarafı bozulmaları yakalar."
+    fr:
+      - "Si vous avez des mods (ce qui est le cas — vérifiez 'Used Modules' dans les preuves) : le drapeau est normal, ne vous inquiétez pas. Envoyez le bundle à t.me/CodeRickTg / discord.gg/ZDJZFxQeMV, l'équipe de support gère les plantages avec mods."
+      - "Si vous N'AVEZ PAS de mods et que vous voyez toujours cela : utilisez Vérifier l'intégrité de Steam (détecte les fichiers vanilla remplacés), puis réinstallez les outils de superposition conflictuels (NVIDIA Filters, Reshade, MSI Afterburner OSD)."
+      - "Crash Doctor → Tune-Up → la carte 'SHA-256 integrity check' détecte les corruptions côté mod que Steam Verify ne voit pas."
   match:
     all:
       - crash_tag:
@@ -459,6 +524,7 @@
     zh: "在 TOR 之上的重型模组堆叠（加载了 20+ 个模组）"
     zht: "在 TOR 之上的重型模組堆疊（載入了 20+ 個模組）"
     tr: "TOR üzerinde ağır mod yığını (20+ mod yüklü)"
+    fr: "Grosse pile de mods au-dessus de TOR (20+ mods chargés)"
   description:
     en: |
       You have 20+ unofficial modules active alongside TOR. TOR alone overrides
@@ -509,27 +575,41 @@
       belirtiyi kovalamak değil "mod listesini yarıya indir ve yeniden çalıştır"
       olur. Crash Doctor'ın desen kataloğu nispeten temiz bir TOR kurulumunu
       varsayar; ağır bir mod yığını üzerinde yanlış-negatifler artar.
+    fr: |
+      Vous avez plus de 20 modules non officiels actifs en même temps que TOR. TOR seul remplace
+      18 modèles de jeu et patche plus de 40 classes vanilla via Harmony ; les mods de combat /
+      montée de niveau / forge au-dessus de cela entrent en concurrence pour la même surface de patch
+      et perdent souvent des conditions de course dans le code en milieu de mission.
+
+      Ce n'est pas un plantage en soi — c'est informatif. Mais : lorsqu'un plantage non reconnu
+      apparaît sur une pile de 20 mods, le manuel de dépannage consiste à "diviser par deux
+      la liste de mods et relancer" plutôt que de chercher un symptôme spécifique. Crash Doctor's
+      catalogue de motifs suppose une installation TOR propre ; sur une pile de mods lourde, les faux-négatifs augmentent.
   fix:
     en:
       - "Halve-the-mod-list debugging: disable half of your non-TOR mods (combat, leveling, smithing groups). Replay the crash scenario. If it doesn't crash — re-enable half of those, repeat. Binary search finds the culprit in log2(N) attempts."
       - "Top suspects when crash is mid-mission: combat-overhauls (RBM, PartialParry, UnblockableThrust). Top suspects when crash is in conversation/inventory: CharacterReload, BannerCraft, BetterSmithingContinued."
-      - "If you do not have time for binary search: report the crash bundle to t.me/CodeRickTg with the full module list. Triage there."
+      - "If you do not have time for binary search: report the crash bundle to t.me/CodeRickTg / discord.gg/ZDJZFxQeMV with the full module list. Triage there."
     ru:
       - "Половинь-мод-лист дебаг: отключи половину non-TOR модов (combat, leveling, smithing группы). Повтори сценарий краша. Если не падает — включи половину обратно, повтори. Binary search найдёт виновника за log2(N) попыток."
       - "Главные подозреваемые если краш в бою: combat-overhaul'ы (RBM, PartialParry, UnblockableThrust). Если краш в диалоге/инвентаре: CharacterReload, BannerCraft, BetterSmithingContinued."
-      - "Если на binary search нет времени — отправь crash bundle в t.me/CodeRickTg с полным module list. Разберут на месте."
+      - "Если на binary search нет времени — отправь crash bundle в t.me/CodeRickTg / discord.gg/ZDJZFxQeMV с полным module list. Разберут на месте."
     zh:
       - "二分法排查：禁用一半非 TOR 的模组（战斗、升级、锻造这些组）。重现崩溃场景。如果不崩——把那一半重新启用，再重复。二分查找能在 log2(N) 次尝试内找到元凶。"
       - "崩溃发生在战斗中时的头号嫌疑：战斗大改（RBM、PartialParry、UnblockableThrust）。崩溃发生在对话 / 物品栏时的头号嫌疑：CharacterReload、BannerCraft、BetterSmithingContinued。"
-      - "如果没时间做二分查找——把崩溃数据包连同完整的模块列表发到 t.me/CodeRickTg。那边会帮你分诊。"
+      - "如果没时间做二分查找——把崩溃数据包连同完整的模块列表发到 t.me/CodeRickTg / discord.gg/ZDJZFxQeMV。那边会帮你分诊。"
     zht:
       - "二分法排查：停用一半非 TOR 的模組（戰鬥、升級、鍛造這些組）。重現崩潰場景。如果不崩——把那一半重新啟用，再重複。二分搜尋能在 log2(N) 次嘗試內找到元兇。"
       - "崩潰發生在戰鬥中時的頭號嫌疑：戰鬥大改（RBM、PartialParry、UnblockableThrust）。崩潰發生在對話 / 物品欄時的頭號嫌疑：CharacterReload、BannerCraft、BetterSmithingContinued。"
-      - "如果沒時間做二分搜尋——把崩潰資料包連同完整的模組列表發到 t.me/CodeRickTg。那邊會幫你分流。"
+      - "如果沒時間做二分搜尋——把崩潰資料包連同完整的模組列表發到 t.me/CodeRickTg / discord.gg/ZDJZFxQeMV。那邊會幫你分流。"
     tr:
       - "İkili-arama hata ayıklaması: TOR olmayan modlarının yarısını devre dışı bırak (savaş, seviye, demircilik grupları). Çökme senaryosunu tekrarla. Çökmüyorsa — o yarının yarısını yeniden etkinleştir, tekrarla. İkili arama suçluyu log2(N) denemede bulur."
       - "Çökme savaş ortasındaysa başlıca şüpheliler: savaş elden geçirmeleri (RBM, PartialParry, UnblockableThrust). Çökme diyalog/envanterdeyse: CharacterReload, BannerCraft, BetterSmithingContinued."
-      - "İkili arama için vaktin yoksa — çökme paketini tam modül listesiyle t.me/CodeRickTg adresine gönder. Orada incelenir."
+      - "İkili arama için vaktin yoksa — çökme paketini tam modül listesiyle t.me/CodeRickTg / discord.gg/ZDJZFxQeMV adresine gönder. Orada incelenir."
+    fr:
+      - "Dépannage par division de la liste de mods : désactivez la moitié de vos mods non-TOR (groupes combat, montée de niveau, forge). Relancez le scénario de plantage. S'il ne plante pas — réactivez la moitié de ces mods, répétez. La recherche binaire trouve le responsable en log2(N) tentatives."
+      - "Suspects principaux quand le plantage est en milieu de mission : mods de combat (RBM, PartialParry, UnblockableThrust). Suspects principaux quand le plantage est dans une conversation/inventaire : CharacterReload, BannerCraft, BetterSmithingContinued."
+      - "Si vous n'avez pas le temps pour une recherche binaire : signalez le bundle de plantage à t.me/CodeRickTg / discord.gg/ZDJZFxQeMV avec la liste complète des modules. Le tri sera effectué là-bas."
   match:
     all:
       - module_list: { id: "TOR_Core", has: "true" }
@@ -553,6 +633,7 @@
     zh: "每日 tick 时更换总督崩溃（Bannerlord 1.2.7 时期）"
     zht: "每日 tick 時更換總督崩潰（Bannerlord 1.2.7 時期）"
     tr: "Günlük tick'te vali değişimi çökmesi (Bannerlord 1.2.7 dönemi)"
+    fr: "Plantage lors du changement de gouverneur au tick quotidien (époque Bannerlord 1.2.7)"
   description:
     en: |
       KingdomGovernorChange / OnGovernorChanged throws on daily tick. This is a
@@ -582,6 +663,13 @@
       referansını bağlanmadan önce okuduğu bilinen bir regresyondur. 1.3.x'te
       düzeltildi. Kullanıcı 1.3.x'te ve hâlâ görüyorsa, kök neden krallık karar
       akışını eski varsayımlarla yamalayan bir moddur.
+    fr: |
+      KingdomGovernorChange / OnGovernorChanged plante au tick quotidien. Il s'agit d'une
+      régression connue dans Bannerlord 1.2.7 (build du DLC Naval) où le pipeline
+      de décision du royaume lit une référence de gouverneur avant qu'elle ne soit
+      connectée. Corrigé dans la version 1.3.x. Si l'utilisateur est en 1.3.x et
+      constate le problème, la cause racine est un mod qui modifie le flux de
+      décision du royaume avec des hypothèses obsolètes.
   fix:
     en:
       - "Update Bannerlord to 1.3.x (1.2.7 has known governor-flow bugs)."
@@ -603,6 +691,10 @@
       - "Bannerlord'u 1.3.x'e güncelle (1.2.7'de bilinen vali-akışı hataları var)."
       - "Zaten 1.3.x'teysen — krallık kararlarını yamalayan modları teker teker devre dışı bırak (eski Diplomacy sürümleri, BannerKings)."
       - "Geçici çözüm: kaydı yükle ve haritada 1 gün atla; çöken karar genellikle bir sonraki tick'te kaybolur."
+    fr:
+      - "Mettez à jour Bannerlord vers la version 1.3.x (la 1.2.7 contient des bugs connus du flux des gouverneurs)."
+      - "Si vous êtes déjà en 1.3.x — désactivez les mods qui patchent les décisions du royaume (Diplomacy anciennes versions, BannerKings) un par un."
+      - "Solution de contournement : rechargez la sauvegarde et passez 1 jour sur la carte ; la décision qui plante disparaît souvent au prochain tick."
   match:
     all:
       - any:
@@ -625,6 +717,7 @@
     zh: "构建港口/船只视觉时的原生崩溃（海军 DLC）"
     zht: "建構港口/船隻視覺時的原生崩潰（海軍 DLC）"
     tr: "Liman/gemi görsellerini oluştururken yerel çökme (Naval DLC)"
+    fr: "Plantage natif lors de la construction des visuels du port/du navire (Naval DLC)"
   description:
     en: |
       The game died with a native access violation (0xC0000005) right after the
@@ -667,6 +760,16 @@
       yakalanabilir bir .NET istisnası değildir — bu yüzden hiçbir canlı Harmony
       koruması onu durduramaz. Oyun yeni bir yapıya güncellendikten sonra önceki
       yapıda oluşturulmuş bir kaydı çok büyük bir mod listesiyle yüklerken görüldü.
+    fr: |
+      Le jeu a planté avec une violation d'accès native (0xC0000005) juste après que
+      le DLC Naval a commencé à construire les visuels des navires pour une scène de port
+      (VisualShipFactory.CreateVisualShip), et aucune trace de pile gérée (.NET) n'a été
+      capturée. Il s'agit d'une écriture nulle au niveau du moteur dans le chemin de rendu
+      port/navire du DLC Naval, et non d'une exception .NET récupérable — donc aucun garde Harmony en direct ne peut
+      l'arrêter. Observé juste après la mise à jour du jeu vers une nouvelle version lors du chargement d'une sauvegarde
+      créée sur la version précédente, avec une très longue liste de mods : une migration de sauvegarde/version
+      plus un mod touchant aux visuels des groupes/colonies/navires rend cela plus
+      probable.
   fix:
     en:
       - "After a game update, load the save and re-save once from a safe map spot before visiting ports — a fresh save on the new build is more stable."
@@ -693,6 +796,11 @@
       - "Belirli bir limanda çöküyorsa, ona harita üzerinde yaklaş ve liman sahnesi yerine kasaba menüsünden gir ya da farklı bir liman dene."
       - "Parti/yerleşim veya gemi görsellerini değiştiren modları (RBM, Artems* görsel paketi, vbody/CarbonBody) geçici olarak devre dışı bırak ve o limanı yeniden test et."
       - "Kötü bir Naval DLC varlığını elemek için Steam'de oyun dosyalarını doğrula (Bannerlord'a sağ tık -> Özellikler -> Yüklü Dosyalar -> Doğrula)."
+    fr:
+      - "Après une mise à jour du jeu, chargez la sauvegarde et sauvegardez une fois depuis un endroit sûr sur la carte avant de visiter les ports — une sauvegarde fraîche sur la nouvelle version est plus stable."
+      - "Si le jeu plante à un port spécifique, approchez-vous sur la carte de campagne et entrez par le menu de la ville au lieu de la scène du port, ou essayez un autre port."
+      - "Désactivez temporairement les mods qui modifient les visuels du groupe/colonie ou des navires (RBM, le pack visuel Artems*, vbody/CarbonBody) et re-testez ce port."
+      - "Vérifiez les fichiers du jeu dans Steam (clic droit sur Bannerlord -> Propriétés -> Fichiers installés -> Vérifier) pour écarter un actif corrompu de la Naval DLC."
   match:
     all:
       - exception:
@@ -715,6 +823,7 @@
     zh: "着色器已编译却从未保存——游戏无法写入着色器缓存"
     zht: "著色器已編譯卻從未儲存——遊戲無法寫入著色器快取"
     tr: "Gölgelendiriciler derleniyor ama hiç kaydedilmiyor — oyun gölgelendirici önbelleğine yazamıyor"
+    fr: "Les shaders sont compilés mais jamais sauvegardés — le jeu ne peut pas écrire le cache de shaders"
   description:
     en: |
       The engine says it in as many words in its own log: `Could not write shader cache file.`
@@ -762,6 +871,16 @@
       C:\ProgramData\Mount and Blade II Bannerlord\Shaders\CoreShaders\D3D11, ya yok ya da
       yazılabilir değil. Motor bu klasörü oluşturmaz ve yazma başarısız olduğunda durmaz — bu
       yüzden dışarıdan "gölgelendiriciler yine kayboldu" gibi görünür.
+    fr: |
+      Le moteur l'indique clairement dans son propre journal : `Could not write shader cache file.`
+      Tout ce qui est compilé durant cette session est perdu à la fermeture du jeu, donc au prochain lancement,
+      le moteur le compile à nouveau — longs blocages au chargement, centaines de messages "Missing shader from sack", et une
+      compilation des shaders qui s'exécute jusqu'au bout sans rien sauvegarder.
+
+      Il ne s'agit pas d'un cache corrompu ni d'un problème de pilote. Le dossier dans lequel le moteur écrit,
+      C:\ProgramData\Mount and Blade II Bannerlord\Shaders\CoreShaders\D3D11, est soit absent,
+      soit inaccessible en écriture. Le moteur ne crée pas ce dossier et n'interrompt pas l'exécution lorsque
+      l'écriture échoue — c'est pourquoi on a l'impression que "les shaders disparaissent encore".
   fix:
     en:
       - "Open C:\\ProgramData\\Mount and Blade II Bannerlord. The Shaders folder must exist and must NOT be read-only; if Shaders\\CoreShaders\\D3D11 is missing, create it — the game will not."
@@ -788,6 +907,11 @@
       - "Antivirüsü ve Windows «Denetimli klasör erişimi» ayarını kontrol edin: Bannerlord.exe ProgramData içine yazabilmeli."
       - "Klasör başka bir hesapla ya da «yönetici olarak çalıştır» ile oluşturulduysa: Shaders → sağ tık → Özellikler → Güvenlik → kendi kullanıcınıza Tam denetim verin (ya da klasörü silin, başlatıcı yeniden oluşturur)."
       - "Sonra gölgelendiricileri BİR kez derleyin. Oyunu yeniden kurmayın, sürücü değiştirmeyin — ikisinde de sorun yok."
+    fr:
+      - "Ouvrez C:\\ProgramData\\Mount and Blade II Bannerlord. Le dossier Shaders doit exister et ne doit PAS être en lecture seule ; si Shaders\\CoreShaders\\D3D11 est absent, créez-le — le jeu ne le fera pas pour vous."
+      - "Vérifiez l'antivirus / l'« Accès contrôlé aux dossiers » de Windows : Bannerlord.exe doit être autorisé à écrire dans ProgramData."
+      - "Si ce dossier a été créé par un autre compte ou par un processus exécuté en tant qu'administrateur : clic droit sur Shaders → Propriétés → Sécurité → accordez à votre utilisateur le contrôle total (ou supprimez le dossier et laissez le lanceur le recréer)."
+      - "Ensuite, compilez les shaders UNE SEULE FOIS. Ne réinstallez pas le jeu et ne changez pas les pilotes — aucun des deux n'est défectueux ici."
   match:
     all:
       - log_line:

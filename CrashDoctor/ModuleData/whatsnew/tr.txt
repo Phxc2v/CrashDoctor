@@ -2,30 +2,28 @@ Crash Doctor'ı kullandığın için teşekkürler!
 
 YENİLİKLER
 
-• Yeni koruma: kaldırılan grubun klanı kalmadığında savaş sonu çökmesi. Oyunun dünyadan ayrılan bir grupla yaptığı son iş, onu klanının savaş grupları listesinden düşürmektir — ve bunu klan üzerinde, öyle bir klan var mı diye hiç denetlemeden çağırır. Bir grup, bir mod zaten kaldırılmış bir grubu yok ettiğinde ya da dağıttığında veya klanını elle temizlediğinde klansız kalır. Yeni "Grup kaldırma çökme koruması (klansız grup)" imkânsız çağrıyı atlar ve grubu kayıttan kendisi düşürür; kaldırma tamamlanır, sefer devam eder.
+• Mod artık oyununun hangi sürümü için başka bir modun hangi yapısının gerektiğini biliyor. İçinde bir uyumluluk başvurusu geliyor: her modun hangi yapısı Bannerlord'un hangi dalı için yapılmış, uyumsuz olanın yerine ne kurulmalı ve nereden alınır. Ağ yok — veriler modun kendi içinden okunuyor.
 
-• Yeni koruma: etkisi olmayan bir sancak yüzünden yerleştirme ekranı çökmesi. Oyun komutan ipucunu hazırlarken o birliğin sancak etkisini, var olup olmadığını denetlemeden okur — kurulu hiçbir modun tanımlamadığı bir etkiyi adlandıran sancakta ise böyle bir etki yoktur ve savaş hiç başlamaz. Yeni "Yerleştirme ekranı çökme koruması (bozuk verili sancak)" ipucunu sancak bölümü olmadan gösterir ve sancağın id'sini günlüğe yazar.
+• Modlar sekmesi, kendi kodu tam olarak senin oyun yapına karşı denetlenmiş modları yeşil "denetlendi" işaretiyle, senin sürümün için yapılmamış olanları ise kırmızıyla işaretler — ihtiyacın olan sürüm numarası ve dosya sayfasına giden bir düğmeyle birlikte. Eskiden "TAMAM" hem "denetledik, sorun yok" hem de "bu modu hiç duymadık" anlamına geliyordu; artık bunlar iki ayrı cevap. Devre dışı modlar için de çalışır: sen açmadan önce uyarmak, bunu zamanında yakalamanın tek yolu.
 
-• Yeni koruma: taraflardan biri öncü grubunu kaybetmişken savaş bittiğinde çökme. Oyun savaşı kapatırken bu grubu arka arkaya yarım düzine yerde okur ve hâlâ orada mı diye hiç bakmaz. Yeni "Savaş sonu çökme koruması (öncü grubu olmayan taraf)" oyunun kendi kuralını uygular: o tarafta ayakta kalan ilk grup lideri devralır — bu da bütün o yerleri tek seferde kapatır.
+• Çökme kartı kurulumunda neyin yanlış olduğunu söyler: etkin olan ama senin oyun sürümün için yapılmamış modları, gereken sürümleriyle listeler. Bu, çökmeye onların yol açtığı iddiası değil — suçluyu adlandırmak yığının en üst çerçevesini gerektirir — ama "bu kurulum zaten çalışmalı mıydı?" sorusunu yanıtlar.
 
-• Yeni koruma: yerleşimini kaybetmiş bir garnizon yüzünden birkaç saniyede bir sefer haritası çökmesi. Grup iyileşmesi hesabında yerleşim doğrudan gruptan okunur, bu yüzden öksüz kalmış bir garnizon tüm sefer tikini çökertir — her yüklemeden saniyeler sonra yeniden. Yeni "Grup iyileşmesi çökme koruması (yerleşimi olmayan garnizon)" yalnızca o grubun iyileşmesini ve yalnızca o tikte atlar; öksüz garnizon ise sefere girişte temizlenir.
+• report.txt yeniden yapıldı. Kurulum hükmü, uzun her şeyin önünde, ilk on satırda. Eklendi: oyun ve mod sürümleri, fırlatma yeri ve yığınıyla birlikte managed istisna, ve etkin korumaların listesi (devreye giren bir koruma yığından bir çerçeve siler; o liste olmadan iz yanlış okunur). Modül listesi artık on ikide kesilmiyor.
 
-• Yeni koruma: her yüklemeden yaklaşık bir saniye sonra ölen kayıt. Oyun her tikte devam eden bir savaşın taraflarının savaşta olup olmadığını sorar, ama öncü grubun hâlâ bir hizbe ait olup olmadığını denetlemez — savaşın içindeyken yok edilen bir grup tam da böyle görünür ve bozuk savaş kayda yazılır. Yeni "Savaş çökme koruması (hizipsiz öncü grup)" çökmek yerine o savaşı sonlandırır.
-
-• Klan gücü için kayıt yükleme koruması artık Bannerlord 1.2'de de çalışıyor. Motorun o bölümü orada farklı adlandırılmış, bu yüzden koruma sessizce hiç kurulmuyordu — oysa çökme birebir aynı.
-
-• Yeni teşhis: gölgelendiriciler derleniyor ama hiç kaydedilmiyor. Motor günlüğüne "Could not write shader cache file" yazıp devam eder; derleme başarılı görünür, bir sonraki açılış baştan başlar. Sorun ne bozuk önbellek ne sürücüdür: ProgramData içindeki gölgelendirici klasörü yok ya da yazılabilir değil.
+• Ayarlar sekmesinde yeni bir "Diğer modlarımız" penceresi. Oyun Steam'den çalışıyorsa Atölye düğmesi başta gelir — arşivi elle açmak yerine tek tıkla abonelik. Pencereden hiçbir şey kurulmaz; her şey kendi tarayıcında açılır.
 
 DÜZELTMELER
 
-• İki hatalı "çökme önlendi" mesajı kaldırıldı. Biri Bannerlord 1.2'de, o sürümde hiç oluşamayacak bir çökme için görünebiliyordu; diğeri gemi verisi olmayan bir hizbi, oyun gayet iyi başa çıkacakken sorun ilan ediyordu. İkisi de oyuncuyu suçsuz bir modu kaldırmaya yolluyordu.
+• Yeni koruma: birliğini toplayacak yeri olmayan bir lord yüzünden oluşan gün değişimi çökmesi. Oyun her gün bir lorda adamlarını toplayacağı bir yer verir. Bazen hiç başlayacak yeri olmayan bir lordla karşılaşır — haritanın hiçbir yerinde ne şehri, ne kalesi, ne de kendi halkından bir köyü vardır — ve pes eder, o günü de beraberinde götürür. Bu bir mod hatası değil, oyunun kendi açığıdır. Koruma onu makul bir yerde toplar ve gün tamamlanır; lordun kendisi, hanesi ve kültürü günlüğe yazılır — bu evsiz lordların nereden geldiğini gösteren de budur.
 
-• Önlenenler sayacı tek bir takılı savaş yüzünden artık şişmiyor. Savaşın hemen sonlandırılamadığı durumda koruma her karede tetikleniyordu ve tek bir olay sayacı binlere çıkarabiliyordu. Artık bir kez sayılıyor.
+• Hiç başlamayan kampanyalar için iki yeni koruma. Kurulu hiçbir modun tanımlamadığı bir karaktere işaret eden hizip dosyası ve Bannerlord'un eski bir sürümü için yazılmış teçhizat dosyası — ikisinden biri tüm yükleme sürecini öldürür ve çökmenin hiçbir yerinde bir mod görünmez. Korumalar yalnızca bozuk kaydı atlar, böylece kampanya başlar; Modlar sekmesi de artık ikisini de dosyalarda önceden bulur ve güncellenecek modu adlandırır.
 
-• Tek çökme, tek karar. Bozuk savaştan kaynaklanan çökme birbirine zıt iki kart gösterebiliyordu. Artık yalnızca gerçekten olanı anlatan kart gösteriliyor.
+• Sistem İnce Ayar sekmesi artık arayüzü dondurmuyor. Disk, kayıt defteri ve süreç denetimleri arka plan iş parçacığına taşındı; ekranda hangi denetimin sürdüğü ve kaç saniyedir devam ettiği görünüyor. Eskiden birkaç gigabaytlık geçici klasörü taramak pencereyi saniyelerce donduruyor ve mod takılmış gibi görünüyordu.
 
-• "İnce Ayar" sekmesi yönetici hakları metinlerinde de Geleneksel Çince konuşuyor: takas dosyası, TDR gecikmesi ve Game DVR için ipucu ile uygulama/geri alma redleri Basitleştirilmiş Çince gösteriliyordu.
+• Önlenen sekmesi yalnızca günlükte bir şey varken görünür: sağlıklı bir kurulumda hiçbir koruma devreye girmez ve sekme arkasında hiçbir şey olmayan bir düğmeye dönüşüyordu.
 
-• "Kayıtlar" sekmesi Game Saves içindeki okunamayan tek bir alt klasör yüzünden artık boş kalmıyor — böyle bir klasör atlanıyor.
+• Esc açık olan pencereyi kapatır, aracın tamamını değil. Geri alınamaz bir temizleme onayında Esc "iptal" demektir.
 
-Çökme bildir: t.me/CodeRickTg — çökme kartındaki "Klasörü aç" düğmesine bas ve İKİ dosyayı da gönder: report.txt ve crashdoctor_at_crash.log.
+• Bir koruma boşuna alarm veriyordu: "bir YZ klanı artık ait olmadığı bir krallıktan ayrıldı" iletisi, bir klan yalnızca bir krallığa KATILDIĞINDA da çıkıyordu — oysa oyun bu durumu çökmeden hallediyor. Kampanyana bir zararı yoktu ama önlenen çökme sayısı yanlıştı. Artık yalnızca yazıldığı gerçek çökmede devreye giriyor.
+
+Çökme bildir: t.me/CodeRickTg / discord.gg/ZDJZFxQeMV — çökme kartında "Klasörü aç"a bas ve HER İKİ dosyayı gönder: report.txt ve crashdoctor_at_crash.log.

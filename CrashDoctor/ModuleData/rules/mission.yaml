@@ -10,6 +10,7 @@
     zh: "战前部署阶段崩溃（在编队间转移部队）"
     zht: "戰前部署階段崩潰（在編隊間轉移部隊）"
     tr: "Savaş öncesi yerleştirme aşamasında çökme (düzen arası birlik aktarımı)"
+    fr: "Plantage pendant la phase de déploiement pré-combat (transfert d'unités entre formations)"
   description:
     en: |
       Real-world signature from a client crash: log ends right after a troop-transfer
@@ -58,37 +59,53 @@
 
       Yönetilen bir yığın izi (BetterExceptionWindow / BLSE) olmadan yamayı
       adlandıramayız. Tekrarlarsa BLSE kur — bkz. m41 modülü.
+    fr: |
+      Signature réelle d'un plantage client : le journal s'arrête juste après un transfert d'unités
+      entre formations + la ligne 'Selected formations being cleared', en plein combat dans
+      l'écran de déploiement. La ligne suivante n'est jamais écrite — le jeu meurt à l'intérieur
+      de la manipulation de la formation/gestionnaire d'unités de la Mission. Fortement corrélé avec des mods
+      qui patchent la logique de déploiement / de pool d'unités (RestoreLordTroops, RBM, mods de factions
+      custom qui écrasent DeploymentMissionController).
+
+      Sans une trace de pile gérée (BetterExceptionWindow / BLSE), nous ne pouvons pas nommer
+      le patcher. Installez BLSE si cela se reproduit — voir m41 module.
   fix:
     en:
       - "Try a battle WITHOUT moving troops between formations in deployment — if it still crashes, the cause is elsewhere; if it doesn't, the trigger is confirmed."
       - "Disable mods that patch troop pool / deployment one at a time: RestoreLordTroops, RBM, custom factions. Re-enable in groups to find the culprit."
       - "Steam → Verify integrity (catches partial Bannerlord install if a deployment asset is missing)."
       - "Install BLSE + BetterExceptionWindow before next session — captures managed stack with patcher name."
-      - "If campaign-wide: send the crash_report.html (after BLSE is installed) to t.me/CodeRickTg."
+      - "If campaign-wide: send the crash_report.html (after BLSE is installed) to t.me/CodeRickTg / discord.gg/ZDJZFxQeMV."
     ru:
       - "Попробуй бой БЕЗ перемещения войск между формациями в расстановке — если всё равно крашится, причина в другом; если нет — триггер подтверждён."
       - "Отключай по одному моды, патчащие troop pool / deployment: RestoreLordTroops, RBM, кастомные фракции. Включай по группам — ищи виновника."
       - "Steam → Проверить целостность (ловит частичный install если отсутствует deployment-ассет)."
       - "Поставь BLSE + BetterExceptionWindow к следующей сессии — поймает managed-стек с именем патчера."
-      - "Если повторяется — пришли crash_report.html (после установки BLSE) в t.me/CodeRickTg."
+      - "Если повторяется — пришли crash_report.html (после установки BLSE) в t.me/CodeRickTg / discord.gg/ZDJZFxQeMV."
     zh:
       - "试一场战斗，在部署时不在编队间移动部队——如果仍然崩溃，原因在别处；如果不崩，触发条件就确认了。"
       - "逐个禁用修补部队池 / 部署的模组：RestoreLordTroops、RBM、自定义势力。再按组重新启用以找出元凶。"
       - "Steam → 验证文件完整性（如果缺少某个部署资源，可发现 Bannerlord 安装不完整）。"
       - "下次游戏前安装 BLSE + BetterExceptionWindow——能捕获带补丁名称的托管堆栈。"
-      - "如果整个战役都这样：（装好 BLSE 后）把 crash_report.html 发到 t.me/CodeRickTg。"
+      - "如果整个战役都这样：（装好 BLSE 后）把 crash_report.html 发到 t.me/CodeRickTg / discord.gg/ZDJZFxQeMV。"
     zht:
       - "試一場戰鬥，在部署時不在編隊間移動部隊——如果仍然崩潰，原因在別處；如果不崩，觸發條件就確認了。"
       - "逐個停用修補部隊池 / 部署的模組：RestoreLordTroops、RBM、自訂勢力。再按組重新啟用以找出元兇。"
       - "Steam → 驗證檔案完整性（如果缺少某個部署資源，可發現 Bannerlord 安裝不完整）。"
       - "下次遊戲前安裝 BLSE + BetterExceptionWindow——能擷取帶修補程式名稱的託管堆疊。"
-      - "如果整個戰役都這樣：（裝好 BLSE 後）把 crash_report.html 發到 t.me/CodeRickTg。"
+      - "如果整個戰役都這樣：（裝好 BLSE 後）把 crash_report.html 發到 t.me/CodeRickTg / discord.gg/ZDJZFxQeMV。"
     tr:
       - "Yerleştirmede düzenler arası birlik taşımadan bir savaş dene — yine çöküyorsa neden başka yerde; çökmüyorsa tetikleyici doğrulanmıştır."
       - "Birlik havuzunu / yerleştirmeyi yamalayan modları teker teker devre dışı bırak: RestoreLordTroops, RBM, özel hizipler. Suçluyu bulmak için gruplar hâlinde yeniden etkinleştir."
       - "Steam → Bütünlüğü doğrula (bir yerleştirme varlığı eksikse kısmi Bannerlord kurulumunu yakalar)."
       - "Bir sonraki oturumdan önce BLSE + BetterExceptionWindow kur — yama adıyla birlikte yönetilen yığını yakalar."
-      - "Sefer genelindeyse: (BLSE kurulduktan sonra) crash_report.html dosyasını t.me/CodeRickTg adresine gönder."
+      - "Sefer genelindeyse: (BLSE kurulduktan sonra) crash_report.html dosyasını t.me/CodeRickTg / discord.gg/ZDJZFxQeMV adresine gönder."
+    fr:
+      - "Essayez une bataille SANS déplacer d'unités entre les formations lors du déploiement — si le jeu plante toujours, la cause est ailleurs ; si ce n'est pas le cas, le déclencheur est confirmé."
+      - "Désactivez les mods qui patchent le pool d'unités / le déploiement un par un : RestoreLordTroops, RBM, factions custom. Réactivez-les par groupes pour trouver le coupable."
+      - "Steam → Vérifier l'intégrité (capte une installation partielle de Bannerlord si un actif de déploiement est manquant)."
+      - "Installez BLSE + BetterExceptionWindow avant la prochaine session — capture la trace de pile gérée avec le nom du patcher."
+      - "Si c'est à l'échelle de la campagne : envoyez le crash_report.html (après que BLSE est installé) à t.me/CodeRickTg / discord.gg/ZDJZFxQeMV."
   match:
     # Drop the redundant `contains "transfers"` filter — the regex already
     # narrows on "transfers N unit(s) to", so adding a substring check on
@@ -111,6 +128,7 @@
     zh: "打开物品栏界面时崩溃（装备模组冲突）"
     zht: "開啟物品欄介面時崩潰（裝備模組衝突）"
     tr: "Envanter ekranı açılırken çökme (ekipman-mod çakışması)"
+    fr: "Plantage à l'ouverture de l'écran d'inventaire (conflit de mod d'équipement)"
   description:
     en: |
       Click on the inventory tab → game dies. Signature in rgl_log: last entries
@@ -155,6 +173,14 @@
 
       Bir mod, bir kahramanın ekipmanına artık var olmayan bir eşya eklediyse
       (mod kayıt ortasında kaldırıldıysa) orijinal oyun da bununla karşılaşabilir.
+    fr: |
+      Cliquez sur l'onglet inventaire → le jeu plante. Signature dans rgl_log : dernières entrées
+      affichant GauntletInventoryScreen.HandleActivate / HandleResume suivi de tout autre contenu (le jeu a planté pendant le remplissage de l'inventaire). Sur les
+      installations TOR, la cause typique est un mod d'équipement (OpenSourceArmory,
+      ExpandedArmoury, Distinguished Service) qui casse les ID d'équipement de TOR.
+
+      Vanilla peut aussi rencontrer ce problème si un mod a ajouté un objet à l'équipement d'un héros qui
+      n'existe plus (mod désinstallé en cours de sauvegarde).
   fix:
     en:
       - "Disable equipment mods (OpenSourceArmory, ExpandedArmoury, Distinguished Service) and try again."
@@ -181,6 +207,11 @@
       - "TOR + Distinguished Service kullanıyorsan — Nexus'tan TOR DS Compat Patch'i kur."
       - "Sorun orijinal oyunda da sürüyorsa: ekipman modu eklenmeden/kaldırılmadan önceki daha eski bir kaydı yükle."
       - "Steam → Bütünlüğü doğrula, eksik ekipman XML'i olmadığını teyit et."
+    fr:
+      - "Désactivez les mods d'équipement (OpenSourceArmory, ExpandedArmoury, Distinguished Service) et réessayez."
+      - "Si vous utilisez TOR + Distinguished Service — installez le TOR DS Compat Patch sur Nexus."
+      - "Si le problème persiste en vanilla : chargez une sauvegarde antérieure avant que le mod d'équipement n'ait été ajouté/supprimé."
+      - "Steam → Vérifier l'intégrité pour confirmer qu'aucun XML d'équipement n'est manquant."
   match:
     all:
       - log_line:
@@ -205,6 +236,7 @@
     zh: "战斗后战利品界面崩溃"
     zht: "戰鬥後戰利品介面崩潰"
     tr: "Savaştan sonra ganimet ekranında çökme"
+    fr: "Plantage sur l'écran de butin après la bataille"
   description:
     en: |
       Battle ends → loot screen → crash. Often a NullReference inside
@@ -244,6 +276,14 @@
 
       Güven düşük — rgl_log imzası sadece 'battle won' ve ardından sessizlik.
       BLSE'den bir crash_report.html olmadan kesin olarak belirleyemeyiz.
+    fr: |
+      La bataille se termine → écran des butins → plantage. Souvent un NullReference dans
+      MissionAfterMath / LootCampaignBehavior, déclenché par un mod tiers
+      modifiant les butins (Loot Anywhere, Loot Filter) qui a patché la logique
+      après que la signature de la classe sous-jacente ait changé.
+
+      La confiance est faible — la signature rgl_log est simplement 'bataille gagnée' suivie
+      du silence. Sans un crash_report.html de BLSE, nous ne pouvons pas l'identifier avec certitude.
   fix:
     en:
       - "Disable loot-modifying mods (Loot Anywhere, Loot Filter, custom drop-rate mods)."
@@ -265,6 +305,10 @@
       - "Ganimet-değiştiren modları devre dışı bırak (Loot Anywhere, Loot Filter, özel düşme oranı modları)."
       - "Savaş öncesi kaydı yükle ve aynı savaşı tekrar dene — tekrarlanabiliyorsa mod çakışması; değilse yarış durumu (güvenilir şekilde tekrarlamaz)."
       - "Bir sonraki olayda yönetilen yığın için BLSE + BetterExceptionWindow kur."
+    fr:
+      - "Désactivez les mods modifiant les butins (Loot Anywhere, Loot Filter, mods de taux de drop personnalisés)."
+      - "Rechargez la sauvegarde d'avant la bataille et réessayez la même bataille — si reproductible, conflit de mod ; sinon, condition de course (ne se reproduira pas de manière fiable)."
+      - "Installez BLSE + BetterExceptionWindow pour une gestion de pile lors de la prochaine occurrence."
   match:
     all:
       - log_line:
@@ -287,6 +331,7 @@
     zh: "Steam 会话初始化失败——多人 / 创意工坊同步损坏"
     zht: "Steam 工作階段初始化失敗——多人 / 創意工坊同步損壞"
     tr: "Steam oturumu başlatılamadı — çok oyunculu / Workshop senkronizasyonu bozuk"
+    fr: "Échec de l'initialisation de la session Steam — multijoueur / synchronisation Workshop cassée"
   description:
     en: |
       Bannerlord couldn't establish a Steam session. Means: SteamAPI handshake
@@ -330,6 +375,15 @@
       belirtecinin süresinin dolması). Daha az yaygın: Steam süreci çalışmıyor,
       antivirüs SteamAPI64.dll'i engelliyor ya da geçici bir Steam kesintisi
       (steamstat.us'a bak).
+    fr: |
+      Bannerlord n'a pas pu établir une session Steam. Cela signifie : l'échange SteamAPI
+      a échoué, l'API Workshop n'a pas répondu, ou le client Steam de l'utilisateur est hors ligne.
+      Le multijoueur est entièrement indisponible ; la mise à jour automatique des mods Workshop ne s'exécute pas ;
+      les sauvegardes cloud ne se synchronisent pas.
+
+      La cause la plus courante est Steam en mode hors ligne (ou son jeton de connexion a expiré).
+      Moins courant : processus Steam non exécuté, antivirus bloquant SteamAPI64.dll,
+      ou panne transitoire de Steam (vérifiez steamstat.us).
   fix:
     en:
       - "Restart Steam: full quit from system tray (right-click → Exit), wait 10 seconds, relaunch."
@@ -356,6 +410,11 @@
       - "Steam → kullanıcı adına tıkla → çevrimdışı görünüyorsa 'Çevrimiçi ol'."
       - "Antivirüs istisnası: SteamAPI64.dll yolunu ekle (genellikle <Steam>\\steamapps\\common\\Mount & Blade II Bannerlord\\bin\\Win64_Shipping_Client\\)."
       - "Steam durumunu https://steamstat.us adresinde kontrol et — 'Steam API' kırmızıysa geçmesini bekle."
+    fr:
+      - "Redémarrez Steam : quittez complètement depuis la zone de notification (clic droit → Quitter), attendez 10 secondes, relancez."
+      - "Steam → cliquez sur votre nom d'utilisateur → 'Passer en ligne' s'il indique hors ligne."
+      - "Exclusion antivirus : ajoutez le chemin de SteamAPI64.dll (généralement <Steam>\\steamapps\\common\\Mount & Blade II Bannerlord\\bin\\Win64_Shipping_Client\\)."
+      - "Vérifiez l'état de Steam sur https://steamstat.us — si 'Steam API' est rouge, attendez que cela se résolve."
   match:
     any:
       - log_line:

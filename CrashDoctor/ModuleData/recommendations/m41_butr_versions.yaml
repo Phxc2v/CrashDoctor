@@ -5,6 +5,7 @@
     zh: "检查 BUTR / BLSE 版本"
     zht: "檢查 BUTR / BLSE 版本"
     tr: "BUTR / BLSE sürümlerini kontrol et"
+    fr: "Vérifiez les versions de BUTR / BLSE"
   description:
     en: |
       BLSE 1.6.3 and 1.6.4 ship a known regression that crashes the game on startup
@@ -26,6 +27,10 @@
       BLSE 1.6.3 ve 1.6.4, oyunu başlangıçta TaleWorlds.GauntletUI.PrefabSystem.ConstantDefinition
       içinde bir FormatException ile çökerten bilinen bir gerilemeyle gelir.
       Düzeltme, BLSE 1.6.2 sürümüne geri dönmektir.
+    fr: |
+      BLSE 1.6.3 et 1.6.4 incluent une régression connue qui provoque un plantage du jeu au démarrage
+      avec un FormatException dans TaleWorlds.GauntletUI.PrefabSystem.ConstantDefinition.
+      Le correctif consiste à revenir à BLSE 1.6.2.
   details:
     en:
       - "Crash Doctor cannot install/uninstall BLSE itself."
@@ -47,3 +52,8 @@
       - "Crash Doctor BLSE'yi kendi başına kuramaz/kaldıramaz."
       - "«Uygula» tarayıcınızda BLSE NexusMods sayfasını açar — 1.6.2'yi manuel olarak indirin."
       - "1.6.2'yi kurduktan sonra Bannerlord'u yeniden başlatın."
+
+    fr:
+      - "Crash Doctor ne peut pas installer/désinstaller BLSE lui-même."
+      - "«Appliquer» ouvre la page BLSE NexusMods dans votre navigateur — téléchargez 1.6.2 manuellement."
+      - "Après avoir installé 1.6.2, redémarrez Bannerlord."

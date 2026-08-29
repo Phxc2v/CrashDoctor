@@ -5,6 +5,7 @@
     zh: "清理 FDS_ShaderCache 的 XML 黑名单"
     zht: "清理 FDS_ShaderCache 的 XML 黑名單"
     tr: "FDS_ShaderCache'in XML atlama listesini temizle"
+    fr: "Vider la liste de saut XML du cache des shaders FDS_ShaderCache"
   description:
     en: |
       FDS_ShaderCache (Nexus 12195) is not just a shader cache: its DLL patches the game's XML
@@ -40,6 +41,8 @@
       okuyan diğer modlar çökebilir (doğrulanmış bir vaka, The Old Realms'in sefer yüklemesinde
       çökmesidir). Atlama yalnızca yeniden-oluşturma sırasında çalışır, bu yüzden normal bir yeniden
       başlatma genellikle düzgün yüklenir, ama dosya kalıcıdır.
+    fr: |
+      FDS_ShaderCache (Nexus 12195) n'est pas qu'un simple cache de shaders : son DLL modifie le chargeur XML du jeu. Lors de sa phase de reconstruction des shaders, tout fichier XML ayant généré une erreur lors du chargement est inscrit dans fds_xml_blacklist.txt et, par la suite, le mod renvoie un document VIDE pour ce fichier — ainsi, les objets, éléments et types définis dans ce XML disparaissent silencieusement, et d'autres mods qui les lisent au démarrage peuvent planter (un cas confirmé est un plantage de The Old Realms lors du chargement de la campagne). Le saut ne s'applique que pendant la reconstruction, donc un redémarrage normal charge généralement bien, mais le fichier persiste.
   details:
     en:
       - "This deletes fds_xml_blacklist.txt in FDS_ShaderCache's logs folder; the skipped XMLs then load normally again."
@@ -66,3 +69,9 @@
       - "Kaydına veya modun kendisine dokunulmaz."
       - "Uzun vadede daha güvenli: FDS_ShaderCache modunu kaldır — tasarımı gereği bir kez bile hata veren her XML'i düşürür."
       - "Yeniden başlatma gerekmez."
+
+    fr:
+      - "Cela supprime fds_xml_blacklist.txt dans le dossier de logs de FDS_ShaderCache ; les fichiers XML ignorés chargent alors normalement à nouveau."
+      - "Votre sauvegarde et le mod lui-même ne sont pas modifiés."
+      - "Plus sûr à long terme : supprimez le mod FDS_ShaderCache — par conception, il ignore tout XML ayant généré une erreur ne serait qu'une seule fois."
+      - "Aucun redémarrage requis."

@@ -1,0 +1,284 @@
+{
+ "schema": "rick.showcase/1",
+ "built_utc": "2026-08-23T22:48:38+00:00",
+ "langs": [
+  "RU",
+  "EN",
+  "TR",
+  "CNs",
+  "CNt",
+  "FR"
+ ],
+ "products": [
+  {
+   "id": "CrashDoctor",
+   "name": "Crash Doctor",
+   "author": "v2CodeRick",
+   "line": {
+    "RU": "Инструмент для исправления вылетов и очистки сохранений.",
+    "EN": "Tool for fixing crashes and cleaning saves.",
+    "TR": "Çökmeleri düzeltme ve kayıtları temizleme aracı.",
+    "CNs": "用于修复崩溃和清理存档的工具。",
+    "CNt": "用於修復崩潰與清理存檔的工具。",
+    "FR": "Outil de correction des plantages et nettoyage des sauvegardes."
+   },
+   "summary": {
+    "RU": "Универсальный инструмент для исправления вылетов, очистки сохранений и оптимизации для Bannerlord версий 1.2.12, 1.3.15 и 1.4.6.",
+    "EN": "An all-in-one crash fixer, save cleaner, and optimization tool for Bannerlord 1.2.12, 1.3.15, and 1.4.6.",
+    "TR": "Bannerlord 1.2.12, 1.3.15 ve 1.4.6 sürümleri için tek bir araçta çözümler, kayıt temizleyici ve optimizasyon aracı.",
+    "CNs": "一款适用于《骑马与砍杀2：霸主》1.2.12、1.3.15 和 1.4.6 版本的集崩溃修复、存档清理与优化于一体的工具。",
+    "CNt": "《騎馬與砍殺2：霸主》1.2.12、1.3.15 與 1.4.6 版本的整合型崩潰修復、存檔清理與效能優化工具。",
+    "FR": "Un outil tout-en-un de correction des plantages, de nettoyage des sauvegardes et d'optimisation pour Bannerlord 1.2.12, 1.3.15 et 1.4.6."
+   },
+   "description": {
+    "RU": "Crash Doctor предотвращает вылеты во время игры, вызванные модами и проблемами движка, восстанавливает поврежденные или раздутые файлы сохранений и повышает стабильность при использовании большого количества модов. Поддерживаются версии игры 1.2.12, 1.3.15 и 1.4.6, а также совместимость с крупными модами, такими как Banner Kings, The Old Realms и War Sails.\n\nМод включает модуль Anti-Crash Guard, который исправляет определенные ошибки, такие как «сиротские» юниты ИИ, проблемы с загрузкой/выгрузкой гарнизона и нулевые ссылки в ИИ битвы. Crash Analyzer анализирует причины вылетов на основе правил YAML и предоставляет понятные объяснения на английском языке, а также приоритизированные шаги по исправлению как для оригинальной игры, так и для модифицированных конфигураций.\n\nМодули оптимизации системы автоматически настраивают параметры Windows, драйверы GPU и реестр для повышения производительности. Эти изменения выполняются по обратимому алгоритму с созданием резервных копий и охватывают управление памятью, очистку диска и оптимизацию ноутбуков с гибридной графикой.",
+    "EN": "Crash Doctor prevents runtime crashes caused by mods and engine issues, repairs corrupted or bloated saves, and improves stability in heavily modded setups. It supports game versions 1.2.12, 1.3.15, and 1.4.6 and is compatible with major mods such as Banner Kings, The Old Realms, and War Sails.\n\nThe mod includes an Anti-Crash Guard that fixes specific errors like orphaned AI units, garrison save-load issues, and battle AI null references. A Crash Analyzer diagnoses crashes using YAML rules and provides plain-English explanations and prioritized fix steps for vanilla and modded configurations.\n\nSystem optimization modules automatically adjust Windows, GPU drivers, and registry settings to improve performance. These changes follow a reversible workflow with backups, covering memory management, disk cleanup, and hybrid-graphics laptop tweaks.",
+    "TR": "Crash Doctor, modlar ve motor sorunlarından kaynaklanan çalışma zamanı çökmelerini önler, bozuk veya aşırı şişmiş kayıtları onarır ve yoğun modlu kurulumlarda kararlılığı artırır. 1.2.12, 1.3.15 ve 1.4.6 oyun sürümlerini destekler ve Banner Kings, The Old Realms ve War Sails gibi büyük modlarla uyumludur.\n\nMod, yetim kalan AI birimleri, garnizon kayıt yükleme sorunları ve savaş AI sıfır referansları gibi belirli hataları düzelten bir Çökme Önleyici Koruma (Anti-Crash Guard) içerir. Bir Çökme Analizörü, YAML kuralları kullanarak çökmeleri teşhis eder ve hem saf hem de modlu yapılandırmalar için basit İngilizce açıklamalar ve önceliklendirilmiş düzeltme adımları sağlar.\n\nSistem optimizasyon modülleri, performansı artırmak için Windows, GPU sürücüleri ve kayıt defteri ayarlarını otomatik olarak düzenler. Bu değişiklikler, bellek yönetimi, disk temizleme ve hibrit grafikli dizüstü bilgisayar ince ayarlarını kapsayan, yedeklemelerle birlikte geri alınabilir bir iş akışını takip eder.",
+    "CNs": "Crash Doctor 可防止由模组和引擎问题导致的运行时崩溃，修复损坏或臃肿的存档，并提升重度模组环境下的稳定性。它支持游戏版本 1.2.12、1.3.15 和 1.4.6，并与 Banner Kings、The Old Realms 和 War Sails 等主要模组兼容。\n\n该模组包含“防崩溃守卫”（Anti-Crash Guard），可修复特定错误，如孤儿 AI 单位、驻军存档加载问题以及战斗 AI 空引用。崩溃分析器（Crash Analyzer）使用 YAML 规则诊断崩溃，并提供通俗易懂的解释以及针对原版和模组配置的分优先级修复步骤。\n\n系统优化模块会自动调整 Windows、GPU 驱动和注册表设置以提升性能。这些更改遵循带有备份的可逆工作流程，涵盖内存管理、磁盘清理以及混合显卡笔记本的优化。",
+    "CNt": "Crash Doctor 可防止由模組與引擎問題導致的執行階段崩潰，修復損毀或過於龐大的存檔，並提升重度模組化環境下的穩定性。它支援遊戲版本 1.2.12、1.3.15 與 1.4.6，並與 Banner Kings、The Old Realms 與 War Sails 等主要模組相容。\n\n此模組內建 Anti-Crash Guard，可修復特定錯誤，例如孤立的 AI 單位、駐軍存檔讀取問題以及戰鬥 AI 的空值參照。Crash Analyzer 則使用 YAML 規則來診斷崩潰原因，並提供通俗易懂的說明與針對原版及模組化配置的優先修復步驟。\n\n系統優化模組會自動調整 Windows、GPU 驅動程式與登錄機碼設定以提升效能。這些變更遵循可逆的工作流程並包含備份，涵蓋記憶體管理、磁碟清理以及混合繪圖筆記型電腦的微調。",
+    "FR": "Crash Doctor empêche les plantages en cours d'exécution causés par des mods et des problèmes du moteur, répare les sauvegardes corrompues ou alourdies, et améliore la stabilité dans les configurations fortement modifiées. Il prend en charge les versions du jeu 1.2.12, 1.3.15 et 1.4.6 et est compatible avec les mods majeurs tels que Banner Kings, The Old Realms et War Sails.\n\nLe mod comprend un Anti-Crash Guard qui corrige des erreurs spécifiques comme les unités IA orphelines, les problèmes de chargement des sauvegardes de garnison et les références nulles de l'IA de bataille. Un Crash Analyzer diagnostique les plantages à l'aide de règles YAML et fournit des explications en langage clair ainsi que des étapes de correction priorisées pour les configurations vanilla et modifiées.\n\nLes modules d'optimisation du système ajustent automatiquement les paramètres de Windows, des pilotes GPU et du registre pour améliorer les performances. Ces modifications suivent un processus réversible avec des sauvegardes, couvrant la gestion de la mémoire, le nettoyage du disque et les ajustements pour les ordinateurs portables à graphiques hybrides."
+   },
+   "image": "images/CrashDoctor.jpg",
+   "links": [
+    {
+     "site": "moddb",
+     "url": "https://www.moddb.com/mods/crash-doctor"
+    },
+    {
+     "site": "nexus",
+     "url": "https://www.nexusmods.com/mountandblade2bannerlord/mods/11132"
+    },
+    {
+     "site": "steam",
+     "url": "https://steamcommunity.com/sharedfiles/filedetails/?id=3717685432"
+    }
+   ],
+   "downloads": 20861,
+   "updated_utc": "2026-08-19T19:16:01+00:00"
+  },
+  {
+   "id": "RTSCameraUniversal",
+   "name": "RTS Camera Universal",
+   "author": "v2CodeRick",
+   "line": {
+    "RU": "Объединяет RTS-камеру, систему команд, миникарту и ускорение времени для версий 1.2.x, 1.3.x и 1.4.x.",
+    "EN": "Combines RTS camera, command system, minimap, and time acceleration for v1.2-1.4.",
+    "TR": "RTS kamerası, komutlar, mini harita ve zaman hızlandırmasını 1.2-1.4 sürümleri için birleştirir.",
+    "CNs": "整合RTS视角、指令、小地图与时间加速，支持1.2-1.4版。",
+    "CNt": "整合 RTS 鏡頭、指令、小地圖與時間加速，支援 1.2.x 至 1.4.x 版本。",
+    "FR": "Fusionne caméra RTS, commandes, minimap et accélération pour les versions 1.2.x, 1.3.x et 1.4.x."
+   },
+   "summary": {
+    "RU": "Универсальный мод, объединяющий RTS-камеру, систему команд, миникарту битвы и ускорение времени для Bannerlord версий 1.2.x, 1.3.x и 1.4.x.",
+    "EN": "An all-in-one mod providing RTS camera, command system, battle minimap, and super speed for Bannerlord 1.2.x, 1.3.x, and 1.4.x.",
+    "TR": "Bannerlord 1.2.x, 1.3.x ve 1.4.x için RTS kamera, komut sistemi, savaş mini haritası ve süper hız sağlayan tek parça bir mod.",
+    "CNs": "一款为《骑马与砍杀2：霸主》1.2.x、1.3.x 和 1.4.x 版本提供即时战略视角、指挥系统、战斗小地图和超级速度功能的整合模组。",
+    "CNt": "一款為 Bannerlord 1.2.x、1.3.x 和 1.4.x 提供的整合模組，包含即時戰略（RTS）視角、指揮系統、戰鬥小地圖以及超級速度功能。",
+    "FR": "Un mod tout-en-un offrant une caméra de jeu de stratégie en temps réel (RTS), un système de commandement, une minimap de bataille et une vitesse surhumaine pour Bannerlord 1.2.x, 1.3.x et 1.4.x."
+   },
+   "description": {
+    "RU": "RTS Camera Universal объединяет RTS-камеру, систему команд RTS, миникарту битвы и ускорение времени в одном пакете. Мод поддерживает Bannerlord версий 1.2.x, 1.3.x и 1.4.x, устраняя необходимость в отдельных релизах для каждой версии. В состав мода входят расширенные боевые построения, функции управления временем, такие как пауза и замедление, а также исправления ошибок для повышения стабильности.",
+    "EN": "RTS Camera Universal combines the RTS Camera, RTS Command System, Battle Minimap, and Super Speed into a single package. It supports Bannerlord 1.2.x, 1.3.x, and 1.4.x, eliminating the need for separate version-specific releases. The mod includes advanced formations, time control features like pause and slow motion, and bug fixes for stability.",
+    "TR": "RTS Camera Universal, RTS Kamera, RTS Komut Sistemi, Savaş Mini Haritası ve Süper Hız'ı tek bir paketle birleştirir. Bannerlord 1.2.x, 1.3.x ve 1.4.x sürümlerini destekleyerek, her sürüm için ayrı ayrı indirme gereksinimini ortadan kaldırır. Mod, gelişmiş oluşumlar, duraklatma ve yavaşlatma gibi zaman kontrolü özellikleri ve kararlılık için hata düzeltmeleri içerir.",
+    "CNs": "RTS Camera Universal 将即时战略视角、即时战略指挥系统、战斗小地图和超级速度整合到一个包中。它支持《骑马与砍杀2：霸主》1.2.x、1.3.x 和 1.4.x 版本，无需分别下载针对不同版本的模组。该模组包含高级阵型、暂停和慢动作等时间控制功能，以及用于提升稳定性的错误修复。",
+    "CNt": "RTS Camera Universal 將 RTS 視角、RTS 指揮系統、戰鬥小地圖和超級速度整合為單一套件。它支援 Bannerlord 1.2.x、1.3.x 和 1.4.x，無需再分別下載特定版本的模組。此模組包含進階陣型、暫停和慢動作等時間控制功能，以及提升穩定性的錯誤修復。",
+    "FR": "RTS Camera Universal regroupe la caméra RTS, le système de commandement RTS, la minimap de bataille et la vitesse surhumaine en un seul package. Il prend en charge Bannerlord 1.2.x, 1.3.x et 1.4.x, éliminant ainsi le besoin de versions spécifiques séparées. Le mod inclut des formations avancées, des fonctionnalités de contrôle du temps comme la pause et le ralenti, ainsi que des corrections de bugs pour améliorer la stabilité."
+   },
+   "image": "images/RTSCameraUniversal.jpg",
+   "links": [
+    {
+     "site": "moddb",
+     "url": "https://www.moddb.com/mods/rts-camera-universal"
+    },
+    {
+     "site": "nexus",
+     "url": "https://www.nexusmods.com/mountandblade2bannerlord/mods/11643"
+    },
+    {
+     "site": "steam",
+     "url": "https://steamcommunity.com/sharedfiles/filedetails/?id=3743392231"
+    }
+   ],
+   "downloads": 4791,
+   "updated_utc": "2026-06-15T21:23:00+00:00"
+  },
+  {
+   "id": "RickLauncher",
+   "name": "RickLauncher — Bannerlord Advanced Launcher",
+   "author": "Phxc2v",
+   "line": {
+    "RU": "Лаунчер для Bannerlord: несколько версий игры и сборок модов рядом, у каждой свои сохранения и настройки.",
+    "EN": "A launcher for Bannerlord: several game versions and mod packs side by side, each with its own saves and settings.",
+    "TR": "Bannerlord için başlatıcı: birkaç oyun sürümü ve mod paketi yan yana, her biri kendi kayıtlarıyla.",
+    "CNs": "Bannerlord 启动器：多个游戏版本和模组整合包并存，各有各的存档与设置。",
+    "CNt": "Bannerlord 啟動器：多個遊戲版本和模組整合包並存，各有各的存檔與設定。",
+    "FR": "Un lanceur pour Bannerlord : plusieurs versions du jeu et plusieurs packs de mods côte à côte, chacun avec ses propres sauvegardes et paramètres."
+   },
+   "summary": {
+    "RU": "Держит несколько версий Bannerlord и несколько сборок модов в одном окне: у каждой свои сохранения, настройки MCM и шейдеры, и они не мешают друг другу. Моды ставятся из архива, папки, мастерской Steam или ссылки на GitHub, ModDB и Nexus, а нужные библиотеки — Harmony, ButterLib, UIExtenderEx, MCM — подтягиваются сами.",
+    "EN": "Keeps several Bannerlord versions and several mod packs in one window: each has its own saves, MCM settings and shaders, and they never get in each other's way. Mods install from an archive, a folder, the Steam Workshop or a link to GitHub, ModDB and Nexus, while the libraries — Harmony, ButterLib, UIExtenderEx, MCM — are fetched for you.",
+    "TR": "Birkaç Bannerlord sürümünü ve birkaç mod paketini tek pencerede tutar: her birinin kendi kayıtları, MCM ayarları ve gölgelendiricileri vardır. Modlar arşivden, klasörden, Steam Atölyesi'nden veya GitHub, ModDB ve Nexus bağlantısından kurulur; Harmony, ButterLib, UIExtenderEx ve MCM kendiliğinden indirilir.",
+    "CNs": "在一个窗口里管理多个 Bannerlord 版本和多个模组整合包：每个都有自己的存档、MCM 设置和着色器，互不干扰。模组可从压缩包、文件夹、Steam 创意工坊或 GitHub、ModDB、Nexus 链接安装，Harmony、ButterLib、UIExtenderEx、MCM 等前置会自动下载。",
+    "CNt": "在一個視窗裡管理多個 Bannerlord 版本和多個模組整合包：每個都有自己的存檔、MCM 設定和著色器，互不干擾。模組可從壓縮檔、資料夾、Steam 創意工坊或 GitHub、ModDB、Nexus 連結安裝，Harmony、ButterLib、UIExtenderEx、MCM 等前置會自動下載。",
+    "FR": "Garde plusieurs versions de Bannerlord et plusieurs packs de mods dans une seule fenêtre : chacun possède ses propres sauvegardes, paramètres MCM et shaders, sans jamais interférer entre eux. Les mods s'installent depuis une archive, un dossier, le Workshop Steam ou un lien vers GitHub, ModDB et Nexus, tandis que les bibliothèques — Harmony, ButterLib, UIExtenderEx, MCM — sont récupérées automatiquement pour vous."
+   },
+   "description": {
+    "RU": "RickLauncher — лаунчер для Mount & Blade II: Bannerlord, в котором рядом живут несколько версий игры и несколько сборок модов.\n\nЧто он умеет:\n\n• Несколько версий игры и сборок в одном окне — переключение одним нажатием.\n• У каждой сборки свои сохранения, настройки MCM и шейдеры: правки в одной сборке не задевают другую.\n• Перенос из игры: подхватывает уже существующие сохранения, настройки модов и порядок загрузки.\n• Установка модов из архива, папки, мастерской Steam или ссылки — GitHub, ModDB, Nexus.\n• Библиотеки ставятся сами: Harmony, ButterLib, UIExtenderEx, MCM.\n• Порядок загрузки: включение и отключение модов, умная сортировка по зависимостям, проверка конфликтов.\n• Следит за обновлениями и помечает вышедшие новые версии.\n• Сборку можно собрать и передать другому одним файлом .rickpack.\n• Ничего не трогает в папке игры: добавленные моды лежат в своём каталоге и подключаются к игре только на время запуска.\n• Встроенная справка — с картинками и разбором по шагам, на всех пяти языках.\n• Обновляется сам, а там, где GitHub недоступен, — со своего зеркала.\n\nЯзыки: English, Русский, Türkçe, 简体中文, 繁體中文.\n\nТребования: Windows 10/11 (64 бита) и установленная игра. Ставить .NET не нужно — всё внутри.",
+    "EN": "RickLauncher is a launcher for Mount & Blade II: Bannerlord where several game versions and several mod packs live side by side.\n\nWhat it does:\n\n• Several game versions and packs in one window — one click to switch.\n• Every pack keeps its own saves, MCM settings and shaders: changing one pack leaves the others alone.\n• Imports from the game: picks up your existing saves, mod settings and load order.\n• Installs mods from an archive, a folder, the Steam Workshop or a link — GitHub, ModDB, Nexus.\n• Fetches the libraries by itself: Harmony, ButterLib, UIExtenderEx, MCM.\n• Load order: enable and disable mods, smart sorting by dependencies, conflict checks.\n• Watches for updates and marks the ones that have a new version.\n• A pack can be built and handed to someone else as a single .rickpack file.\n• Fully non-invasive: added mods live in the launcher's own folder and are linked into the game only while it runs.\n• Built-in help — step by step, with pictures, in all five languages.\n• Updates itself, and falls back to its own mirror where GitHub is unreachable.\n\nLanguages: English, Русский, Türkçe, 简体中文, 繁體中文.\n\nRequirements: Windows 10/11 (64-bit) and a copy of the game. No .NET install needed — the build is self-contained.",
+    "TR": "RickLauncher, Mount & Blade II: Bannerlord için bir başlatıcıdır; birkaç oyun sürümü ve birkaç mod paketi yan yana yaşar.\n\nNeler yapar:\n\n• Tek pencerede birkaç oyun sürümü ve paket — geçiş tek tıkla.\n• Her paketin kendi kayıtları, MCM ayarları ve gölgelendiricileri: birini değiştirmek diğerine dokunmaz.\n• Oyundan içe aktarma: mevcut kayıtlarınızı, mod ayarlarınızı ve yükleme sıranızı alır.\n• Modları arşivden, klasörden, Steam Atölyesi'nden veya bağlantıdan kurar — GitHub, ModDB, Nexus.\n• Kitaplıkları kendisi indirir: Harmony, ButterLib, UIExtenderEx, MCM.\n• Yükleme sırası: modları açıp kapatma, bağımlılıklara göre akıllı sıralama, çakışma denetimi.\n• Güncellemeleri izler ve yeni sürümü olanları işaretler.\n• Bir paket tek bir .rickpack dosyası olarak paylaşılabilir.\n• Oyun klasörüne hiç dokunmaz: eklenen modlar kendi klasöründe durur ve oyuna yalnızca çalışırken bağlanır.\n• Yerleşik yardım — adım adım, görsellerle, beş dilde.\n• Kendini günceller; GitHub'a erişilemeyen yerlerde kendi aynasını kullanır.\n\nDiller: English, Русский, Türkçe, 简体中文, 繁體中文.\n\nGereksinimler: Windows 10/11 (64 bit) ve oyunun kurulu bir kopyası. .NET kurmaya gerek yok.",
+    "CNs": "RickLauncher 是《骑马与砍杀2：霸主》的启动器，可让多个游戏版本和多个模组整合包并存。\n\n功能：\n\n• 一个窗口管理多个游戏版本和整合包——一键切换。\n• 每个整合包都有独立的存档、MCM 设置和着色器：改动一个不会影响其他。\n• 从游戏导入：自动读取已有的存档、模组设置和加载顺序。\n• 从压缩包、文件夹、Steam 创意工坊或链接安装模组——GitHub、ModDB、Nexus。\n• 自动获取前置库：Harmony、ButterLib、UIExtenderEx、MCM。\n• 加载顺序：启用与停用模组、按依赖智能排序、冲突检查。\n• 跟踪更新，并标出有新版本的模组。\n• 整合包可打包成单个 .rickpack 文件分享给他人。\n• 完全不侵入：新增模组存放在启动器自己的目录，仅在游戏运行时挂载。\n• 内置帮助——图文并茂，分步讲解，支持全部五种语言。\n• 自动更新；在无法访问 GitHub 的地区改用自建镜像。\n\n语言：English、Русский、Türkçe、简体中文、繁體中文。\n\n要求：Windows 10/11（64 位）以及已安装的游戏。无需安装 .NET。",
+    "CNt": "RickLauncher 是《騎馬與砍殺2：霸主》的啟動器，可讓多個遊戲版本和多個模組整合包並存。\n\n功能：\n\n• 一個視窗管理多個遊戲版本和整合包——一鍵切換。\n• 每個整合包都有獨立的存檔、MCM 設定和著色器：改動一個不會影響其他。\n• 從遊戲匯入：自動讀取既有的存檔、模組設定和載入順序。\n• 從壓縮檔、資料夾、Steam 創意工坊或連結安裝模組——GitHub、ModDB、Nexus。\n• 自動取得前置庫：Harmony、ButterLib、UIExtenderEx、MCM。\n• 載入順序：啟用與停用模組、依相依性智慧排序、衝突檢查。\n• 追蹤更新，並標出有新版本的模組。\n• 整合包可打包成單一 .rickpack 檔案分享給他人。\n• 完全不侵入：新增模組存放在啟動器自己的目錄，僅在遊戲執行時掛載。\n• 內建說明——圖文並茂、逐步講解，支援全部五種語言。\n• 自動更新；在無法存取 GitHub 的地區改用自建鏡像。\n\n語言：English、Русский、Türkçe、简体中文、繁體中文。\n\n需求：Windows 10/11（64 位元）以及已安裝的遊戲。無需安裝 .NET。",
+    "FR": "RickLauncher est un lanceur pour Mount & Blade II: Bannerlord où plusieurs versions du jeu et plusieurs packs de mods coexistent côte à côte.\n\nCe qu'il fait :\n\n• Plusieurs versions du jeu et packs dans une seule fenêtre — un clic pour basculer.\n• Chaque pack conserve ses propres sauvegardes, paramètres MCM et shaders : modifier un pack n'affecte pas les autres.\n• Importation depuis le jeu : récupère vos sauvegardes existantes, les paramètres des mods et l'ordre de chargement.\n• Installation des mods depuis une archive, un dossier, le Workshop Steam ou un lien — GitHub, ModDB, Nexus.\n• Récupération automatique des bibliothèques : Harmony, ButterLib, UIExtenderEx, MCM.\n• Ordre de chargement : activez et désactivez les mods, tri intelligent par dépendances, vérification des conflits.\n• Surveille les mises à jour et signale celles qui ont une nouvelle version.\n• Un pack peut être construit et transmis à quelqu'un d'autre sous forme d'un seul fichier .rickpack.\n• Entièrement non intrusif : les mods ajoutés vivent dans le propre dossier du lanceur et ne sont liés au jeu que pendant son exécution.\n• Aide intégrée — étape par étape, avec des images, dans les cinq langues.\n• Se met à jour automatiquement et utilise son propre miroir si GitHub est inaccessible.\n\nLangues : English, Русский, Türkçe, 简体中文, 繁體中文.\n\nExigences : Windows 10/11 (64-bit) et une copie du jeu. Aucune installation de .NET nécessaire — le build est autonome."
+   },
+   "image": "images/RickLauncher.jpg",
+   "links": [
+    {
+     "site": "github",
+     "url": "https://github.com/Phxc2v/RickLauncher-Releases"
+    },
+    {
+     "site": "nexus",
+     "url": "https://www.nexusmods.com/mountandblade2bannerlord/mods/12639"
+    }
+   ],
+   "downloads": 123,
+   "updated_utc": "2026-08-13T20:14:00+00:00"
+  },
+  {
+   "id": "LoreHardcore",
+   "name": "Lore-Hardcore — TOR Balance Overhaul",
+   "author": "Phxc2v",
+   "line": {
+    "RU": "Перерабатывает баланс Warhammer: орки становятся устрашающей ордой, а фракция Хаоса полностью играбельна.",
+    "EN": "Reworks Warhammer balance: orcs become a terrifying horde, and the Chaos faction is fully playable.",
+    "TR": "Warhammer dengesini yeniden düzenler: orklar korkutucu bir orduya dönüşür ve Kaos fraksiyonu tamamen oynanabilir olur.",
+    "CNs": "重做《战锤》平衡：兽人成为恐怖军团，混沌阵营完全可玩。",
+    "CNt": "重做《戰鎚》平衡性：半獸人成為令人畏懼的軍團，混沌陣營完全可玩。",
+    "FR": "Rebalance Warhammer : les orques deviennent une horde terrifiante, la faction Chaos est entièrement jouable."
+   },
+   "summary": {
+    "RU": "Жёсткая переработка баланса Warhammer для мода The Old Realms: орки превращены в устрашающую орду, добавлена полностью играбельная фракция Хаоса.",
+    "EN": "A hardcore Warhammer rebalance for The Old Realles mod, reworking Greenskins into a terrifying horde and adding a fully playable Chaos faction.",
+    "TR": "The Old Realms modu için sert zorluklu bir Warhammer dengelemesi; Yeşiltenekleri korkunç bir sürü haline getirir ve tamamen oynanabilir bir Kaos fraksiyonu ekler.",
+    "CNs": "为《旧世界》（The Old Realms）模组打造的硬核战锤平衡调整，将绿皮重塑为令人恐惧的兽潮，并新增一个完全可玩的混沌阵营。",
+    "CNt": "為《The Old Realms》模組設計的硬核戰錘重平衡模組，將綠皮改造成令人畏懼的軍團，並新增完整可玩的混沌陣營。",
+    "FR": "Un rééquilibrage hardcore de Warhammer pour le mod The Old Realms, transformant les Greenskins en horde terrifiante et ajoutant une faction Chaos entièrement jouable."
+   },
+   "description": {
+    "RU": "Этот мод полностью перерабатывает фракцию Орки, чтобы привести её в соответствие с лором Warhammer: орки становятся сильнее, но дороже, и лишены страха, тогда как гоблины превращаются в хрупкие юниты. Введена уникальная экономика «зубов» для орков и гоблинов, осадные тараны с высоким уроном заменили баллисты, а голодные орки могут есть пленных или гоблинов вместо того, чтобы умирать. ИИ ограничен для предотвращения снежного кома: армии насчитывают около 80 юнитов и 5 отрядов, а тролли выступают в роли редких тяжёлых танков.\n\nФракция Хаос добавлена как полностью играбельная опция через внутриигровые механики, а не читы. Игрок может стать вассалом Хаоса, платя дань и получая божественное снаряжение, или заключить Тёмный завет, чтобы обратить свою культуру. Система «Славы Хаоса» позволяет бросить вызов действующему Королю Хаоса на дуэль; победа позволяет узурпировать королевство, включая вассалов, столицу и знамёна. В поселениях Хаоса есть уникальные рынки проклятых предметов и божественного снаряжения, а улучшения войск требуют как золота, так и Тёмной энергии.\n\nМод самодостаточен, включает 13 встроенных языков и содержит внутриигровое руководство, доступное по клавише H. Он разработан для Bannerlord 1.3.15 и TOR 0.6.0+, требует наличия зависимостей Bannerlord.Harmony и TOR_Armory. По умолчанию включены орки, но отключён Хаос, который в настоящее время находится в бета-тестировании.",
+    "EN": "This mod overhauls the Greenskins faction to align with Warhammer lore, making orcs stronger, more expensive, and fearless while rendering goblins as fragile units. It introduces a unique 'teef' economy for orcs and goblins, replaces trebuchets with high-damage battering rams, and allows starving orcs to eat prisoners or goblins instead of dying. The AI is capped to prevent snowballing, with armies limited to approximately 80 troops and 5 parties, while trolls serve as rare heavy tanks.\n\nThe Chaos faction is introduced as a fully playable option through in-game mechanics rather than cheats. Players can become a Chaos vassal by paying tribute and receiving god-gear, or take the Dark Pact to convert their own culture. A 'Chaos Glory' system allows players to challenge the reigning Chaos King for a duel; winning usurps the kingdom, including vassals, capital, and banners. Chaos settlements feature unique markets for cursed items and god-gear, with troop upgrades requiring both gold and Dark Energy.\n\nThe mod is self-contained with 13 built-in languages and includes an in-game guide accessible via the H key. It is designed for Bannerlord 1.3.15 and TOR 0.6.0+, requiring Bannerlord.Harmony and TOR_Armory as dependencies. Defaults enable Orcs but disable Chaos, which is currently in beta.",
+    "TR": "Bu mod, Yeşiltenekler fraksiyonunu Warhammer evrenine uygun hale getirmek için baştan sona yeniden düzenlenmiştir. Orc'ler daha güçlü, daha pahalı ve korkusuz hale getirilirken, goblinler kırılgan birer birlik olarak tasarlanmıştır. Orc'ler ve goblinler için benzersiz bir 'diş' ekonomisi tanıtılmış, trebuchetler yüksek hasarlı çekiçli kapılarla değiştirilmiş ve açlık çeken orc'lerin ölmesi yerine esirleri veya goblinleri yiyebilmeleri sağlanmıştır. Yapay zeka, zincirleme başarıları (snowballing) önlemek için sınırlanmış; ordular yaklaşık 80 asker ve 5 parti ile sınırlandırılmış, troll'ler ise nadir görülen ağır tanklar olarak yer almaktadır.\n\nKaos fraksiyonu, hileler yerine oyun içi mekanikler aracılığıyla tamamen oynanabilir bir seçenek olarak eklenmiştir. Oyuncular, haraç ödeyip tanrısal ekipman alarak bir Kaos vassali olabilir veya kendi kültürünü dönüştürmek için Karanlık Pakt'ı imzalayabilir. 'Kaos Zaferi' sistemi sayesinde oyuncu, tahtta oturan Kaos Kralı ile düello yapabilir; kazanılırsa vassaller, başkent ve bayraklar dahil olmak üzere krallığı ele geçirebilir. Kaos yerleşimlerinde lanetli eşyalar ve tanrısal ekipmanlar için benzersiz pazarlar bulunur; birlik yükseltmeleri için hem altın hem de Karanlık Enerji gereklidir.\n\nMod, 13 yerleşik dil desteğiyle kendi kendine yeten bir yapıdadır ve H tuşu aracılığıyla erişilebilen oyun içi bir kılavuz içerir. Bannerlord 1.3.15 ve TOR 0.6.0+ sürümleri için tasarlanmıştır; bağımlılıklar olarak Bannerlord.Harmony ve TOR_Armory gerektirir. Varsayılan ayarlarda Orc'ler etkinleştirilmiş, ancak henüz beta aşamasında olan Kaos devre dışı bırakılmıştır.",
+    "CNs": "本模组对绿皮（Greenskins）阵营进行了全面 overhaul，以契合战锤背景设定：兽人变得更强壮、造价更高且无所畏惧，而哥布林则成为脆弱的单位。模组为兽人和哥布林引入了独特的“牙齿”（teef）经济系统，用高伤害的冲车替换了投石机，并允许饥饿的兽人通过食用俘虏或哥布林来维持生存而非死亡。AI 行为受到限制以防止滚雪球效应，军队规模被限制在约 80 名士兵和 5 个队伍以内，而巨魔则作为稀有的重型坦克存在。\n\n混沌（Chaos）阵营作为完全可玩的内容通过游戏内机制引入，而非作弊手段。玩家可以通过缴纳贡品并获取“神装”成为混沌附庸，或接受“黑暗契约”来转化自身文化。“混沌荣耀”系统允许玩家挑战现任混沌之王进行决斗；获胜者将篡夺整个王国，包括附庸、首都和旗帜。混沌定居点拥有出售诅咒物品和神装的独特市场，部队升级需要同时消耗金币和黑暗能量。\n\n本模组内置 13 种语言，并通过按 H 键在游戏内提供指南。它专为 Bannerlord 1.3.15 和 TOR 0.6.0+ 设计，依赖 Bannerlord.Harmony 和 TOR_Armory。默认设置下启用兽人，但禁用混沌阵营（目前处于测试阶段）。",
+    "CNt": "本模組對綠皮陣營進行全面 overhaul，以符合戰錘背景設定。獸人變得更強、造價更高且無畏，而哥布林則變得脆弱不堪。模組為獸人和哥布林引入了獨特的「牙齒」經濟系統，以高傷害的衝車取代投石機，並允許飢餓的獸人吞噬俘虜或哥布林以維持生存，而非直接死亡。AI 行為受到限制以防止雪球效應，軍隊規模上限約為 80 名士兵和 5 個隊伍，巨怪則作為稀有的重型坦克單位。\n\n混沌陣營透過遊戲內機制而非作弊碼引入，成為完全可玩的選項。玩家可以透過繳納進貢並獲得神裝來成為混沌附庸，或簽訂黑暗契約以轉換自身文化。新增的「混沌榮耀」系統允許玩家挑戰現任混沌國王進行決鬥；勝利者將篡奪王位，包括附庸、首都和旗幟。混沌定居點擁有販售詛咒物品和神裝的獨特市場，部隊升級需要同時消耗金幣和黑暗能量。\n\n本模組為獨立模組，內建 13 種語言，並可透過按 H 鍵在遊戲內開啟指南。本模組設計用於 Bannerlord 1.3.15 和 TOR 0.6.0+，並需要 Bannerlord.Harmony 和 TOR_Armory 作為依賴項。預設設定為啟用獸人，但禁用混沌（目前處於測試階段）。",
+    "FR": "Ce mod refond la faction des Greenskins pour l'aligner sur la lore de Warhammer, rendant les orcs plus forts, plus coûteux et sans peur, tandis que les gobelins deviennent des unités fragiles. Il introduit une économie unique de 'teef' pour les orcs et les gobelins, remplace les trébuchets par des béliers à haute puissance de dégâts, et permet aux orcs affamés de manger des prisonniers ou des gobelins au lieu de mourir. L'IA est plafonnée pour empêcher l'effet boule de neige, les armées étant limitées à environ 80 troupes et 5 partis, tandis que les trolls servent de chars lourds rares.\n\nLa faction Chaos est introduite comme une option entièrement jouable via des mécaniques de jeu plutôt que des triches. Les joueurs peuvent devenir vassaux du Chaos en payant un tribut et en recevant des équipements divins, ou signer le Pacte des Ténèbres pour convertir leur propre culture. Un système de 'Gloire du Chaos' permet aux joueurs de défier le Roi du Chaos en duel ; gagner permet de usurper le royaume, y compris les vassaux, la capitale et les bannières. Les établissements du Chaos disposent de marchés uniques pour les objets maudits et les équipements divins, les améliorations de troupes nécessitant à la fois de l'or et de l'Énergie Sombre.\n\nLe mod est autonome avec 13 langues intégrées et comprend un guide accessible en jeu via la touche H. Il est conçu pour Bannerlord 1.3.15 et TOR 0.6.0+, nécessitant Bannerlord.Harmony et TOR_Armory comme dépendances. Les paramètres par défaut activent les Orcs mais désactivent le Chaos, qui est actuellement en bêta."
+   },
+   "image": "images/LoreHardcore.jpg",
+   "links": [
+    {
+     "site": "steam",
+     "url": "https://steamcommunity.com/sharedfiles/filedetails/?id=3713338763"
+    }
+   ],
+   "downloads": 0,
+   "updated_utc": "2026-07-01T20:59:18Z"
+  },
+  {
+   "id": "TOR_RU_Translation",
+   "name": {
+    "RU": "The Old Realms — Русский перевод",
+    "EN": "The Old Realms — Russian Translation",
+    "FR": "The Old Realms — traduction russe",
+    "TR": "The Old Realms — Rusça Çeviri",
+    "CNs": "The Old Realms — 俄语翻译",
+    "CNt": "The Old Realms — 俄語翻譯"
+   },
+   "author": "Phxc2v",
+   "line": {
+    "RU": "Русский перевод The Old Realms: 22 комплекта, 22 героя и описания свойств.",
+    "EN": "Russian translation for The Old Realms: 22 sets, 22 heroes, and trait descriptions.",
+    "TR": "The Old Realms için Rusça çeviri: 22 set, 22 kahraman ve özellik açıklamaları.",
+    "CNs": "《The Old Realms》俄语翻译：22套装备、22名英雄及属性说明。",
+    "CNt": "The Old Realms 的俄文翻譯：22 套裝備、22 名英雄與屬性說明。",
+    "FR": "Traduction russe de The Old Realms : 22 ensembles, 22 héros et descriptions de propriétés."
+   },
+   "summary": {
+    "RU": "Русская локализация для уникальных комплектов, событий и легендарных героев карьеры в The Old Realms: War in the Mountains.",
+    "EN": "Russian localization for The Old Realms: War in the Mountains career unique sets, encounters, and legendary heroes.",
+    "TR": "The Old Realms: War in the Mountains kariyer benzersiz setleri, karşılaşmaları ve efsanevi kahramanları için Rusça yerelleştirme.",
+    "CNs": "《旧领域：山地战争》职业专属套装、遭遇战及传奇英雄的俄语本地化。",
+    "CNt": "《The Old Realms: War in the Mountains》職業獨特套裝、遭遇事件與傳奇英雄的俄語本地化。",
+    "FR": "Traduction russe des ensembles uniques de carrière, des rencontres et des héros légendaires de The Old Realms: War in the Mountains."
+   },
+   "description": {
+    "RU": "Этот мод предоставляет русский перевод для The Old Realms: War in the Mountains, охватывая систему карьерных уникальных предметов. Он переводит текст для 22 комплектов для конца игры, привязанных к классу, их магических свойств, бонусов за комплект и 22 легендарных героев, которых можно нанять, связанных с постоянными стражами и случайными встречами.\n\nПеревод позволяет игрокам понять механику прогрессии, включая пятиэлементные фирменные комплекты, кумулятивные бонусы и варианты переговоров после победы для найма героев. Он охватывает все фракции карьеры, такие как Бретония, Империя и другие, обеспечивая полное погружение в контент мода.\n\nЭто мод локализации, который не добавляет новых игровых механик или ресурсов. Для работы требуется базовая игра Mount & Blade II: Bannerlord и мод The Old Realms: War in the Mountains.",
+    "EN": "This mod provides a Russian language translation for The Old Realms: War in the Mountains, specifically covering the Career Uniques system. It translates the text for 22 career-specific endgame sets, their associated magical properties, set bonuses, and the 22 recruitable legendary heroes tied to persistent guardian and roaming encounters.\n\nThe translation ensures that players can understand the progression mechanics, including the five-piece signature sets, cumulative bonuses, and the post-victory parley options for recruiting heroes. It covers all career factions, such as Bretonnia, Empire, and others, allowing for full immersion in the mod's content.\n\nThis is a localization mod and does not add new gameplay mechanics or assets. It requires the base game Mount & Blade II: Bannerlord and the The Old Realms: War in the Mountains mod to function.",
+    "TR": "Bu mod, The Old Realms: War in the Mountains için Rusça dil çevirisi sağlar ve özellikle Kariyer Benzersizleri sistemini kapsar. 22 kariyere özgü oyun sonu setinin metinlerini, bunlara ait büyülü özellikleri, set bonuslarını ve kalıcı koruyucu ve dolaşan karşılaşmalara bağlı 22 işe alınabilir efsanevi kahramanı çevirir.\n\nÇeviri, oyuncuların beş parçalı imza setleri, kümülatif bonuslar ve kahramanları işe almak için zafer sonrası müzakere seçenekleri dahil olmak üzere ilerleme mekaniklerini anlamasını sağlar. Bretonnia, İmparatorluk ve diğerleri gibi tüm kariyer fraksiyonlarını kapsayarak modun içeriğinde tam bir daldırma deneyimi sunar.\n\nBu bir yerelleştirme modudur ve yeni oyun içi mekanikler veya varlıklar eklemez. Çalışması için temel oyun olan Mount & Blade II: Bannerlord ve The Old Realms: War in the Mountains modu gereklidir.",
+    "CNs": "本模组为《旧领域：山地战争》提供俄语翻译，专门针对职业独特（Career Uniques）系统。它翻译了22套职业专属终局套装的文本、相关的魔法属性、套装加成，以及与持续守护者及游荡遭遇战绑定的22名可招募传奇英雄。\n\n该翻译确保玩家能够理解游戏进度机制，包括五件套的专属套装、累积加成以及胜利后的谈判招募选项。它涵盖了所有职业阵营，如布雷托尼亚、帝国等，让玩家能够完全沉浸于模组内容之中。\n\n这是一个本地化模组，不添加新的游戏机制或资源。它需要基础游戏《骑马与砍杀2：霸主》和《旧领域：山地战争》模组才能运行。",
+    "CNt": "本模組為 The Old Realms: War in the Mountains 提供俄語翻譯，專門涵蓋職業獨特系統。它翻譯了 22 套職業專屬終局套裝的文字、相關魔法屬性、套裝加成，以及與持續守護者和遊蕩遭遇事件綁定的 22 名可招募傳奇英雄。\n\n此翻譯確保玩家能夠理解進度機制，包括五件套裝的標誌性效果、累積加成，以及戰後談判招募英雄的選項。它涵蓋了所有職業陣營，如布列塔尼亞、帝國等，讓玩家能完全沉浸在模組的內容中。\n\n這是一款本地化模組，不會新增任何遊戲機制或資源。它需要基礎遊戲 Mount & Blade II: Bannerlord 以及 The Old Realms: War in the Mountains 模組才能運作。",
+    "FR": "Ce mod propose une traduction en russe de The Old Realms: War in the Mountains, couvrant spécifiquement le système des Uniques de carrière. Il traduit le texte de 22 ensembles de fin de partie spécifiques à chaque carrière, leurs propriétés magiques associées, les bonus d'ensemble, ainsi que les 22 héros légendaires recrutables liés aux rencontres persistantes de gardiens et aux rencontres itinérantes.\n\nLa traduction permet aux joueurs de comprendre les mécaniques de progression, y compris les ensembles signature à cinq pièces, les bonus cumulatifs et les options de pourparlers post-victoire pour recruter des héros. Elle couvre toutes les factions de carrière, telles que la Bretonnia, l'Empire et d'autres, permettant une immersion totale dans le contenu du mod.\n\nIl s'agit d'un mod de localisation qui n'ajoute aucune nouvelle mécanique de jeu ou ressource. Il nécessite le jeu de base Mount & Blade II: Bannerlord ainsi que le mod The Old Realms: War in the Mountains pour fonctionner."
+   },
+   "image": "images/TOR_RU_Translation.jpg",
+   "links": [
+    {
+     "site": "nexus",
+     "url": "https://www.nexusmods.com/mountandblade2bannerlord/mods/11191"
+    },
+    {
+     "site": "nexus",
+     "url": "https://www.nexusmods.com/mountandblade2bannerlord/mods/12134"
+    },
+    {
+     "site": "steam",
+     "url": "https://steamcommunity.com/sharedfiles/filedetails/?id=3708788710"
+    }
+   ],
+   "downloads": 0,
+   "updated_utc": "2026-07-20T17:40:47Z"
+  },
+  {
+   "id": "RickEncyclopedia",
+   "name": {
+    "RU": "Энциклопедия модов Bannerlord",
+    "EN": "Bannerlord Mod Encyclopedia",
+    "FR": "Encyclopédie des mods de Bannerlord",
+    "TR": "Bannerlord Mod Ansiklopedisi",
+    "CNs": "《骑马与砍杀2》模组百科",
+    "CNt": "《騎馬與砍殺2》模組百科"
+   },
+   "author": "Phxc2v",
+   "line": {
+    "RU": "Справочник по модам Bannerlord: где скачать, пойдёт ли на вашей версии игры, что требует и с чем поссорится.",
+    "EN": "A reference for Bannerlord mods: where to download, whether it runs on your game version, what it needs and what it clashes with.",
+    "TR": "Bannerlord modları için bir başvuru kaynağı: indirilebilecek yerler, oyun sürümünüzde çalışıp çalışmadığı, gereksinimleri ve çakıştığı modlar.",
+    "CNs": "《骑马与砍杀2：霸主》模组参考指南：提供下载链接、兼容性检查、运行需求及冲突信息。",
+    "CNt": "《Bannerlord》模組參考指南：下載來源、是否支援您的遊戲版本、所需條件及衝突模組。",
+    "FR": "Un guide pour les mods de Bannerlord : où les télécharger, s'ils sont compatibles avec votre version du jeu, ce qu'ils nécessitent et avec quoi ils entrent en conflit."
+   },
+   "summary": {
+    "RU": "Отдельная программа для Windows: девять с половиной тысяч модов, поиск по-русски, совместимость проверена разбором самих файлов, а не словами авторов. Показывает, какой файл ставить под вашу версию игры, что мод требует и с какими модами конфликтует по данным.",
+    "EN": "A standalone Windows app: nine and a half thousand mods, compatibility verified by reading the mod files themselves rather than trusting authors' claims. Shows which file to install for your game version, what the mod requires and which mods it conflicts with by data.",
+    "TR": "Bağımsız bir Windows uygulaması: dokuz bin beş yüz mod, uyumluluk yazarların iddialarına güvenmek yerine mod dosyalarının kendilerini okuyarak doğrulanmıştır. Oyun sürümünüz için hangi dosyanın kurulacağını, modun neye ihtiyaç duyduğunu ve veriye dayalı olarak hangi modlarla çakıştığını gösterir.",
+    "CNs": "独立的 Windows 应用程序：收录九千五百个模组，通过直接读取模组文件来验证兼容性，而非轻信作者声明。它会显示适合您游戏版本的安装文件、模组依赖项以及数据层面的冲突模组。",
+    "CNt": "獨立 Windows 應用程式：收錄九千五百個模組，透過直接讀取模組檔案來驗證相容性，而非依賴作者聲明。顯示適合您遊戲版本的安裝檔案、模組需求及資料衝突的模組。",
+    "FR": "Une application Windows autonome : neuf mille cinq cents mods, dont la compatibilité est vérifiée par l'analyse des fichiers de mod eux-mêmes, plutôt que de faire confiance aux affirmations des auteurs. Indique quel fichier installer pour votre version du jeu, ce que le mod nécessite et avec quels mods il entre en conflit selon les données."
+   },
+   "description": {
+    "RU": "Энциклопедия модов Mount & Blade II: Bannerlord — справочник, где совместимость проверена разбором файлов, а не обещаниями авторов. Для каждого мода видно: под какую ветку игры он собран и какой файл ставить именно вам, к чему он обращается в коде игры и чего в вашей версии не осталось, что он требует и с чем спорит по данным.\n\nДевять с половиной тысяч модов с Nexus, Steam Workshop, ModDB и GitHub. Поиск понимает русский: «беременность», «гарнизон», «осада» — описания написаны по-русски и переведены на шесть языков. Первым в выдаче идёт сам мод, а не переводы и переделки к нему.\n\nПрограмма ничего не устанавливает и не пишет в реестр: распакуйте папку и запустите. Обновления приходят сами. То, что проверить нечем, названо незнанием прямо — «не проверяли» не то же самое, что «не работает».",
+    "EN": "A reference for Mount & Blade II: Bannerlord mods where compatibility is proven by analysing the files, not by promises. For every mod you see which game branch it was built for and which file to install, what it calls in the game code and what is missing from your version, what it depends on and what it conflicts with.\n\nNine and a half thousand mods from Nexus, Steam Workshop, ModDB and GitHub, with descriptions written by us and translated into six languages. The mod itself comes first in the results, ahead of its translations and reuploads.\n\nNothing is installed and nothing is written to the registry: unpack the folder and run it. Updates arrive on their own. Whatever cannot be verified is called unknown outright — \"not checked\" is not the same as \"does not work\".",
+    "TR": "Mount & Blade II: Bannerlord modları için bir başvuru kaynağı; uyumluluk vaatlerle değil, dosyaların analiz edilmesiyle kanıtlanmıştır. Her mod için hangi oyun dalı için geliştirildiğini, hangi dosyanın kurulması gerektiğini, oyun kodunda neyi çağırdığını ve sürümünüzde eksik olanları, neye bağımlı olduğunu ve hangi modlarla çakıştığını görürsünüz.\n\nNexus, Steam Workshop, ModDB ve GitHub'dan dokuz bin beş yüz mod, açıklamalarımız tarafından yazılmış ve altı dile çevrilmiştir. Modlar sonuçlarda kendi çevirilerinden ve yeniden yüklemelerinden önce gelir.\n\nHiçbir şey kurulmaz ve kayıt defterine hiçbir şey yazılmaz: klasörü çıkarın ve çalıştırın. Güncellemeler otomatik olarak gelir. Doğrulanamayan her şey açıkça \"bilinmiyor\" olarak adlandırılır — \"kontrol edilmedi\" ile \"çalışmıyor\" aynı şey değildir.",
+    "CNs": "《骑马与砍杀2：霸主》模组参考指南，通过文件分析而非承诺来证明兼容性。对于每个模组，您可以查看其构建的游戏分支、应安装的文件、调用的游戏代码以及您版本中缺失的内容、依赖关系和冲突信息。\n\n收录来自 Nexus、Steam 创意工坊、ModDB 和 GitHub 的九千五百个模组，描述由我们编写并翻译成六种语言。模组本身在结果中排在首位，优先于其翻译版和重新上传版。\n\n无需安装，不写入注册表：解压文件夹即可运行。更新自动推送。无法验证的内容直接标注为“未知”——“未检查”不等于“无法运行”。",
+    "CNt": "《Mount & Blade II: Bannerlord》模組參考指南，相容性經檔案分析證實，而非僅靠承諾。每個模組皆顯示其建構的遊戲分支、應安裝的檔案、呼叫的遊戲程式碼、您的版本缺少的內容、依賴關係及衝突模組。\n\n收錄來自 Nexus、Steam 創意工坊、ModDB 和 GitHub 的九千五百個模組，描述由我們撰寫並翻譯成六種語言。模組本身在結果中優先顯示，高於其翻譯和重新上傳版本。\n\n無需安裝，不寫入登錄檔：解壓縮資料夾即可執行。更新自動進行。無法驗證的內容直接標示為未知——「未檢查」不等於「無法運作」。",
+    "FR": "Un guide pour les mods de Mount & Blade II: Bannerlord où la compatibilité est prouvée par l'analyse des fichiers, et non par des promesses. Pour chaque mod, vous voyez pour quelle branche du jeu il a été conçu et quel fichier installer, ce qu'il appelle dans le code du jeu et ce qui manque dans votre version, ce dont il dépend et avec quoi il entre en conflit.\n\nNeuf mille cinq cents mods provenant de Nexus, Steam Workshop, ModDB et GitHub, avec des descriptions rédigées par nos soins et traduites en six langues. Le mod lui-même apparaît en premier dans les résultats, avant ses traductions et ses réuploads.\n\nRien n'est installé et rien n'est écrit dans le registre : décompressez le dossier et exécutez-le. Les mises à jour se font automatiquement. Tout ce qui ne peut pas être vérifié est appelé inconnu sans détour : \"non vérifié\" n'est pas la même chose que \"ne fonctionne pas\"."
+   },
+   "image": "images/RickEncyclopedia.jpg",
+   "links": [
+    {
+     "site": "github",
+     "url": "https://github.com/Phxc2v/RickEncyclopedia-Releases"
+    }
+   ],
+   "downloads": 0,
+   "updated_utc": "2026-08-23T22:39:59+00:00"
+  }
+ ]
+}

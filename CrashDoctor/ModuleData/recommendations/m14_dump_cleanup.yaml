@@ -5,6 +5,7 @@
     zh: "清理旧的崩溃转储"
     zht: "清理舊的當機傾印"
     tr: "Eski çökme dökümlerini temizle"
+    fr: "Nettoyer les anciens fichiers de plantage"
   description:
     en: |
       Each Bannerlord crash leaves a folder with a 0.5–1.5 GB minidump and log files
@@ -26,6 +27,10 @@
       Bannerlord her çökmesinde ProgramData\Mount and Blade II Bannerlord\crashes\
       altında 0.5–1.5 GB'lık bir mini döküm ve günlük dosyaları içeren bir klasör
       bırakır. Zamanla bunlar onlarca GB disk alanı yer ve yüklemeyi yavaşlatır.
+    fr: |
+      Chaque plantage de Bannerlord laisse un dossier contenant un minidump de 0,5 à 1,5 Go et des fichiers de journalisation
+      sous ProgramData\Mount and Blade II Bannerlord\crashes\. Avec le temps, ces fichiers consomment
+      des dizaines de Go d'espace disque et ralentissent le chargement.
   details:
     en:
       - "The 3 most recent crash folders are kept for diagnostic continuity."
@@ -47,3 +52,8 @@
       - "Tanılama sürekliliği için en yeni 3 çökme klasörü saklanır."
       - "Daha eski klasörler Windows Geri Dönüşüm Kutusu'na gider ve oradan geri getirilebilir."
       - "Yeniden başlatma gerekmez."
+
+    fr:
+      - "Les 3 dossiers de plantage les plus récents sont conservés pour assurer la continuité du diagnostic."
+      - "Les dossiers plus anciens sont envoyés à la Corbeille Windows et peuvent être restaurés depuis celle-ci."
+      - "Aucun redémarrage requis."

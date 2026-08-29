@@ -10,6 +10,7 @@
     zh: "Windows 页面文件几乎耗尽"
     zht: "Windows 分頁檔幾乎耗盡"
     tr: "Windows sayfa dosyası neredeyse tükendi"
+    fr: "Le fichier d'échange Windows est presque épuisé"
   description:
     en: |
       Less than 1 GB of virtual memory is left for the game. Long sessions with
@@ -34,6 +35,11 @@
       oturumlar (özellikle /continuegame ile yüklenen TOR kaydı) Windows artık
       sayfa veremeyene kadar bellek biriktirir — sonra süreç bir erişim ihlaliyle
       ölür.
+    fr: |
+      Il reste moins de 1 Go de mémoire virtuelle pour le jeu. Les longues sessions avec
+      des mods lourds (en particulier TOR sur une sauvegarde /continuegame) accumulent la mémoire jusqu'à ce que
+      Windows ne puisse plus en allouer — le processus meurt alors avec une
+      violation d'accès.
   fix:
     en:
       - "Reboot the PC — the page file is reset on cold boot."
@@ -60,6 +66,11 @@
       - "Uzun bir oturumdan sonra kayıtları /continuegame ile yükleme — ana menüye çık ve oradan Continue'ya bas."
       - "Sayfa dosyasını büyüt: Sistem → Gelişmiş sistem ayarları → Performans → Ayarlar → Gelişmiş → Sanal Bellek → SSD'de 32–64 GB özel boyut."
       - "Başlatmadan önce arka plan uygulamalarını kapat (Chrome, Discord, tarayıcılar)."
+    fr:
+      - "Redémarrez le PC — le fichier d'échange est réinitialisé lors d'un démarrage à froid."
+      - "Ne chargez pas de sauvegardes via /continuegame après une longue session — quittez vers le menu principal et continuez depuis là."
+      - "Augmentez le fichier d'échange : Système → Paramètres système avancés → Performances → Paramètres → Avancé → Mémoire virtuelle → Taille personnalisée 32–64 Go sur un SSD."
+      - "Fermez les applications en arrière-plan (Chrome, Discord, navigateurs) avant de lancer le jeu."
   match:
     all:
       - system:
@@ -78,6 +89,7 @@
     zh: "内存不足（bad_alloc）"
     zht: "記憶體不足（bad_alloc）"
     tr: "Bellek yetersiz (bad_alloc)"
+    fr: "Manque de mémoire (bad_alloc)"
   description:
     en: |
       The native allocator failed to grab a chunk of memory. Either the page file
@@ -94,6 +106,9 @@
     tr: |
       Yerel ayırıcı bir bellek parçası alamadı. Ya sayfa dosyası çok küçük, ya
       uzun bir oturumdan sonra RAM parçalanmış ya da bir modda sızıntı var.
+    fr: |
+      L'allocateur natif n'a pas pu réserver un bloc de mémoire. Soit le fichier d'échange
+      est trop petit, soit la RAM est fragmentée après une longue session, soit un mod possède une fuite.
   fix:
     en:
       - "Reboot the PC."
@@ -120,6 +135,11 @@
       - "Seçenekler → Grafikler'de Texture Quality ve Texture Budget'ı birer kademe düşür."
       - "Windows sayfa dosyasını büyüt (bkz. mem.pagefile_low çözümü)."
       - "Başlatmadan önce tüm arka plan uygulamalarını kapat."
+    fr:
+      - "Redémarrez le PC."
+      - "Réduisez la Qualité des textures et le Budget des textures d'un cran dans Options → Graphismes."
+      - "Augmentez le fichier d'échange Windows (voir correctif mem.pagefile_low)."
+      - "Fermez toute application en arrière-plan avant de lancer le jeu."
   match:
     all:
       - log_line:
@@ -137,6 +157,7 @@
     zh: "TaleWorlds.MountAndBlade 原生代码中的访问冲突"
     zht: "TaleWorlds.MountAndBlade 原生程式碼中的存取違規"
     tr: "TaleWorlds.MountAndBlade yerel kodunda erişim ihlali"
+    fr: "Violation d'accès dans le code natif TaleWorlds.MountAndBlade"
   description:
     en: |
       System.AccessViolationException with Source=TaleWorlds.MountAndBlade — native
@@ -158,6 +179,9 @@
       Source=TaleWorlds.MountAndBlade ile System.AccessViolationException —
       Bannerlord 1.2.10 / 1.2.11'deki yerel motor bozulması. Belgelenmiş bir
       TaleWorlds regresyonu. Çökme rastgeledir ve modlardan kaynaklanmaz.
+    fr: |
+      System.AccessViolationException avec Source=TaleWorlds.MountAndBlade — corruption du
+      moteur natif dans Bannerlord 1.2.10 / 1.2.11. Régression TaleWorlds documentée. Le plantage est aléatoire et n'est pas causé par des mods.
   fix:
     en:
       - "Update Bannerlord to 1.2.12+ or downgrade to 1.2.9 via Steam beta branch."
@@ -179,12 +203,27 @@
       - "Bannerlord'u 1.2.12+ sürümüne güncelle veya Steam beta dalı üzerinden 1.2.9'a düşür."
       - "GPU saat hızlarını varsayılana sıfırla (overclock / undervolt yok)."
       - "Steam'de oyun dosyalarının bütünlüğünü doğrula."
+    fr:
+      - "Mettez à jour Bannerlord vers la version 1.2.12+ ou rétrogradez vers la 1.2.9 via la branche bêta Steam."
+      - "Réinitialisez les fréquences du GPU par défaut (pas d'overclock / undervolt)."
+      - "Vérifiez l'intégrité des fichiers du jeu dans Steam."
   match:
     all:
       - log_line:
           contains: "AccessViolationException"
       - log_line:
           contains: "TaleWorlds.MountAndBlade"
+      # This verdict is branch-specific ("update past 1.2.11") and would be wrong advice next to a
+      # battle-tick AV on any later build. When we captured the exception ourselves and it carries
+      # the mission-tick signature, native.mission_tick_av owns it. A report with only log lines
+      # and no managed capture is unaffected: the managed matcher is not applicable there, so the
+      # exclusion evaluates to false and this rule still fires.
+      - none:
+          - all:
+              - managed_exception: { type_contains: "AccessViolation" }
+              - any:
+                  - managed_exception: { frame_contains: "Mission.Tick" }
+                  - managed_exception: { frame_contains: "MissionState.TickMission" }
 
 # Native use-after-free surfacing on the GC finalizer thread. Matches BOTH shapes of evidence: the
 # log-file form (rgl_log lines) and a Crash Doctor managed capture, whose stack is the single frame
@@ -203,6 +242,7 @@
     zh: "TaleWorlds.DotNet 原生终结器中的访问冲突"
     zht: "TaleWorlds.DotNet 原生終結器中的存取違規"
     tr: "TaleWorlds.DotNet yerel sonlandırıcısında erişim ihlali"
+    fr: "Violation d'accès dans le finaliseur natif TaleWorlds.DotNet"
   description:
     en: |
       System.AccessViolationException in TaleWorlds.DotNet.NativeObject.Finalize() —
@@ -292,6 +332,29 @@
       erişim ihlali, durumu bozulmuş bir istisnadır; onu ne try/catch ne de bir yama
       sarabilir. Shader önbelleğini yeniden derlemek de hatayı onarmaz — shader turu,
       hatanın göründüğü yerdir, çaresi değil.
+    fr: |
+      System.AccessViolationException dans TaleWorlds.DotNet.NativeObject.Finalize() —
+      le ramasse-miettes .NET a tenté de libérer un objet natif du moteur que celui-ci
+      avait déjà détruit (utilisation après libération). La pile d'appels ne contient
+      qu'une seule frame, donc rien ne peut pointer vers un mod.
+
+      Ce plantage survient lorsque les pics d'allocation et de finalisation natifs se
+      produisent : transitions de scène, tournois, démarrage d'une partie ou fermeture
+      de session — et de manière très fiable lorsque l'option du menu principal de The
+      Old Realms « Build Shader Cache » (Construire le cache de shaders) est en cours
+      d'exécution. Cette option n'est pas un préchargement discret en arrière-plan :
+      elle lance une bataille personnalisée sur une carte contenant TOUS les types
+      d'unités et PNJ uniques du mod (quatre fois chaque soldat, plafonné à 1999
+      personnages) uniquement pour forcer la compilation des shaders, ce qui crée et
+      libère des milliers de maillages, textures et matériaux en une seule scène. Sur
+      une machine de 16 Go, c'est exactement sous cette pression que le finaliseur
+      atteint un pointeur déjà libéré.
+
+      Aucune protection de code n'est possible : une violation d'accès sur le thread
+      de finalisation du ramasse-miettes est une exception d'état corrompu, et aucun
+      try/catch ou correctif ne peut l'intercepter. Reconstruire le cache de shaders
+      ne répare pas non plus le défaut — l'exécution des shaders est le moment où il
+      apparaît, pas sa solution.
   fix:
     en:
       - "If it happened during The Old Realms' «Build Shader Cache»: the cache is INCREMENTAL — everything that compiled before the crash is kept. Start it again and it will get further; two or three passes usually see it through to the deployment phase."
@@ -323,6 +386,12 @@
       - "O düğmeye hiç dokunmadan, önbelleğin oynadıkça kendiliğinden oluşmasını da bekleyebilirsin. Daha uzun sürer ama tek bir sahneye iki bin karakter yüklemez."
       - "Çökme shader turunun DIŞINDA olduysa, tam olarak ne yaptığını not et (turnuva, menüden çıkış, yerleşime giriş, kayıt yükleme). Tek kareli bir yığında o eylem tek kullanışlı ipucudur — mod listesi yolu tükendi: çökme minimal bir The Old Realms kurulumunda da tekrarlıyor, yani yan bir modun suçu değil."
       - "Steam → Oyun dosyalarının bütünlüğünü doğrula; GPU/CPU overclock ya da undervolt ayarlarını varsayılana sıfırla."
+    fr:
+      - "Si cela s'est produit pendant la « Build Shader Cache » de The Old Realms : le cache est INCREMENTAL — tout ce qui a été compilé avant le plantage est conservé. Relancez-le et il avancera ; deux ou trois passes suffisent généralement pour atteindre la phase de déploiement."
+      - "Avant de le relancer : fermez le navigateur et les autres applications en arrière-plan, NE PAS utiliser Alt+Tab pendant qu'il fonctionne, assurez-vous que le fichier d'échange Windows est activé et que le lecteur système dispose de plusieurs Go d'espace libre — le compilateur de shaders écrit ses fichiers temporaires dans %TEMP% (l'onglet System tune-up vérifie les deux)."
+      - "Vous pouvez ignorer ce bouton et laisser le cache se construire au fur et à mesure de votre jeu. Cela prend plus de temps, mais il ne charge jamais deux mille personnages dans une seule scène."
+      - "Si le plantage s'est produit HORS de l'exécution des shaders, notez exactement ce que vous faisiez (tournoi, sortie d'un menu, entrée dans une colonie, chargement d'une sauvegarde). Avec une pile d'une seule frame, cette action est l'unique indice exploitable — la liste des mods a déjà été épuisée : le plantage se reproduit sur une configuration minimale Old Realms, donc aucun mod tiers n'est en cause."
+      - "Steam → Vérifier l'intégrité des fichiers du jeu, et réinitialiser tout overclock ou undervolt GPU/CPU aux valeurs par défaut."
   match:
     any:
       - all:
@@ -333,6 +402,153 @@
       - all:
           - managed_exception: { type_contains: "AccessViolation" }
           - managed_exception: { frame_contains: "NativeObject.Finalize" }
+
+# BATTLE crash: AccessViolationException surfacing through the mission tick.
+#   Mission.Tick <- MissionState.TickMissionAux <- MissionState.TickMission <- MissionState.OnTick
+#   <- GameStateManager.OnTick <- Module.OnApplicationTick <- Managed.ApplicationTick.
+# Everything BELOW Mission.Tick is the engine's native C++ code, and the managed stack stops at that
+# boundary — so the trace carries the tick chain and nothing else. It contains zero frames of any
+# mod, not because no mod is involved but because the fault happened on the other side of the
+# boundary. The `_PatchN` suffixes on those frames only say the methods are Harmony-patched, which
+# names who patched them, not who corrupted memory (same trap as BUTR's "involved modules").
+# There is nothing to guard here: an access violation is not a code error that can be caught and
+# skipped — by the time it surfaces the memory is already corrupt. What the verdict can do is stop
+# the player from hunting a mod bug inside a stack that has no mod in it, and hand them the two
+# things that DO name the faulting module: the game's own native minidump, and bisection by halves.
+# Kept separate from native.dotnet_finalizer_av (one-frame finalizer-thread use-after-free) and from
+# native.access_violation_taleworlds (the 1.2.10/1.2.11 engine regression, matched on log lines).
+- id: native.mission_tick_av
+  category: native
+  severity: critical
+  confidence: high
+  evidence_source: "Client crash id 7cf8617e (2026-08-17, Bannerlord 1.4.7 + War Sails, 66 modules, reported via Nexus) — System.AccessViolationException 'Attempted to read or write protected memory' at Mission.Tick_Patch4 <- MissionState.TickMissionAux_Patch1 <- MissionState.TickMission_Patch1 <- MissionState.OnTick <- GameStateManager.OnTick <- Module.OnApplicationTick_Patch5 <- Managed.ApplicationTick_Patch4. Captured by Crash Doctor managed capture; battles almost never finished. Before this rule the stack matched only managed.code_bug, whose verdict ('a mod's code threw') is wrong for a native fault and sent the reporter through a week of one-mod-at-a-time removals."
+  requires_sources: [managed_exception]
+  title:
+    en: "Battle crash inside the engine's native code — this stack cannot name the mod"
+    ru: "Вылет в бою в нативном коде движка — по этому стеку виновника не определить"
+    zh: "战斗中崩溃于引擎原生代码——这个堆栈无法点名模组"
+    zht: "戰鬥中崩潰於引擎原生程式碼——這個堆疊無法點名模組"
+    tr: "Savaşta motorun yerel kodunda çökme — bu yığın modu adlandıramaz"
+    fr: "Plantage de bataille dans le code natif du moteur — cette pile ne peut pas identifier le mod"
+  description:
+    en: |
+      An access violation — the game tried to read or write memory it does not own — during the
+      battle tick. Everything below Mission.Tick is the engine's own native code, and the .NET
+      stack trace stops at that boundary. That is why the trace holds nothing but the tick chain:
+      it carries no frame from any mod, not because no mod is involved, but because the fault
+      happened on the other side of a line the trace cannot cross. The "_Patch" endings on those
+      method names only mean the methods are Harmony-patched — that says who patched them, not
+      who corrupted the memory.
+      This is not something a guard can catch and skip: by the time the game notices, the memory
+      is already damaged. Nor is it a mod's code throwing an error, so hunting for a bug inside
+      that stack leads nowhere — and removing mods one at a time is close to hopeless with a large
+      setup. Two things do work: the game's own crash dump, which records the native call stack
+      and names the module that faulted, and halving the mod list instead of picking at it.
+      The usual sources are code that touches soldiers, animations or battle visuals on every
+      frame, software injected into the game process from outside (overlays, capture tools,
+      antivirus), and, less often, the engine itself or unstable hardware.
+    ru: |
+      Access violation — игра обратилась к памяти, которая ей не принадлежит, — во время боевого
+      тика. Всё, что ниже Mission.Tick, это собственный нативный код движка, и стек .NET
+      обрывается ровно на этой границе. Поэтому в трейсе нет ничего, кроме цепочки тика: в нём
+      нет ни одного кадра мода — не потому, что мод ни при чём, а потому, что сбой произошёл по
+      ту сторону линии, которую трейс не пересекает. Окончания «_Patch» в именах методов говорят
+      лишь о том, что методы пропатчены Harmony: это «кто патчил», а не «кто испортил память».
+      Перехватить и пропустить такое нельзя: к моменту, когда игра это замечает, память уже
+      повреждена. И это не «упал код мода», поэтому искать баг внутри этого стека бесполезно, а
+      снимать моды по одному при большой сборке почти безнадёжно. Работают две вещи: собственный
+      краш-дамп игры, где записан нативный стек с именем сбойного модуля, и деление списка модов
+      пополам вместо перебора.
+      Обычные источники — код, который каждый кадр трогает бойцов, анимации или боевую графику;
+      сторонние программы, внедряющиеся в процесс игры (оверлеи, захват видео, антивирус); реже —
+      сам движок или нестабильное железо.
+    zh: |
+      访问冲突——游戏试图读写不属于它的内存——发生在战斗结算期间。Mission.Tick 以下的一切都是
+      引擎自身的原生代码，而 .NET 堆栈正好在这个边界处中断。因此堆栈里除了结算调用链之外空无
+      一物：它不包含任何模组的帧，并不是因为与模组无关，而是因为故障发生在堆栈无法跨越的那一
+      侧。那些方法名末尾的「_Patch」只说明这些方法被 Harmony 修补过——那是谁修补了它们，而不是
+      谁破坏了内存。
+      这种问题无法被拦截并跳过：等到游戏察觉时，内存已经损坏。它也不是「模组的代码抛出了异常」，
+      所以在这个堆栈里找 bug 毫无结果，而在庞大的模组列表中一个一个地移除几乎没有希望。有两件
+      事有用：游戏自己的崩溃转储，它记录了原生调用堆栈并点名出错的模块；以及把模组列表对半拆分，
+      而不是逐个挑拣。
+      常见来源是每帧都触碰士兵、动画或战斗画面的代码；从外部注入游戏进程的软件（叠加层、录制
+      工具、杀毒软件）；较少见的是引擎本身或不稳定的硬件。
+    zht: |
+      存取違規——遊戲試圖讀寫不屬於它的記憶體——發生在戰鬥結算期間。Mission.Tick 以下的一切都是
+      引擎自身的原生程式碼，而 .NET 堆疊正好在這個邊界處中斷。因此堆疊裡除了結算呼叫鏈之外空無
+      一物：它不包含任何模組的框架，並不是因為與模組無關，而是因為故障發生在堆疊無法跨越的那一
+      側。那些方法名結尾的「_Patch」只說明這些方法被 Harmony 修補過——那是誰修補了它們，而不是
+      誰破壞了記憶體。
+      這種問題無法被攔截並跳過：等到遊戲察覺時，記憶體已經損壞。它也不是「模組的程式碼擲出了
+      例外」，所以在這個堆疊裡找 bug 毫無結果，而在龐大的模組清單中一個一個地移除幾乎沒有希望。
+      有兩件事有用：遊戲自己的當機傾印，它記錄了原生呼叫堆疊並點名出錯的模組；以及把模組清單
+      對半拆分，而不是逐個挑揀。
+      常見來源是每個影格都觸碰士兵、動畫或戰鬥畫面的程式碼；從外部注入遊戲行程的軟體（覆蓋層、
+      錄製工具、防毒軟體）；較少見的是引擎本身或不穩定的硬體。
+    tr: |
+      Savaş tick'i sırasında bir erişim ihlali — oyun kendisine ait olmayan belleği okumaya ya da
+      yazmaya çalıştı. Mission.Tick'in altındaki her şey motorun kendi yerel kodudur ve .NET yığın
+      izi tam o sınırda durur. Bu yüzden izde tick zincirinden başka bir şey yoktur: içinde hiçbir
+      modun karesi bulunmaz — bunun sebebi hiçbir modun ilgili olmaması değil, hatanın izin
+      geçemediği çizginin öbür tarafında olmasıdır. O yöntem adlarındaki "_Patch" ekleri yalnızca
+      yöntemlerin Harmony ile yamalandığını söyler; bu, onları kimin yamaladığıdır, belleği kimin
+      bozduğu değil.
+      Bunu yakalayıp atlamak mümkün değildir: oyun fark ettiğinde bellek çoktan bozulmuştur. Bu bir
+      modun kod hatası da değildir, dolayısıyla bu yığının içinde hata aramak bir yere çıkmaz ve
+      büyük bir kurulumda modları teker teker kaldırmak neredeyse umutsuzdur. İşe yarayan iki şey
+      vardır: oyunun kendi çökme dökümü — yerel çağrı yığınını kaydeder ve hatalı modülü adlandırır
+      — ve mod listesini tek tek yoklamak yerine ikiye bölmek.
+      Alışılmış kaynaklar: her karede askerlere, animasyonlara veya savaş görselliğine dokunan kod;
+      oyun sürecine dışarıdan giren yazılımlar (bindirmeler, kayıt araçları, antivirüs); daha
+      seyrek olarak motorun kendisi veya kararsız donanım.
+    fr: |
+      Une violation d'accès — le jeu a tenté de lire ou d'écrire dans une mémoire qui ne lui appartient pas — pendant le tick de bataille. Tout ce qui se trouve en dessous de Mission.Tick correspond au code natif du moteur, et la trace de pile .NET s'arrête à cette limite. C'est pourquoi la trace ne contient que la chaîne de ticks : elle ne comporte aucune frame de pile issue d'un mod, non pas parce qu'aucun mod n'est impliqué, mais parce que l'erreur s'est produite de l'autre côté d'une ligne que la trace ne peut pas franchir. Les suffixes « _Patch » sur ces noms de méthodes indiquent simplement que les méthodes sont patchées via Harmony — cela précise qui les a patchées, pas qui a corrompu la mémoire.
+      Ce n'est pas le genre de problème qu'une protection peut intercepter et ignorer : lorsque le jeu s'en rend compte, la mémoire est déjà endommagée. Il ne s'agit pas non plus d'un code de mod levant une erreur, donc chercher un bug dans cette trace ne mène nulle part — et retirer les mods un par un est presque hopeless avec une configuration importante. Deux solutions fonctionnent : le fichier de plantage du jeu lui-même, qui enregistre la pile d'appels native et indique le module fautif, et la réduction de moitié de la liste des mods plutôt que de les tester un par un.
+      Les sources habituelles sont le code qui manipule les soldats, les animations ou les effets visuels de bataille à chaque frame, les logiciels injectés dans le processus du jeu depuis l'extérieur (superpositions, outils de capture, antivirus), et, plus rarement, le moteur lui-même ou un matériel instable.
+  fix:
+    en:
+      - "Send the game's OWN crash folder: C:\\ProgramData\\Mount and Blade II Bannerlord\\crashes — take the newest folder there and zip it whole. It holds a native dump whose stack names the module that actually faulted; this report cannot. Add report.txt and crashdoctor_at_crash.log from this folder to it: https://t.me/CodeRickTg / https://discord.gg/ZDJZFxQeMV ."
+      - "Search by halves, not one mod at a time. Disable HALF of your mods (always keep Harmony, ButterLib, UIExtenderEx, MCM and the official modules), fight three battles. If it still crashes, the cause is in the half you kept; if it does not, it is in the half you switched off. Split that half again. Six rounds instead of sixty."
+      - "Start the first split with what runs every frame in a battle: dismemberment, blood and gore, animation and combat-stance overhauls, battle cameras, projectile and formation mods. That is where to look first, NOT an accusation — none of them appears in this stack. Also remove battle-testing tools from a normal campaign."
+      - "Close the programs that inject themselves into the game: RivaTuner / MSI Afterburner, the Discord overlay, the GeForce Experience overlay, OBS in Game Capture mode. The System tune-up tab lists which of them are running right now."
+      - "Unlike an ordinary code crash, this one is worth ruling out on the hardware side too: Steam → Verify integrity of game files, and reset any GPU or CPU overclock and undervolt to default."
+    ru:
+      - "Пришли СОБСТВЕННУЮ папку крашей игры: C:\\ProgramData\\Mount and Blade II Bannerlord\\crashes — возьми самую свежую папку оттуда и запакуй целиком. В ней лежит нативный дамп, чей стек называет реально сбойный модуль; этот отчёт назвать его не может. Добавь к нему report.txt и crashdoctor_at_crash.log из этой папки: https://t.me/CodeRickTg / https://discord.gg/ZDJZFxQeMV ."
+      - "Ищи делением пополам, а не по одному моду. Отключи ПОЛОВИНУ модов (Harmony, ButterLib, UIExtenderEx, MCM и официальные модули оставь всегда), проведи три боя. Вылетает — причина в оставленной половине; не вылетает — в отключённой. Дели дальше ту половину, где вылетает. Шесть заходов вместо шестидесяти."
+      - "Первую половину набирай из того, что работает каждый кадр боя: расчленёнка, кровь и раны, переработки анимаций и стоек, боевые камеры, моды на снаряды и построения. Это направление поиска, а НЕ обвинение — ни одного из них в этом стеке нет. Тестовые инструменты для боёв из обычной кампании тоже убери."
+      - "Закрой программы, внедряющиеся в игру: RivaTuner / MSI Afterburner, оверлей Discord, оверлей GeForce Experience, OBS в режиме Game Capture. Вкладка «Настройка системы» показывает, что из этого запущено прямо сейчас."
+      - "В отличие от обычного вылета в коде, здесь стоит исключить и железо: Steam → Проверить целостность файлов игры, а разгон и андервольт GPU и процессора сбросить на стандарт."
+    zh:
+      - "请发送游戏自己的崩溃文件夹：C:\\ProgramData\\Mount and Blade II Bannerlord\\crashes —— 取其中最新的一个文件夹，整体打包。里面有原生转储，它的堆栈能点名真正出错的模块；本报告做不到。再把本文件夹中的 report.txt 和 crashdoctor_at_crash.log 一并附上：https://t.me/CodeRickTg / https://discord.gg/ZDJZFxQeMV 。"
+      - "用对半拆分来找，而不是一个一个地移除。停用一半模组（Harmony、ButterLib、UIExtenderEx、MCM 和官方模块始终保留），打三场战斗。仍然崩溃说明原因在保留的那一半；不崩溃说明在停用的那一半。继续拆分崩溃的那一半。六轮，而不是六十次。"
+      - "第一次拆分先从战斗中每帧都在运行的东西入手：肢解、血液与伤口、动画与战斗姿态重制、战斗镜头、弹道与阵型模组。这是搜索方向，不是指控——它们没有一个出现在这个堆栈里。普通战役中也请移除战斗测试工具。"
+      - "关闭那些注入游戏的程序：RivaTuner / MSI Afterburner、Discord 叠加层、GeForce Experience 叠加层、Game Capture 模式的 OBS。系统调优页会显示其中哪些正在运行。"
+      - "与普通的代码崩溃不同，这次也值得排除硬件因素：Steam → 验证游戏文件完整性，并把 GPU 与 CPU 的超频、降压重置为默认。"
+    zht:
+      - "請傳送遊戲自己的當機資料夾：C:\\ProgramData\\Mount and Blade II Bannerlord\\crashes —— 取其中最新的一個資料夾，整體打包。裡面有原生傾印，它的堆疊能點名真正出錯的模組；本報告做不到。再把本資料夾中的 report.txt 和 crashdoctor_at_crash.log 一併附上：https://t.me/CodeRickTg / https://discord.gg/ZDJZFxQeMV 。"
+      - "用對半拆分來找，而不是一個一個地移除。停用一半模組（Harmony、ButterLib、UIExtenderEx、MCM 和官方模組始終保留），打三場戰鬥。仍然崩潰代表原因在保留的那一半；不崩潰代表在停用的那一半。繼續拆分崩潰的那一半。六輪，而不是六十次。"
+      - "第一次拆分先從戰鬥中每個影格都在執行的東西入手：肢解、血液與傷口、動畫與戰鬥架勢重製、戰鬥鏡頭、彈道與陣型模組。這是搜尋方向，不是指控——它們沒有一個出現在這個堆疊裡。一般戰役中也請移除戰鬥測試工具。"
+      - "關閉那些注入遊戲的程式：RivaTuner / MSI Afterburner、Discord 覆蓋層、GeForce Experience 覆蓋層、Game Capture 模式的 OBS。系統調校頁會顯示其中哪些正在執行。"
+      - "與一般的程式碼崩潰不同，這次也值得排除硬體因素：Steam → 驗證遊戲檔案完整性，並把 GPU 與 CPU 的超頻、降壓重設為預設。"
+    tr:
+      - "Oyunun KENDİ çökme klasörünü gönder: C:\\ProgramData\\Mount and Blade II Bannerlord\\crashes — oradaki en yeni klasörü al ve olduğu gibi sıkıştır. İçinde, yığını gerçekten hata veren modülü adlandıran yerel bir döküm vardır; bu rapor bunu yapamaz. Yanına bu klasördeki report.txt ve crashdoctor_at_crash.log dosyalarını da ekle: https://t.me/CodeRickTg / https://discord.gg/ZDJZFxQeMV ."
+      - "Tek tek değil, ikiye bölerek ara. Modlarının YARISINI kapat (Harmony, ButterLib, UIExtenderEx, MCM ve resmi modüller her zaman açık kalsın), üç savaş yap. Hâlâ çöküyorsa sebep açık bıraktığın yarıdadır; çökmüyorsa kapattığın yarıdadır. Çöken yarıyı yeniden böl. Altmış deneme yerine altı tur."
+      - "İlk bölmeyi savaşta her karede çalışan şeylerle yap: uzuv kopması, kan ve yara, animasyon ve duruş revizyonları, savaş kameraları, mermi ve düzen modları. Bu bir arama yönüdür, suçlama DEĞİL — hiçbiri bu yığında yer almıyor. Normal bir kampanyadan savaş test araçlarını da kaldır."
+      - "Oyuna kendini enjekte eden programları kapat: RivaTuner / MSI Afterburner, Discord bindirmesi, GeForce Experience bindirmesi, Game Capture kipindeki OBS. Sistem ayarları sekmesi bunlardan hangilerinin şu anda çalıştığını gösterir."
+      - "Sıradan bir kod çökmesinden farklı olarak burada donanımı da elemekte fayda var: Steam → Oyun dosyalarının bütünlüğünü doğrula ve GPU ile işlemcideki overclock/undervolt ayarlarını varsayılana sıfırla."
+    fr:
+      - "Envoyez le dossier de plantage DU JEU : C:\\ProgramData\\Mount and Blade II Bannerlord\\crashes — prenez le dossier le plus récent et zippez-le en entier. Il contient un dump natif dont la pile nomme le module qui a réellement causé l'erreur ; ce rapport ne le peut pas. Ajoutez-y report.txt et crashdoctor_at_crash.log depuis ce dossier : https://t.me/CodeRickTg / https://discord.gg/ZDJZFxQeMV ."
+      - "Recherchez par moitiés, pas un mod à la fois. Désactivez LA MOITIÉ de vos mods (gardez toujours Harmony, ButterLib, UIExtenderEx, MCM et les modules officiels), menez trois batailles. Si le jeu plante toujours, la cause se trouve dans la moitié que vous avez conservée ; sinon, elle est dans celle que vous avez désactivée. Divisez à nouveau cette moitié. Six tours au lieu de soixante."
+      - "Commencez la première division par ce qui s'exécute à chaque image lors d'une bataille : démembrement, sang et gore, améliorations d'animations et de postures de combat, caméras de bataille, mods de projectiles et de formations. C'est là qu'il faut chercher en premier, ce n'est pas une accusation — aucun d'entre eux n'apparaît dans cette pile. Retirez également les outils de test de bataille d'une campagne normale."
+      - "Fermez les programmes qui s'injectent dans le jeu : RivaTuner / MSI Afterburner, le superposition Discord, le superposition GeForce Experience, OBS en mode Capture de jeu. L'onglet Réglages système indique lesquels sont en cours d'exécution."
+      - "Contrairement à un plantage de code ordinaire, celui-ci mérite aussi d'être exclu au niveau du matériel : Steam → Vérifier l'intégrité des fichiers du jeu, et réinitialiser tout overclocking ou undervoltage du GPU ou du CPU aux valeurs par défaut."
+  match:
+    all:
+      - managed_exception: { type_contains: "AccessViolation" }
+      - any:
+          - managed_exception: { frame_contains: "Mission.Tick" }
+          - managed_exception: { frame_contains: "MissionState.TickMission" }
 
 - id: native.stack_overflow
   category: native
@@ -346,6 +562,7 @@
     zh: "栈溢出（0xC00000FD）——递归 AI 循环"
     zht: "堆疊溢位（0xC00000FD）——遞迴 AI 迴圈"
     tr: "Yığın taşması (0xC00000FD) — özyinelemeli AI döngüsü"
+    fr: "Dépassement de pile (0xC00000FD) — boucle d'IA récursive"
   description:
     en: |
       Process exited with STATUS_STACK_OVERFLOW (exit code 0xC00000FD). Vanilla
@@ -371,6 +588,8 @@
       yükseltme döngüsü). Bilinen ve 1.1.0'da düzeltilmiş bir sorun — neredeyse
       her zaman sefer kaydının daha eski, hatalı bir sürümde başlatıldığı anlamına
       gelir.
+    fr: |
+      Processus terminé avec STATUS_STACK_OVERFLOW (code de sortie 0xC00000FD). Cause vanilla Bannerlord : une boucle d'IA récursive (recherche BannerBearer, cycle de mise à niveau des troupes). Connu et corrigé dans la version 1.1.0 — signifie presque toujours que la sauvegarde de campagne a été démarrée sur une version plus ancienne boguée.
   fix:
     en:
       - "Update Bannerlord to the latest patch."
@@ -392,6 +611,10 @@
       - "Bannerlord'u en son yamaya güncelle."
       - "Kayıt 1.0.x'te başlatıldıysa — yeni bir sefer başlat."
       - "Belirli bir savaşta tekrarlanabiliyorsa — AI modlarını teker teker devre dışı bırak (RBM, AI elden geçirmeleri)."
+    fr:
+      - "Mettez à jour Bannerlord vers le dernier correctif."
+      - "Si la sauvegarde a été démarrée sur la version 1.0.x — lancez une nouvelle campagne."
+      - "Si le problème est reproductible lors d'une bataille spécifique — désactivez les mods d'IA un par un (RBM, révisions de l'IA)."
   match:
     any:
       - log_line:
@@ -411,6 +634,7 @@
     zh: "领主大厅战斗的 DivideByZeroException"
     zht: "領主大廳戰鬥的 DivideByZeroException"
     tr: "Lord's Hall savaşında DivideByZeroException"
+    fr: "Combat du Hall des Seigneurs DivideByZeroException"
   description:
     en: |
       LordsHallFightMissionController+MissionSide.SpawnTroops divides by zero
@@ -430,6 +654,8 @@
       LordsHallFightMissionController+MissionSide.SpawnTroops sıfıra bölünüyor,
       çünkü sahnenin doğuş noktası sayısı sıfır. Belirli tımarlardaki özel bir
       Lord's Hall kuşatma aşaması.
+    fr: |
+      LordsHallFightMissionController+MissionSide.SpawnTroops divise par zéro car le nombre de points de spawn de la scène est nul. Étape spécifique du siège du Hall des Seigneurs sur certains fiefs.
   fix:
     en:
       - "Avoid the Lord's Hall stage of this specific siege — sally out / surrender / pick another fief."
@@ -451,6 +677,10 @@
       - "Bu belirli kuşatmanın Lord's Hall aşamasından kaçın — çıkış yap / teslim ol / başka bir tımar seç."
       - "Kuşatma öncesi kayda dön ve farklı bir yerleşim dene."
       - "Hata belirli bir tımarda tekrarlanabiliyorsa — sahne adıyla birlikte TaleWorlds forumlarında bildir."
+    fr:
+      - "Évitez l'étape du Manoir du Seigneur de ce siège spécifique — faites une sortie / capitulez / choisissez un autre fief."
+      - "Rechargez la sauvegarde pré-siège et essayez une autre colonie."
+      - "Si le bug est reproductible sur un fief particulier — signalez-le sur les forums TaleWorlds avec le nom de la scène."
   match:
     all:
       - log_line:

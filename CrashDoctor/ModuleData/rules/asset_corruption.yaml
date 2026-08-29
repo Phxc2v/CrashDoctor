@@ -15,6 +15,7 @@
     zh: "某个创意工坊模组有一个损坏的 .tpac 资源包"
     zht: "某個創意工坊模組有一個損壞的 .tpac 資源包"
     tr: "Bir Workshop modunun bozuk bir .tpac varlık paketi var"
+    fr: "Le mod de l'Atelier possède un pack d'actifs .tpac corrompu"
   description:
     en: |
       Bannerlord could not asynchronously read a .tpac asset pack from a Workshop
@@ -94,6 +95,15 @@
 
       Neden neredeyse her zaman Steam indirme kesintisi veya AV karantinasıdır —
       dosya diskte ama kesik / sıfır bayt / engellenmiş.
+    fr: |
+      Bannerlord n'a pas pu lire de manière asynchrone un pack d'actifs .tpac depuis le dossier d'un mod du Workshop, puis a consigné « ERROR: File read failed! Please try to verify your installation! ». Le numéro du pack et l'ID du Workshop mis en évidence nous indiquent QUEL mod est corrompu (comparez l'ID numérique à vos abonnements au Steam Workshop).
+
+      Une fois qu'un .tpac échoue à charger, chaque prefab/squelette/particule déclaré à l'intérieur est manquant pour le reste de la session. Effets en cascade typiques :
+      - « Unable to find particle system with name <psys_blaze_small_1, comet_of_sigmar, ...> »
+      - « Emitter hierarchy does not match invalid_particle-invalid_particle »
+      - Les squelettes manquants basculent silencieusement vers invalid_particle, puis plantent au premier spawn d'agent qui en avait besoin (orcs, trolls, gobelins sur TOR).
+
+      La cause est presque toujours une interruption du téléchargement Steam ou une quarantaine AV — le fichier est sur le disque mais tronqué / de taille zéro / bloqué.
   fix:
     en:
       - "Find the Workshop ID in evidence (the number after /261550/<id>/). Open https://steamcommunity.com/sharedfiles/filedetails/?id=<id> to see which mod it is."
@@ -125,6 +135,12 @@
       - "Yeniden abone olduktan sonra aynı .tpac başarısız olursa: Windows Defender → Koruma geçmişi → karantinaya alınmış Bannerlord/Workshop dosyalarını geri yükle, Workshop klasörünü Defender istisnalarına elle ekle (Ayarlar → Gizlilik ve güvenlik → Windows Güvenliği → Virüs ve tehdit koruması → Ayarları yönet → İstisna ekle veya kaldır → Klasör)."
       - "Steam → Bannerlord → Özellikler → Yüklü Dosyalar → Bütünlüğü doğrula. Orijinal bir .tpac'in bozulduğu nadir durumu yakalar (Steam doğrulaması modlara dokunmaz)."
       - "Crash Doctor → Tune-Up'taki 'SHA-256 integrity check' kartı, Steam doğrulamasının göremediği sessiz bozulmaları (Workshop modları) tespit eder."
+    fr:
+      - "Repérez l'ID de l'Atelier dans le journal de plantage (le nombre après /261550/<id>/). Ouvrez https://steamcommunity.com/sharedfiles/filedetails/?id=<id> pour voir de quel mod il s'agit."
+      - "Steam → Atelier → Abonné → trouvez le mod → Se désabonner. Attendez 30 secondes que Steam supprime ses fichiers. Puis abonnez-vous à nouveau — téléchargement complet."
+      - "Si le même .tpac plante après vous être désabonné puis réabonné : Windows Defender → Historique de protection → restaurez tous les fichiers Bannerlord/Workshop mis en quarantaine, ajoutez manuellement le dossier Workshop aux exclusions de Defender (Paramètres → Confidentialité et sécurité → Sécurité Windows → Protection contre les virus et menaces → Gérer les paramètres → Ajouter ou supprimer des exclusions → Ajouter une exclusion → Dossier)."
+      - "Steam → Bannerlord → Propriétés → Fichiers installés → Vérifier l'intégrité. Capture le cas rare où un .tpac vanilla est corrompu (les mods ne sont PAS touchés par la vérification Steam)."
+      - "Crash Doctor → Réglage → la carte 'Vérification d'intégrité SHA-256' repère la corruption silencieuse que la vérification Steam ne peut pas voir (mods de l'Atelier)."
   match:
     all:
       - log_line:
@@ -147,6 +163,7 @@
     zh: "资源包超出了 Bannerlord 的内存池上限"
     zht: "資源包超出了 Bannerlord 的記憶體池上限"
     tr: "Varlık paketi Bannerlord'un bellek havuzu sınırını aşıyor"
+    fr: "Le pack d'actifs dépasse la limite du pool de mémoire de Bannerlord"
   description:
     en: |
       Bannerlord logged "Performance warning read N byte from <path>/pack0.tpac
@@ -203,6 +220,17 @@
       Tek başına çökmez — özel-içeriği yoğun bir mod yığınının belirtisidir. Yaygın
       suçlular: 4K doku paketleri ("Improved Visuals", "RealisticBattle" zırh
       paketleri), büyük şehir elden geçirmeleri, vampir kalesi prefab paketleri.
+    fr: |
+      Bannerlord a enregistré l'avertissement « Performance warning read N byte from <path>/pack0.tpac
+      is bigger than memory pool limit M » : une seule charge utile .tpac a dépassé le
+      cache d'actifs de 256 Mo. Le moteur gère cela en diffusant des chunks au lieu
+      de les mettre en cache, ce qui ralentit les chargements de mission et augmente
+      la fragmentation VRAM/RAM. Avec un matériel modeste (moins de 32 Go de RAM, moins de 8 Go de VRAM) plus TOR + des mods lourds,
+      la contention peut provoquer des cascades « out of memory » lors du changement de scène suivant.
+
+      Ne provoque pas de plantage seul — symptôme d'une pile de mods riche en contenu personnalisé.
+      Les coupables courants : packs de textures 4K (« Improved Visuals », « RealisticBattle »
+      packs d'armure), rénovations de grandes villes, packs de préfabriqués de châteaux vampires.
   fix:
     en:
       - "Identify the heaviest texture/prefab mods in your stack — Workshop ID is in evidence. If you don't strictly need them, unsubscribe."
@@ -229,6 +257,11 @@
       - "Oyun içi Texture Quality ve Texture Budget'ı birer kademe düşür. Birkaç yüz MB havuz alanı açar."
       - "Başlatmadan önce bellek tüketen arka plan uygulamalarını kapat: tarayıcılar (Chrome / Edge), VR çalışma zamanları, yapay zeka araçları (Ollama). Crash Doctor → Tune-Up → 'Heavy VRAM apps' şu anda çalışanları listeler."
       - "Sayfa dosyasını 32+ GB sistem yönetimli olacak şekilde büyüt (Crash Doctor → Tune-Up → 'Pagefile' kartı) — havuz dolduğunda akış katmanına bir yedek verir."
+    fr:
+      - "Identifiez les mods de textures/préfabriqués les plus lourds dans votre pile — l'ID du Workshop est visible. Si vous n'en avez pas strictement besoin, désabonnez-vous."
+      - "Réduisez la Qualité des textures et le Budget des textures d'un cran chacun dans les options. Cela libère plusieurs centaines de Mo d'espace dans le pool."
+      - "Fermez les applications en arrière-plan gourmandes en mémoire avant de lancer : navigateurs (Chrome / Edge), runtimes VR, outils IA (Ollama). Crash Doctor → Tune-Up → 'Heavy VRAM apps' liste ce qui s'exécute actuellement."
+      - "Augmentez le fichier d'échange à 32+ Go gérés par le système (Crash Doctor → Tune-Up → carte 'Pagefile') — cela donne une solution de repli à la couche de diffusion lorsque le pool est saturé."
   match:
     all:
       - log_line:
@@ -246,6 +279,7 @@
     zh: "Bannerlord 资源文件读取失败（请验证你的安装）"
     zht: "Bannerlord 資源檔案讀取失敗（請驗證你的安裝）"
     tr: "Bannerlord varlık dosyası okuması başarısız (kurulumunu doğrula)"
+    fr: "Échec de la lecture du fichier d'actifs Bannerlord (vérifiez votre installation)"
   description:
     en: |
       Bannerlord's IO layer threw "ERROR: File read failed! Please try to verify
@@ -300,6 +334,17 @@
         karantinaya aldı — dosya hâlâ diskte ama sıfır bayt.
       - Bir mod oturum ortasında kaldırıldı ve oyuncu oynamaya devam etti.
       - Bozuk disk sektörü — SSD'lerde nadir, yaşlanan HDD'lerde yaygın.
+    fr: |
+      La couche E/S de Bannerlord a généré « ERROR: File read failed! Please try to verify
+      your installation! » sans balise de lecture asynchrone claire précédente, donc nous ne pouvons pas
+      identifier un mod spécifique. Échec E/S générique : un fichier que le moteur s'attendait
+      à lire n'est pas lisible. Causes typiques :
+
+      - Le téléchargement Steam a été interrompu (fichier plus court que l'entrée du manifeste).
+      - L'antivirus a mis en quarantaine un .dll / .tpac après une mise à jour Windows — le fichier
+        est toujours sur le disque mais fait zéro octet.
+      - Un mod a été désinstallé en cours de session et le joueur a continué à jouer.
+      - Secteur de disque défectueux — rare sur les SSD, courant sur les HDD vieillissants.
   fix:
     en:
       - "Steam → Bannerlord → Properties → Installed Files → Verify integrity of game files. Re-downloads any short/missing files."
@@ -331,6 +376,12 @@
       - "Windows Defender → Koruma geçmişini kontrol et. Bannerlord ile ilgili karantinaya alınmış öğeleri geri yükle, sonra kurulum + Workshop klasörlerini elle istisnalara ekle (Ayarlar → Gizlilik ve güvenlik → Windows Güvenliği → Virüs ve tehdit koruması → Ayarları yönet → İstisna ekle veya kaldır → Klasör)."
       - "Doğrula + Geri Yükle'den sonra sorun sürerse — tüm Workshop modlarına yeniden abone ol (Steam Workshop → Abonelikler → abonelikten çık → yeniden abone ol). Tam yeniden indirmeyi zorlar."
       - "Eski HDD: Bannerlord'un bulunduğu sürücüde `chkdsk /r` çalıştır. Suçlu diskse, bozuk sektör yeniden eşlemesi dosyayı kurtarabilir."
+    fr:
+      - "Steam → Bannerlord → Propriétés → Fichiers installés → Vérifier l'intégrité des fichiers du jeu. Télécharge à nouveau les fichiers courts/missing."
+      - "Crash Doctor → Tune-Up → carte 'SHA-256 integrity check'. Détecte la corruption des mods Workshop (la vérification Steam ne vérifie que les fichiers du jeu, pas les mods)."
+      - "Vérifiez l'historique de protection de Windows Defender. Restaurez tous les éléments mis en quarantaine liés à Bannerlord, puis ajoutez manuellement les dossiers d'installation et Workshop aux exclusions (Paramètres → Confidentialité et sécurité → Sécurité Windows → Protection contre les virus et menaces → Gérer les paramètres → Ajouter ou supprimer des exclusions → Dossier)."
+      - "Si le problème persiste après Vérifier + Restaurer : désabonnez-vous puis resouscrivez à tous les mods du Workshop (Steam Workshop → Abonnements → se désabonner → se resoucrire). Cela force un nouveau téléchargement complet."
+      - "Vieux disque dur : exécutez `chkdsk /r` sur le lecteur où Bannerlord est installé. La relocalisation des secteurs défectueux peut récupérer le fichier si le disque est en cause."
   match:
     all:
       - log_line:

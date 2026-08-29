@@ -5,6 +5,7 @@
     zh: "DirectX 11 运行库 + 功能级别检查"
     zht: "DirectX 11 執行階段程式庫 + 功能等級檢查"
     tr: "DirectX 11 çalışma zamanı + özellik düzeyi kontrolü"
+    fr: "Vérification du runtime DirectX 11 et du niveau de fonctionnalité"
   description:
     en: |
       Bannerlord's renderer hard-requires D3D feature level 11_0 — TaleWorlds.Native
@@ -50,6 +51,15 @@
 
       Kart yalnızca d3d11.dll eksik olduğunda, D3D11CreateDevice başarısız olduğunda veya
       mevcut en yüksek özellik düzeyi 11_0'ın altında olduğunda görünür.
+    fr: |
+      Le moteur de rendu de Bannerlord exige strictement le niveau de fonctionnalité D3D 11_0 — TaleWorlds.Native
+      est lié directement à d3d11.dll et ne dispose d'aucun chemin de repli. Sur les versions
+      Win10/11 LTSC allégées, sous Wine/Proton sans DXVK, ou sur les machines dont
+      l'adaptateur GPU expose uniquement le FL10_x, le lanceur échoue silencieusement avec
+      « TaleWorlds.MountAndBlade.dll n'a pas pu être chargé » et les joueurs en blâment les mods.
+
+      La carte n'apparaît que si d3d11.dll est manquant, si D3D11CreateDevice échoue,
+      ou si le niveau de fonctionnalité le plus élevé disponible est inférieur à 11_0.
   details:
     en:
       - "Read-only probe via D3D11CreateDevice (hardware driver type)."
@@ -76,3 +86,9 @@
       - "«Uygula» https://www.microsoft.com/en-us/download/details.aspx?id=35 adresini açar — DirectX Son Kullanıcı Çalışma Zamanı."
       - "Sorun özellik düzeyiyse (FL10_x kart), hiçbir yükleyici düzeltmez — GPU'nun kendisi çok eski."
       - "Geri alınamaz."
+
+    fr:
+      - "Sonde en lecture seule via D3D11CreateDevice (type de pilote matériel)."
+      - "L'application ouvre https://www.microsoft.com/en-us/download/details.aspx?id=35 — Runtime DirectX End-User."
+      - "Si le problème concerne le niveau de fonctionnalité (carte FL10_x), aucun installateur ne le corrige — le GPU lui-même est trop ancien."
+      - "Non réversible."

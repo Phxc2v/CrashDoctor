@@ -5,6 +5,7 @@
     zh: ".NET Framework 4.7.2+ 检查"
     zht: ".NET Framework 4.7.2+ 檢查"
     tr: ".NET Framework 4.7.2+ kontrolü"
+    fr: "Vérification de .NET Framework 4.7.2+"
   description:
     en: |
       Bannerlord 1.3.x and the BUTR family of mods (BLSE, ButterLib, MCM) target
@@ -46,6 +47,14 @@
 
       `dotnet --list-runtimes` kullanmıyoruz — o, .NET Core / .NET 5+ içindir ve klasik
       Framework'ü listelemez. Kayıt defteri yetkili kaynaktır.
+    fr: |
+      Bannerlord 1.3.x et la famille de mods BUTR (BLSE, ButterLib, MCM) ciblent
+      net472. La clé de registre classique du .NET Framework (HKLM\SOFTWARE\Microsoft\NET
+      Framework Setup\NDP\v4\Full) indique ce qui est réellement installé sur la machine. En dessous de 4.7.2,
+      vous obtiendrez BadImageFormatException au chargement du module.
+
+      Nous n'utilisons pas `dotnet --list-runtimes` — c'est pour .NET Core / .NET 5+
+      et ne liste pas le Framework classique. Le registre est la source de vérité.
   details:
     en:
       - "Apply opens Microsoft's .NET 4.8 download page (latest supported on Win10, fully back-compatible)."
@@ -72,3 +81,9 @@
       - "Kaynak: HKLM Release DWORD değeri, okunabilir sürüm adına eşlenir."
       - "Eşik: 461808 (.NET 4.7.2)."
       - "Geri alınamaz."
+
+    fr:
+      - "Appliquer ouvre la page de téléchargement de .NET 4.8 de Microsoft (dernière version prise en charge sur Win10, entièrement rétrocompatible)."
+      - "Source : valeur DWORD Release de HKLM mappée au nom de version convivial."
+      - "Seuil : 461808 (.NET 4.7.2)."
+      - "Non réversible."

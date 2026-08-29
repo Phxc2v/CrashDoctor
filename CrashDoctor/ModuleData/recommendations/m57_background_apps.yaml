@@ -5,6 +5,7 @@
     zh: "关闭已知有问题的后台应用程序"
     zht: "關閉已知有問題的背景應用程式"
     tr: "Bilinen sorunlu arka plan uygulamalarını kapat"
+    fr: "Fermez les applications en arrière-plan connues pour poser problème"
   description:
     en: |
       Some popular utilities hook into D3D11 / DXGI to draw overlays, capture frames, or sync
@@ -33,6 +34,8 @@
       Bannerlord'un gölgelendirici durumunu bozduğu veya DXGI device-removed çökmelerini
       tetiklediği belgelenmiştir. Crash Doctor, özenle seçilmiş bir listeden çalışan her
       ihlalciyi listeler — başlatmadan önce bunları Görev Yöneticisi'nde kapatın.
+    fr: |
+      Certains utilitaires populaires s'interfacent avec D3D11 / DXGI pour dessiner des superpositions, capturer des images ou synchroniser l'éclairage RGB avec l'état du jeu. Ils sont documentés pour corrompre l'état des shaders de Bannerlord ou déclencher des plantages DXGI de type périphérique supprimé. Crash Doctor répertorie chaque programme fautif en cours d'exécution à partir d'une liste curatée — fermez-les dans le Gestionnaire des tâches avant de lancer le jeu.
   details:
     en:
       - "Apply opens Task Manager. Crash Doctor doesn't kill processes automatically — some are part of audio/RGB drivers."
@@ -59,3 +62,9 @@
       - "Sonlandırılan işlemler, Bannerlord çıktıktan sonra Başlat Menüsü'nden yeniden başlatılabilir."
       - "Liste şunları içerir: RTSS, MSI Afterburner OSD, Discord kaplaması, Nahimic, SignalRGB, iCUE, OBS Game Capture, XSplit."
       - "Sonlandırdıktan sonra — Crash Doctor'u yeniden tarayın."
+
+    fr:
+      - "Appliquer ouvre le Gestionnaire des tâches. Crash Doctor ne tue pas automatiquement les processus — certains font partie des pilotes audio/RGB."
+      - "Les processus tués peuvent être redémarrés depuis le Menu Démarrer après la sortie de Bannerlord."
+      - "La liste inclut RTSS, OSD MSI Afterburner, superposition Discord, Nahimic, SignalRGB, iCUE, Capture de jeu OBS, XSplit."
+      - "Après avoir tué — rescannez Crash Doctor."

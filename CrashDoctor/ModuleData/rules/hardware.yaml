@@ -10,6 +10,7 @@
     zh: "内存低于 Bannerlord 最低要求"
     zht: "記憶體低於 Bannerlord 最低要求"
     tr: "RAM, Bannerlord'un alt sınırının altında"
+    fr: "RAM inférieure au minimum requis pour Bannerlord"
   description:
     en: |
       Bannerlord's minimum is 6 GB RAM, recommended 8 GB. With heavy mods like TOR,
@@ -26,6 +27,9 @@
     tr: |
       Bannerlord en az 6 GB RAM ister, önerilen 8 GB. TOR gibi ağır modlarla
       16 GB altındaki her şey düzenli olarak çökecektir.
+    fr: |
+      Le minimum pour Bannerlord est de 6 Go de RAM, 8 Go sont recommandés. Avec des mods lourds comme TOR,
+      tout en dessous de 16 Go entraînera des plantages réguliers.
   fix:
     en:
       - "Close Chrome, Discord, browsers, and other background apps before launching."
@@ -47,6 +51,10 @@
       - "Başlatmadan önce Chrome, Discord, tarayıcıları ve diğer arka plan uygulamalarını kapatın."
       - "Oyun içinde: Options → Graphics → Texture Quality ve Shadow Quality değerlerini Low yapın."
       - "Sisteminiz izin veriyorsa ek bir RAM çubuğu takın."
+    fr:
+      - "Fermez Chrome, Discord, les navigateurs et autres applications en arrière-plan avant de lancer le jeu."
+      - "Dans le jeu : Options → Graphismes → réglez la Qualité des textures et la Qualité des ombres sur Faible."
+      - "Ajoutez une barrette de RAM supplémentaire si votre système le permet."
   match:
     all:
       - system:
@@ -65,6 +73,7 @@
     zh: "运行 TOR 内存偏紧"
     zht: "執行 TOR 記憶體偏緊"
     tr: "TOR için RAM yetersiz"
+    fr: "RAM insuffisante pour TOR"
   description:
     en: |
       The Old Realms is heavy. With less than 16 GB RAM and TOR_Core enabled,
@@ -81,6 +90,9 @@
     tr: |
       The Old Realms ağır bir moddur. 16 GB'den az RAM ile TOR_Core etkinken,
       uzun oturumlarda veya kuşatmalarda çökmeler olasıdır.
+    fr: |
+      The Old Realms est gourmand. Avec moins de 16 Go de RAM et TOR_Core activé,
+      les plantages lors de longues sessions ou de sièges sont probables.
   fix:
     en:
       - "In-game: lower Texture Quality and Shadow Quality."
@@ -102,6 +114,10 @@
       - "Oyun içinde: Texture Quality ve Shadow Quality değerlerini düşürün."
       - "Başlatmadan önce arka plandaki her şeyi kapatın."
       - "Her 1–2 saatte bir ana menüye çıkıp oradan Continue ile devam ederek belleği boşaltın."
+    fr:
+      - "Dans le jeu : réduisez la Qualité des textures et la Qualité des ombres."
+      - "Fermez tout en arrière-plan avant de lancer le jeu."
+      - "Retournez au menu principal toutes les 1 à 2 heures et reprenez la partie pour libérer la mémoire."
   match:
     all:
       - system:
@@ -123,6 +139,7 @@
     zh: "显卡显存少于 2 GB"
     zht: "顯示卡顯示記憶體少於 2 GB"
     tr: "Ekran kartında 2 GB'den az VRAM var"
+    fr: "GPU avec moins de 2 Go de VRAM"
   description:
     en: |
       Active GPU has under 2 GB dedicated VRAM. Bannerlord minimum is 2 GB,
@@ -139,6 +156,9 @@
     tr: |
       Etkin ekran kartında 2 GB'den az ayrılmış VRAM var. Bannerlord en az 2 GB,
       önerilen 4 GB ve üzeri ister. TOR ile 6 GB ve üzeri.
+    fr: |
+      Le GPU actif dispose de moins de 2 Go de VRAM dédiée. Le minimum pour Bannerlord est de 2 Go,
+      4 Go+ sont recommandés. Avec TOR — 6 Go+.
   fix:
     en:
       - "In-game: lower Texture Quality and Texture Budget."
@@ -155,6 +175,9 @@
     tr:
       - "Oyun içinde: Texture Quality ve Texture Budget değerlerini düşürün."
       - "Ağır doku modlarını devre dışı bırakın."
+    fr:
+      - "Dans le jeu : réduisez la Qualité des textures et le Budget des textures."
+      - "Désactivez les mods de textures lourds."
   match:
     all:
       - system:
@@ -173,6 +196,7 @@
     zh: "显卡显存可能不足以运行 TOR（报告低于 6 GB）"
     zht: "顯示卡顯示記憶體可能不足以執行 TOR（報告低於 6 GB）"
     tr: "Ekran kartının VRAM'i TOR için yetersiz olabilir (6 GB altında bildirildi)"
+    fr: "GPU probablement sous-équipé en VRAM pour TOR (moins de 6 Go signalés)"
   description:
     en: |
       DXDIAG reports under 6 GB dedicated VRAM on the active GPU. TOR + Bannerlord
@@ -213,6 +237,16 @@
       yapılandırmalarda RTX 4080/4090) kart fiziksel olarak 12-24 GB'a sahip olsa
       bile raporda 3072–4095 MB ile sınırlanır. Kartınız bunlardan biriyse ve oyun
       aksi halde sorunsuz çalışıyorsa bu kartı yok sayın. Aksi takdirde uyarı gerçektir.
+    fr: |
+      DXDIAG signale moins de 6 Go de VRAM dédiée sur le GPU actif. TOR + Bannerlord
+      à 1080p+ nécessite 6 Go+ ; en dessous, attendez-vous à des erreurs « mémoire vidéo insuffisante » ou
+      à des échecs CreateTexture2D lors de batailles intenses ou de chargements de mods d'armure.
+
+      Avertissement important : DXDIAG est connu pour signaler incorrectement la VRAM sur les cartes modernes. Les
+      séries AMD RX 7000/9000 et plusieurs cartes NVIDIA haut de gamme (RTX 4080/4090 dans
+      certaines configurations) sont limitées à 3072–4095 Mo dans le rapport même si
+      la carte possède physiquement 12 à 24 Go. Si votre carte fait partie de celles-ci et que
+      le jeu fonctionne correctement par ailleurs — ignorez cet avertissement. Sinon, l'avertissement est réel.
     ru: |
       DXDIAG показал меньше 6 ГБ выделенной VRAM на активной видеокарте. TOR на
       Bannerlord в 1080p+ хочет 6+ ГБ; ниже — будут «out of video memory» или
@@ -256,6 +290,14 @@
       - "Crash Doctor → Sistem ayarı → 'Ağır VRAM uygulamaları' kartı çıktıysa açın — makinenizde şu anda gerçekten neyin çalıştığını listeler."
       - "Ekran kartınızın fiziksel VRAM'i 4 GB'den azsa: ağır modlar (TOR + zırh paketleri) gerçekçi değil. Native Bannerlord çalıştırın ya da daha hafif modlar seçin."
       - "Herhangi bir grafik ayarını değiştirdikten SONRA: bilgisayarı yeniden başlatın, ardından Crash Doctor → Sistem ayarı → 'gölgelendirici önbelleğini temizle', sonra Ana Menü → 'Build Shader Cache' (20–60 dk). Bunlardan herhangi birini atlarsanız oyun bir sonraki açılışta açılış ekranında çöker."
+    fr:
+      - "Si vous possédez réellement une RX 7700 XT / 7800 XT / 7900 / 9070 / RTX 4070 Super+ / 4080 / 4090 / 5080 / 5090 : ignorez cet avertissement — DXDIAG signale incorrectement votre VRAM. Passez à la suite."
+      - "Si vous utilisez un PC portable de jeu avec une carte graphique intégrée et une carte dédiée (NVIDIA Optimus / AMD SmartShift — Lenovo Legion, ASUS ROG, MSI, Razer, etc.) : DXDIAG sous-estime toujours la VRAM de la carte dédiée lorsqu'il utilise la vue de la carte intégrée. Votre VRAM réelle correspond à celle indiquée par le fabricant (généralement 8 Go sur un RTX 4060 Laptop, 12 Go sur un 4070 Laptop, etc.). Ignorez cette carte."
+      - "Sinon : dans le jeu Options → Graphismes → Qualité des textures = Moyen, Budget des textures = Moyen, Qualité des ombres = Moyen."
+      - "Fermez toutes les applications en arrière-plan gourmandes en VRAM avant de lancer : les runtimes VR (Oculus, SteamVR, Mixed Reality Portal), les outils d'IA (Ollama, LM Studio, Stable Diffusion), les éditeurs vidéo (DaVinci Resolve, Premiere, After Effects), les navigateurs avec de nombreux onglets (Chrome / Edge / Firefox / Brave), OBS en mode Game Capture."
+      - "Ouvrez Crash Doctor → Optimisation système → carte 'Applications VRAM lourdes' si elle apparaît — elle liste ce qui s'exécute réellement sur votre machine à l'instant T."
+      - "Si votre GPU dispose de moins de 4 Go de VRAM physique : les mods lourds (TOR + packs d'armures) ne sont pas réalistes. Lancez Native Bannerlord ou choisissez des mods plus légers."
+      - "APRÈS avoir modifié un paramètre graphique : REDÉMARREZ le PC, puis Crash Doctor → Optimisation système → 'Vider le cache de shaders Bannerlord', puis Menu Principal → 'Construire le cache de shaders' (20–60 min). Sauter l'une de ces étapes → le jeu plante sur l'écran de démarrage au prochain lancement."
     ru:
       - "Если у тебя на самом деле RX 7700 XT / 7800 XT / 7900 / 9070 / RTX 4070 Super+ / 4080 / 4090 / 5080 / 5090 — игнорируй эту карточку, DXDIAG занижает твой VRAM. Иди дальше."
       - "Если ты на игровом ноутбуке с встроенной + дискретной картой (NVIDIA Optimus / AMD SmartShift — Lenovo Legion, ASUS ROG, MSI, Razer и т.д.): DXDIAG всегда занижает VRAM дискретки через iGPU view. Реальный VRAM = тот, что указал производитель (типично 8 ГБ на RTX 4060 Laptop, 12 ГБ на 4070 Laptop и т.д.). Игнорируй эту карточку."
@@ -282,6 +324,7 @@
     zh: "显卡驱动程序超过 18 个月未更新"
     zht: "顯示卡驅動程式超過 18 個月未更新"
     tr: "Ekran kartı sürücüsü 18 aydan eski"
+    fr: "Le pilote du GPU a plus de 18 mois"
   description:
     en: |
       The display driver is from a different release year. Many TaleWorlds and
@@ -298,6 +341,8 @@
     tr: |
       Ekran sürücüsü farklı bir yıla ait. TaleWorlds ve modlarla ilgili birçok
       gölgelendirici/render hatası daha yeni sürücü sürümlerinde düzeltildi.
+    fr: |
+      Le pilote d'affichage provient d'une année de publication différente. De nombreux bugs de shaders/render liés à TaleWorlds et aux mods sont corrigés dans les versions plus récentes des pilotes.
   fix:
     en:
       - "AMD: open AMD Software → Auto-detect → install the latest driver."
@@ -319,6 +364,10 @@
       - "AMD: AMD Software → Auto-detect → en son sürücüyü yükleyin."
       - "NVIDIA: GeForce Experience'ı açın veya nvidia.com'dan indirin → en son Game Ready'i yükleyin."
       - "Kurulumdan sonra yeniden başlatın."
+    fr:
+      - "AMD : ouvrez AMD Software → Détection automatique → installez le dernier pilote."
+      - "NVIDIA : ouvrez GeForce Experience ou téléchargez depuis nvidia.com → installez la dernière version Game Ready."
+      - "Redémarrez après l'installation."
   match:
     all:
       - system:
@@ -337,6 +386,7 @@
     zh: "Bannerlord 不再支持 Windows 7 或 8"
     zht: "Bannerlord 不再支援 Windows 7 或 8"
     tr: "Windows 7 veya 8 artık Bannerlord tarafından desteklenmiyor"
+    fr: "Windows 7 ou 8 n'est plus pris en charge par Bannerlord"
   description:
     en: |
       Bannerlord 1.2+ requires Windows 10 or 11. On Windows 7/8 the game can launch
@@ -353,6 +403,8 @@
     tr: |
       Bannerlord 1.2+ Windows 10 veya 11 gerektirir. Windows 7/8 üzerinde oyun
       açılabilir ama çökmeler kaçınılmazdır.
+    fr: |
+      Bannerlord 1.2+ nécessite Windows 10 ou 11. Sous Windows 7/8, le jeu peut se lancer mais les plantages sont inévitables.
   fix:
     en:
       - "Upgrade to Windows 10 or 11."
@@ -364,6 +416,8 @@
       - "升級到 Windows 10 或 11。"
     tr:
       - "Windows 10 veya 11'e yükseltin."
+    fr:
+      - "Mettez à niveau vers Windows 10 ou 11."
   match:
     any:
       - system:
@@ -385,6 +439,7 @@
     zh: "页面文件已耗尽或被禁用"
     zht: "分頁檔已耗盡或被停用"
     tr: "Sayfa dosyası tükendi veya devre dışı"
+    fr: "Le fichier d'échange est épuisé ou désactivé"
   description:
     en: |
       Less than 1 GB free in the Windows page file. With heavy mods this leads
@@ -401,6 +456,8 @@
     tr: |
       Windows sayfa dosyasında 1 GB'den az boş alan var. Ağır modlarla bu,
       access violation çökmelerine yol açar.
+    fr: |
+      Moins de 1 Go d'espace libre dans le fichier d'échange Windows. Avec des mods lourds, cela entraîne des plantages par violation d'accès.
   fix:
     en:
       - "System Properties → Advanced → Performance → Settings → Advanced → Virtual Memory → Custom 32–64 GB on an SSD."
@@ -417,6 +474,9 @@
     tr:
       - "Sistem Özellikleri → Gelişmiş → Performans → Ayarlar → Gelişmiş → Sanal Bellek → SSD üzerinde özel 32–64 GB."
       - "Uyguladıktan sonra yeniden başlatın."
+    fr:
+      - "Propriétés système → Avancé → Performances → Paramètres → Avancé → Mémoire virtuelle → Personnalisé 32–64 Go sur un SSD."
+      - "Redémarrez après l'application."
   match:
     all:
       - system:
@@ -435,6 +495,7 @@
     zh: "某个路径指向不再存在的驱动器（通常是过时的 TEMP）"
     zht: "某個路徑指向不再存在的磁碟（通常是過時的 TEMP）"
     tr: "Bir yol artık var olmayan bir sürücüyü gösteriyor (genelde eski TEMP)"
+    fr: "Un chemin pointe vers un lecteur qui n'existe plus (souvent TEMP obsolète)"
   description:
     en: |
       The log carries a .NET drive-not-found error — "Could not find the drive
@@ -486,6 +547,16 @@
       %TEMP% içine hiçbir şey yazılamaz — gölgelendirici derlemesinin 'Build
       Shader Cache' adımı 'hatalarla' biter, yükleyiciler ve diğer uygulamalar da
       aynı şekilde başarısız olur.
+    fr: |
+      Le journal contient une erreur .NET de lecteur introuvable — « Impossible de trouver le lecteur
+      'X:\'. Le lecteur n'est peut-être pas prêt ou n'est peut-être pas mappé. » Quelque chose est
+      configuré pour utiliser une lettre de lecteur qui n'existe plus ou n'est pas prête.
+
+      La cause la plus courante est un dossier TMP/TEMP Windows périmé après un changement de lettre
+      de lecteur : e.g, un volume temporaire créé en tant que A:\ puis renommé plus tard en D:\,
+      tandis que TMP/TEMP a conservé l'ancien chemin A:\. Rien ne peut alors écrire dans %TEMP%, donc
+      le compilateur de shaders termine la compilation du cache de shaders « avec des erreurs » et
+      les installateurs / autres applications échouent de la même manière.
   fix:
     en:
       - "Open Crash Doctor → System tune-up. If the 'Repair broken Windows TEMP path' card is shown, Apply it — it repoints TMP/TEMP back to %USERPROFILE%\\AppData\\Local\\Temp."
@@ -512,6 +583,11 @@
       - "Ardından Windows'tan ÇIKIŞ yapın (ya da yeniden başlatın) — ortam değişkenleri yalnızca yeni bir oturumda etkili olur."
       - "Elle alternatif: Sistem Özellikleri → Gelişmiş → Ortam Değişkenleri → Kullanıcı TMP ve TEMP değerlerini %USERPROFILE%\\AppData\\Local\\Temp (ya da var olan bir sürücü) yapın, sonra oturumu kapatıp açın."
       - "Bir gölgelendirici derlemesiyse: TEMP'i onardıktan sonra Crash Doctor → Sistem ayarı → 'gölgelendirici önbelleğini temizle', ardından ana menüden 'Build Shader Cache'i tekrar çalıştırın."
+    fr:
+      - "Ouvrez Crash Doctor → Optimisation système. Si la carte 'Réparer le chemin TEMP Windows cassé' est affichée, Appliquez-la — elle réoriente TMP/TEMP vers %USERPROFILE%\\AppData\\Local\\Temp."
+      - "Puis DÉCONNECTEZ-VOUS de Windows (ou redémarrez) — les modifications de l'environnement ne prennent effet que dans une nouvelle session de connexion."
+      - "Alternative manuelle : Propriétés système → Avancé → Variables d'environnement → définissez User TMP et TEMP sur %USERPROFILE%\\AppData\\Local\\Temp (ou un lecteur existant), puis déconnectez-vous et reconnectez-vous."
+      - "S'il s'agissait d'une compilation de shaders : après avoir corrigé TEMP, Crash Doctor → Optimisation système → 'Effacer le cache de shaders de Bannerlord', puis lancez 'Compiler le cache de shaders' depuis le menu principal."
   match:
     any:
       - log_line:

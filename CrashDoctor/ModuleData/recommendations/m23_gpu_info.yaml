@@ -5,6 +5,7 @@
     zh: "显卡信息 — 型号、准确显存、驱动程序版本"
     zht: "顯示卡資訊 — 型號、準確顯示記憶體、驅動程式版本"
     tr: "Ekran kartı bilgisi — model, doğru VRAM, sürücü sürümü"
+    fr: "Infos GPU — modèle, VRAM exacte, version du pilote"
   description:
     en: |
       Read-only display. Pulls live data from `Win32_VideoController` (name, driver
@@ -63,6 +64,14 @@
 
       Bir hata bildirirken "gerçekte hangi ekran kartı + sürücü + VRAM'a sahip
       olduğunu" almak için bunu kullan. Crash Doctor donanım yükseltmez.
+    fr: |
+      Affichage en lecture seule. Récupère les données en temps réel depuis `Win32_VideoController` (nom, version du pilote, date du pilote) et la clé de registre de la classe de périphérique pour obtenir la VRAM exacte.
+
+      Le champ `AdapterRAM` de WMI est un uint32 — il sature à 4 Go sur toute carte moderne,
+      nous allons donc directement lire la clé `HardwareInformation.qwMemorySize`
+      du registre (REG_QWORD, 64 bits). Cela correspond aux valeurs rapportées par les panneaux de configuration NVIDIA / AMD / Intel. Aucune dépendance à DXGI / Vortice.
+
+      Utilisez cette option pour récupérer « quel GPU + pilote + VRAM vous avez réellement » lors du signalement d'un bug. Crash Doctor ne peut pas améliorer votre matériel.
   details:
     en:
       - "Source 1: Win32_VideoController WMI."
@@ -89,3 +98,9 @@
       - "Kaynak 2: HKLM\\SYSTEM\\CurrentControlSet\\Control\\Class\\{4d36e968-...}\\NNNN\\HardwareInformation.qwMemorySize."
       - "Salt okunur — Uygula düğmesi yıkıcı bir şey yapmaz."
       - "Geri alınamaz (salt okunur)."
+
+    fr:
+      - "Source 1 : WMI Win32_VideoController."
+      - "Source 2 : HKLM\\\\SYSTEM\\\\CurrentControlSet\\\\Control\\\\Class\\\\{4d36e968-...}\\\\NNNN\\\\HardwareInformation.qwMemorySize."
+      - "Lecture seule — Le bouton Appliquer ne fait rien de destructeur."
+      - "Irréversible (lecture seule)."

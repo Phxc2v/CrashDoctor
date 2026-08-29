@@ -5,6 +5,7 @@
     zh: "清理 Bannerlord 着色器缓存"
     zht: "清理 Bannerlord 著色器快取"
     tr: "Bannerlord gölgelendirici önbelleğini temizle"
+    fr: "Vider le cache de shaders de Bannerlord"
   description:
     en: |
       The shader cache holds compiled GPU shaders. After a Bannerlord or TOR update, or after
@@ -27,6 +28,8 @@
       güncellemesinden sonra ya da bir ekran kartı sürücüsü değişikliğinden sonra önbellek
       eskiyebilir ve d3d hatalarına, siyah ekranlara ya da gölgelendirici derleme çökmelerine
       ("Error compiling shader file: ...particle_shading.rs") yol açabilir.
+    fr: |
+      Le cache de shaders contient les shaders GPU compilés. Après une mise à jour de Bannerlord ou de TOR, ou après un changement de pilote GPU, le cache peut devenir obsolète et provoquer des erreurs d3d, des écrans noirs ou des plantages de compilation de shaders (« Error compiling shader file: ...particle_shading.rs »).
   details:
     en:
       - "Files are moved to the Windows Recycle Bin and can be restored if needed."
@@ -53,3 +56,9 @@
       - "Bundan sonra Bannerlord'un ilk açılışı gölgelendiricileri yeniden derlemek için 10–60 dakika harcar."
       - "Oyunu yeniden başlattıktan hemen sonra ana menüdeki 'Build Shader Cache' düğmesini kullanın,"
       - "aksi halde ilk savaş ciddi şekilde takılır."
+
+    fr:
+      - "Les fichiers sont déplacés vers la Corbeille de Windows et peuvent être restaurés si nécessaire."
+      - "Le premier lancement de Bannerlord après cette opération passera 10 à 60 minutes à recompiler les shaders."
+      - "Utilisez le bouton 'Construire le cache de shaders' du menu principal juste après avoir redémarré le jeu,"
+      - "sinon la première bataille sera fortement saccadée."

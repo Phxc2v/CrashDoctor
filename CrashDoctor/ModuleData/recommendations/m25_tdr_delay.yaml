@@ -5,6 +5,7 @@
     zh: "为 TOR 着色器编译提高显卡超时（TdrDelay）"
     zht: "為 TOR 著色器編譯提高顯示卡逾時（TdrDelay）"
     tr: "TOR gölgelendirici derlemesi için ekran kartı zaman aşımını (TdrDelay) yükselt"
+    fr: "Augmenter le délai d'attente du GPU (TdrDelay) pour la compilation du shader TOR"
   description:
     en: |
       Windows kills any GPU command that doesn't return within 2 seconds (TDR — Timeout
@@ -55,6 +56,10 @@
       Bu modül TdrDelay ve TdrDdiDelay değerlerini 60 saniyeye yükselterek derleyiciye her
       permütasyonu bitirmesi için yeterli zaman verir. Microsoft'un önerdiği güvenli bir
       geçici çözüm; geri alınabilir.
+    fr: |
+      Windows tue toute commande GPU qui ne renvoie pas dans les 2 secondes (TDR — Détection et récupération de délai d'attente). Les pbr_metallic.rs / faceshader_high.rs de TOR prennent régulièrement 5 à 15 secondes par dispatch sur une seule permutation de shader, donc le système d'exploitation considère que le GPU est bloqué et le tue — ce qui entraîne des cascades d'erreurs « mémoire insuffisante lors de la compilation » et des plantages DXGI device-removed pendant la « Construction du cache de shaders ».
+
+      Ce module augmente TdrDelay et TdrDdiDelay à 60 secondes, donnant au compilateur suffisamment de temps pour terminer chaque permutation. Solution de contournement recommandée par Microsoft et sûre ; réversible.
   details:
     en:
       - "Click Apply: Windows shows one UAC consent dialog — click Yes."
@@ -81,3 +86,9 @@
       - "Yeniden başlatma gerektirir — Windows TDR ayarlarını yalnızca açılışta okur."
       - "Geçmiş sekmesinden geri alınabilir."
       - "TdrDelay = TdrDdiDelay = 60 (saniye) olarak ayarlar. Varsayılan 2 / 5'tir."
+
+    fr:
+      - "Cliquez sur Appliquer : Windows affiche une boîte de dialogue de consentement UAC — cliquez sur Oui."
+      - "Nécessite un redémarrage — Windows ne lit les paramètres TDR qu'au démarrage."
+      - "Réversible depuis l'onglet Historique."
+      - "Définir TdrDelay = TdrDdiDelay = 60 (secondes). La valeur par défaut est 2 / 5."

@@ -5,6 +5,7 @@
     zh: "「文档」文件夹位于 OneDrive 上"
     zht: "「文件」資料夾位於 OneDrive 上"
     tr: "Belgeler klasörü OneDrive üzerinde"
+    fr: "Le dossier Documents se trouve sur OneDrive"
   description:
     en: |
       Bannerlord stores saves, configs and shader logs under Documents. When Documents is
@@ -40,6 +41,8 @@
       meşgulken günlük döndürmeyi başarısız kılabilir. Önerilen düzeltme, Bannerlord
       klasörünü 'Her zaman bu cihazda tut' olarak işaretlemek veya Belgeler'in OneDrive
       yedeklemesini tamamen devre dışı bırakmaktır.
+    fr: |
+      Bannerlord stocke les sauvegardes, les fichiers de configuration et les journaux de shaders dans Documents. Lorsque Documents est redirigé vers OneDrive (par défaut sur les nouvelles installations de Windows), la synchronisation paresseuse de OneDrive peut verrouiller les fichiers en cours d'écriture — ce qui corrompt les sauvegardes lors d'une longue campagne — ou échouer lors de la rotation des journaux si le cloud est occupé. La solution recommandée est de marquer le dossier Bannerlord comme « Toujours conserver sur cet appareil » ou de désactiver la sauvegarde de Documents par OneDrive.
   details:
     en:
       - "⚠ DO NOT delete the OneDrive folder. That wipes your saves both locally and in the cloud sync. Use the steps below — they keep your saves intact."
@@ -76,3 +79,11 @@
       - "Kalıcı düzeltme: OneDrive Ayarları → Yedekleme → Yedeklemeyi yönet → 'Belgeler' işaretini kaldırın. Dosyalar yerel Belgeler klasörünüzde kalır, OneDrive yalnızca eşitlemeyi durdurur."
       - "OneDrive klasörünü yanlışlıkla zaten sildiyseniz: kayıtlar 30 gün boyunca https://onedrive.live.com → Geri Dönüşüm Kutusu (ve yerel Geri Dönüşüm Kutusu) üzerinden kurtarılabilir."
       - "Yeniden sabitledikten sonra, uzun kampanyalarda kayıt bozulma riski belirgin şekilde düşer."
+
+    fr:
+      - "⚠ NE supprimez PAS le dossier OneDrive. Cela effacerait vos sauvegardes localement et dans la synchronisation cloud. Suivez les étapes ci-dessous — elles conservent vos sauvegardes intactes."
+      - "Appliquer ouvre le dossier Bannerlord dans Documents."
+      - "Clic droit sur 'Mount and Blade II Bannerlord' → 'Toujours conserver sur cet appareil' (force la copie locale, les sauvegardes restent)."
+      - "Correctif permanent : Paramètres OneDrive → Sauvegarde → Gérer la sauvegarde → décocher 'Documents'. Les fichiers restent dans votre dossier Documents local, OneDrive arrête simplement de les synchroniser."
+      - "Si vous avez déjà supprimé accidentellement le dossier OneDrive : les sauvegardes sont récupérables pendant 30 jours sur https://onedrive.live.com → Corbeille (et la Corbeille locale)."
+      - "Après avoir réépinglé, le risque de corruption des sauvegardes diminue fortement lors des longues campagnes."

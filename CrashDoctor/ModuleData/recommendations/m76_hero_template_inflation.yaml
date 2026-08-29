@@ -5,6 +5,7 @@
     zh: "英雄模板膨胀（模组生成的 NPC 膨胀）"
     zht: "英雄範本膨脹（模組生成的 NPC 膨脹）"
     tr: "Kahraman şablonu şişmesi (mod kaynaklı NPC şişmesi)"
+    fr: "Inflation des modèles de Héros (surcharge de PNJ générés par des mods)"
   description:
     en: |
       Surfaces when a single CharacterObject template has more than 100
@@ -143,6 +144,42 @@
       referansları null'lar ve ayrı bir "CrashDoctor_cleaned_*" kaydı yazar;
       diskteki orijinal kaydınıza dokunulmaz. Temizlenmiş kaydı Load Game'den
       yükleyin.
+    fr: |
+      Se produit lorsqu'un seul template CharacterObject compte plus de 100
+      instances de Héros en vie dans la campagne chargée. Il s'agit du
+      scénario de fin de partie causé par des mods dont le hook HourlyTickParty
+      fait apparaître de nouveaux Héros sans limite — le plus souvent
+      la logique de recrutement des Greenskins de LoreHardcore, mais le mode
+      d'échec est indépendant du template.
+
+      Pourquoi c'est important : chaque Héros charge son propre
+      Équipement, ce qui charge (et épingle) un ensemble unique de
+      textures GPU. Une fois que le cache de shaders ne peut plus les
+      tous maintenir en mémoire, le jeu plante avec 0xC0000005 dans le
+      rendu — le plus souvent quelques secondes après un tick de
+      journée accéléré. La sauvegarde se charge correctement ; les
+      dégâts s'accumulent pendant la partie et ne se manifestent que
+      lorsque le cache déborde. Les joueurs qui ont supprimé le mod
+      responsable et ont continué avec la même sauvegarde ne rapportent
+      plus de plantages — confirmant que le mod est la source.
+
+      Ce que fait le scanner : regroupe Hero.AllAliveHeroes par
+      CharacterObject.StringId, exclut le joueur / le clan du joueur /
+      les notables du décompte, et signale tout template au-dessus du
+      seuil. La carte reste Saine si aucun template n'est en danger.
+
+      Ce que fait le nettoyeur (lorsque vous appuyez sur Nettoyer dans le
+      panneau Santé de sauvegarde) : pour chaque template au-dessus du
+      seuil, conserve les 20 premiers Héros intacts (afin que le type
+      d'unité continue d'apparaître à l'avenir) et marque les autres
+      comme supprimables S'ils passent des vérifications de sécurité
+      strictes — pas un chef de clan, pas un notable, pas un chef de
+      groupe, pas de liens familiaux, pas d'ancrage à une colonie /
+      un gouverneur. Le graph walker du Nettoyeur de sauvegarde annule
+      ensuite toutes les références à ces Héros et écrit une sauvegarde
+      séparée "CrashDoctor_cleaned_*" ; votre sauvegarde originale sur
+      le disque n'est pas touchée. Chargez la sauvegarde nettoyée depuis
+      Charger une sauvegarde.
   details:
     en:
       - "Threshold: > 100 alive heroes sharing one CharacterObject template."
@@ -179,3 +216,11 @@
       - "Kaldırma, Save Cleaner grafik gezgini üzerinden gider — üst düzey bir Action çağrısı değil, gerçek referans null'laması. Sonuç ayrı bir kayıt dosyasıdır; orijinaliniz dokunulmadan kalır."
       - "Kart sağlıklı kayıtlarda gizlenir (kampanya yüklü değilken NotApplicable; her şablon 100 veya altındayken Healthy)."
       - "Çökme günlüğündeki belirti: 0xC0000005 artı rgl_log_*.txt içinde 'Missing shader from sack: pbr_terrain' spam'i, tipik olarak Speed x4-x8 hızlı-ileri sonrası."
+
+    fr:
+      - "Seuil : > 100 Héros en vie partageant un même modèle CharacterObject."
+      - "Plancher de conservation : 20 Héros par modèle sont toujours conservés."
+      - "Ignore le joueur, le clan du joueur, les notables, les seigneurs, les chefs de faction, les gouverneurs, les Héros ancrés à une colonie, les chefs de groupe, les prisonniers, les Héros liés par famille (conjoint / parent / enfant), les compagnons, les errants."
+      - "La suppression passe par le graph walker du Nettoyeur de sauvegarde — annulation propre des références, et non un appel d'Action de haut niveau. Le résultat est un fichier de sauvegarde séparé ; votre sauvegarde originale reste intacte."
+      - "La carte se masque sur les sauvegardes saines (NotApplicable lorsqu'aucune campagne n'est chargée ; Saine lorsque chaque modèle est à ou en dessous de 100)."
+      - "Symptôme dans le journal de plantage : 0xC0000005 suivi d'un spam de 'Missing shader from sack: pbr_terrain' dans rgl_log_*.txt, généralement après une avance rapide à x4-x8."
