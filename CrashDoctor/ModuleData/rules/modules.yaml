@@ -708,6 +708,7 @@
   category: modules
   severity: critical
   confidence: high
+  evidence_source: "Client 2026-08-07 — Realm of Thrones 8.0.10 on game 1.3.15 with only Harmony and UIExtenderEx present (no ButterLib, no MCM): 4 identical faults at the same address, no crash folder, no managed capture. Crash Doctor's own pre-crash check (ModDependencyScanner) names the same missing library in report.txt and crashdoctor.log."
   requires_sources: [managed_exception]
   title:
     en: "A mod could not load a library it needs (missing prerequisite module)"
@@ -803,3 +804,149 @@
       # The TOR/NAudio System.Memory case has its own card with a step-by-step fix — don't shadow it.
       - none:
           - managed_exception: { frame_contains: "NAudio" }
+# Evidence: client crash a628d65c (2026-09-01, Bannerlord 1.3.15, TOR + LoreHardcore), game dead
+# before the main menu on every launch. Root read off the SHIPPED Bannerlord.Harmony 2.4.2.248 the
+# client runs, not guessed:
+#     Bannerlord.Harmony.SubModule.ValidateLoadOrder()          (SubModule.cs:104)
+#         var list = ModuleInfoHelper.GetLoadedModules().ToList();
+#         var m = list.SingleOrDefault(x => x.Id == "Bannerlord.Harmony");   // throws here
+#     Bannerlord.BUTR.Shared.Helpers.ModuleInfoHelper.GetLoadedModules()
+#         foreach (string key in Utilities.GetModulesNames())    // ONE yield per NAME
+#             if (allModulesAvailable.TryGetValue(key, out var value)) yield return value;
+# SingleOrDefault throws "more than one matching element" only when two yielded entries match, and
+# that needs the NAME twice in the launch list. Two module FOLDERS sharing an id cannot do it: they
+# die one line earlier inside GetModules().ToDictionary(x => x.Id, ...) with ArgumentException.
+# The duplicate is invisible everywhere else — TaleWorlds' own ModuleHelper.InitializeModules folds
+# the names into a dictionary keyed by id.ToLower() behind `if (!ContainsKey(...))`, so the
+# launcher, the engine APIs and our own module list all show it once.
+- id: mod.duplicate_load_order_entry
+  category: modules
+  severity: critical
+  confidence: high
+  evidence_source: "Client a628d65c, 2026-09-01, game 1.3.15. Decompiled Bannerlord.Harmony 2.4.2.248 (SubModule.ValidateLoadOrder, ModuleInfoHelper.GetLoadedModules) and TaleWorlds.ModuleManager.ModuleHelper.InitializeModules from the shipped DLLs."
+  requires_sources: [managed_exception]
+  title:
+    en: "A module is listed twice in the load order — the game cannot start"
+    ru: "Модуль указан в порядке загрузки дважды — игра не запускается"
+    zh: "某模组在加载顺序中被列出两次——游戏无法启动"
+    zht: "某模組在載入順序中被列出兩次——遊戲無法啟動"
+    tr: "Bir modül yükleme sırasında iki kez listelenmiş — oyun başlayamıyor"
+    fr: "Un module est listé deux fois dans l'ordre de chargement — le jeu ne démarre pas"
+  description:
+    en: |
+      The list of modules the game was started with contains the same module twice. That alone
+      kills the game before the main menu, every launch.
+
+      Bannerlord.Harmony checks where it sits in that list so it can warn you when it is not first.
+      The check uses SingleOrDefault, which does not tolerate a repeated entry — it throws
+      "Sequence contains more than one matching element" and, because the check runs from a postfix
+      on the initial screen setup, the throw takes the whole game down.
+
+      This is not a broken mod and not a conflict between mods: every mod in your list can be
+      perfectly healthy. It is one duplicated line in the launcher's saved module list, or in the
+      module list a third-party launcher passes on the command line.
+
+      Two installations of the same mod in separate folders do NOT cause this — that fails
+      differently and earlier.
+    ru: |
+      В списке модулей, с которым запустилась игра, один и тот же модуль указан дважды. Одного
+      этого хватает, чтобы игра умирала до главного меню при каждом запуске.
+
+      Bannerlord.Harmony проверяет своё место в этом списке, чтобы предупредить, если он не первый.
+      Проверка сделана через SingleOrDefault, а он не терпит повторной записи — бросает
+      «Sequence contains more than one matching element», и так как проверка висит постфиксом на
+      инициализации стартового экрана, исключение уносит игру целиком.
+
+      Это не сломанный мод и не конфликт модов: все моды в списке могут быть исправны. Это одна
+      задвоенная строка в сохранённом списке модулей лаунчера — или в списке, который передаёт
+      сторонний лаунчер в командной строке.
+
+      Две установки одного мода в разных папках такого НЕ дают — там ошибка другая и раньше.
+    zh: |
+      游戏启动时使用的模组列表中，同一个模组出现了两次。仅此一点就会让游戏在每次启动时都死在主菜单之前。
+
+      Bannerlord.Harmony 会检查自己在该列表中的位置，以便在它不是第一位时提醒你。该检查使用
+      SingleOrDefault，它不容许重复项——会抛出「Sequence contains more than one matching element」；
+      而由于这项检查挂在初始画面初始化的后置补丁上，异常会直接带走整个游戏。
+
+      这不是模组损坏，也不是模组冲突：列表里的每个模组都可能完全正常。问题只是启动器保存的模组
+      列表里多了一行重复，或者第三方启动器在命令行里传入的模组列表中多了一行。
+
+      同一模组安装在两个不同文件夹并不会导致此问题——那种情况的报错不同，且发生得更早。
+    zht: |
+      遊戲啟動時使用的模組清單中，同一個模組出現了兩次。僅此一點就會讓遊戲在每次啟動時都死在主選單之前。
+
+      Bannerlord.Harmony 會檢查自己在該清單中的位置，以便在它不是第一位時提醒你。該檢查使用
+      SingleOrDefault，它不容許重複項——會擲出「Sequence contains more than one matching element」；
+      而由於這項檢查掛在初始畫面初始化的後置修補上，例外會直接帶走整個遊戲。
+
+      這不是模組損壞，也不是模組衝突：清單裡的每個模組都可能完全正常。問題只是啟動器儲存的模組
+      清單裡多了一行重複，或者第三方啟動器在命令列裡傳入的模組清單中多了一行。
+
+      同一模組安裝在兩個不同資料夾並不會導致此問題——那種情況的錯誤不同，且發生得更早。
+    tr: |
+      Oyunun başlatıldığı modül listesinde aynı modül iki kez yer alıyor. Tek başına bu bile oyunu
+      her açılışta ana menüden önce öldürür.
+
+      Bannerlord.Harmony, ilk sırada olmadığında seni uyarabilmek için o listedeki kendi yerini
+      denetler. Denetim SingleOrDefault ile yapılır ve tekrarlanan bir girdiyi kaldıramaz —
+      "Sequence contains more than one matching element" hatası fırlatır; denetim başlangıç ekranı
+      kurulumuna bağlı bir postfix'ten çalıştığı için bu hata tüm oyunu götürür.
+
+      Bu bozuk bir mod ya da modlar arası çatışma değildir: listendeki her mod gayet sağlam
+      olabilir. Sorun, başlatıcının kaydettiği modül listesindeki tek bir tekrarlanmış satır — ya
+      da üçüncü taraf bir başlatıcının komut satırında geçirdiği modül listesindeki bir tekrar.
+
+      Aynı modun iki ayrı klasöre kurulmuş olması buna yol açmaz — o durum farklı ve daha erken
+      hata verir.
+    fr: |
+      La liste des modules avec laquelle le jeu a démarré contient deux fois le même module. Cela
+      suffit à tuer le jeu avant le menu principal, à chaque lancement.
+
+      Bannerlord.Harmony vérifie sa propre place dans cette liste afin de vous avertir s'il n'est
+      pas en premier. Cette vérification utilise SingleOrDefault, qui ne tolère pas une entrée
+      répétée : elle lève « Sequence contains more than one matching element » et, comme la
+      vérification s'exécute depuis un postfix sur l'initialisation de l'écran de départ,
+      l'exception emporte tout le jeu.
+
+      Ce n'est ni un mod cassé ni un conflit entre mods : chaque mod de votre liste peut être en
+      parfait état. C'est une seule ligne dupliquée dans la liste de modules enregistrée par le
+      lanceur — ou dans celle qu'un lanceur tiers passe en ligne de commande.
+
+      Deux installations du même mod dans des dossiers séparés ne provoquent PAS ceci : ce cas-là
+      échoue autrement, et plus tôt.
+  fix:
+    en:
+      - "Open the launcher, UNTICK the module named in the crash (usually Bannerlord.Harmony), apply, then tick it again and start the game. That rewrites the module list with a single entry and is enough on its own in most cases."
+      - "Still crashing: close the game and delete Documents\\Mount and Blade II Bannerlord\\Configs\\LauncherData.xml. The game recreates it; re-tick your mods afterwards."
+      - "If you start the game through BLSE, Vortex, a desktop shortcut or a .bat file, look at the module list in ITS launch command — that is where the repeated entry usually lives, and rewriting LauncherData.xml will not touch it."
+      - "Open Crash Doctor and check the Mods tab: the duplicated module is marked there in red, by name."
+    ru:
+      - "Открой лаунчер, СНИМИ галку с модуля из отчёта (обычно Bannerlord.Harmony), примени, потом поставь галку обратно и запусти игру. Список модулей перезапишется одной записью — в большинстве случаев этого достаточно."
+      - "Не помогло: закрой игру и удали Documents\\Mount and Blade II Bannerlord\\Configs\\LauncherData.xml. Игра создаст его заново, после чего отметь моды снова."
+      - "Если запускаешь через BLSE, Vortex, ярлык на рабочем столе или .bat — смотри список модулей в ЕГО строке запуска: чаще всего повтор живёт именно там, и правка LauncherData.xml его не тронет."
+      - "Открой Crash Doctor, вкладка «Моды» — задвоенный модуль отмечен там красным и назван по имени."
+    zh:
+      - "打开启动器，取消勾选报告中提到的模组（通常是 Bannerlord.Harmony），应用，然后重新勾选并启动游戏。这会把模组列表重写为单条记录，多数情况下这样就够了。"
+      - "仍然崩溃：关闭游戏并删除 Documents\\Mount and Blade II Bannerlord\\Configs\\LauncherData.xml。游戏会重新创建它，之后请重新勾选你的模组。"
+      - "如果你通过 BLSE、Vortex、桌面快捷方式或 .bat 启动游戏，请查看它的启动命令中的模组列表——重复项通常就在那里，重写 LauncherData.xml 不会影响它。"
+      - "打开 Crash Doctor 的「模组」页：重复的模组会以红色标出并写明名称。"
+    zht:
+      - "開啟啟動器，取消勾選報告中提到的模組（通常是 Bannerlord.Harmony），套用，然後重新勾選並啟動遊戲。這會把模組清單重寫為單筆記錄，多數情況下這樣就夠了。"
+      - "仍然當機：關閉遊戲並刪除 Documents\\Mount and Blade II Bannerlord\\Configs\\LauncherData.xml。遊戲會重新建立它，之後請重新勾選你的模組。"
+      - "如果你透過 BLSE、Vortex、桌面捷徑或 .bat 啟動遊戲，請查看它的啟動命令中的模組清單——重複項通常就在那裡，重寫 LauncherData.xml 不會影響它。"
+      - "開啟 Crash Doctor 的「模組」頁：重複的模組會以紅色標出並寫明名稱。"
+    tr:
+      - "Başlatıcıyı aç, raporda adı geçen modülün (genellikle Bannerlord.Harmony) işaretini KALDIR, uygula, sonra yeniden işaretle ve oyunu başlat. Bu, modül listesini tek girdiyle yeniden yazar ve çoğu durumda tek başına yeter."
+      - "Hâlâ çöküyorsa: oyunu kapat ve Documents\\Mount and Blade II Bannerlord\\Configs\\LauncherData.xml dosyasını sil. Oyun onu yeniden oluşturur; ardından modlarını yeniden işaretle."
+      - "Oyunu BLSE, Vortex, bir masaüstü kısayolu veya .bat ile başlatıyorsan, ONUN başlatma komutundaki modül listesine bak — tekrarlanan girdi genellikle oradadır ve LauncherData.xml'i yeniden yazmak ona dokunmaz."
+      - "Crash Doctor'ı aç ve Modlar sekmesine bak: tekrarlanan modül orada kırmızıyla ve adıyla işaretlidir."
+    fr:
+      - "Ouvrez le lanceur, DÉCOCHEZ le module nommé dans le rapport (généralement Bannerlord.Harmony), appliquez, puis recochez-le et lancez le jeu. Cela réécrit la liste des modules avec une seule entrée et suffit dans la plupart des cas."
+      - "Toujours planté : fermez le jeu et supprimez Documents\\Mount and Blade II Bannerlord\\Configs\\LauncherData.xml. Le jeu le recrée ; recochez ensuite vos mods."
+      - "Si vous lancez le jeu via BLSE, Vortex, un raccourci ou un fichier .bat, regardez la liste de modules dans SA commande de lancement — c'est là que se trouve d'ordinaire l'entrée répétée, et réécrire LauncherData.xml n'y changera rien."
+      - "Ouvrez Crash Doctor et regardez l'onglet Mods : le module dupliqué y est signalé en rouge, nommément."
+  match:
+    all:
+      - managed_exception: { frame_contains: "ValidateLoadOrder" }
+      - managed_exception: { message_contains: "Sequence contains more than one matching element" }

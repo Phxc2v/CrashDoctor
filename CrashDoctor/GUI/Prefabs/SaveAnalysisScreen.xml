@@ -53,19 +53,98 @@
                             Brush.FontSize="16" Brush.FontColor="#C8B898FF"
                             Brush.TextHorizontalAlignment="Center" Text="@StatusText" />
 
-                <!-- Scrollable report body — hard-clipped wrapper around a
-                     plain TextWidget. Same clip pattern as the wipe list so
-                     long reports can't overflow the popup boundary and
-                     visually cover the bottom button row. -->
+                <!-- "This is not a crash" banner — only over the prevention journal.
+                     Players photograph that list and send it in as a crash report, so the
+                     answer has to sit ON the screen they photograph, in a colour the eye
+                     lands on first. Outer widget is the bright frame, the inner one insets
+                     it by 3px to leave a border (a real border sprite would need an atlas).
+                     Alpha in Color= does not work on this renderer — all fills are FF. -->
+                <Widget IsVisible="@IsPreventionNoticeVisible"
+                        WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="92"
+                        VerticalAlignment="Top" MarginTop="106" MarginLeft="32" MarginRight="52"
+                        Sprite="BlankWhiteSquare_9" Color="#E0A33CFF" IsEnabled="false">
+                  <Children>
+                    <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
+                            MarginTop="3" MarginBottom="3" MarginLeft="3" MarginRight="3"
+                            Sprite="BlankWhiteSquare_9" Color="#4A2E0CFF">
+                      <Children>
+                        <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="28"
+                                    VerticalAlignment="Top" MarginTop="8" MarginLeft="16" MarginRight="16"
+                                    Brush.FontSize="21" Brush.FontColor="#FFC14DFF"
+                                    Brush.TextHorizontalAlignment="Center" Text="@PreventionNoticeTitle" />
+                        <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="46"
+                                    VerticalAlignment="Top" MarginTop="38" MarginLeft="16" MarginRight="16"
+                                    Brush.FontSize="16" Brush.FontColor="#F6E3B8FF"
+                                    Brush.TextHorizontalAlignment="Center" Text="@PreventionNoticeText" />
+                      </Children>
+                    </Widget>
+                  </Children>
+                </Widget>
+
+                <!-- Report body — a ScrollablePanel WIRED to a real scrollbar
+                     (ClipRect + InnerPanel + VerticalScrollbar), exactly like the
+                     wipe list below and every long-text box in the main window.
+                     The top margin is bound, not fixed: it moves down by the
+                     banner's height while the prevention journal is on screen
+                     (this popup places everything by absolute margins, there is
+                     no vertical flow to push).
+
+                     It used to be a bare clipping Widget around a StretchToParent
+                     TextWidget, and that never clipped anything: Gauntlet answers
+                     overflow of a FIXED text box by SHRINKING the glyphs, not by
+                     cutting them. Text.UpdateMesh sets
+                     ScaleToFitTextInLayout = boxHeight / textHeight and re-lays the
+                     text at that size (TwoDimension/Text.cs:398-419, 688-696), and
+                     _resizeTextOnOverflow is true with no way to turn it off from
+                     XML. The prevention journal is ~240px of box against 600+px of
+                     text, so it rendered at ~5px — reported 2026-08-31 as "text for
+                     ants". CoverChildren on the inner TextWidget is what makes the
+                     text report its full height so the panel can scroll it.
+
+                     Brush.TextHorizontalAlignment is set EXPLICITLY: Brush's
+                     constructor defaults it to Center (GauntletUI/Brush.cs:383), so
+                     an unset alignment renders a list as a centred ragged pyramid. -->
                 <Widget IsVisible="@IsReportVisible"
                         WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
-                        MarginTop="106" MarginBottom="210" MarginLeft="20" MarginRight="40"
-                        ClipContents="true">
+                        MarginTop="@ReportBodyMarginTop" MarginBottom="210" MarginLeft="20" MarginRight="40">
                   <Children>
-                    <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
-                                MarginLeft="14" MarginRight="14" MarginTop="4" MarginBottom="14"
-                                Brush.FontSize="15" Brush.FontColor="#E8DCC4FF"
-                                Brush.TextVerticalAlignment="Top" Text="@ReportText" />
+                    <ScrollablePanel Id="ReportScroll"
+                                     WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
+                                     AutoHideScrollBars="true"
+                                     ClipRect="ReportClipRect"
+                                     InnerPanel="ReportClipRect\ReportTextWidget"
+                                     VerticalScrollbar="..\ReportScrollbar">
+                      <Children>
+                        <Widget Id="ReportClipRect"
+                                WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
+                                MarginRight="20" ClipContents="true">
+                          <Children>
+                            <TextWidget Id="ReportTextWidget"
+                                        WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren"
+                                        MarginLeft="14" MarginRight="14" MarginTop="4" MarginBottom="14"
+                                        Brush.FontSize="15" Brush.FontColor="#E8DCC4FF"
+                                        Brush.TextHorizontalAlignment="Left"
+                                        Brush.TextVerticalAlignment="Top" Text="@ReportText" />
+                          </Children>
+                        </Widget>
+                      </Children>
+                    </ScrollablePanel>
+                    <ScrollbarWidget Id="ReportScrollbar"
+                                     WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent"
+                                     SuggestedWidth="10" HorizontalAlignment="Right" VerticalAlignment="Top"
+                                     MarginTop="6" MarginBottom="6" MarginRight="2"
+                                     AlignmentAxis="Vertical" Handle="ReportScrollbarHandle"
+                                     MaxValue="100" MinValue="0">
+                      <Children>
+                        <Widget WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="4"
+                                HorizontalAlignment="Center"
+                                Sprite="BlankWhiteSquare_9" Color="#5a4033FF" AlphaFactor="0.4" />
+                        <ImageWidget Id="ReportScrollbarHandle"
+                                     WidthSizePolicy="Fixed" HeightSizePolicy="Fixed"
+                                     SuggestedHeight="40" SuggestedWidth="10"
+                                     HorizontalAlignment="Center" Brush="FaceGen.Scrollbar.Handle" />
+                      </Children>
+                    </ScrollbarWidget>
                   </Children>
                 </Widget>
 

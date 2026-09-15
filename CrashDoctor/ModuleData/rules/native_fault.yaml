@@ -1,0 +1,316 @@
+# Verdicts keyed on WHERE the native crash happened — the module that owns the faulting
+# instruction, resolved from the engine's dump.dmp by MinidumpReader before the dump is purged
+# (NativeFaultStore keeps the result per crash folder). These are the only native verdicts that
+# name a component from the instruction pointer rather than from log lines; `stack_contains` is
+# deliberately NOT used here — stack candidates can be stale pointers (see NativeFaultMatcher).
+#
+# Each rule requires the `minidump` source, so a folder whose dump was never read (older Crash
+# Doctor, dump already gone) simply falls back to the log/tag rules elsewhere.
+
+- id: native.fault_in_gpu_driver
+  category: gpu
+  severity: critical
+  confidence: high
+  evidence_source: "MinidumpReader: the exception record's instruction pointer resolves into a GPU user-mode driver module (amdxc*/atiumd*/nvwgf2um*/nvoglv*/nvd3dum*/igd10*…). Classified by NativeFault.Classify; the module name and version are in the evidence line."
+  requires_sources: [minidump]
+  title:
+    en: "The crash happened inside the graphics driver"
+    ru: "Вылет произошёл внутри драйвера видеокарты"
+    zh: "崩溃发生在显卡驱动内部"
+    zht: "崩潰發生在顯示卡驅動程式內部"
+    tr: "Çökme ekran kartı sürücüsünün içinde oldu"
+    fr: "Le plantage s'est produit à l'intérieur du pilote graphique"
+  description:
+    en: |
+      The instruction that faulted belongs to the graphics driver's own DLL (the module and its
+      version are in the evidence line below), not to the game and not to any mod. Mods can make
+      the driver work harder — more meshes, bigger textures, a shader set it has never compiled —
+      but the code that fell over is the driver's. Removing mods rarely changes this; updating or
+      cleanly reinstalling the driver, and letting the shader cache rebuild, does.
+    ru: |
+      Упавшая инструкция принадлежит собственной DLL драйвера видеокарты (модуль и его версия —
+      в строке улик ниже), а не игре и не какому-либо моду. Моды могут нагружать драйвер сильнее —
+      больше мешей, крупнее текстуры, набор шейдеров, который он ещё не компилировал, — но упал
+      именно код драйвера. Удаление модов здесь редко что-то меняет; обновление или чистая
+      переустановка драйвера и пересборка кэша шейдеров — меняют.
+    zh: |
+      出错的指令属于显卡驱动自身的 DLL（模块及其版本见下方证据行），而不是游戏，也不是任何模组。
+      模组会让驱动负担更重——更多网格、更大贴图、从未编译过的着色器集——但崩掉的是驱动的代码。
+      移除模组很少能改变这一点；更新或干净地重装驱动，并让着色器缓存重建，才有用。
+    zht: |
+      出錯的指令屬於顯示卡驅動程式自身的 DLL（模組及其版本見下方證據列），而不是遊戲，也不是任何模組。
+      模組會讓驅動負擔更重——更多網格、更大貼圖、從未編譯過的著色器集——但崩掉的是驅動程式的程式碼。
+      移除模組很少能改變這一點；更新或乾淨地重裝驅動程式，並讓著色器快取重建，才有用。
+    tr: |
+      Hata veren komut, oyuna ya da herhangi bir moda değil, ekran kartı sürücüsünün kendi DLL'ine
+      aittir (modül ve sürümü aşağıdaki kanıt satırında). Modlar sürücüyü daha çok zorlayabilir —
+      daha fazla mesh, daha büyük dokular, hiç derlemediği bir gölgelendirici kümesi — ama çöken
+      kod sürücünündür. Modları kaldırmak bunu nadiren değiştirir; sürücüyü güncellemek ya da
+      temiz kurmak ve gölgelendirici önbelleğinin yeniden oluşmasına izin vermek değiştirir.
+    fr: |
+      L'instruction fautive appartient à la DLL du pilote graphique lui-même (le module et sa
+      version figurent dans la ligne de preuve ci-dessous), pas au jeu ni à un mod. Les mods peuvent
+      faire travailler le pilote davantage — plus de maillages, des textures plus grandes, un jeu de
+      shaders jamais compilé — mais le code qui est tombé est celui du pilote. Retirer des mods
+      change rarement quelque chose ; mettre à jour ou réinstaller proprement le pilote et laisser
+      le cache de shaders se reconstruire, si.
+  fix:
+    en:
+      - "Update the graphics driver from the vendor (NVIDIA / AMD / Intel), or do a clean reinstall of the same version if it is already current. A driver a few weeks old is fine; a driver from a different year is the usual cause."
+      - "After the driver change, clear the game's generated shader cache (Crash Doctor → System tune-up → shader cache) so it is rebuilt against the new driver."
+      - "If the crash stays with a fresh driver: lower Shader Quality / Texture Quality one step and check the GPU is not overheating or overclocked — a driver fault under load is how those show up."
+      - "Do NOT reinstall the game or uninstall mods for this one — the game's own code is not in the faulting frame."
+    ru:
+      - "Обнови драйвер видеокарты с сайта производителя (NVIDIA / AMD / Intel) или сделай чистую переустановку той же версии, если она уже свежая. Драйвер двух-трёхнедельной давности — норма; драйвер другого года — типичная причина."
+      - "После смены драйвера очисти сгенерированный кэш шейдеров игры (Crash Doctor → Настройка системы → кэш шейдеров), чтобы он пересобрался под новый драйвер."
+      - "Если со свежим драйвером вылет остался: понизь Качество шейдеров / Качество текстур на шаг и проверь, что видеокарта не перегревается и не разогнана — так проявляется сбой драйвера под нагрузкой."
+      - "НЕ переустанавливай игру и не удаляй моды из-за этого вылета — кода игры в упавшем кадре нет."
+    zh:
+      - "从厂商（NVIDIA / AMD / Intel）更新显卡驱动；若已是最新，则对同一版本做干净重装。几周前的驱动没问题；跨年的旧驱动是常见原因。"
+      - "更换驱动后，清理游戏生成的着色器缓存（Crash Doctor → 系统调优 → 着色器缓存），让它针对新驱动重建。"
+      - "如果换了新驱动仍崩溃：把着色器质量/贴图质量各降一档，并检查显卡是否过热或超频——负载下的驱动故障就是这样表现的。"
+      - "不要为此重装游戏或卸载模组——出错的帧里没有游戏自身的代码。"
+    zht:
+      - "從廠商（NVIDIA / AMD / Intel）更新顯示卡驅動程式；若已是最新，則對同一版本做乾淨重裝。幾週前的驅動沒問題；跨年的舊驅動是常見原因。"
+      - "更換驅動後，清理遊戲產生的著色器快取（Crash Doctor → 系統調校 → 著色器快取），讓它針對新驅動重建。"
+      - "如果換了新驅動仍崩潰：把著色器品質／貼圖品質各降一檔，並檢查顯示卡是否過熱或超頻——負載下的驅動故障就是這樣表現的。"
+      - "不要為此重裝遊戲或移除模組——出錯的框架裡沒有遊戲自身的程式碼。"
+    tr:
+      - "Ekran kartı sürücüsünü üreticiden (NVIDIA / AMD / Intel) güncelle ya da zaten güncelse aynı sürümü temiz kur. Birkaç haftalık sürücü sorun değildir; başka bir yıldan kalma sürücü olağan nedendir."
+      - "Sürücü değişiminden sonra oyunun oluşturduğu gölgelendirici önbelleğini temizle (Crash Doctor → Sistem ayarı → gölgelendirici önbelleği) ki yeni sürücüye göre yeniden oluşsun."
+      - "Yeni sürücüyle de çöküyorsa: Gölgelendirici Kalitesi / Doku Kalitesi'ni bir kademe düşür ve kartın aşırı ısınmadığını ya da hız aşırtılmadığını kontrol et — yük altındaki sürücü hatası böyle görünür."
+      - "Bunun için oyunu yeniden KURMA ve modları kaldırma — hata veren çerçevede oyunun kendi kodu yok."
+    fr:
+      - "Mettez à jour le pilote graphique depuis le site du fabricant (NVIDIA / AMD / Intel), ou faites une réinstallation propre de la même version si elle est déjà récente. Un pilote vieux de quelques semaines convient ; un pilote d'une autre année est la cause habituelle."
+      - "Après le changement de pilote, videz le cache de shaders généré par le jeu (Crash Doctor → Optimisation système → cache de shaders) pour qu'il soit reconstruit avec le nouveau pilote."
+      - "Si le plantage persiste avec un pilote récent : baissez d'un cran la qualité des shaders / des textures et vérifiez que la carte ne surchauffe pas et n'est pas overclockée — un défaut de pilote sous charge se manifeste ainsi."
+      - "NE réinstallez PAS le jeu et ne retirez pas de mods pour celui-ci — le code du jeu n'est pas dans la frame fautive."
+  match:
+    all:
+      - native_fault: { kind: "gpu_driver" }
+
+- id: native.fault_in_overlay
+  category: system
+  severity: critical
+  confidence: high
+  evidence_source: "MinidumpReader: the faulting instruction resolves into an injected overlay/hook module (gameoverlayrenderer, rtsshooks, nahimic, discord*, eosovh, fraps, medal, obs-*, xsplit, nvcamera/ansel, msiafterburner). Classified by NativeFault.Classify."
+  requires_sources: [minidump]
+  title:
+    en: "The crash happened inside an injected overlay (Steam / Discord / RTSS / Nahimic / capture software)"
+    ru: "Вылет произошёл внутри внедрённого оверлея (Steam / Discord / RTSS / Nahimic / программа захвата)"
+    zh: "崩溃发生在注入的覆盖层内部（Steam / Discord / RTSS / Nahimic / 录制软件）"
+    zht: "崩潰發生在注入的覆蓋層內部（Steam / Discord / RTSS / Nahimic / 錄製軟體）"
+    tr: "Çökme enjekte edilmiş bir kaplamanın içinde oldu (Steam / Discord / RTSS / Nahimic / kayıt yazılımı)"
+    fr: "Le plantage s'est produit dans un overlay injecté (Steam / Discord / RTSS / Nahimic / logiciel de capture)"
+  description:
+    en: |
+      The faulting instruction belongs to a DLL that another program injected into the game to
+      draw an overlay or hook the swap chain (the module is named in the evidence line). Such hooks
+      sit between the game and DirectX and crash on their own terms; the game and its mods are
+      bystanders. Overlays are the single most common source of "random" crashes that look like
+      engine faults in the log.
+    ru: |
+      Упавшая инструкция принадлежит DLL, которую другая программа внедрила в игру, чтобы рисовать
+      оверлей или перехватывать swap chain (модуль назван в строке улик). Такие хуки стоят между
+      игрой и DirectX и падают по своим причинам; игра и её моды — свидетели. Оверлеи — самый
+      частый источник «случайных» вылетов, которые в логе выглядят как сбои движка.
+    zh: |
+      出错的指令属于另一个程序注入到游戏中用来绘制覆盖层或挂钩交换链的 DLL（模块名见证据行）。
+      这类挂钩位于游戏与 DirectX 之间，会自行崩溃；游戏及其模组只是旁观者。覆盖层是日志中看似引擎
+      故障的"随机"崩溃最常见的来源。
+    zht: |
+      出錯的指令屬於另一個程式注入到遊戲中用來繪製覆蓋層或掛鉤交換鏈的 DLL（模組名見證據列）。
+      這類掛鉤位於遊戲與 DirectX 之間，會自行崩潰；遊戲及其模組只是旁觀者。覆蓋層是記錄中看似引擎
+      故障的「隨機」崩潰最常見的來源。
+    tr: |
+      Hata veren komut, başka bir programın kaplama çizmek ya da swap chain'i kancalamak için oyuna
+      enjekte ettiği bir DLL'e aittir (modül kanıt satırında adlandırılır). Bu kancalar oyunla
+      DirectX arasında durur ve kendi nedenleriyle çöker; oyun ve modları seyircidir. Kaplamalar,
+      günlükte motor hatası gibi görünen «rastgele» çökmelerin en yaygın kaynağıdır.
+    fr: |
+      L'instruction fautive appartient à une DLL qu'un autre programme a injectée dans le jeu pour
+      dessiner un overlay ou accrocher la swap chain (le module est nommé dans la ligne de preuve).
+      Ces crochets se placent entre le jeu et DirectX et plantent pour leurs propres raisons ; le jeu
+      et ses mods sont de simples témoins. Les overlays sont la source la plus fréquente de plantages
+      « aléatoires » qui ressemblent à des défauts du moteur dans le journal.
+  fix:
+    en:
+      - "Disable the overlay named in the evidence line: Steam (Settings → In-Game → overlay), Discord (Settings → Game Overlay), RTSS/MSI Afterburner (close it or add Bannerlord to its exclusions), Nahimic (stop the service), OBS/XSplit/Medal (use Window Capture instead of Game Capture, or close them while playing)."
+      - "Crash Doctor → System tune-up → 'Background apps' lists the hooks it can see running right now."
+      - "Nothing in the game or its mods needs changing for this crash."
+    ru:
+      - "Отключи оверлей, названный в строке улик: Steam (Настройки → В игре → оверлей), Discord (Настройки → Игровой оверлей), RTSS/MSI Afterburner (закрой или добавь Bannerlord в исключения), Nahimic (останови службу), OBS/XSplit/Medal (Window Capture вместо Game Capture или закрой на время игры)."
+      - "Crash Doctor → Настройка системы → «Фоновые программы» показывает хуки, которые видны запущенными прямо сейчас."
+      - "В игре и модах из-за этого вылета менять ничего не нужно."
+    zh:
+      - "禁用证据行中点名的覆盖层：Steam（设置 → 游戏中 → 覆盖层）、Discord（设置 → 游戏覆盖层）、RTSS/MSI Afterburner（关闭或把 Bannerlord 加入排除）、Nahimic（停止服务）、OBS/XSplit/Medal（改用窗口捕获而非游戏捕获，或游玩时关闭）。"
+      - "Crash Doctor → 系统调优 → 「后台程序」会列出此刻能看到正在运行的挂钩。"
+      - "游戏及模组无需为此崩溃做任何改动。"
+    zht:
+      - "停用證據列中點名的覆蓋層：Steam（設定 → 遊戲中 → 覆蓋層）、Discord（設定 → 遊戲覆蓋層）、RTSS/MSI Afterburner（關閉或把 Bannerlord 加入排除）、Nahimic（停止服務）、OBS/XSplit/Medal（改用視窗擷取而非遊戲擷取，或遊玩時關閉）。"
+      - "Crash Doctor → 系統調校 → 「背景程式」會列出此刻能看到正在執行的掛鉤。"
+      - "遊戲及模組無需為此崩潰做任何改動。"
+    tr:
+      - "Kanıt satırında adı geçen kaplamayı kapat: Steam (Ayarlar → Oyun içi → kaplama), Discord (Ayarlar → Oyun Kaplaması), RTSS/MSI Afterburner (kapat ya da Bannerlord'u istisnalara ekle), Nahimic (hizmeti durdur), OBS/XSplit/Medal (Game Capture yerine Window Capture kullan ya da oynarken kapat)."
+      - "Crash Doctor → Sistem ayarı → «Arka plan uygulamaları» şu an çalışır görünen kancaları listeler."
+      - "Bu çökme için oyunda ya da modlarda değiştirilecek bir şey yok."
+    fr:
+      - "Désactivez l'overlay nommé dans la ligne de preuve : Steam (Paramètres → Dans le jeu → overlay), Discord (Paramètres → Overlay de jeu), RTSS/MSI Afterburner (fermez-le ou ajoutez Bannerlord à ses exclusions), Nahimic (arrêtez le service), OBS/XSplit/Medal (capture de fenêtre au lieu de capture de jeu, ou fermez-les pendant le jeu)."
+      - "Crash Doctor → Optimisation système → « Applications en arrière-plan » liste les crochets visibles en cours d'exécution."
+      - "Rien dans le jeu ni dans ses mods n'a besoin d'être changé pour ce plantage."
+  match:
+    all:
+      - native_fault: { kind: "overlay" }
+
+- id: native.fault_in_sound_engine
+  category: system
+  severity: critical
+  confidence: medium
+  evidence_source: "MinidumpReader: the faulting instruction resolves into an FMOD module (fmod*.dll), the game's sound engine. Classified by NativeFault.Classify. Medium confidence: FMOD faults on bad audio data as readily as on a broken audio device, so the cause can be a sound mod as well as the driver."
+  requires_sources: [minidump]
+  title:
+    en: "The crash happened inside the sound engine (FMOD)"
+    ru: "Вылет произошёл внутри звукового движка (FMOD)"
+    zh: "崩溃发生在音频引擎（FMOD）内部"
+    zht: "崩潰發生在音訊引擎（FMOD）內部"
+    tr: "Çökme ses motorunun (FMOD) içinde oldu"
+    fr: "Le plantage s'est produit dans le moteur audio (FMOD)"
+  description:
+    en: |
+      The faulting instruction is inside FMOD, the audio middleware the game uses. FMOD falls over
+      for two very different reasons: an audio device or driver that misbehaves (a headset
+      re-plugged mid-game, a virtual audio cable, a stale Realtek/Nahimic stack), or audio DATA it
+      cannot decode — a sound mod shipping a broken bank or a file in a format it does not accept.
+      The evidence line names the module; which of the two it is comes from what changed recently.
+    ru: |
+      Упавшая инструкция — внутри FMOD, звукового движка игры. FMOD падает по двум очень разным
+      причинам: аудиоустройство или драйвер ведёт себя неправильно (гарнитура, переподключённая
+      посреди игры, виртуальный аудиокабель, старый стек Realtek/Nahimic) либо звуковые ДАННЫЕ,
+      которые он не может декодировать — звуковой мод с битым банком или файлом в формате, который
+      FMOD не принимает. Строка улик называет модуль; какая из двух причин — видно по тому, что
+      менялось недавно.
+    zh: |
+      出错的指令位于游戏使用的音频中间件 FMOD 内部。FMOD 崩溃有两类截然不同的原因：音频设备或驱动异常
+      （游戏中途重新插拔耳机、虚拟音频线、陈旧的 Realtek/Nahimic 栈），或它无法解码的音频数据——
+      某个音效模组带来了损坏的音频库或它不接受的格式。证据行给出模块名；具体是哪一类，看最近改动了什么。
+    zht: |
+      出錯的指令位於遊戲使用的音訊中介軟體 FMOD 內部。FMOD 崩潰有兩類截然不同的原因：音訊裝置或驅動異常
+      （遊戲中途重新插拔耳機、虛擬音訊線、陳舊的 Realtek/Nahimic 堆疊），或它無法解碼的音訊資料——
+      某個音效模組帶來了損壞的音訊庫或它不接受的格式。證據列給出模組名；具體是哪一類，看最近改動了什麼。
+    tr: |
+      Hata veren komut, oyunun kullandığı ses ara yazılımı FMOD'un içindedir. FMOD iki çok farklı
+      nedenle çöker: yanlış davranan bir ses aygıtı ya da sürücüsü (oyun ortasında yeniden takılan
+      kulaklık, sanal ses kablosu, eski Realtek/Nahimic yığını) ya da çözemediği ses VERİSİ — bozuk
+      bir bank ya da kabul etmediği formatta bir dosya getiren bir ses modu. Kanıt satırı modülü
+      adlandırır; hangisi olduğu yakın zamanda neyin değiştiğinden anlaşılır.
+    fr: |
+      L'instruction fautive se trouve dans FMOD, l'intergiciel audio du jeu. FMOD tombe pour deux
+      raisons très différentes : un périphérique ou pilote audio défaillant (un casque rebranché en
+      pleine partie, un câble audio virtuel, une pile Realtek/Nahimic obsolète), ou des DONNÉES audio
+      qu'il ne peut pas décoder — un mod sonore livrant une banque corrompue ou un fichier dans un
+      format qu'il n'accepte pas. La ligne de preuve nomme le module ; laquelle des deux se déduit de
+      ce qui a changé récemment.
+  fix:
+    en:
+      - "If you added or updated a sound/voice/music mod recently, disable it first and re-test — that is the quick half of the split."
+      - "Otherwise: set one fixed default playback device in Windows before launching, do not unplug or switch headsets while the game runs, and update the audio driver (Realtek from the board vendor; stop Nahimic if it is installed)."
+      - "Crash Doctor → System tune-up → 'Background apps' shows Nahimic and similar audio hooks if they are running."
+    ru:
+      - "Если недавно ставил или обновлял мод на звук/голоса/музыку — сначала отключи его и перепроверь: это быстрая половина развилки."
+      - "Иначе: выбери одно фиксированное устройство воспроизведения в Windows до запуска, не переподключай и не переключай гарнитуру во время игры, обнови аудиодрайвер (Realtek — с сайта производителя платы; Nahimic, если стоит, останови)."
+      - "Crash Doctor → Настройка системы → «Фоновые программы» покажет Nahimic и похожие аудиохуки, если они запущены."
+    zh:
+      - "如果最近添加或更新过音效/语音/音乐模组，先禁用它再测试——这是两条分支中快的那条。"
+      - "否则：启动前在 Windows 中固定一个默认播放设备，游戏运行时不要拔插或切换耳机，并更新音频驱动（Realtek 从主板厂商获取；若装有 Nahimic 则停止它）。"
+      - "Crash Doctor → 系统调优 → 「后台程序」会显示正在运行的 Nahimic 及类似音频挂钩。"
+    zht:
+      - "如果最近新增或更新過音效／語音／音樂模組，先停用它再測試——這是兩條分支中快的那條。"
+      - "否則：啟動前在 Windows 中固定一個預設播放裝置，遊戲執行時不要拔插或切換耳機，並更新音訊驅動（Realtek 從主機板廠商取得；若裝有 Nahimic 則停止它）。"
+      - "Crash Doctor → 系統調校 → 「背景程式」會顯示正在執行的 Nahimic 及類似音訊掛鉤。"
+    tr:
+      - "Yakın zamanda bir ses/seslendirme/müzik modu ekledin ya da güncelledinse önce onu kapatıp yeniden dene — ayrımın hızlı yarısı budur."
+      - "Aksi hâlde: başlatmadan önce Windows'ta tek bir sabit varsayılan oynatma aygıtı seç, oyun çalışırken kulaklığı çıkarma ya da değiştirme ve ses sürücüsünü güncelle (Realtek anakart üreticisinden; kuruluysa Nahimic'i durdur)."
+      - "Crash Doctor → Sistem ayarı → «Arka plan uygulamaları», çalışıyorsa Nahimic ve benzeri ses kancalarını gösterir."
+    fr:
+      - "Si vous avez ajouté ou mis à jour un mod de sons/voix/musique récemment, désactivez-le d'abord et retestez — c'est la moitié rapide de l'alternative."
+      - "Sinon : fixez un seul périphérique de lecture par défaut dans Windows avant de lancer, ne débranchez pas et ne changez pas de casque pendant que le jeu tourne, et mettez à jour le pilote audio (Realtek depuis le fabricant de la carte mère ; arrêtez Nahimic s'il est installé)."
+      - "Crash Doctor → Optimisation système → « Applications en arrière-plan » montre Nahimic et les crochets audio similaires s'ils tournent."
+  match:
+    all:
+      - native_fault: { kind: "sound" }
+
+- id: native.fault_in_mod_native_dll
+  category: modules
+  severity: critical
+  confidence: high
+  evidence_source: "MinidumpReader: the faulting instruction resolves into a DLL that lives inside a mod's folder (NativeFault.ModId is set from the module path → SubModule.xml). This is the one native verdict where naming the mod is justified by the instruction pointer itself, not by a stack candidate."
+  requires_sources: [minidump]
+  title:
+    en: "The crash happened inside a mod's own native DLL"
+    ru: "Вылет произошёл внутри собственной нативной DLL мода"
+    zh: "崩溃发生在某个模组自带的原生 DLL 内部"
+    zht: "崩潰發生在某個模組自帶的原生 DLL 內部"
+    tr: "Çökme bir modun kendi yerel DLL'inin içinde oldu"
+    fr: "Le plantage s'est produit dans la DLL native d'un mod"
+  description:
+    en: |
+      The faulting instruction is inside a DLL shipped by a mod (the mod and the file are named in
+      the evidence line) — not managed C# code the game runs through the runtime, but native code the
+      mod brought along: an audio decoder, a physics or scripting helper, a packed/protected build.
+      That code fell over on its own; the game cannot catch or survive a native fault. This is the one
+      case where the mod name in the evidence is the verdict, not a suspicion.
+    ru: |
+      Упавшая инструкция — внутри DLL, которую поставил мод (мод и файл названы в строке улик), —
+      не управляемый C#-код, который игра гоняет через рантайм, а нативный код, принесённый модом:
+      аудиодекодер, физический или скриптовый хелпер, упакованная/защищённая сборка. Этот код упал
+      сам; игра не может ни поймать, ни пережить нативный сбой. Это тот единственный случай, когда
+      имя мода в уликах — вердикт, а не подозрение.
+    zh: |
+      出错的指令位于某个模组附带的 DLL 内部（模组与文件见证据行）——不是游戏通过运行时执行的托管
+      C# 代码，而是模组带来的原生代码：音频解码器、物理或脚本辅助库、打包/加壳的构建。这段代码自行
+      崩溃；游戏既无法捕获也无法从原生故障中存活。这是证据中的模组名即为结论、而非怀疑的唯一情况。
+    zht: |
+      出錯的指令位於某個模組附帶的 DLL 內部（模組與檔案見證據列）——不是遊戲透過執行階段執行的受控
+      C# 程式碼，而是模組帶來的原生程式碼：音訊解碼器、物理或腳本輔助函式庫、打包／加殼的建置。這段程式碼
+      自行崩潰；遊戲既無法捕捉也無法從原生故障中存活。這是證據中的模組名即為結論、而非懷疑的唯一情況。
+    tr: |
+      Hata veren komut, bir modun beraberinde getirdiği bir DLL'in içindedir (mod ve dosya kanıt
+      satırında adlandırılır) — oyunun çalışma zamanı üzerinden yürüttüğü yönetilen C# kodu değil,
+      modun getirdiği yerel kod: bir ses çözücü, fizik ya da betik yardımcısı, paketlenmiş/korumalı
+      bir derleme. O kod kendi başına çöktü; oyun yerel bir hatayı ne yakalayabilir ne de atlatabilir.
+      Kanıttaki mod adının şüphe değil hüküm olduğu tek durum budur.
+    fr: |
+      L'instruction fautive se trouve dans une DLL livrée par un mod (le mod et le fichier sont
+      nommés dans la ligne de preuve) — pas du code C# managé exécuté par le runtime du jeu, mais du
+      code natif apporté par le mod : un décodeur audio, un assistant physique ou de script, une
+      compilation empaquetée/protégée. Ce code est tombé de lui-même ; le jeu ne peut ni intercepter ni
+      survivre à un défaut natif. C'est le seul cas où le nom du mod dans la preuve est le verdict, et
+      non un soupçon.
+  fix:
+    en:
+      - "Disable the mod named in the evidence line and re-test. If the crash is gone, report it to that mod's author with this card — the file name and version are what they need."
+      - "Check the mod's page for a build made for your game version: a native DLL compiled against another version of the engine is the most common reason for this."
+      - "Do NOT touch drivers, shaders or the game installation for this crash — the faulting code is the mod's."
+    ru:
+      - "Отключи мод, названный в строке улик, и перепроверь. Если вылет ушёл — сообщи автору этого мода с этой карточкой: имя файла и версия — то, что ему нужно."
+      - "Проверь на странице мода, есть ли сборка под твою версию игры: нативная DLL, собранная под другую версию движка, — самая частая причина такого."
+      - "НЕ трогай драйверы, шейдеры и установку игры из-за этого вылета — упавший код принадлежит моду."
+    zh:
+      - "禁用证据行中点名的模组并重新测试。如果崩溃消失，带上这张卡片向该模组作者报告——文件名和版本正是他们需要的。"
+      - "到模组页面查看是否有针对你游戏版本的构建：针对另一版本引擎编译的原生 DLL 是此类问题最常见的原因。"
+      - "不要为此崩溃去动驱动、着色器或游戏安装——出错的代码属于模组。"
+    zht:
+      - "停用證據列中點名的模組並重新測試。如果崩潰消失，帶上這張卡片向該模組作者回報——檔案名稱和版本正是他們需要的。"
+      - "到模組頁面查看是否有針對你遊戲版本的建置：針對另一版本引擎編譯的原生 DLL 是此類問題最常見的原因。"
+      - "不要為此崩潰去動驅動、著色器或遊戲安裝——出錯的程式碼屬於模組。"
+    tr:
+      - "Kanıt satırında adı geçen modu kapat ve yeniden dene. Çökme gittiyse bu kartla o modun yazarına bildir — ihtiyacı olan dosya adı ve sürümdür."
+      - "Modun sayfasında oyun sürümün için yapılmış bir derleme olup olmadığına bak: başka bir motor sürümüne karşı derlenmiş yerel bir DLL bunun en yaygın nedenidir."
+      - "Bu çökme için sürücülere, gölgelendiricilere ya da oyun kurulumuna DOKUNMA — hata veren kod modun."
+    fr:
+      - "Désactivez le mod nommé dans la ligne de preuve et retestez. Si le plantage disparaît, signalez-le à l'auteur de ce mod avec cette carte — le nom du fichier et la version sont ce dont il a besoin."
+      - "Vérifiez sur la page du mod s'il existe une version compilée pour votre version du jeu : une DLL native compilée contre une autre version du moteur est la cause la plus fréquente."
+      - "NE touchez PAS aux pilotes, aux shaders ni à l'installation du jeu pour ce plantage — le code fautif est celui du mod."
+  match:
+    all:
+      - native_fault: { kind: "mod" }

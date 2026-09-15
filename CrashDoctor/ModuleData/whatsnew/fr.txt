@@ -1,29 +1,45 @@
 Merci d'utiliser Crash Doctor !
 
-QUOI DE NEUF
+NOTRE PROPRE BUG, CORRIGÉ
 
-• Le mod sait désormais quelle version d'un autre mod votre jeu réclame. Il embarque une référence de compatibilité : quelle version de chaque mod a été faite pour quelle branche de Bannerlord, quoi installer à la place d'une version inadaptée, et la page où la prendre. Aucun réseau — les données sont lues depuis le mod lui-même.
+• Sur Bannerlord 1.2.10, le mod cassait lui-même le calcul des soldes : une protection posée au menu principal exécutait un morceau de code du jeu trop tôt, le jeu mémorisait l'échec, et la solde de chaque groupe valait zéro jusqu'au redémarrage — pendant que le mod comptait les dégâts comme 94 332 « plantages évités ». Plus aucune protection n'est posée si tôt, et un tel échec est désormais signalé une seule fois, avec des mots honnêtes.
 
-• L'onglet Mods coche en vert les mods dont le code a été confronté à votre version exacte du jeu, et met en rouge ceux qui n'ont pas été compilés pour elle — avec la version qu'il vous faut et un bouton vers sa page. « OK » signifiait à la fois « vérifié, tout va bien » et « jamais entendu parler de ce mod » ; ce sont deux réponses distinctes maintenant. Les mods désactivés sont couverts aussi.
+• La protection du menu de rencontre ne boucle plus : un journal contenait 3 223 déclenchements en deux minutes, chacun compté comme un sauvetage. La répétition est détectée et signalée une fois.
 
-• La carte de plantage vous dit ce qui cloche dans votre installation : les mods activés qui ne sont pas compilés pour votre version du jeu, avec les versions à prendre. Ce n'est pas une accusation — désigner un coupable demande la première ligne de la pile d'appels — mais cela répond à la question « cette installation est-elle seulement censée fonctionner ? ».
+NOUVEAUTÉS
 
-• report.txt a été refondu. Le verdict sur l'installation tient dans les dix premières lignes. Ajoutés : les versions du jeu et du mod, l'exception avec sa pile, et la liste des protections actives — une protection déclenchée retire une image de la pile, et sans cette liste la trace se lit mal. La liste des modules n'est plus tronquée.
+• report.txt contient une pile enrichie : la position dans chaque méthode, l'appel le plus proche et les propriétaires de chaque patch. Plus besoin d'un rapporteur de plantage tiers.
 
-• Une nouvelle fenêtre « Nos autres mods » dans l'onglet Paramètres. Lancé depuis Steam, le bouton Workshop passe en premier — un clic pour s'abonner au lieu de décompresser une archive à la main. Rien ne s'installe depuis cette fenêtre ; tout s'ouvre dans votre navigateur.
+• Les plantages natifs sont lus depuis le dump : la bibliothèque fautive décide du verdict — pilote graphique, overlay injecté, moteur audio ou DLL native d'un mod. Le mod supprimait le dump avant de le lire.
 
-CORRECTIFS
+• Les dossiers de plantage sont associés à l'enregistrement du mod dans tout fuseau horaire (les noms sont en UTC), et la liste des modules nomme les identifiants, pas les dossiers.
 
-• Nouvelle protection : plantage au changement de jour quand un seigneur n'a nulle part où lever son groupe. Une fois par jour, le jeu attribue à chaque seigneur un lieu de rassemblement. Il tombe parfois sur un seigneur qui n'a nulle part où aller — ni ville, ni château, ni même un village de son peuple sur la carte — et abandonne, emportant la journée avec lui. C'est un trou du jeu lui-même, pas un bogue de mod. La protection le rassemble ailleurs et la journée s'achève ; son nom, sa famille et sa culture vont dans le journal, ce qui montre d'où viennent ces seigneurs sans terre.
+• L'onglet Mods analyse en arrière-plan avec progression et garde le résultat tant qu'aucun fichier ne change. Un module listé deux fois dans l'ordre de chargement, un manifeste illisible pour le jeu et une traduction placée au-dessus de son mod sont signalés avant le lancement.
 
-• Deux nouvelles protections pour les campagnes qui refusent de démarrer. Un fichier de faction citant un personnage qu'aucun mod installé ne définit, et un fichier d'équipement écrit pour un Bannerlord plus ancien : chacun tue tout le chargement, sans qu'aucun mod n'apparaisse dans le plantage. Seule l'entrée cassée est ignorée, la campagne démarre, et l'onglet Mods nomme d'avance le mod à mettre à jour.
+• Le bouton du cache des shaders ne touche que le cache généré — jamais un fichier du jeu ou d'un mod.
 
-• L'onglet Réglages système ne fige plus l'interface. Les vérifications de disque, de registre et de processus sont passées sur un fil d'arrière-plan, et l'écran indique quelle vérification tourne et depuis combien de temps.
+• Un correctif attendant une session de jeu s'affiche « Différé », pas « Inutile ici ». Les textes longs défilent au lieu de rétrécir. L'onglet Évités regroupe les répétitions et suit votre langue.
 
-• L'onglet Prévenus n'apparaît que lorsque le journal contient quelque chose : sur une installation saine, aucune protection ne se déclenche jamais, et l'onglet était un bouton derrière lequel il n'y avait rien.
+NOUVELLES PROTECTIONS
 
-• Échap ferme la fenêtre ouverte, pas l'outil entier. Sur une confirmation irréversible, Échap veut dire annuler.
+• Plantage au changement de jour dû à un objet dont la catégorie vient d'une campagne précédente de la même session. Redémarrez le jeu avant de charger une sauvegarde.
 
-• Deux protections criaient au loup. L'une annonçait un plantage évité dès qu'un clan IA REJOIGNAIT un royaume ; l'autre quand le jeu retirait une troupe absente du groupe — sans jamais vérifier qui l'avait demandé, si bien qu'un mod rattrapant sa propre erreur passait pour un sauvetage. Aucun mal pour votre campagne, mais le compteur était faux. Les deux n'annoncent plus un sauvetage que si le jeu serait réellement mort.
+• Plantage à la première vague de renforts quand un mod ajoute une équipe après le début de la bataille.
 
-Signaler un plantage : t.me/CodeRickTg / discord.gg/ZDJZFxQeMV — appuyez sur « Ouvrir le dossier » sur la carte de plantage et envoyez LES DEUX fichiers : report.txt et crashdoctor_at_crash.log.
+• Plantage en bataille au dessin de l'icône de bannière au-dessus de soldats partageant une bannière.
+
+• Plantage quand un marchand envoie une caravane — régression du jeu depuis la mise à jour navale.
+
+• Plantage de carte à chaque tick dû à une colonie sans clan propriétaire — ajoutée au jeu après la sauvegarde.
+
+• Plantage quelques secondes après chaque chargement : héros exécuté sans bourreau enregistré (1.5+).
+
+• Plantage à la naissance d'un enfant d'un parent sans données de visage — réparé au lieu d'être contourné.
+
+• Plantage au début d'un siège dû à un effectif qui compte des hommes alors que sa liste est vide.
+
+• Plantage dû à une texture de bannière arrivant sur une armure déjà détruite avec son soldat.
+
+Crash Doctor est fait par une seule personne et vit de dons. S'il vous a sauvé une bataille ou une sauvegarde, le bouton Don est en bas de sa fenêtre.
+
+Signaler un plantage : t.me/CodeRickTg / discord.gg/ZDJZFxQeMV — cliquez « Ouvrir le dossier » sur la carte du plantage et envoyez LES DEUX fichiers : report.txt et crashdoctor_at_crash.log.

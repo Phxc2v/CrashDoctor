@@ -1,29 +1,45 @@
 Thanks for using Crash Doctor!
 
+OUR OWN BUG, FIXED
+
+• On Bannerlord 1.2.10 the mod itself broke the wage calculation: a guard installed at the main menu ran a piece of game code too early, the game cached the failure, and every party's wage read zero until restart — while the mod counted the fallout as 94,332 "prevented crashes". No guard is installed that early any more, and a failure like that is now reported once, in honest words.
+
+• The encounter-menu guard no longer loops: one log had 3,223 firings in two minutes, each counted as a rescue. A repeat is now detected and reported once.
+
 WHAT'S NEW
 
-• The mod now knows which build of another mod your game needs. It ships a compatibility reference: which build of each mod was made for which Bannerlord branch, what to install instead of a mismatched one, and the page to get it from. No network — the data is read from inside the mod.
+• report.txt carries an enhanced stack: the position inside each method, the nearest call there and the owners of every patch on it. No third-party crash reporter needed any more.
 
-• The Mods tab marks mods whose own code was checked against your exact game build with a green "checked" tick, and mods that were not built for it in red — with the version you need and a button to its file page. "OK" used to mean both "checked, fine" and "we have never heard of this mod"; those are two different answers now. It also covers disabled mods, because warning you before you switch one on is the only way to catch this in time.
+• Native crashes are read from the dump: the faulting library decides the verdict — graphics driver, injected overlay, sound engine, or a mod's own native DLL. The mod used to delete the dump before reading it.
 
-• The crash card tells you what is wrong with your setup: the enabled mods that are not built for your game version, with the versions you want. This is not a claim that any of them caused the crash — naming a culprit needs the top stack frame — but it answers "is this setup even supposed to work?".
+• Crash folders match the mod's own record in any time zone (folder names are UTC), and the module list names mod ids, not folders.
 
-• report.txt has been rebuilt. The setup verdict is in the first ten lines, ahead of anything long. Added: the game and mod versions, the managed exception with its throw site and stack, and the list of active guards (a guard that fires removes a frame from the stack, and without that list the trace reads wrong). The module list is no longer cut off at twelve.
+• The Mods tab scans in the background with progress, and remembers the result until a file changes. A module listed twice in the load order, a manifest the game cannot read and a translation placed above its mod are reported before launch.
 
-• A new "Our other mods" window on the Settings tab. When the game runs from Steam the Workshop button leads — one click to subscribe instead of unpacking an archive by hand. Nothing is installed from the window; everything opens in your own browser.
+• The shader-cache button touches only the generated cache — never a file shipped by the game or a mod.
 
-FIXES
+• A fix waiting for a game session shows as "Deferred", not "Not needed". Long texts scroll instead of shrinking. The Prevented tab folds repeats into one row and follows your language.
 
-• New guard: a day-change crash when a lord has nowhere to raise his party. Once a day the game gives a lord a place to gather his men, and sometimes it meets one with nowhere at all to start from — no town, no castle, not even a village of his own people. It gives up, taking the day with it. That is a hole in the game itself, not a mod bug. The guard musters him somewhere sensible instead; the lord and his culture go into the log, which shows where these homeless lords come from.
+NEW CRASH GUARDS
 
-• Two new guards for campaigns that refuse to start at all. A faction file naming a character no installed mod defines, and an equipment file written for an older Bannerlord — either one kills the whole load, and no mod appears anywhere in the crash. The guards skip only the broken entry, so the campaign starts; and the Mods tab now finds both in the files beforehand and names the mod to update.
+• A day-change crash from an item whose category belongs to a previous campaign in the same game session. Restart the game before loading a save.
 
-• The System Tune-Up tab no longer freezes the interface. Disk, registry and process checks moved to a background thread, and the screen shows which check is running and how long it has been going. One walk of a multi-gigabyte temp folder used to freeze the window for seconds and made the mod look hung.
+• A crash on the first reinforcement wave when a mod adds a team after the battle started.
 
-• The Prevented tab appears only when the journal has something in it: on a healthy setup no guard ever fires, and the tab was a button with nothing behind it.
+• A battle crash while drawing the banner icon over soldiers sharing one banner.
 
-• Esc closes the window that is open, not the whole tool. On a destructive confirmation, Esc means cancel.
+• A crash when a merchant sends out a caravan — a game regression since the naval update.
 
-• Two guards used to cry wolf. One announced a prevented crash every time an AI clan simply JOINED a kingdom; the other did it whenever the game removed a troop that was no longer in the roster — without ever checking who asked, so a mod that catches its own error looked like a rescue. No harm was done to your campaign, but the prevented-crash count was wrong. Both now claim a save only when the game itself would really have died.
+• A map crash every tick from a settlement with no owner clan — one added to the game after your save was made.
+
+• A map crash seconds after every load: a hero executed with no executioner on record (1.5+).
+
+• A childbirth crash on a parent with no face data — now repaired instead of patched around.
+
+• A crash at siege start from a roster whose headcount says men while its list is empty.
+
+• A crash from a banner texture landing on armour already destroyed with its soldier.
+
+Crash Doctor is made by one person and lives on donations. If it has saved you a battle or a save, the Donate button is at the bottom of its window.
 
 Report a crash: t.me/CodeRickTg / discord.gg/ZDJZFxQeMV — press "Open folder" on the crash card and send BOTH files: report.txt and crashdoctor_at_crash.log.

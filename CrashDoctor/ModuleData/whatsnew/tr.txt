@@ -1,29 +1,45 @@
-Crash Doctor'ı kullandığın için teşekkürler!
+Crash Doctor'ı kullandığınız için teşekkürler!
+
+KENDİ HATAMIZ, DÜZELTİLDİ
+
+• Bannerlord 1.2.10'da modun kendisi maaş hesabını bozuyordu: ana menüde kurulan bir koruma, oyunun bir kod parçasını çok erken çalıştırıyor, oyun bu hatayı kalıcı olarak hafızaya alıyor ve her grubun maaşı yeniden başlatana kadar sıfır okunuyordu — mod ise sonuçları 94.332 "önlenen çökme" olarak sayıyordu. Artık hiçbir koruma bu kadar erken kurulmuyor ve böyle bir hata bir kez, dürüst sözlerle bildiriliyor.
+
+• Karşılaşma menüsü koruması artık döngüye girmiyor: bir günlükte iki dakikada 3.223 tetiklenme vardı, her biri kurtarma sayılmıştı. Tekrar artık algılanıyor ve bir kez bildiriliyor.
 
 YENİLİKLER
 
-• Mod artık oyununun hangi sürümü için başka bir modun hangi yapısının gerektiğini biliyor. İçinde bir uyumluluk başvurusu geliyor: her modun hangi yapısı Bannerlord'un hangi dalı için yapılmış, uyumsuz olanın yerine ne kurulmalı ve nereden alınır. Ağ yok — veriler modun kendi içinden okunuyor.
+• report.txt zenginleştirilmiş yığın içeriyor: her yöntemin içindeki konum, oradaki en yakın çağrı ve üzerindeki her yamanın sahibi. Üçüncü taraf çökme raporlayıcısına gerek kalmadı.
 
-• Modlar sekmesi, kendi kodu tam olarak senin oyun yapına karşı denetlenmiş modları yeşil "denetlendi" işaretiyle, senin sürümün için yapılmamış olanları ise kırmızıyla işaretler — ihtiyacın olan sürüm numarası ve dosya sayfasına giden bir düğmeyle birlikte. Eskiden "TAMAM" hem "denetledik, sorun yok" hem de "bu modu hiç duymadık" anlamına geliyordu; artık bunlar iki ayrı cevap. Devre dışı modlar için de çalışır: sen açmadan önce uyarmak, bunu zamanında yakalamanın tek yolu.
+• Yerel çökmeler dökümden okunuyor: hatalı kütüphane kararı belirliyor — grafik sürücüsü, enjekte edilen overlay, ses motoru ya da bir modun kendi yerel DLL'i. Mod eskiden dökümü okumadan siliyordu.
 
-• Çökme kartı kurulumunda neyin yanlış olduğunu söyler: etkin olan ama senin oyun sürümün için yapılmamış modları, gereken sürümleriyle listeler. Bu, çökmeye onların yol açtığı iddiası değil — suçluyu adlandırmak yığının en üst çerçevesini gerektirir — ama "bu kurulum zaten çalışmalı mıydı?" sorusunu yanıtlar.
+• Çökme klasörleri her saat diliminde modun kendi kaydıyla eşleşiyor (klasör adları UTC), modül listesi klasörleri değil mod kimliklerini gösteriyor.
 
-• report.txt yeniden yapıldı. Kurulum hükmü, uzun her şeyin önünde, ilk on satırda. Eklendi: oyun ve mod sürümleri, fırlatma yeri ve yığınıyla birlikte managed istisna, ve etkin korumaların listesi (devreye giren bir koruma yığından bir çerçeve siler; o liste olmadan iz yanlış okunur). Modül listesi artık on ikide kesilmiyor.
+• Modlar sekmesi arka planda ilerleme göstererek tarıyor ve bir dosya değişene kadar sonucu hatırlıyor. Yükleme sırasında iki kez yazılmış bir modül, oyunun okuyamadığı bir manifest ve kendi modunun üstüne yerleştirilmiş bir çeviri başlatmadan önce bildiriliyor.
 
-• Ayarlar sekmesinde yeni bir "Diğer modlarımız" penceresi. Oyun Steam'den çalışıyorsa Atölye düğmesi başta gelir — arşivi elle açmak yerine tek tıkla abonelik. Pencereden hiçbir şey kurulmaz; her şey kendi tarayıcında açılır.
+• Shader önbelleği düğmesi yalnızca üretilen önbelleğe dokunuyor — oyunun ya da bir modun dosyasına asla.
 
-DÜZELTMELER
+• Oyun oturumu bekleyen bir düzeltme "Gerekli değil" değil "Ertelendi" olarak görünüyor. Uzun metinler küçülmek yerine kaydırılıyor. Önlenenler sekmesi tekrarları tek satırda topluyor ve dilinizi izliyor.
 
-• Yeni koruma: birliğini toplayacak yeri olmayan bir lord yüzünden oluşan gün değişimi çökmesi. Oyun her gün bir lorda adamlarını toplayacağı bir yer verir. Bazen hiç başlayacak yeri olmayan bir lordla karşılaşır — haritanın hiçbir yerinde ne şehri, ne kalesi, ne de kendi halkından bir köyü vardır — ve pes eder, o günü de beraberinde götürür. Bu bir mod hatası değil, oyunun kendi açığıdır. Koruma onu makul bir yerde toplar ve gün tamamlanır; lordun kendisi, hanesi ve kültürü günlüğe yazılır — bu evsiz lordların nereden geldiğini gösteren de budur.
+YENİ ÇÖKME KORUMALARI
 
-• Hiç başlamayan kampanyalar için iki yeni koruma. Kurulu hiçbir modun tanımlamadığı bir karaktere işaret eden hizip dosyası ve Bannerlord'un eski bir sürümü için yazılmış teçhizat dosyası — ikisinden biri tüm yükleme sürecini öldürür ve çökmenin hiçbir yerinde bir mod görünmez. Korumalar yalnızca bozuk kaydı atlar, böylece kampanya başlar; Modlar sekmesi de artık ikisini de dosyalarda önceden bulur ve güncellenecek modu adlandırır.
+• Aynı oyun oturumundaki önceki bir kampanyaya ait kategori taşıyan bir eşyadan kaynaklanan gün değişimi çökmesi. Kayıt yüklemeden önce oyunu yeniden başlatın.
 
-• Sistem İnce Ayar sekmesi artık arayüzü dondurmuyor. Disk, kayıt defteri ve süreç denetimleri arka plan iş parçacığına taşındı; ekranda hangi denetimin sürdüğü ve kaç saniyedir devam ettiği görünüyor. Eskiden birkaç gigabaytlık geçici klasörü taramak pencereyi saniyelerce donduruyor ve mod takılmış gibi görünüyordu.
+• Bir mod savaş başladıktan sonra takım eklediğinde ilk takviye dalgasındaki çökme.
 
-• Önlenen sekmesi yalnızca günlükte bir şey varken görünür: sağlıklı bir kurulumda hiçbir koruma devreye girmez ve sekme arkasında hiçbir şey olmayan bir düğmeye dönüşüyordu.
+• Aynı sancağı paylaşan askerlerin üzerine sancak simgesi çizilirken savaş çökmesi.
 
-• Esc açık olan pencereyi kapatır, aracın tamamını değil. Geri alınamaz bir temizleme onayında Esc "iptal" demektir.
+• Bir tüccar kervan gönderdiğinde çökme — deniz güncellemesinden beri oyunun kendi gerilemesi.
 
-• İki koruma boşuna alarm veriyordu. Biri, bir YZ klanı yalnızca bir krallığa KATILDIĞINDA çökme önlendi diyordu; diğeri ise oyun, kadroda artık bulunmayan bir birliği çıkarırken — kimin istediğine hiç bakmadan, böylece kendi hatasını yakalayan bir mod kurtarılmış gibi görünüyordu. Kampanyana bir zararı yoktu ama sayı yanlıştı. Artık ikisi de yalnızca oyun gerçekten ölecek olsaydı kurtarış iddia ediyor.
+• Sahibi olmayan bir yerleşimden kaynaklanan her tikte harita çökmesi — kayıttan sonra oyuna eklenen bir yerleşim.
 
-Çökme bildir: t.me/CodeRickTg / discord.gg/ZDJZFxQeMV — çökme kartında "Klasörü aç"a bas ve HER İKİ dosyayı gönder: report.txt ve crashdoctor_at_crash.log.
+• Her yüklemeden saniyeler sonra çökme: cellat kaydı olmadan idam edilmiş kahraman (1.5+).
+
+• Yüz verisi olmayan bir ebeveynden doğum çökmesi — artık etrafından dolaşılmıyor, onarılıyor.
+
+• Listesi boşken mevcudu asker gösteren bir kadrodan kaynaklanan kuşatma başlangıcı çökmesi.
+
+• Askeriyle birlikte yok edilmiş bir zırha inen sancak dokusundan kaynaklanan çökme.
+
+Crash Doctor'ı tek bir kişi yapıyor ve bağışlarla yaşıyor. Size bir savaş ya da bir kayıt kazandırdıysa, Bağış düğmesi penceresinin altında.
+
+Çökme bildir: t.me/CodeRickTg / discord.gg/ZDJZFxQeMV — çökme kartında "Klasörü aç"a basın ve HER İKİ dosyayı gönderin: report.txt ve crashdoctor_at_crash.log.

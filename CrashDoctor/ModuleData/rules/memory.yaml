@@ -235,6 +235,10 @@
   category: native
   severity: critical
   confidence: high
+  # No requires_sources on purpose: match below is `any` between a log_line probe and a
+  # managed_exception probe. Listing either source here would gate the whole rule on that one
+  # being present and silently drop the other half — and the two halves cover different
+  # capture paths (rgl_log vs. our own managed capture), never the same crash twice.
   evidence_source: "Client crash id 3973dcff — 5 separate occurrences on Bannerlord 1.3.15 with The Old Realms: 2026-06-13, 2026-06-21, 2026-07-23 (x2), 2026-07-26, 2026-07-30. Third-party suspects ruled out by modlist comparison (TOR_Chaos_Fraction absent from later ones; RTSCameraUniversal absent from three of five, incl. the 12-module minimal list of 2026-07-30) — the TOR stack is the only constant. First hard attribution 2026-07-30: the reporter had just clicked TOR's main-menu 'Build Shader Cache', which runs MBGameManager.StartNewGame(new TORShaderGameManager()) → a custom battle on battle_terrain_a holding every unique TOR troop/NPC (soldiers x4, truncated at 1999 characters) purely to force shader compilation. Confirmed by decompiling TOR_Core: MainMenuOptionsPatches.BuildShaderCache + TORShaderGameManager.LoadScene/GetPlayerParty."
   title:
     en: "Access violation in TaleWorlds.DotNet native finalizer"
