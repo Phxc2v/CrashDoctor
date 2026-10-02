@@ -106,7 +106,7 @@
                      an unset alignment renders a list as a centred ragged pyramid. -->
                 <Widget IsVisible="@IsReportVisible"
                         WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
-                        MarginTop="@ReportBodyMarginTop" MarginBottom="210" MarginLeft="20" MarginRight="40">
+                        MarginTop="@ReportBodyMarginTop" MarginBottom="246" MarginLeft="20" MarginRight="40">
                   <Children>
                     <ScrollablePanel Id="ReportScroll"
                                      WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
@@ -245,6 +245,26 @@
                             Sprite="BlankWhiteSquare_9" Color="#7AC07AFF" />
                   </Children>
                 </Widget>
+
+                <!-- Opt-in checkbox for the cleaner's glitched-party pass (OFF by default — it
+                     destroys parties). Sits between the report body (MarginBottom 246) and the
+                     progress bar (200..206); the whole row is the click target. -->
+                <ButtonWidget IsVisible="@IsGlitchedPartiesToggleVisible" IsEnabled="@IsNotWorking"
+                              DoNotPassEventsToChildren="true" Command.Click="ExecuteToggleGlitchedParties"
+                              WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="1000" SuggestedHeight="30"
+                              HorizontalAlignment="Center" VerticalAlignment="Bottom" MarginBottom="210">
+                  <Children>
+                    <Widget DoNotAcceptEvents="true"
+                            WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="18" SuggestedHeight="18"
+                            HorizontalAlignment="Left" VerticalAlignment="Center" MarginLeft="10"
+                            Sprite="BlankWhiteSquare_9" Color="@GlitchedPartiesToggleColor" />
+                    <TextWidget DoNotAcceptEvents="true"
+                                WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="38"
+                                Brush.FontSize="15" Brush.FontColor="#E8DCC0FF"
+                                Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Center"
+                                Text="@LabelGlitchedParties" />
+                  </Children>
+                </ButtonWidget>
 
                 <!-- Bottom action area — REPORT MODE
                      5 buttons (Scan/Backup/Clean/Wipe/Close) totalled ~1200 px

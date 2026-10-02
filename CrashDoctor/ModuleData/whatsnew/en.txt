@@ -1,45 +1,43 @@
 Thanks for using Crash Doctor!
 
-OUR OWN BUG, FIXED
+OUR OWN BUGS, FIXED
 
-• On Bannerlord 1.2.10 the mod itself broke the wage calculation: a guard installed at the main menu ran a piece of game code too early, the game cached the failure, and every party's wage read zero until restart — while the mod counted the fallout as 94,332 "prevented crashes". No guard is installed that early any more, and a failure like that is now reported once, in honest words.
+• On some setups Crash Doctor itself crashed the game whenever a party's roster changed: the game picked up the mod's build for 1.2 instead of the one for 1.3 and later. The two builds now have different names, and the loader refuses a wrong one instead of running it.
 
-• The encounter-menu guard no longer loops: one log had 3,223 firings in two minutes, each counted as a rescue. A repeat is now detected and reported once.
+• The "destroyed parties back on the map" save repair never worked once, and on every reload it reported a repair that did not happen. Rewritten: it now checks the map after the load has finished.
+
+• report.txt was not written when the game runs on the .NET Core runtime. Fixed.
 
 WHAT'S NEW
 
-• report.txt carries an enhanced stack: the position inside each method, the nearest call there and the owners of every patch on it. No third-party crash reporter needed any more.
+• Mods tab: a dependency written against a mod's old name (Europe 1700 add-ons asking for EoE1700) is no longer reported as missing when the renamed mod is installed. Characters borrowing equipment sets no mod defines are named before the campaign starts.
 
-• Native crashes are read from the dump: the faulting library decides the verdict — graphics driver, injected overlay, sound engine, or a mod's own native DLL. The mod used to delete the dump before reading it.
+• Linux / Steam Deck (Proton): checks that change Windows settings are no longer offered.
 
-• Crash folders match the mod's own record in any time zone (folder names are UTC), and the module list names mod ids, not folders.
+• Tales from the Age of Men: Crash Doctor saw Harmony as off and its live guards stood idle. Fixed.
 
-• The Mods tab scans in the background with progress, and remembers the result until a file changes. A module listed twice in the load order, a manifest the game cannot read and a translation placed above its mod are reported before launch.
+• Save cleaning: a new "also remove glitched parties" box — off by default, and it never touches your own party.
 
-• The shader-cache button touches only the generated cache — never a file shipped by the game or a mod.
+• The exported report.txt hides your Windows user name and PC name.
 
-• A fix waiting for a game session shows as "Deferred", not "Not needed". Long texts scroll instead of shrinking. The Prevented tab folds repeats into one row and follows your language.
+• The shader-cache cards no longer delete files shipped with the game or with mods.
 
 NEW CRASH GUARDS
 
-• A day-change crash from an item whose category belongs to a previous campaign in the same game session. Restart the game before loading a save.
+• A map crash 20–30 seconds after every load: a clan with no leader on the daily tick.
 
-• A crash on the first reinforcement wave when a mod adds a team after the battle started.
+• A siege deployment crash: a mod asked an empty formation for its nearest enemy.
 
-• A battle crash while drawing the banner icon over soldiers sharing one banner.
+• A crash opening a settlement menu that asks for places the settlement does not have.
 
-• A crash when a merchant sends out a caravan — a game regression since the naval update.
+• A town or village crash: a resident missing from the list of the place they walk through.
 
-• A map crash every tick from a settlement with no owner clan — one added to the game after your save was made.
+• A TOR battle crash on killing a unit whose troop has no culture.
 
-• A map crash seconds after every load: a hero executed with no executioner on record (1.5+).
+• A new-campaign crash: a character borrows an equipment set that does not exist.
 
-• A childbirth crash on a parent with no face data — now repaired instead of patched around.
-
-• A crash at siege start from a roster whose headcount says men while its list is empty.
-
-• A crash from a banner texture landing on armour already destroyed with its soldier.
+• The ownerless-party guard now also covers War Sails' daily ship repair.
 
 Crash Doctor is made by one person and lives on donations. If it has saved you a battle or a save, the Donate button is at the bottom of its window.
 
-Report a crash: t.me/CodeRickTg / discord.gg/ZDJZFxQeMV — press "Open folder" on the crash card and send BOTH files: report.txt and crashdoctor_at_crash.log.
+Report a crash: t.me/CodeRickTg / discord.gg/ZDJZFxQeMV — close the game's crash window WITHOUT sending it to TaleWorlds (sending deletes the files), then in Crash Doctor open Crash diagnosis, press Export and send the file it makes.

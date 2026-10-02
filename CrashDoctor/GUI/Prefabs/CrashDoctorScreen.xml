@@ -727,10 +727,7 @@
                                         </ButtonWidget>
                                         <!-- 2026-05-14: Removed "Open Save System Fix on Nexus" + "Open Save Cleaner
                                              on Nexus" buttons per Phoenix's call — Crash Doctor now scans saves
-                                             itself, so external Nexus links became redundant clutter. Leaving the
-                                             VM properties unused (HasSaveSystemFixHint / HasSaveCleanerHint /
-                                             ExecuteOpenSaveSystemFix / ExecuteOpenSaveCleaner) so we don't have to
-                                             touch SaveEntryVM in this pass. -->
+                                             itself, so external Nexus links became redundant clutter. -->
                                       </Children>
                                     </ListPanel>
                                     <ListPanel WidthSizePolicy="CoverChildren" HeightSizePolicy="Fixed" SuggestedHeight="44"
@@ -2290,10 +2287,8 @@
                   </Children>
                 </ButtonWidget>
 
-                <!-- Third: Boosty — Russian-language page, shown only when the mod runs in Russian
-                     (IsDonateBoostyVisible is a snapshot taken when the window opened). Last in the
-                     stack on purpose: hidden, it leaves the gap above the thanks line, not mid-window. -->
-                <ButtonWidget IsVisible="@IsDonateBoostyVisible" DoNotPassEventsToChildren="true" Command.Click="ExecuteOpenDonateBoosty"
+                <!-- Third: Boosty — shown in every language (since 2026-10-01). -->
+                <ButtonWidget DoNotPassEventsToChildren="true" Command.Click="ExecuteOpenDonateBoosty"
                               Brush="Popup.Cancel.Button"
                               WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="380" SuggestedHeight="44"
                               HorizontalAlignment="Center" VerticalAlignment="Top" MarginTop="486">
@@ -2304,7 +2299,7 @@
                                 Text="@LabelDonateBoosty" />
                   </Children>
                 </ButtonWidget>
-                <TextWidget IsVisible="@IsDonateBoostyVisible" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="800" SuggestedHeight="22"
+                <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="800" SuggestedHeight="22"
                             HorizontalAlignment="Center" VerticalAlignment="Top" MarginTop="534"
                             Brush.FontSize="13" Brush.FontColor="#A89878FF" Brush.TextHorizontalAlignment="Center"
                             Text="@LabelDonateBoostySub" />

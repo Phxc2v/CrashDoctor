@@ -121,18 +121,35 @@
           - all:
               - managed_exception: { frame_contains: "game_menu_town_outside_on_init" }
               - managed_exception: { type_contains: "NullReference" }
+          # Same three conditions as tor.audio_dependency_missing (NAudio from TOR_Core.Audio) - an NAudio
+          # FileNotFound from any other mod has no narrow rule and keeps this verdict.
           - all:
               - managed_exception: { frame_contains: "NAudio" }
+              - managed_exception: { frame_contains: "TOR_Core.Audio" }
               - managed_exception: { type_contains: "FileNotFoundException" }
           - all:
               - managed_exception: { frame_contains: "CalculateAICastMatrixFrame" }
               - managed_exception: { type_contains: "NullReferenceException" }
+          # TOR's culture predicates on a troop with no culture (client 2026-09-27, 1.3.15);
+          # tor.culture_predicate_null_culture owns it.
+          # Exactly the three predicates that rule claims - IsUndead/IsVampire/... keep this verdict.
+          - all:
+              - any:
+                  - managed_exception: { frame_contains: "TOR_Core.Extensions.CharacterObjectExtensions.IsChaos" }
+                  - managed_exception: { frame_contains: "TOR_Core.Extensions.CharacterObjectExtensions.IsBeastman" }
+                  - managed_exception: { frame_contains: "TOR_Core.Extensions.CharacterObjectExtensions.IsCultist" }
+              - managed_exception: { type_contains: "NullReference" }
           - all:
               - managed_exception: { frame_contains: "BesiegerCamp.AddSiegePartyInternal" }
               - managed_exception: { type_contains: "NullReference" }
           - all:
               - managed_exception: { frame_contains: "CaravansCampaignBehavior.SpawnCaravan" }
               - managed_exception: { type_contains: "NullReference" }
+          # campaign.rebel_clan_not_registered is a WARNING (BLSE turns it into a daily prompt), so
+          # at critical this card would always sit on top of the specific verdict.
+          - all:
+              - managed_exception: { frame_contains: "RebellionsCampaignBehavior.DailyTick" }
+              - managed_exception: { type_contains: "KeyNotFound" }
           - all:
               - managed_exception: { frame_contains: "FindBestGatheringSettlementAndMoveTheLeader" }
               - managed_exception: { type_contains: "NullReference" }
@@ -172,6 +189,12 @@
           # looking in the wrong place (client 367609f9).
           - all:
               - managed_exception: { frame_contains: "CreateMinorFactionHeroFromTemplate" }
+              - managed_exception: { type_contains: "NullReference" }
+          # A new campaign whose player character was never built, because a mod's character file
+          # stopped the merged character list (client 284e62ab);
+          # campaign.new_game_main_hero_missing_nre owns it.
+          - all:
+              - managed_exception: { frame_contains: "Campaign.InitializeGamePlayReferences" }
               - managed_exception: { type_contains: "NullReference" }
           - all:
               - managed_exception: { frame_contains: "SpawnedItemEntity.PlayPhysics" }
@@ -282,6 +305,11 @@
           - all:
               - managed_exception: { frame_contains: "SkillHelper.GetEffectivePartyLeaderForSkill" }
               - managed_exception: { type_contains: "IndexOutOfRange" }
+          # A non-bandit clan with no leader at its daily tick — game code on top, a mod-added clan
+          # underneath (client 33ec76f3); campaign.leaderless_clan_daily_tick_nre owns it.
+          - all:
+              - managed_exception: { frame_contains: "ClanVariablesCampaignBehavior.MakeClanFinancialEvaluation" }
+              - managed_exception: { type_contains: "NullReference" }
           # A banner texture applied to an armour mesh whose agent is already gone — a native
           # access violation with base-game code on top (client 22f44c4a);
           # battle.banner_mesh_dead_av owns it. A mod's prefix on that method only gets there one
@@ -291,6 +319,30 @@
               - any:
                   - managed_exception: { type_contains: "AccessViolation" }
                   - managed_exception: { type_contains: "NullReference" }
+          # A soldier's stale slot written past the formation grid — game list code on top, a
+          # formation-rearranging mod underneath (client bundle 2026-09-14_00.29.57);
+          # mission.formation_unit_index_stale_ioor owns it.
+          - all:
+              - managed_exception: { frame_contains: "MBList2D" }
+              - managed_exception: { type_contains: "IndexOutOfRange" }
+          # A formation query evaluated on a never-populated formation — a native access violation
+          # with base-game code on top, asked for by a mod's prefix (client 40b69e1e);
+          # battle.formation_query_empty_formation_av owns it.
+          - all:
+              - managed_exception: { frame_contains: "ClosestSignificantlyLargeEnemyFormation" }
+              - managed_exception: { type_contains: "AccessViolation" }
+          # A settlement menu opened for the wrong kind of settlement (the town menu inside a castle) —
+          # game code on top, the mod that opened it underneath or already gone from the stack
+          # (client d72314f4, SOTOR); campaign.menu_location_missing_nre owns it.
+          - all:
+              - managed_exception: { frame_contains: "HeroKnownInformationCampaignBehavior.LearnAboutLocationCharacters" }
+              - managed_exception: { type_contains: "NullReference" }
+          # A settlement NPC whose location entry vanished while it walked — game code on top, the mod
+          # that moved the entry already gone from the stack (BUTR 7BF40N);
+          # mission.change_location_orphan_agent_nre owns it.
+          - all:
+              - managed_exception: { frame_contains: "ChangeLocationBehavior.GetAvailability" }
+              - managed_exception: { type_contains: "NullReference" }
 
 # Generic on purpose — no mod name, no member name, no game version is hardcoded here. The
 # matcher fills all of that in from the captured exception (ApiMismatchAnalyzer): which mod
@@ -5972,6 +6024,387 @@
       - managed_exception: { frame_contains: "SkillHelper.GetEffectivePartyLeaderForSkill" }
       - managed_exception: { type_contains: "IndexOutOfRange" }
 
+# A non-bandit clan has NO leader when its daily tick runs.
+#   ClanVariablesCampaignBehavior.MakeClanFinancialEvaluation ← ClanVariablesCampaignBehavior.DailyTickClan
+#   ← MbEvent`1.InvokeList ← CampaignEvents.DailyTickClan ← CampaignEventDispatcher.DailyTickClan
+#   ← CampaignPeriodicEventManager.PeriodicDailyTick ← Campaign.Tick ← MapState.OnMapModeTick.
+# `if (clan.Leader.Gold > num2)` is the first statement after two IsMinorFaction reads; three lines
+# later DailyTickClan hands the same null to ClanFinanceModel.CalculateClanGoldChange →
+# CalculateHeroIncomeFromWorkshops(clan.Leader) → hero.OwnedWorkshops. No vanilla path leaves a
+# non-bandit clan leaderless (DestroyClanAction keeps the dead leader, ChangeClanLeaderAction assigns
+# a living heir, a minor faction's leader is assigned once at new-game time) — the clan was added to
+# the campaign after it started, by a mod in code or as a mod's XML clan added to a running save.
+# Guarded by Crash Doctor (id "leaderless_clan_daily_tick").
+- id: campaign.leaderless_clan_daily_tick_nre
+  category: managed
+  severity: critical
+  confidence: high
+  evidence_source: "Client crash 2026-09-16 report.txt (crash id 33ec76f3, seen 26x 2026-09-15..16, 20-30 s after every load of one save) — NullReferenceException TaleWorlds.CampaignSystem.CampaignBehaviors.ClanVariablesCampaignBehavior.MakeClanFinancialEvaluation ← DailyTickClan ← MbEvent`1.InvokeList ← CampaignEvents.DailyTickClan ← CampaignEventDispatcher.DailyTickClan ← CampaignPeriodicEventManager.PeriodicTicker`1.PeriodicTickSome ← PeriodicDailyTick ← TickPeriodicEvents ← Campaign.Tick ← MapState.OnMapModeTick. Bannerlord 1.4.8, ~60 mods incl. GangsOfCalradia 0.1.14, gondor e1.7.0.0, Sellsword, Slavery, Fourberie, Retinues, BanditMilitiasRedux. Enhanced stack frame #0 at IL_0024 (`ldc.i4 30000`) — the branch reachable only for IsMinorFaction == true, immediately before the inlined clan.Leader.Gold read at IL_002b/IL_0030; a null clan would have faulted at IL_0001. Root confirmed on the shipped 1.4.8 CampaignSystem IL (identical on 1.2.10..1.5.2): the only nullable dereference in the method is clan.Leader; WarPartyComponent.MobileParty is set by PartyComponent.Initialize, the same call that adds the component to the clan's [CachedData] list on load. Captured by Crash Doctor managed capture."
+  requires_sources: [managed_exception]
+  title:
+    en: "World-map crash: a clan with no leader at its daily tick — guarded by Crash Doctor"
+    ru: "Вылет на карте мира: клан без лидера на ежедневном тике — перехвачено Crash Doctor"
+    zh: "大地图崩溃：某个家族在每日结算时没有首领——已被 Crash Doctor 拦截"
+    zht: "大地圖當機：某個家族在每日結算時沒有首領——已被 Crash Doctor 攔截"
+    tr: "Dünya haritası çökmesi: günlük tikinde lideri olmayan bir klan — Crash Doctor koruyor"
+    fr: "Plantage sur la carte du monde : un clan sans chef à son tour quotidien — intercepté par Crash Doctor"
+  description:
+    en: |
+      NullReferenceException from TaleWorlds.CampaignSystem.CampaignBehaviors.ClanVariablesCampaignBehavior
+      .MakeClanFinancialEvaluation, reached from DailyTickClan — the base game's once-a-day clan
+      bookkeeping, spread over the game day so it hits a given clan within a day of loading. It sets
+      every war party's wage limit from `clan.Leader.Gold` without a null-check, and three lines later
+      the same tick hands `clan.Leader` to the clan finance model, which reads the leader's workshops.
+      Here the clan has NO leader. No base-game path leaves a non-bandit clan like that: a destroyed
+      clan keeps its dead leader, succession always picks a living heir, and a minor faction's leader is
+      assigned exactly once — when a new campaign starts. So this clan joined the campaign after it
+      began: a mod created it in code without giving it a leader, or a mod's data (an XML clan) was
+      added to a running save, where the hero it names was never created. The stack has no mod in it
+      because the clan is data, not code. The crash returns on every load of the save until the clan
+      gets a leader. This is base-game code TRIGGERED by a mod-added clan, NOT a shader, driver or TOR bug.
+    ru: |
+      NullReferenceException из TaleWorlds.CampaignSystem.CampaignBehaviors.ClanVariablesCampaignBehavior
+      .MakeClanFinancialEvaluation, через DailyTickClan — ежедневный расчёт кланов базовой игры,
+      размазанный по игровому дню, так что до конкретного клана он доходит в течение дня после
+      загрузки. Он выставляет лимит жалованья каждому боевому отряду по `clan.Leader.Gold` без проверки
+      на null, а тремя строками ниже тот же тик передаёт `clan.Leader` финансовой модели клана, которая
+      читает мастерские лидера. Здесь у клана НЕТ лидера. Ни один путь базовой игры не оставляет
+      небандитский клан таким: у уничтоженного клана остаётся мёртвый лидер, наследование всегда
+      выбирает живого наследника, а лидер малой фракции назначается ровно один раз — при старте новой
+      кампании. Значит, этот клан появился в кампании после её начала: мод создал его в коде, не дав
+      лидера, или данные мода (XML-клан) подключили к идущему сейву, где названный в них герой никогда
+      не создавался. В стеке нет мода, потому что клан — это данные, а не код. Вылет повторяется при
+      каждой загрузке сейва, пока у клана не появится лидер. Это код базовой игры, ЗАПУЩЕННЫЙ кланом
+      от мода, а НЕ баг шейдеров, драйвера или TOR.
+    zh: |
+      TaleWorlds.CampaignSystem.CampaignBehaviors.ClanVariablesCampaignBehavior.MakeClanFinancialEvaluation
+      抛出 NullReferenceException，经由 DailyTickClan——原版每日一次的家族结算，分散在整个游戏日内进行，因此
+      读档后一天内就会轮到某个家族。它用 `clan.Leader.Gold` 为每支战斗队伍设定军饷上限而不做空检查，三行之后
+      同一结算又把 `clan.Leader` 交给家族财务模型，后者读取首领的作坊。此处该家族没有首领。原版没有任何路径会
+      让非匪徒家族处于这种状态：被摧毁的家族保留其已故首领，继承总是选出在世继承人，小派系的首领只在新战役
+      开始时指定一次。因此该家族是在战役开始后才加入的：由模组在代码中创建却未指定首领，或是模组数据（XML 家族）
+      被加进了进行中的存档，而其中指定的英雄从未被创建。堆栈中没有模组，因为家族是数据而非代码。在该家族获得
+      首领之前，每次读取该存档都会再次崩溃。这是被模组添加的家族触发的原版代码，而不是着色器、驱动或 TOR 的 bug。
+    zht: |
+      TaleWorlds.CampaignSystem.CampaignBehaviors.ClanVariablesCampaignBehavior.MakeClanFinancialEvaluation
+      擲出 NullReferenceException，經由 DailyTickClan——原版每日一次的家族結算，分散在整個遊戲日內進行，因此
+      讀檔後一天內就會輪到某個家族。它用 `clan.Leader.Gold` 為每支戰鬥隊伍設定軍餉上限而不做空檢查，三行之後
+      同一結算又把 `clan.Leader` 交給家族財務模型，後者讀取首領的作坊。此處該家族沒有首領。原版沒有任何路徑會
+      讓非匪徒家族處於這種狀態：被摧毀的家族保留其已故首領，繼承總是選出在世繼承人，小派系的首領只在新戰役
+      開始時指定一次。因此該家族是在戰役開始後才加入的：由模組在程式碼中建立卻未指定首領，或是模組資料（XML 家族）
+      被加進了進行中的存檔，而其中指定的英雄從未被建立。堆疊中沒有模組，因為家族是資料而非程式碼。在該家族獲得
+      首領之前，每次讀取該存檔都會再次崩潰。這是被模組新增的家族觸發的原版程式碼，而不是著色器、驅動或 TOR 的 bug。
+    tr: |
+      DailyTickClan üzerinden TaleWorlds.CampaignSystem.CampaignBehaviors.ClanVariablesCampaignBehavior
+      .MakeClanFinancialEvaluation'dan NullReferenceException — oyunun günde bir kez yaptığı klan hesabı,
+      oyun gününe yayıldığı için belirli bir klana yüklemeden sonraki bir gün içinde ulaşır. Her savaş
+      grubunun maaş sınırını null denetimi yapmadan `clan.Leader.Gold` üzerinden belirler ve üç satır
+      sonra aynı tik `clan.Leader`'ı liderin atölyelerini okuyan klan maliye modeline verir. Burada klanın
+      lideri YOK. Oyunun hiçbir yolu haydut olmayan bir klanı böyle bırakmaz: yok edilen klan ölü liderini
+      korur, veraset her zaman yaşayan bir vâris seçer ve küçük bir hizbin lideri tam bir kez — yeni sefer
+      başlarken — atanır. Demek ki bu klan sefere sonradan katıldı: bir mod onu kodla lider vermeden
+      yarattı ya da bir modun verisi (bir XML klanı) süren bir kayda eklendi ve adını verdiği kahraman
+      hiç yaratılmadı. Yığında mod yok, çünkü klan kod değil veridir. Klan bir lider alana kadar çökme
+      kaydın her yüklenişinde geri döner. Bu, modun eklediği bir klan tarafından TETİKLENEN oyun kodudur;
+      gölgelendirici, sürücü ya da TOR hatası DEĞİLDİR.
+    fr: |
+      NullReferenceException depuis TaleWorlds.CampaignSystem.CampaignBehaviors.ClanVariablesCampaignBehavior
+      .MakeClanFinancialEvaluation, atteint via DailyTickClan — la comptabilité quotidienne des clans du
+      jeu de base, répartie sur la journée de jeu, qui atteint donc un clan donné dans la journée qui suit
+      le chargement. Elle fixe le plafond de solde de chaque groupe de guerre à partir de
+      `clan.Leader.Gold` sans vérification de nullité, et trois lignes plus loin le même tour transmet
+      `clan.Leader` au modèle financier du clan, qui lit les ateliers du chef. Ici le clan n'a PAS de chef.
+      Aucun chemin du jeu de base ne laisse un clan non bandit dans cet état : un clan détruit garde son
+      chef mort, la succession choisit toujours un héritier vivant, et le chef d'une faction mineure est
+      attribué exactement une fois — au début d'une nouvelle campagne. Ce clan a donc rejoint la campagne
+      après son début : un mod l'a créé dans le code sans lui donner de chef, ou les données d'un mod (un
+      clan XML) ont été ajoutées à une sauvegarde en cours, où le héros qu'elles nomment n'a jamais été
+      créé. La pile ne contient aucun mod parce que le clan est une donnée, pas du code. Le plantage
+      revient à chaque chargement de la sauvegarde tant que le clan n'a pas de chef. Il s'agit de code du
+      jeu de base DÉCLENCHÉ par un clan ajouté par un mod, PAS d'un bug de shader, de pilote ou de TOR.
+  fix:
+    en:
+      - "Crash Doctor already guards this — its safety net gives the clan a leader the way a new campaign would (its first living lord), or skips that clan's daily bookkeeping when it has no lords at all, so the game keeps running. Keep the «Leaderless clan crash guard (daily clan bookkeeping)» fix ON (Crash Fixes tab)."
+      - "Open the Prevented tab or crashdoctor.log: the entry names the clan's id. That id tells you which mod added the clan — a mod that creates clans, gangs or mercenary companies in play (e.g. GangsOfCalradia, Sellsword, Slavery), or an overhaul whose factions were added to an existing save (e.g. gondor)."
+      - "A mod that adds clans or factions must be enabled from a NEW campaign. If you added one mid-save, either keep the guard on and play, or start a new campaign with it enabled."
+      - "Do NOT rebuild shaders or change drivers — this is clan data, none of that helps."
+    ru:
+      - "Crash Doctor уже это перехватывает — safety net даёт клану лидера так же, как это сделала бы новая кампания (его первого живого лорда), а клану без лордов вовсе пропускает ежедневный расчёт, и игра продолжает работать. Держи фикс «Защита от вылета по клану без лидера (ежедневный расчёт клана)» ВКЛ (вкладка «Фиксы крашей»)."
+      - "Открой вкладку «Предотвращено» или crashdoctor.log: в записи указан id клана. По нему видно, какой мод его добавил — мод, создающий кланы, банды или наёмные компании по ходу игры (например, GangsOfCalradia, Sellsword, Slavery), или глобальный мод, чьи фракции подключили к существующему сейву (например, gondor)."
+      - "Мод, добавляющий кланы или фракции, включается с НОВОЙ кампании. Если ты добавил такой посреди сейва — либо играй с включённой защитой, либо начни новую кампанию с этим модом."
+      - "НЕ пересобирай шейдеры и не меняй драйвер — это данные клана, ничего из этого не поможет."
+    zh:
+      - "Crash Doctor 已经拦截了它——安全网会像新战役那样为该家族指定首领（其第一位在世领主），或在它完全没有领主时跳过其每日结算，游戏继续运行。在「崩溃修复」页保持「无首领家族崩溃防护（每日家族结算）」为开。"
+      - "打开「已避免」页或 crashdoctor.log：记录中写有该家族的 id。由此可知是哪个模组添加了它——在游戏进程中创建家族、帮派或雇佣兵团的模组（如 GangsOfCalradia、Sellsword、Slavery），或是其派系被加进现有存档的大型模组（如 gondor）。"
+      - "添加家族或派系的模组必须从新战役开始启用。若你在存档中途添加了此类模组，要么开着防护继续玩，要么用它开一局新战役。"
+      - "不要重建着色器或更换驱动——这是家族数据，这些都没用。"
+    zht:
+      - "Crash Doctor 已經攔截了它——安全網會像新戰役那樣為該家族指定首領（其第一位在世領主），或在它完全沒有領主時跳過其每日結算，遊戲繼續執行。在「崩潰修復」頁保持「無首領家族崩潰防護（每日家族結算）」為開。"
+      - "開啟「已避免」頁或 crashdoctor.log：記錄中寫有該家族的 id。由此可知是哪個模組新增了它——在遊戲進程中建立家族、幫派或傭兵團的模組（如 GangsOfCalradia、Sellsword、Slavery），或是其派系被加進現有存檔的大型模組（如 gondor）。"
+      - "新增家族或派系的模組必須從新戰役開始啟用。若你在存檔中途新增了此類模組，要麼開著防護繼續玩，要麼用它開一局新戰役。"
+      - "不要重建著色器或更換驅動——這是家族資料，這些都沒用。"
+    tr:
+      - "Crash Doctor bunu zaten koruyor — güvenlik ağı klana, yeni bir seferin yapacağı gibi bir lider verir (ilk yaşayan lordunu) ya da hiç lordu yoksa o klanın günlük hesabını atlar; oyun çalışmaya devam eder. «Lidersiz klan çökme koruması (günlük klan hesabı)» düzeltmesini AÇIK tut (Çökme Düzeltmeleri sekmesi)."
+      - "Önlenen sekmesini ya da crashdoctor.log'u aç: kayıt klanın kimliğini verir. Bu kimlik klanı hangi modun eklediğini söyler — oyun sırasında klan, çete ya da paralı asker bölüğü yaratan bir mod (ör. GangsOfCalradia, Sellsword, Slavery) ya da hizipleri mevcut bir kayda eklenen bir overhaul (ör. gondor)."
+      - "Klan ya da hizip ekleyen bir mod YENİ bir seferden itibaren etkinleştirilmelidir. Kayıt ortasında eklediysen ya korumayı açık tutup oyna ya da o modla yeni bir sefer başlat."
+      - "Gölgelendiricileri yeniden oluşturma veya sürücü değiştirme — bu klan verisi, hiçbiri yardımcı olmaz."
+    fr:
+      - "Crash Doctor protège déjà ce cas — son filet de sécurité donne un chef au clan comme le ferait une nouvelle campagne (son premier seigneur vivant), ou ignore la comptabilité quotidienne de ce clan s'il n'a aucun seigneur ; le jeu continue. Gardez le correctif « Anti-plantage : clan sans chef (comptabilité quotidienne des clans) » ACTIVÉ (onglet Crash Fixes)."
+      - "Ouvrez l'onglet Évités ou crashdoctor.log : l'entrée indique l'identifiant du clan. Cet identifiant dit quel mod a ajouté le clan — un mod qui crée des clans, des gangs ou des compagnies de mercenaires en cours de partie (p. ex. GangsOfCalradia, Sellsword, Slavery), ou une refonte dont les factions ont été ajoutées à une sauvegarde existante (p. ex. gondor)."
+      - "Un mod qui ajoute des clans ou des factions doit être activé dès une NOUVELLE campagne. Si vous en avez ajouté un en cours de sauvegarde, gardez la protection activée et jouez, ou commencez une nouvelle campagne avec ce mod."
+      - "Ne reconstruisez PAS les shaders ni ne changez les pilotes — il s'agit de données de clan, rien de tout cela n'aidera."
+  match:
+    all:
+      - managed_exception: { frame_contains: "ClanVariablesCampaignBehavior.MakeClanFinancialEvaluation" }
+      - managed_exception: { type_contains: "NullReference" }
+
+# A settlement menu's location list holds a null: the menu asked for a location id the settlement
+# does not have.
+#   HeroKnownInformationCampaignBehavior.LearnAboutLocationCharacters ← OnGameMenuChanged
+#   ← MbEvent`1.InvokeList ← CampaignEvents.OnGameMenuOpened ← CampaignEventDispatcher.OnGameMenuOpened
+#   ← MenuContext.HandleStates (GameMenu.RunOnInit inlined) ← MapState.EnterMenuMode / GameMenu.SwitchToMenu.
+# The menu's on_init calls PlayerTownVisitCampaignBehavior.UpdateMenuLocations, whose "town" branch adds
+# LocationComplex.GetLocationWithId("center" / "arena" / "house_1..3") unchecked; GetLocationWithId
+# returns null for a missing id. RunOnInit then raises OnGameMenuOpened and OnGameMenuChanged calls
+# `location.GetCharacterList()` on every entry. The base game never opens the town menu for a castle —
+# SOTOR's SotorApprenticeDuelBehavior.FinishMenu does (`IsVillage ? "village" : "town"`).
+# Guarded by Crash Doctor (id "menu_locations_null_entry").
+- id: campaign.menu_location_missing_nre
+  category: managed
+  severity: critical
+  confidence: high
+  evidence_source: "Client crash 2026-09-30 report.txt (crash id d72314f4, seen 5x 2026-09-20..30; RickLauncher sig 0a2faa72, 21 earlier crashes at the same address) — NullReferenceException TaleWorlds.CampaignSystem.CampaignBehaviors.HeroKnownInformationCampaignBehavior.LearnAboutLocationCharacters ← OnGameMenuChanged ← MbEvent`1.InvokeList ← CampaignEvents.OnGameMenuOpened ← CampaignEventDispatcher.OnGameMenuOpened ← MenuContext.HandleStates ← MapState.EnterMenuMode ← GameMenu.ActivateGameMenu ← Campaign.Tick ← MapState.OnMapModeTick. Bannerlord 1.4.5, ~50 mods incl. SOTOR 3.5.0, Castles restored, RBM, ImprovedGarrisons 4.2.0.5. Enhanced stack frame #0 at IL_0000 (`ldarg.1`) — the null is `location` itself. crashdoctor.log: the first NRE one second earlier was thrown with first mod frame SOTOR!SOTOR.CampaignBehaviors.SotorApprenticeDuelBehavior.FinishMenu (caught there; its catch calls GameMenu.ExitToLast and the next tick re-opens the menu). SOTOR source (GitHub arkenfagen/spells-of-the-old-realms, LocalPatches/SOTOR/CampaignBehaviors/SotorApprenticeDuelBehavior.cs): FinishMenu switches to `IsVillage ? \"village\" : \"town\"`. Verified on the shipped 1.4.5 CampaignSystem IL (same on 1.2.10..1.5.2): UpdateMenuLocations \"town\" adds GetLocationWithId(center/arena/house_1/house_2/house_3) unchecked, LocationComplex.GetLocationWithId returns null on a miss, GameMenu.RunOnInit raises OnGameMenuOpened after OnInit. Captured by Crash Doctor managed capture."
+  requires_sources: [managed_exception]
+  title:
+    en: "Crash on opening a settlement menu: the menu asks for places this settlement does not have — guarded by Crash Doctor"
+    ru: "Вылет при открытии меню поселения: меню просит места, которых в поселении нет — перехвачено Crash Doctor"
+    zh: "打开定居点菜单时崩溃：菜单请求了此定居点没有的地点——已被 Crash Doctor 拦截"
+    zht: "開啟聚落選單時當機：選單要求了此聚落沒有的地點——已被 Crash Doctor 攔截"
+    tr: "Yerleşim menüsü açılırken çökme: menü bu yerleşimde olmayan yerleri istiyor — Crash Doctor koruyor"
+    fr: "Plantage à l'ouverture d'un menu de colonie : le menu demande des lieux que cette colonie n'a pas — intercepté par Crash Doctor"
+  description:
+    en: |
+      NullReferenceException from TaleWorlds.CampaignSystem.CampaignBehaviors.HeroKnownInformationCampaignBehavior
+      .LearnAboutLocationCharacters, raised the moment a settlement menu opens. Every town, castle and
+      village menu fills a list of the places inside it (streets, arena, houses, keep) by id, and the
+      base game adds a place the settlement does not have as an empty (null) entry; right after that the
+      "learn who is here" step walks the list and reads every entry without a check. The base game never
+      opens a menu for the wrong kind of settlement, so this list is only broken when a MOD does — the
+      known case is SOTOR (Spells of the Old Realms): after an apprentice duel it sends you back to the
+      TOWN menu even when you are in a CASTLE, and a castle has no arena and no houses. A settlement a
+      mod added without one of the standard places does the same. The mod is often not in the stack: it
+      opened the menu and caught the first crash itself, and the game re-opened the same menu on the
+      next tick, where nobody caught it. This is base-game code TRIGGERED by a mod, NOT a shader, driver
+      or save problem.
+    ru: |
+      NullReferenceException из TaleWorlds.CampaignSystem.CampaignBehaviors.HeroKnownInformationCampaignBehavior
+      .LearnAboutLocationCharacters, в момент открытия меню поселения. Каждое меню города, замка и деревни
+      заполняет список мест внутри (улицы, арена, дома, замок) по id, и базовая игра кладёт место,
+      которого в поселении нет, пустой (null) записью; сразу после этого шаг «узнать, кто здесь» обходит
+      список и читает каждую запись без проверки. Сама игра никогда не открывает меню не того типа
+      поселения, поэтому список ломается, только когда это делает МОД. Известный случай — SOTOR (Spells of
+      the Old Realms): после дуэли ученика он возвращает в меню ГОРОДА, даже если ты в ЗАМКЕ, а в замке нет
+      ни арены, ни домов. То же даёт поселение, добавленное модом без одного из стандартных мест. Мода в
+      стеке часто нет: он открыл меню и сам поймал первый вылет, а игра на следующем тике открыла то же
+      меню ещё раз, и там его уже никто не поймал. Это код базовой игры, ЗАПУЩЕННЫЙ модом, а НЕ проблема
+      шейдеров, драйвера или сейва.
+    zh: |
+      TaleWorlds.CampaignSystem.CampaignBehaviors.HeroKnownInformationCampaignBehavior.LearnAboutLocationCharacters
+      在定居点菜单打开的瞬间抛出 NullReferenceException。每个城镇、城堡和村庄菜单都会按 id 填充其中地点的列表
+      （街道、竞技场、房屋、要塞），原版会把定居点没有的地点作为空（null）条目加入；紧接着“了解此处有谁”这一步
+      会遍历列表并不做检查地读取每个条目。原版从不为错误类型的定居点打开菜单，因此只有模组这么做时列表才会损坏——
+      已知案例是 SOTOR（Spells of the Old Realms）：学徒决斗结束后，即使你身在城堡，它也会把你送回城镇菜单，而城堡
+      既没有竞技场也没有房屋。缺少某个标准地点的模组定居点也会如此。堆栈中常常没有该模组：它打开了菜单并自己捕获了
+      第一次崩溃，游戏在下一帧又打开了同一个菜单，这次无人捕获。这是被模组触发的原版代码，而不是着色器、驱动或存档问题。
+    zht: |
+      TaleWorlds.CampaignSystem.CampaignBehaviors.HeroKnownInformationCampaignBehavior.LearnAboutLocationCharacters
+      在聚落選單開啟的瞬間擲出 NullReferenceException。每個城鎮、城堡和村莊選單都會依 id 填入其中地點的清單
+      （街道、競技場、房屋、要塞），原版會把聚落沒有的地點作為空（null）項目加入；緊接著「了解此處有誰」這一步
+      會走訪清單並不做檢查地讀取每個項目。原版從不為錯誤類型的聚落開啟選單，因此只有模組這麼做時清單才會損壞——
+      已知案例是 SOTOR（Spells of the Old Realms）：學徒決鬥結束後，即使你身在城堡，它也會把你送回城鎮選單，而城堡
+      既沒有競技場也沒有房屋。缺少某個標準地點的模組聚落也會如此。堆疊中常常沒有該模組：它開啟了選單並自己捕捉了
+      第一次崩潰，遊戲在下一幀又開啟了同一個選單，這次無人捕捉。這是被模組觸發的原版程式碼，而不是著色器、驅動或存檔問題。
+    tr: |
+      Bir yerleşim menüsü açıldığı anda TaleWorlds.CampaignSystem.CampaignBehaviors.HeroKnownInformationCampaignBehavior
+      .LearnAboutLocationCharacters'tan NullReferenceException. Her kasaba, kale ve köy menüsü içindeki yerlerin
+      (sokaklar, arena, evler, iç kale) listesini kimliğe göre doldurur ve oyun, yerleşimde olmayan bir yeri boş
+      (null) bir girdi olarak ekler; hemen ardından "burada kim var" adımı listeyi dolaşır ve her girdiyi denetlemeden
+      okur. Oyun hiçbir zaman yanlış türde bir yerleşim için menü açmaz, bu yüzden liste yalnızca bir MOD bunu
+      yaptığında bozulur — bilinen örnek SOTOR (Spells of the Old Realms): bir çırak düellosundan sonra, bir KALEDE
+      olsan bile seni KASABA menüsüne geri gönderir, oysa kalede ne arena ne ev vardır. Standart yerlerden birini
+      içermeyen, bir modun eklediği yerleşim de aynısını yapar. Mod çoğu zaman yığında yoktur: menüyü açtı ve ilk
+      çökmeyi kendisi yakaladı, oyun bir sonraki tikte aynı menüyü yeniden açtı ve orada kimse yakalamadı. Bu, bir
+      mod tarafından TETİKLENEN oyun kodudur; gölgelendirici, sürücü ya da kayıt sorunu DEĞİLDİR.
+    fr: |
+      NullReferenceException depuis TaleWorlds.CampaignSystem.CampaignBehaviors.HeroKnownInformationCampaignBehavior
+      .LearnAboutLocationCharacters, au moment où un menu de colonie s'ouvre. Chaque menu de ville, de château et de
+      village remplit par identifiant la liste des lieux qu'il contient (rues, arène, maisons, donjon), et le jeu de
+      base y ajoute un lieu que la colonie n'a pas sous forme d'entrée vide (null) ; juste après, l'étape « apprendre
+      qui est ici » parcourt la liste et lit chaque entrée sans vérification. Le jeu de base n'ouvre jamais le menu
+      d'un autre type de colonie : la liste n'est donc cassée que lorsqu'un MOD le fait. Le cas connu est SOTOR
+      (Spells of the Old Realms) : après un duel d'apprenti, il vous renvoie au menu de VILLE même dans un CHÂTEAU,
+      qui n'a ni arène ni maisons. Une colonie ajoutée par un mod sans l'un des lieux standard produit le même effet.
+      Le mod est souvent absent de la pile : il a ouvert le menu et intercepté lui-même le premier plantage, puis le
+      jeu a rouvert le même menu au tour suivant, où personne ne l'a intercepté. Il s'agit de code du jeu de base
+      DÉCLENCHÉ par un mod, PAS d'un problème de shader, de pilote ou de sauvegarde.
+  fix:
+    en:
+      - "Crash Doctor already guards this — its safety net leaves the missing places out of the menu's list, so the menu opens and the game keeps running. Keep the «Settlement menu crash guard (menu asks for places the settlement lacks)» fix ON (Crash Fixes tab)."
+      - "If you play SOTOR (Spells of the Old Realms): the crash follows an apprentice duel fought inside a CASTLE. Until its author fixes the return menu, answer the duel in a town or a village, or on the map. Your save is not damaged."
+      - "crashdoctor.log names the settlement, its kind and the menu that was opened — send that line to the author of the mod that opened it."
+      - "Do NOT rebuild shaders or change drivers — this is a menu bug, none of that helps."
+    ru:
+      - "Crash Doctor уже это перехватывает — safety net убирает недостающие места из списка меню, меню открывается, игра продолжается. Держи фикс «Защита от вылета в меню поселения (меню просит места, которых в поселении нет)» ВКЛ (вкладка «Фиксы крашей»)."
+      - "Если у тебя SOTOR (Spells of the Old Realms): вылет идёт после дуэли ученика в ЗАМКЕ. Пока автор не починит возврат из меню, принимай дуэль в городе, в деревне или на карте. Сейв не повреждён."
+      - "В crashdoctor.log указаны поселение, его тип и открытое меню — отправь эту строку автору мода, который это меню открыл."
+      - "НЕ пересобирай шейдеры и не меняй драйвер — это баг меню, ничего из этого не поможет."
+    zh:
+      - "Crash Doctor 已经拦截了它——安全网会把缺失的地点从菜单列表中略去，菜单得以打开，游戏继续运行。在「崩溃修复」页保持「定居点菜单崩溃防护（菜单请求了定居点没有的地点）」为开。"
+      - "如果你在玩 SOTOR（Spells of the Old Realms）：该崩溃发生在城堡内进行学徒决斗之后。在作者修复返回菜单之前，请在城镇、村庄或大地图上接受决斗。你的存档没有损坏。"
+      - "crashdoctor.log 中写有该定居点、其类型以及被打开的菜单——把这一行发给打开该菜单的模组作者。"
+      - "不要重建着色器或更换驱动——这是菜单 bug，这些都没用。"
+    zht:
+      - "Crash Doctor 已經攔截了它——安全網會把缺少的地點從選單清單中略去，選單得以開啟，遊戲繼續執行。在「崩潰修復」頁保持「聚落選單崩潰防護（選單要求了聚落沒有的地點）」為開。"
+      - "如果你在玩 SOTOR（Spells of the Old Realms）：該崩潰發生在城堡內進行學徒決鬥之後。在作者修復返回選單之前，請在城鎮、村莊或大地圖上接受決鬥。你的存檔沒有損壞。"
+      - "crashdoctor.log 中寫有該聚落、其類型以及被開啟的選單——把這一行傳給開啟該選單的模組作者。"
+      - "不要重建著色器或更換驅動——這是選單 bug，這些都沒用。"
+    tr:
+      - "Crash Doctor bunu zaten koruyor — güvenlik ağı eksik yerleri menünün listesinden çıkarır, menü açılır ve oyun çalışmaya devam eder. «Yerleşim menüsü çökme koruması (menü yerleşimde olmayan yerleri istiyor)» düzeltmesini AÇIK tut (Çökme Düzeltmeleri sekmesi)."
+      - "SOTOR (Spells of the Old Realms) oynuyorsan: çökme bir KALEDE yapılan çırak düellosundan sonra gelir. Yazarı dönüş menüsünü düzeltene kadar düelloyu bir kasabada, köyde ya da haritada kabul et. Kaydın zarar görmedi."
+      - "crashdoctor.log yerleşimi, türünü ve açılan menüyü yazar — bu satırı menüyü açan modun yazarına gönder."
+      - "Gölgelendiricileri yeniden oluşturma veya sürücü değiştirme — bu bir menü hatası, hiçbiri yardımcı olmaz."
+    fr:
+      - "Crash Doctor protège déjà ce cas — son filet de sécurité retire de la liste du menu les lieux manquants ; le menu s'ouvre et le jeu continue. Gardez le correctif « Anti-plantage : menu de colonie (le menu demande des lieux que la colonie n'a pas) » ACTIVÉ (onglet Crash Fixes)."
+      - "Si vous jouez à SOTOR (Spells of the Old Realms) : le plantage suit un duel d'apprenti livré dans un CHÂTEAU. Tant que son auteur n'a pas corrigé le menu de retour, acceptez le duel dans une ville, un village ou sur la carte. Votre sauvegarde n'est pas endommagée."
+      - "crashdoctor.log indique la colonie, son type et le menu ouvert — envoyez cette ligne à l'auteur du mod qui a ouvert ce menu."
+      - "Ne reconstruisez PAS les shaders ni ne changez les pilotes — il s'agit d'un bug de menu, rien de tout cela n'aidera."
+  match:
+    all:
+      - managed_exception: { frame_contains: "HeroKnownInformationCampaignBehavior.LearnAboutLocationCharacters" }
+      - managed_exception: { type_contains: "NullReference" }
+
+# A settlement NPC is no longer in the character list of the location it walks in.
+#   SandBox.Missions.AgentBehaviors.ChangeLocationBehavior.GetAvailability ← DailyBehaviorGroup.Think
+#   ← DailyBehaviorGroup.Tick ← AgentNavigator.TickBehaviorGroups ← AgentNavigator.Tick
+#   ← CampaignAgentComponent.OnTick ← Agent.Tick ← Mission.TickAgentsAndTeamsImp.
+# `CampaignMission.Current.Location.GetLocationCharacter(OwnerAgent.Origin)` returns null when the entry
+# is gone, and the next statement reads `.FixedLocation` (after the 5 s grace). The base game gives the
+# behaviour only to nameless townsfolk; an entry disappears while its agent lives when a hero is re-added
+# elsewhere in the settlement, when a character leaves the settlement or the party roles change, or when
+# an AI is halfway through a door. CompanionExpanded's "Companions in town" gives wanderer HEROES this
+# behaviour set in the town centre.
+# Guarded by Crash Doctor (id "change_location_orphan_agent").
+- id: mission.change_location_orphan_agent_nre
+  category: managed
+  severity: critical
+  confidence: high
+  evidence_source: "BUTR report 7BF40N (2026-09-30), Bannerlord 1.4.8 under BLSE (.NET Framework 4.8), 174 mods incl. BannerlordExpanded.CompanionExpanded 1.3.13, CultureDiversityMod 2.8.0, RTSCamera 5.4.16, Crash Doctor 2.1.0.0 — NullReferenceException SandBox.Missions.AgentBehaviors.ChangeLocationBehavior.GetAvailability ← DailyBehaviorGroup.Think ← DailyBehaviorGroup.Tick ← AgentNavigator.TickBehaviorGroups ← AgentNavigator.Tick ← CampaignAgentComponent.OnTick ← Agent.Tick ← Mission.TickAgentsAndTeamsImp ← Mission_TickAgentsAndTeams. No Harmony patch on any frame. Faulting native instruction `cmp byte [rbp+57h],0` (BUTR records IP-1: 0x92 for 0x93, the same -1 as frame #1's return address 0x79 → 0x78) with rbp = the GetLocationCharacter result — locationCharacter.FixedLocation on a null entry. GetAvailability is byte-identical on 1.2.10, 1.3.15, 1.4.5, 1.4.7, 1.4.8 and 1.5.2 (IL of the shipped SandBox.dll). IL scan of 1.4.8: the behaviour set is assigned only by nameless-NPC factories (CommonTownsfolk/CommonVillagers/Guards/RecruitmentAgentSpawn/TavernEmployees); CompanionExpanded's CompanionsInTownHelper (GitHub source) gives it to wanderer heroes."
+  requires_sources: [managed_exception]
+  title:
+    en: "Crash in a town or village: a townsperson is missing from the place they walk in — guarded by Crash Doctor"
+    ru: "Вылет в городе или деревне: жителя нет в списке места, где он ходит — перехвачено Crash Doctor"
+    zh: "城镇或村庄内崩溃：某位居民不在其所处地点的名单中——已被 Crash Doctor 拦截"
+    zht: "城鎮或村莊內當機：某位居民不在其所處地點的名單中——已被 Crash Doctor 攔截"
+    tr: "Kasaba ya da köyde çökme: bir sakin dolaştığı yerin listesinde yok — Crash Doctor koruyor"
+    fr: "Plantage dans une ville ou un village : un habitant est absent de la liste du lieu où il marche — intercepté par Crash Doctor"
+  description:
+    en: |
+      NullReferenceException from SandBox.Missions.AgentBehaviors.ChangeLocationBehavior.GetAvailability, raised
+      by the tick of a townsperson a few seconds into a town or village scene. Every place in a settlement keeps
+      a list of the people in it; before a townsperson decides whether to walk through a door to another place,
+      the game looks them up in that list and uses the entry without a check. Here the entry is gone while the
+      person is still walking around. The base game gives this "walk to another place" behaviour only to nameless
+      townsfolk; the entry disappears when a mod re-adds or moves settlement characters while you are there —
+      for example CompanionExpanded's "Companions in town", which puts wanderer heroes in the town centre with
+      exactly this behaviour — or, rarely, when an AI is halfway through a door. The mod is not in the stack:
+      it changed the list earlier, and the crash waits for the next time the person "thinks". This is
+      base-game code TRIGGERED by a mod, NOT a shader, driver or save problem.
+    ru: |
+      NullReferenceException из SandBox.Missions.AgentBehaviors.ChangeLocationBehavior.GetAvailability — тик
+      жителя через несколько секунд после входа в город или деревню. Каждое место в поселении ведёт список тех,
+      кто в нём находится; прежде чем житель решит пройти через дверь в другое место, игра ищет его в этом
+      списке и использует запись без проверки. Здесь записи уже нет, а человек всё ещё ходит. Базовая игра даёт
+      это поведение «перейти в другое место» только безымянным горожанам; запись пропадает, когда мод заново
+      добавляет или переносит персонажей поселения, пока ты там, — например «Companions in town» из
+      CompanionExpanded ставит странников-героев в центр города ровно с этим поведением, — или, редко, когда
+      ИИ застигнут посреди прохода через дверь. Мода в стеке нет: он поменял список раньше, а вылет ждёт
+      следующего раза, когда житель «подумает». Это код базовой игры, ЗАПУЩЕННЫЙ модом, а НЕ проблема
+      шейдеров, драйвера или сейва.
+    zh: |
+      SandBox.Missions.AgentBehaviors.ChangeLocationBehavior.GetAvailability 抛出 NullReferenceException——进入城镇
+      或村庄几秒后，某位居民的更新触发。定居点中的每个地点都有一份其中人员的名单；居民决定是否穿门前往别处之前，
+      游戏会在名单中查找此人，并不加检查地使用该记录。此处记录已不在，而此人仍在走动。原版只把这种“前往别处”的
+      行为交给无名居民；当你在场时有模组重新添加或迁移定居点人物，记录就会消失——例如 CompanionExpanded 的
+      “Companions in town” 会把流浪者英雄以正是这种行为放到城镇中心——少数情况下也可能是 AI 恰好穿门到一半。
+      堆栈中没有该模组：它早先改动了名单，崩溃要等到此人下一次“思考”。这是被模组触发的原版代码，而不是着色器、
+      驱动或存档问题。
+    zht: |
+      SandBox.Missions.AgentBehaviors.ChangeLocationBehavior.GetAvailability 擲出 NullReferenceException——進入城鎮
+      或村莊幾秒後，某位居民的更新觸發。聚落中的每個地點都有一份其中人員的名單；居民決定是否穿門前往別處之前，
+      遊戲會在名單中尋找此人，並不加檢查地使用該記錄。此處記錄已不在，而此人仍在走動。原版只把這種「前往別處」的
+      行為交給無名居民；當你在場時有模組重新新增或遷移聚落人物，記錄就會消失——例如 CompanionExpanded 的
+      「Companions in town」會把流浪者英雄以正是這種行為放到城鎮中心——少數情況下也可能是 AI 恰好穿門到一半。
+      堆疊中沒有該模組：它早先改動了名單，崩潰要等到此人下一次「思考」。這是被模組觸發的原版程式碼，而不是著色器、
+      驅動或存檔問題。
+    tr: |
+      Bir kasabaya ya da köye girdikten birkaç saniye sonra bir sakinin tikinden
+      SandBox.Missions.AgentBehaviors.ChangeLocationBehavior.GetAvailability'den NullReferenceException. Yerleşimdeki
+      her yer içindekilerin bir listesini tutar; bir sakin başka bir yere kapıdan geçip geçmemeye karar vermeden önce
+      oyun onu bu listede arar ve kaydı denetlemeden kullanır. Burada kayıt yok, kişi ise hâlâ dolaşıyor. Oyun bu
+      "başka yere geç" davranışını yalnızca isimsiz kasabalılara verir; sen oradayken bir mod yerleşim karakterlerini
+      yeniden eklediğinde ya da taşıdığında kayıt kaybolur — örneğin CompanionExpanded'ın "Companions in town"
+      özelliği gezgin kahramanları tam da bu davranışla kasaba merkezine koyar — ya da nadiren bir yapay zekâ bir
+      kapıdan geçerken yakalanır. Mod yığında yoktur: listeyi daha önce değiştirdi, çökme ise sakinin bir sonraki
+      "düşünmesini" bekler. Bu, bir mod tarafından TETİKLENEN oyun kodudur; gölgelendirici, sürücü ya da kayıt
+      sorunu DEĞİLDİR.
+    fr: |
+      NullReferenceException depuis SandBox.Missions.AgentBehaviors.ChangeLocationBehavior.GetAvailability, levée
+      par la mise à jour d'un habitant quelques secondes après l'entrée dans une ville ou un village. Chaque lieu
+      d'une colonie tient la liste des personnes qui s'y trouvent ; avant qu'un habitant décide de franchir une
+      porte vers un autre lieu, le jeu le cherche dans cette liste et utilise l'entrée sans vérification. Ici
+      l'entrée a disparu alors que la personne se promène encore. Le jeu de base ne donne ce comportement « aller
+      ailleurs » qu'aux habitants anonymes ; l'entrée disparaît quand un mod rajoute ou déplace des personnages de
+      colonie pendant votre visite — par exemple « Companions in town » de CompanionExpanded, qui place des héros
+      vagabonds au centre-ville avec exactement ce comportement — ou, rarement, quand une IA est surprise au
+      milieu d'une porte. Le mod n'est pas dans la pile : il a modifié la liste plus tôt, et le plantage attend la
+      prochaine « réflexion » de l'habitant. Il s'agit de code du jeu de base DÉCLENCHÉ par un mod, PAS d'un
+      problème de shader, de pilote ou de sauvegarde.
+  fix:
+    en:
+      - "Crash Doctor already guards this — its safety net tells such a townsperson not to change place (and makes them give up a door they had picked), so the scene keeps running. Keep the «Settlement crash guard (a townsperson missing from the place they walk in)» fix ON (Crash Fixes tab)."
+      - "If you use BannerlordExpanded - Companion Expanded: its «Companions in town» option places wanderers in the town centre with the behaviour that crashes here. Turning that option off removes the most likely source."
+      - "crashdoctor.log names the character, the place and the settlement — if the character is a hero, the mod that placed heroes in that place is the one to report to."
+      - "Do NOT rebuild shaders or change drivers — this is settlement data, none of that helps."
+    ru:
+      - "Crash Doctor уже это перехватывает — safety net велит такому жителю не менять место (и отказаться от двери, если он её уже выбрал), и сцена продолжается. Держи фикс «Защита от вылета в поселении (житель пропал из списка места, где ходит)» ВКЛ (вкладка «Фиксы крашей»)."
+      - "Если у тебя BannerlordExpanded - Companion Expanded: его опция «Companions in town» ставит странников в центр города с тем самым поведением, на котором здесь падает. Выключить эту опцию — убрать самый вероятный источник."
+      - "В crashdoctor.log указаны персонаж, место и поселение — если персонаж герой, писать нужно автору мода, который ставит героев в это место."
+      - "НЕ пересобирай шейдеры и не меняй драйвер — это данные поселения, ничего из этого не поможет."
+    zh:
+      - "Crash Doctor 已经拦截了它——安全网会让这样的居民“不换地点”（若已选好门则放弃），场景继续运行。在「崩溃修复」页保持「定居点崩溃防护（居民不在其所处地点的名单中）」为开。"
+      - "如果你使用 BannerlordExpanded - Companion Expanded：其「Companions in town」选项会把流浪者以正是此处崩溃的行为放到城镇中心。关闭该选项即可去掉最可能的来源。"
+      - "crashdoctor.log 中写有人物、地点和定居点——若该人物是英雄，应向把英雄放到该地点的模组作者报告。"
+      - "不要重建着色器或更换驱动——这是定居点数据，这些都没用。"
+    zht:
+      - "Crash Doctor 已經攔截了它——安全網會讓這樣的居民「不換地點」（若已選好門則放棄），場景繼續執行。在「崩潰修復」頁保持「聚落崩潰防護（居民不在其所處地點的名單中）」為開。"
+      - "如果你使用 BannerlordExpanded - Companion Expanded：其「Companions in town」選項會把流浪者以正是此處崩潰的行為放到城鎮中心。關閉該選項即可去掉最可能的來源。"
+      - "crashdoctor.log 中寫有人物、地點和聚落——若該人物是英雄，應向把英雄放到該地點的模組作者回報。"
+      - "不要重建著色器或更換驅動——這是聚落資料，這些都沒用。"
+    tr:
+      - "Crash Doctor bunu zaten koruyor — güvenlik ağı böyle bir sakine yer değiştirmemesini söyler (seçtiği bir kapı varsa ondan vazgeçirir) ve sahne sürer. «Yerleşim çökme koruması (dolaştığı yerin listesinde olmayan sakin)» düzeltmesini AÇIK tut (Çökme Düzeltmeleri sekmesi)."
+      - "BannerlordExpanded - Companion Expanded kullanıyorsan: «Companions in town» seçeneği gezginleri tam da burada çöken davranışla kasaba merkezine koyar. Bu seçeneği kapatmak en olası kaynağı ortadan kaldırır."
+      - "crashdoctor.log karakteri, yeri ve yerleşimi yazar — karakter bir kahramansa, kahramanları o yere koyan modun yazarına bildir."
+      - "Gölgelendiricileri yeniden oluşturma veya sürücü değiştirme — bu yerleşim verisi, hiçbiri yardımcı olmaz."
+    fr:
+      - "Crash Doctor protège déjà ce cas — son filet de sécurité dit à cet habitant de ne pas changer de lieu (et d'abandonner la porte qu'il avait choisie) ; la scène continue. Gardez le correctif « Anti-plantage : colonie (un habitant absent de la liste du lieu où il marche) » ACTIVÉ (onglet Crash Fixes)."
+      - "Si vous utilisez BannerlordExpanded - Companion Expanded : son option « Companions in town » place des vagabonds au centre-ville avec le comportement qui plante ici. Désactiver cette option supprime la source la plus probable."
+      - "crashdoctor.log indique le personnage, le lieu et la colonie — si le personnage est un héros, c'est à l'auteur du mod qui place des héros à cet endroit qu'il faut le signaler."
+      - "Ne reconstruisez PAS les shaders ni ne changez les pilotes — il s'agit de données de colonie, rien de tout cela n'aidera."
+  match:
+    all:
+      - managed_exception: { frame_contains: "ChangeLocationBehavior.GetAvailability" }
+      - managed_exception: { type_contains: "NullReference" }
+
 # Quarter-daily party tick: the party-healing model reads a GARRISON's settlement with no null-check.
 #   DefaultPartyHealingModel.GetDailyHealingForRegulars ← (TORPartyHealingModel / any override, which
 #   only delegates) ← PartyBase.get_HealingRateForMemberRegulars
@@ -8222,7 +8655,7 @@
   category: managed
   severity: critical
   confidence: high
-  evidence_source: "Client crash 2026-09-04 (BUTR bundle, Bannerlord v1.4.8 + NavalDLC, BLSE 1.7.2, 26 modules, reported as repeating with the same message) — NullReferenceException MilitiaPartyComponent.get_PartyOwner <- PartyBase.get_Owner <- MobileParty.get_MapFaction <- DefaultMobilePartyAIModel.GetBestInitiativeBehavior <- NavalDLCMobilePartyAIModel.GetBestInitiativeBehavior <- MobilePartyAi.TickInternal <- Campaign.PartiesThink <- Campaign.LateAITickAux. All 745 Harmony records in the report were checked: not one method in that stack is patched by any mod, so nothing was injected. Verified against the shipped 1.4.8 CampaignSystem.dll: MilitiaPartyComponent.PartyOwner is Settlement.OwnerClan.Leader with no check; Settlement.OwnerClan returns null for a settlement that is neither village, town/castle nor hideout, and Town.OwnerClan is a plain field. The component's own Settlement cannot be the null one — MilitiaPartyComponent.OnInitialize dereferences it during the load, and it is a [SaveableProperty] restored with the save graph — so the missing value is the settlement's owner clan. Settlement.Deserialize applies the owner attribute from settlements.xml ONLY when CampaignGameLoadingType != SavedCampaign, so a settlement added to the game after the save was created is registered with no owner for good; Settlement.Militia then spawns a militia party for it like any other settlement, without looking at the owner. The save header shows the shape that produces this: NewGameVersion v1.3.15.110062 played on ApplicationVersion v1.4.8.119303. Which settlement is the ownerless one is NOT inferred from that: the rosters were only compared pre-naval (494 entries) against 1.4.7 (541), which shows the list grew, not which entry this particular save is missing — the guard's load sweep names it from the running game."
+  evidence_source: "Client crash 2026-09-04 (BUTR bundle, Bannerlord v1.4.8 + NavalDLC, BLSE 1.7.2, 26 modules, reported as repeating with the same message) — NullReferenceException MilitiaPartyComponent.get_PartyOwner <- PartyBase.get_Owner <- MobileParty.get_MapFaction <- DefaultMobilePartyAIModel.GetBestInitiativeBehavior <- NavalDLCMobilePartyAIModel.GetBestInitiativeBehavior <- MobilePartyAi.TickInternal <- Campaign.PartiesThink <- Campaign.LateAITickAux. All 745 Harmony records in the report were checked: not one method in that stack is patched by any mod, so nothing was injected. Verified against the shipped 1.4.8 CampaignSystem.dll: MilitiaPartyComponent.PartyOwner is Settlement.OwnerClan.Leader with no check; Settlement.OwnerClan returns null for a settlement that is neither village, town/castle nor hideout, and Town.OwnerClan is a plain field. The component's own Settlement cannot be the null one — MilitiaPartyComponent.OnInitialize dereferences it during the load, and it is a [SaveableProperty] restored with the save graph — so the missing value is the settlement's owner clan. Settlement.Deserialize applies the owner attribute from settlements.xml ONLY when CampaignGameLoadingType != SavedCampaign, so a settlement added to the game after the save was created is registered with no owner for good; Settlement.Militia then spawns a militia party for it like any other settlement, without looking at the owner. The save header shows the shape that produces this: NewGameVersion v1.3.15.110062 played on ApplicationVersion v1.4.8.119303. Which settlement is the ownerless one is NOT inferred from that: the rosters were only compared pre-naval (494 entries) against 1.4.7 (541), which shows the list grew, not which entry this particular save is missing — the guard's load sweep names it from the running game. Second client case d9c392f9 (2026-09-16..18, 1.4.8 + NavalDLC, ~55 modules, Crash Doctor 2.1.0.0, seen 3x, 'always after the same amount of in-game time'): the same NullReferenceException reached through MobileParty.get_MapFaction <- NavalDLC.ShipRepairCampaignBehavior.DailyTickParty <- MbEvent`1.InvokeList <- CampaignEvents.DailyTickParty <- CampaignPeriodicEventManager.PeriodicDailyTick; enhanced stack IL_0008 right after the IsBandit call. Verified on the archived NavalDLC.dll 1.3.15/1.4.8/1.5.2: DailyTickParty opens with IsBandit || _factionsThatDoNotHavePort.Contains(MapFaction) for every party, once a day — the initiative-scan finalizer never sees this path, which is now guarded too."
   requires_sources: [managed_exception]
   title:
     en: "Campaign-map crash — a settlement's militia belongs to no one — guarded by Crash Doctor"
@@ -8242,7 +8675,10 @@
       loading a saved campaign deliberately skips the owner written in the settlement files, because
       it is supposed to come from the save — and for a settlement the save has never heard of, it
       never comes. From then on every AI party thinking near that settlement dies, because the
-      initiative scan reads the faction of everything the position grid hands it. No mod appears
+      initiative scan reads the faction of everything the position grid hands it.
+      With the Naval DLC the same party is also read once a day by its ship-repair check
+      (ShipRepairCampaignBehavior.DailyTickParty reads the faction of every party), so the game
+      crashes on the daily tick at the same in-game hour after every load; the guard covers that path too. No mod appears
       anywhere in this stack, and nothing in it was patched: base-game behaviour on a save carried
       across game versions or across a change in the installed settlement data. NOT a shader, driver
       or GPU problem.
@@ -8256,7 +8692,9 @@
       поселений намеренно не применяется, потому что он должен прийти из сейва, — а для поселения, о
       котором сейв никогда не слышал, он не приходит никогда. Дальше каждый ИИ-отряд, думающий рядом
       с этим поселением, умирает: цикл инициативы читает фракцию всего, что выдала координатная
-      сетка. Ни одного мода в стеке нет, и ни один метод из него не пропатчен: это поведение базовой
+      сетка. С Naval DLC тот же отряд раз в день читает ещё и проверка ремонта кораблей
+      (ShipRepairCampaignBehavior.DailyTickParty читает фракцию каждого отряда), поэтому игра падает
+      на суточном тике в один и тот же игровой час после каждой загрузки; этот путь гард тоже закрывает. Ни одного мода в стеке нет, и ни один метод из него не пропатчен: это поведение базовой
       игры на сейве, перенесённом между версиями игры или через смену установленных данных
       поселений. НЕ проблема шейдеров, драйвера или видеокарты.
     zh: |
@@ -8266,7 +8704,9 @@
       同样没有归属。当某个定居点在你的存档创建之后才被加入游戏时就会这样：读取已保存的战役时，游戏刻意
       跳过定居点文件里写的归属者，因为它应当来自存档——而对于存档从未听说过的定居点，它永远不会到来。
       从此以后，每一支在该定居点附近思考的 AI 队伍都会死亡，因为主动权扫描会读取坐标网格交给它的一切的
-      势力。此堆栈中没有任何模组，其中也没有任何方法被打过补丁：这是原版行为，出现在跨游戏版本、或跨已
+      势力。装有 Naval DLC 时，它的修船检查每天也会读取一次同一支队伍
+      （ShipRepairCampaignBehavior.DailyTickParty 读取每支队伍的势力），因此每次读档后游戏都会在同一
+      游戏时刻于每日结算时崩溃；此防护同样覆盖这条路径。此堆栈中没有任何模组，其中也没有任何方法被打过补丁：这是原版行为，出现在跨游戏版本、或跨已
       安装定居点数据变更而沿用的存档上。不是着色器、驱动或显卡问题。
     zht: |
       空參考例外擲自 MilitiaPartyComponent.PartyOwner，當時隊伍 AI 正在詢問相鄰隊伍屬於哪個勢力。該屬性
@@ -8275,7 +8715,9 @@
       同樣沒有歸屬。當某個聚落在你的存檔建立之後才被加入遊戲時就會這樣：讀取已儲存的戰役時，遊戲刻意
       跳過聚落檔案裡寫的歸屬者，因為它應當來自存檔——而對於存檔從未聽說過的聚落，它永遠不會到來。
       從此以後，每一支在該聚落附近思考的 AI 隊伍都會死亡，因為主動權掃描會讀取座標網格交給它的一切的
-      勢力。此堆疊中沒有任何模組，其中也沒有任何方法被打過修補：這是原版行為，出現在跨遊戲版本、或跨已
+      勢力。裝有 Naval DLC 時，它的修船檢查每天也會讀取一次同一支隊伍
+      （ShipRepairCampaignBehavior.DailyTickParty 讀取每支隊伍的勢力），因此每次讀檔後遊戲都會在同一
+      遊戲時刻於每日結算時當機；此防護同樣涵蓋這條路徑。此堆疊中沒有任何模組，其中也沒有任何方法被打過修補：這是原版行為，出現在跨遊戲版本、或跨已
       安裝聚落資料變更而沿用的存檔上。不是著色器、驅動程式或顯示卡問題。
     tr: |
       NullReferenceException, grup YZ'si komşu bir gruba hangi hizbe ait olduğunu sorarken
@@ -8287,7 +8729,9 @@
       yüklenirken yerleşim dosyalarında yazan sahip bilerek atlanır, çünkü kayıttan gelmesi
       beklenir — kaydın hiç duymadığı bir yerleşim için ise hiç gelmez. O andan itibaren o yerleşimin
       yakınında düşünen her YZ grubu ölür, çünkü inisiyatif taraması konum ızgarasının verdiği her
-      şeyin hizbini okur. Bu yığında hiçbir mod yok ve içindeki hiçbir metot yamalanmamış: oyun
+      şeyin hizbini okur. Naval DLC kuruluysa aynı grubu gemi onarım denetimi de günde bir kez
+      okur (ShipRepairCampaignBehavior.DailyTickParty her grubun hizbini okur); bu yüzden oyun her
+      yüklemeden sonra aynı oyun saatinde günlük tick'te çöker; koruma bu yolu da kapsar. Bu yığında hiçbir mod yok ve içindeki hiçbir metot yamalanmamış: oyun
       sürümleri arasında ya da kurulu yerleşim verisi değiştikten sonra taşınmış bir kayıt üzerinde
       görülen oyun davranışıdır. Gölgelendirici, sürücü ya da ekran kartı sorunu DEĞİLDİR.
     fr: |
@@ -8301,43 +8745,46 @@
       sauvegardée, le propriétaire inscrit dans les fichiers de fiefs est délibérément ignoré, car il
       doit venir de la sauvegarde — et pour un fief dont la sauvegarde n'a jamais entendu parler, il
       ne vient jamais. Dès lors, chaque groupe IA qui réfléchit près de ce fief meurt, car le balayage
-      d'initiative lit la faction de tout ce que la grille de positions lui présente. Aucun mod
+      d'initiative lit la faction de tout ce que la grille de positions lui présente. Avec le DLC naval, sa vérification de réparation des navires lit
+      aussi ce groupe une fois par jour (ShipRepairCampaignBehavior.DailyTickParty lit la faction de
+      chaque groupe) : le jeu plante alors au tick quotidien, à la même heure de jeu après chaque
+      chargement ; la protection couvre aussi ce chemin. Aucun mod
       n'apparaît dans cette pile et aucune de ses méthodes n'est patchée : c'est un comportement du
       jeu de base sur une sauvegarde transportée d'une version du jeu à une autre, ou à travers un
       changement des données de fiefs installées. PAS un problème de shader, de pilote ou de GPU.
   fix:
     en:
-      - "Crash Doctor already guards this — the affected party skips one AI tick and the game keeps running. Keep the «Map AI survives a party that belongs to no one» fix ON (Crash Fixes tab)."
+      - "Crash Doctor already guards this — the affected party skips one AI tick (or, with the Naval DLC, one day's ship repair) and the game keeps running. Keep the «Map AI survives a party that belongs to no one» fix ON (Crash Fixes tab)."
       - "Open crashdoctor.log and look for the «[CD OwnerlessFief] sweep» lines: they name the party and the settlement that cannot answer. That name is the answer to «which mod» — if it is a settlement added by a mod, that mod is where to look."
       - "The save is not repaired by this fix and reloading does not help: the settlement stays ownerless. If you want it gone, load a save made before the settlement data changed — before the game update, or before you added or removed the mod that ships settlements."
       - "If the settlement belongs to a mod you no longer want, remember that removing the mod does not give the fief back — a clean map needs a new campaign."
       - "Do NOT rebuild shaders or change drivers — this is a data problem in the save, that won't help."
     ru:
-      - "Crash Doctor уже это перехватывает — задетый отряд пропускает один тик ИИ, игра продолжается. Держи фикс «ИИ карты переживает отряд, который никому не принадлежит» ВКЛ (вкладка «Фиксы крашей»)."
+      - "Crash Doctor уже это перехватывает — задетый отряд пропускает один тик ИИ (или, с Naval DLC, ремонт кораблей в этот день), игра продолжается. Держи фикс «ИИ карты переживает отряд, который никому не принадлежит» ВКЛ (вкладка «Фиксы крашей»)."
       - "Открой crashdoctor.log и найди строки «[CD OwnerlessFief] sweep»: там названы отряд и поселение, которые не отвечают. Это и есть ответ на вопрос «какой мод» — если поселение добавлено модом, смотреть надо на него."
       - "Этот фикс сейв не чинит, и перезагрузка не помогает: поселение остаётся без владельца. Чтобы убрать это совсем, грузи сейв, сделанный до смены данных поселений — до обновления игры или до установки либо удаления мода, который везёт свои поселения."
       - "Если поселение принадлежит моду, который тебе больше не нужен, учти: удаление мода феод обратно не вернёт — за чистой картой нужна новая кампания."
       - "НЕ пересобирай шейдеры и не меняй драйвер — это проблема данных в сейве, не поможет."
     zh:
-      - "Crash Doctor 已经拦截了它——受影响的队伍跳过一个 AI 刻，游戏继续运行。在「崩溃修复」页保持「地图 AI 能挺过不属于任何人的队伍」为开。"
+      - "Crash Doctor 已经拦截了它——受影响的队伍跳过一个 AI 刻（装有 Naval DLC 时则跳过当天的修船），游戏继续运行。在「崩溃修复」页保持「地图 AI 能挺过不属于任何人的队伍」为开。"
       - "打开 crashdoctor.log，查找「[CD OwnerlessFief] sweep」开头的行：那里写明了无法作答的队伍和定居点。这就是「哪个模组」的答案——如果该定居点是某个模组添加的，就从那个模组查起。"
       - "此修复不会修好存档，重新读档也没用：该定居点仍然没有归属。要彻底摆脱它，请读取定居点数据变更之前的存档——游戏更新之前，或安装、移除带定居点的模组之前。"
       - "如果该定居点属于你已经不想要的模组，请注意：移除模组并不会把领地还回来——想要干净的地图就得开新战役。"
       - "不要重建着色器或更换驱动——这是存档里的数据问题，没用。"
     zht:
-      - "Crash Doctor 已經攔截了它——受影響的隊伍跳過一個 AI 刻，遊戲繼續運行。在「崩潰修復」頁保持「地圖 AI 能挺過不屬於任何人的隊伍」為開。"
+      - "Crash Doctor 已經攔截了它——受影響的隊伍跳過一個 AI 刻（裝有 Naval DLC 時則跳過當天的修船），遊戲繼續運行。在「崩潰修復」頁保持「地圖 AI 能挺過不屬於任何人的隊伍」為開。"
       - "開啟 crashdoctor.log，尋找「[CD OwnerlessFief] sweep」開頭的行：那裡寫明了無法作答的隊伍與聚落。這就是「哪個模組」的答案——如果該聚落是某個模組加入的，就從那個模組查起。"
       - "此修復不會修好存檔，重新讀檔也沒用：該聚落仍然沒有歸屬。要徹底擺脫它，請讀取聚落資料變更之前的存檔——遊戲更新之前，或安裝、移除帶聚落的模組之前。"
       - "如果該聚落屬於你已經不想要的模組，請注意：移除模組並不會把領地還回來——想要乾淨的地圖就得開新戰役。"
       - "不要重建著色器或更換驅動程式——這是存檔裡的資料問題，沒用。"
     tr:
-      - "Crash Doctor bunu zaten koruyor — etkilenen grup bir YZ tick'ini atlar ve oyun çalışmaya devam eder. «Harita YZ'si kimseye ait olmayan bir grubu atlatır» düzeltmesini AÇIK tut (Çökme Düzeltmeleri sekmesi)."
+      - "Crash Doctor bunu zaten koruyor — etkilenen grup bir YZ tick'ini (Naval DLC ile o günün gemi onarımını) atlar ve oyun çalışmaya devam eder. «Harita YZ'si kimseye ait olmayan bir grubu atlatır» düzeltmesini AÇIK tut (Çökme Düzeltmeleri sekmesi)."
       - "crashdoctor.log dosyasını aç ve «[CD OwnerlessFief] sweep» satırlarını ara: yanıt veremeyen grubu ve yerleşimi adıyla yazarlar. «Hangi mod» sorusunun yanıtı budur — yerleşimi bir mod eklediyse, bakılacak yer o moddur."
       - "Bu düzeltme kaydı onarmaz ve yeniden yüklemek işe yaramaz: yerleşim sahipsiz kalır. Tamamen kurtulmak istiyorsan, yerleşim verisi değişmeden önce alınmış bir kaydı yükle — oyun güncellemesinden önce ya da yerleşim taşıyan modu ekleyip kaldırmadan önce."
       - "Yerleşim artık istemediğin bir moda aitse şunu unutma: modu kaldırmak tımarı geri getirmez — temiz bir harita için yeni bir kampanya gerekir."
       - "Gölgelendiricileri yeniden oluşturma veya sürücü değiştirme — bu kayıttaki bir veri sorunudur, yardımcı olmaz."
     fr:
-      - "Crash Doctor protège déjà ce cas — le groupe concerné saute un tick d'IA et le jeu continue de tourner. Gardez le correctif « L'IA de la carte survit à un groupe qui n'appartient à personne » ACTIVÉ (onglet Crash Fixes)."
+      - "Crash Doctor protège déjà ce cas — le groupe concerné saute un tick d'IA (ou, avec le DLC naval, la réparation de navires du jour) et le jeu continue de tourner. Gardez le correctif « L'IA de la carte survit à un groupe qui n'appartient à personne » ACTIVÉ (onglet Crash Fixes)."
       - "Ouvrez crashdoctor.log et cherchez les lignes « [CD OwnerlessFief] sweep » : elles nomment le groupe et le fief qui ne savent pas répondre. C'est la réponse à la question « quel mod » — si le fief a été ajouté par un mod, c'est là qu'il faut regarder."
       - "Ce correctif ne répare pas la sauvegarde et recharger n'y change rien : le fief reste sans propriétaire. Pour vous en débarrasser, chargez une sauvegarde antérieure au changement des données de fiefs — avant la mise à jour du jeu, ou avant d'avoir ajouté ou retiré le mod qui apporte ses propres fiefs."
       - "Si le fief appartient à un mod dont vous ne voulez plus, sachez que le retirer ne rend pas le fief — il faut une nouvelle campagne pour retrouver une carte propre."
@@ -9292,6 +9739,157 @@
       - managed_exception: { frame_contains: "Campaign.InitializeDefaultEquipments" }
       - managed_exception: { type_contains: "NullReference" }
 
+# NEW-CAMPAIGN crash: the player's character was never built, because the merged CHARACTER list
+# stopped loading before it reached main_hero.
+#   Campaign.InitializeGamePlayReferences (IL_0020, Hero.MainHero.Mother) <- Campaign.InitializeMainParty
+#   <- Campaign.DoLoadingForGameType (right after MBSaveLoad.OnNewGame) <- SandBoxGameManager
+#   <- GameLoadingState.OnTick <- GameStateManager.OnTick <- Module.OnApplicationTick.
+# Client 284e62ab (1.4.8, Realm of Thrones 8.1.8 + ~90 modules). crashdoctor.log in the same second:
+#   [FirstChance] NullReferenceException | thrown at: TaleWorlds.Core.MBEquipmentRoster.AddEquipmentRoster
+#   [CD CharFallback] substituted fallback CULTURE for troop=main_hero culture=null
+#   [FirstChance] NullReferenceException | thrown at: TaleWorlds.CampaignSystem.Hero.Deserialize
+# then culture=null for 24+ STOCK troops.
+# Read off the shipped assemblies of 1.2.10 ... 1.5.2 (identical):
+#   * BasicCharacterObject.Deserialize: <EquipmentSet id="x"> ->
+#     _equipmentRoster.AddEquipmentRoster(GetObject<MBEquipmentRoster>(x)); an id nothing registered
+#     is null, and AddEquipmentRoster dereferences it first thing.
+#   * MBObjectManager.LoadXml has no catch; LoadXML wraps it in catch (Exception) { }. Every
+#     character below the broken one stays registered but empty.
+#   * Hero.Deserialize then throws on such an empty character (BodyPropertyRange null), ending the
+#     hero list too; Hero.MainHero = CharacterObject.PlayerCharacter.HeroObject is null.
+# Keyed on the frame, not on the equipment-set cause: any character that throws in the loader ends
+# the list the same way, and the advice (find the mod whose character file breaks) is the same.
+- id: campaign.new_game_main_hero_missing_nre
+  category: managed
+  severity: critical
+  confidence: high
+  evidence_source: "Client crash report (Crash Doctor managed capture, crash id 284e62ab, Bannerlord 1.4.8, ~90 active modules incl. Realm of Thrones 8.1.8). NullReferenceException at Campaign.InitializeGamePlayReferences IL_0020 (Hero.MainHero) <- InitializeMainParty <- Campaign.DoLoadingForGameType after MBSaveLoad.OnNewGame, while a new campaign was being created. crashdoctor.log in the same second: NullReferenceException thrown at MBEquipmentRoster.AddEquipmentRoster, culture=null for main_hero, NullReferenceException thrown at Hero.Deserialize, then culture=null for 24+ stock troops. Root read off the shipped 1.4.8 TaleWorlds.Core (BasicCharacterObject.Deserialize, MBEquipmentRoster.AddEquipmentRoster), TaleWorlds.ObjectSystem (MBObjectManager.LoadXML/LoadXml) and TaleWorlds.CampaignSystem (Hero.Deserialize, Hero.MainHero), cross-checked against 1.2.10, 1.3.15, 1.4.5, 1.4.7, 1.5.1 and 1.5.2."
+  requires_sources: [managed_exception]
+  title:
+    en: "Crash when starting a new campaign — your character was never loaded, because a mod's character file stopped the list"
+    ru: "Вылет при старте новой кампании — твой персонаж так и не загрузился: файл персонажей мода оборвал список"
+    zh: "开始新战役时崩溃——你的角色从未被载入，因为某个模组的角色文件中断了清单"
+    zht: "開始新戰役時當機——你的角色從未被載入，因為某個模組的角色檔案中斷了清單"
+    tr: "Yeni kampanya başlatılırken çökme — karakterin hiç yüklenmedi, çünkü bir modun karakter dosyası listeyi durdurdu"
+    fr: "Plantage au lancement d'une nouvelle campagne — votre personnage n'a jamais été chargé, car le fichier de personnages d'un mod a interrompu la liste"
+  description:
+    en: |
+      NullReferenceException while a new campaign is being created, at the step that sets up the
+      player's own character. The stack is base-game code from top to bottom and no mod appears in
+      it — but a mod is the cause.
+      The game merges the character files of ALL installed mods into one list and reads it in a
+      single pass. When one character in that list cannot be read — most often because it borrows
+      an equipment set by an id that no mod defines — the game swallows the error without a word
+      and the pass ends there. Every character listed after it stays an empty shell: the game's own
+      troops, and the player character "main_hero" among them. Creating the campaign then asks for
+      the player's hero, there is none, and the game crashes.
+      A crashdoctor.log with dozens of "culture=null" lines for STOCK troops (imperial_recruit,
+      vlandian_footman ...) in the same session is the fingerprint of exactly this.
+      This is a mod/data problem, NOT a shader, driver or hardware problem, and there is no save
+      involved at all.
+    ru: |
+      NullReferenceException при создании новой кампании, на шаге, где настраивается собственный
+      персонаж игрока. Стек сверху донизу состоит из кода игры, модов в нём нет — но причина
+      именно в моде.
+      Игра склеивает файлы персонажей ВСЕХ установленных модов в один список и читает его одним
+      проходом. Когда одного персонажа прочитать нельзя — чаще всего потому, что он берёт набор
+      экипировки по id, который не описан ни одним модом, — игра молча проглатывает ошибку, и проход
+      на этом заканчивается. Все персонажи после него остаются пустыми: собственные войска игры и
+      персонаж игрока «main_hero» в том числе. Создание кампании потом спрашивает героя игрока, его
+      нет, и игра падает.
+      Если в crashdoctor.log за эту же сессию десятки строк «culture=null» про СТОКОВЫЕ войска
+      (imperial_recruit, vlandian_footman …) — это ровно этот случай.
+      Это проблема мода/данных, а НЕ шейдеров, драйвера или железа, и сейв тут вообще ни при чём.
+    zh: |
+      在创建新战役、设置玩家自己角色的步骤中抛出空引用异常。堆栈从头到尾都是游戏自身的代码，其中
+      没有任何模组——但原因确实在某个模组。
+      游戏会把所有已安装模组的角色文件合并成一份清单，并一次性读完。当清单中某个角色无法读取时
+      ——最常见的原因是它按一个任何模组都未定义的 id 借用装备组——游戏会一声不吭地吞掉该错误，
+      读取就此结束。列在它之后的每个角色都只剩空壳：游戏自带的部队，以及玩家角色「main_hero」都在
+      其中。随后创建战役时需要玩家的英雄，却找不到，于是游戏崩溃。
+      如果同一会话的 crashdoctor.log 里有几十行关于游戏自带部队（imperial_recruit、
+      vlandian_footman ……）的「culture=null」，那正是这种情况的特征。
+      这是模组／数据问题，不是着色器、驱动或硬件问题，也与存档完全无关。
+    zht: |
+      在建立新戰役、設定玩家自己角色的步驟中擲出空參考例外。堆疊從頭到尾都是遊戲自身的程式碼，
+      其中沒有任何模組——但原因確實在某個模組。
+      遊戲會把所有已安裝模組的角色檔案合併成一份清單，並一次讀完。當清單中某個角色無法讀取時
+      ——最常見的原因是它按一個任何模組都未定義的 id 借用裝備組——遊戲會一聲不吭地吞掉該錯誤，
+      讀取就此結束。列在它之後的每個角色都只剩空殼：遊戲自帶的部隊，以及玩家角色「main_hero」都在
+      其中。隨後建立戰役時需要玩家的英雄，卻找不到，於是遊戲當機。
+      如果同一工作階段的 crashdoctor.log 裡有幾十行關於遊戲自帶部隊（imperial_recruit、
+      vlandian_footman ……）的「culture=null」，那正是這種情況的特徵。
+      這是模組／資料問題，不是著色器、驅動程式或硬體問題，也與存檔完全無關。
+    tr: |
+      Yeni bir kampanya oluşturulurken, oyuncunun kendi karakterinin kurulduğu adımda
+      NullReferenceException. Yığın baştan sona oyunun kendi kodu ve içinde hiçbir mod yok — ama
+      sebep bir mod.
+      Oyun, KURULU tüm modların karakter dosyalarını tek bir listede birleştirir ve tek geçişte
+      okur. Listedeki bir karakter okunamadığında — çoğunlukla hiçbir modun tanımlamadığı bir id ile
+      teçhizat seti ödünç aldığı için — oyun hatayı tek kelime etmeden yutar ve geçiş orada biter.
+      Ondan sonra listelenen her karakter boş bir kabuk olarak kalır: oyunun kendi birlikleri ve
+      oyuncu karakteri "main_hero" da dâhil. Kampanya oluşturulurken oyuncunun kahramanı istenir,
+      o yoktur ve oyun çöker.
+      Aynı oturumun crashdoctor.log dosyasında STOK birlikler (imperial_recruit, vlandian_footman …)
+      için onlarca "culture=null" satırı varsa, bu tam olarak bu durumun izidir.
+      Bu bir mod/veri sorunudur; gölgelendirici, sürücü ya da donanım sorunu DEĞİLDİR ve işin içinde
+      hiçbir kayıt dosyası yoktur.
+    fr: |
+      NullReferenceException pendant la création d'une nouvelle campagne, à l'étape qui met en place
+      le personnage du joueur. La pile ne contient que du code du jeu et aucun mod n'y figure —
+      pourtant la cause est bien un mod.
+      Le jeu fusionne les fichiers de personnages de TOUS les mods installés en une seule liste et la
+      lit d'une traite. Quand un personnage de cette liste ne peut pas être lu — le plus souvent parce
+      qu'il emprunte un ensemble d'équipement par un id qu'aucun mod ne définit — le jeu avale
+      l'erreur sans un mot et la lecture s'arrête là. Tous les personnages listés après lui restent
+      des coquilles vides : les troupes du jeu, et le personnage du joueur « main_hero » avec elles.
+      La création de la campagne demande ensuite le héros du joueur, il n'existe pas, et le jeu plante.
+      Un crashdoctor.log contenant, dans la même session, des dizaines de lignes « culture=null » pour
+      des troupes d'ORIGINE (imperial_recruit, vlandian_footman …) est la signature exacte de ce cas.
+      Il s'agit d'un problème de mod/données, PAS d'un problème de shader, de pilote ou de matériel,
+      et aucune sauvegarde n'est en cause.
+  fix:
+    en:
+      - "Crash Doctor guards the most common cause — keep «Character-list crash guard (character borrows an equipment set that does not exist)» ON on the Crash Fixes tab and start the new campaign again. The missing set is skipped and the rest of the list loads."
+      - "Open the Mods tab: a mod whose characters borrow equipment sets nothing defines is listed there by name («characters: … missing equipment set(s)»), with the character and the id. That is the mod to update, or the mod it expects to find those sets in is missing."
+      - "crashdoctor.log names them too — look for «[CD MissingEquipSet]», for «[CD BrokenTroopData] sweep finished», and for the first-chance NullReferenceException just before the troops start reading back with culture=null."
+      - "If none of that names a mod, switch off the mods that add troops or lords, start a new campaign to confirm, then switch them back one at a time — the crash shows at campaign creation, so each try takes a minute."
+      - "Do NOT rebuild shaders, reinstall the game or change drivers — this is data in a mod's files, none of that helps."
+    ru:
+      - "Самую частую причину Crash Doctor перехватывает — держи «Защиту списка персонажей (персонаж берёт несуществующий набор экипировки)» ВКЛЮЧЁННОЙ на вкладке «Фиксы крашей» и начни новую кампанию заново. Отсутствующий набор пропускается, остальной список загружается."
+      - "Открой вкладку «Моды»: там по имени указан мод, чьи персонажи берут наборы экипировки, которых никто не описывает («персонажи: нет … набора(ов) экипировки»), вместе с персонажем и id. Этот мод и надо обновить — либо не хватает мода, в котором он ожидает найти эти наборы."
+      - "В crashdoctor.log они тоже есть — ищи «[CD MissingEquipSet]», «[CD BrokenTroopData] sweep finished» и first-chance NullReferenceException прямо перед тем, как войска начинают читаться с culture=null."
+      - "Если ничего из этого мод не называет, выключи моды, добавляющие войска или лордов, начни новую кампанию для проверки, потом включай их по одному — вылет виден сразу при создании кампании, каждая попытка занимает минуту."
+      - "Не пересобирай шейдеры, не переустанавливай игру и не меняй драйвер — это данные в файлах мода, ничего из этого не поможет."
+    zh:
+      - "Crash Doctor 会拦截最常见的原因——请在「崩溃修复」页保持「角色清单崩溃防护（角色借用了不存在的装备组）」为开，然后重新开始新战役。缺失的装备组会被跳过，清单其余部分正常载入。"
+      - "打开「模组」页：其中会按名称列出角色借用了无人定义之装备组的模组（「角色：缺少 … 个装备组」），并附上角色与 id。要么更新这个模组，要么它期望在其中找到这些装备组的那个模组没有安装。"
+      - "crashdoctor.log 中也有——查找「[CD MissingEquipSet]」「[CD BrokenTroopData] sweep finished」，以及在部队开始以 culture=null 读出之前的首次机会 NullReferenceException。"
+      - "如果以上都没有指出模组，就关闭添加部队或领主的模组，开始新战役确认，然后逐个重新启用——崩溃在创建战役时立即出现，每次尝试只需一分钟。"
+      - "不要重建着色器、重装游戏或更换驱动——这是模组文件里的数据问题，这些都没用。"
+    zht:
+      - "Crash Doctor 會攔截最常見的原因——請在「崩潰修復」頁保持「角色清單當機防護（角色借用了不存在的裝備組）」為開，然後重新開始新戰役。缺失的裝備組會被略過，清單其餘部分正常載入。"
+      - "開啟「模組」頁：其中會按名稱列出角色借用了無人定義之裝備組的模組（「角色：缺少 … 個裝備組」），並附上角色與 id。要麼更新這個模組，要麼它預期在其中找到這些裝備組的那個模組沒有安裝。"
+      - "crashdoctor.log 中也有——查找「[CD MissingEquipSet]」「[CD BrokenTroopData] sweep finished」，以及在部隊開始以 culture=null 讀出之前的首次機會 NullReferenceException。"
+      - "如果以上都沒有指出模組，就停用新增部隊或領主的模組，開始新戰役確認，然後逐個重新啟用——當機在建立戰役時立即出現，每次嘗試只需一分鐘。"
+      - "不要重建著色器、重灌遊戲或更換驅動程式——這是模組檔案裡的資料問題，這些都沒用。"
+    tr:
+      - "Crash Doctor en yaygın nedeni korur — Çökme Düzeltmeleri sekmesinde «Karakter listesi çökme koruması (karakter var olmayan bir teçhizat setini ödünç alıyor)» düzeltmesini AÇIK tut ve yeni kampanyayı yeniden başlat. Eksik set atlanır, listenin geri kalanı yüklenir."
+      - "Modlar sekmesini aç: karakterleri kimsenin tanımlamadığı teçhizat setlerini ödünç alan mod orada adıyla («karakterler: … teçhizat seti eksik»), karakter ve id ile listelenir. Güncellenecek mod odur — ya da bu setleri içinde bulmayı beklediği mod kurulu değildir."
+      - "crashdoctor.log da onları yazar — «[CD MissingEquipSet]», «[CD BrokenTroopData] sweep finished» satırlarını ve birlikler culture=null ile okunmaya başlamadan hemen önceki ilk şans NullReferenceException'ı ara."
+      - "Bunların hiçbiri bir mod adı vermiyorsa birlik veya lord ekleyen modları kapat, doğrulamak için yeni bir kampanya başlat, sonra teker teker geri aç — çökme kampanya oluşturulurken hemen görünür, her deneme bir dakika sürer."
+      - "Gölgelendiricileri yeniden oluşturma, oyunu yeniden kurma veya sürücü değiştirme — bu bir modun dosyalarındaki veridir, hiçbiri yardımcı olmaz."
+    fr:
+      - "Crash Doctor protège contre la cause la plus fréquente — gardez « Protection de la liste des personnages (un personnage emprunte un ensemble d'équipement inexistant) » ACTIVÉ dans l'onglet Crash Fixes et relancez la nouvelle campagne. L'ensemble manquant est ignoré et le reste de la liste se charge."
+      - "Ouvrez l'onglet Mods : le mod dont les personnages empruntent des ensembles d'équipement que personne ne définit y est nommé (« personnages : … ensemble(s) d'équipement manquant(s) »), avec le personnage et l'id. C'est ce mod qu'il faut mettre à jour — ou bien il manque le mod dans lequel il s'attend à trouver ces ensembles."
+      - "crashdoctor.log les nomme aussi — cherchez « [CD MissingEquipSet] », « [CD BrokenTroopData] sweep finished », et la NullReferenceException de première chance juste avant que les troupes ne se lisent avec culture=null."
+      - "Si rien de tout cela ne nomme un mod, désactivez les mods qui ajoutent des troupes ou des seigneurs, créez une nouvelle campagne pour confirmer, puis réactivez-les un par un — le plantage apparaît dès la création de la campagne, chaque essai prend une minute."
+      - "NE reconstruisez PAS les shaders, NE réinstallez PAS le jeu et NE changez PAS les pilotes — il s'agit de données dans les fichiers d'un mod, aucune de ces actions n'aidera."
+  match:
+    all:
+      - managed_exception: { frame_contains: "Campaign.InitializeGamePlayReferences" }
+      - managed_exception: { type_contains: "NullReference" }
+
 # ---------------------------------------------------------------------------------------------
 # A crash inside the loading state. Two rules, one stack, split by whether we have the game's own
 # save-vs-modlist verdict: naming a mod is only allowed when the game itself reported it missing.
@@ -9451,6 +10049,9 @@
       # must not both fire.
       - none:
           - managed_exception: { frame_contains: "Campaign.InitializeDefaultEquipments" }
+          # Same for a new campaign whose player character never loaded (client 284e62ab) -
+          # campaign.new_game_main_hero_missing_nre owns it; there is no save in that story at all.
+          - managed_exception: { frame_contains: "Campaign.InitializeGamePlayReferences" }
 
 # Same stack, but the game's modlist check either found nothing missing or was never observed
 # (the player can switch our save-modlist patch off on the Crash Fixes tab, and then we have no
@@ -9587,8 +10188,9 @@
       - none:
           - save_module_check: { has_missing: true }
 
-          # Same exclusion as the variant above, and for the same reason.
+          # Same exclusions as the variant above, and for the same reasons.
           - managed_exception: { frame_contains: "Campaign.InitializeDefaultEquipments" }
+          - managed_exception: { frame_contains: "Campaign.InitializeGamePlayReferences" }
 # Evidence: client 85b9e48c (2026-08-29, game 1.4.7, 65 mods incl. War Sails), three identical
 # crashes in 30 minutes on the campaign map. The report said "inside GAME code, not a mod" — true
 # of the frame, useless as an answer. crashdoctor_at_crash.log beside it held the real finding:
@@ -10282,3 +10884,251 @@
       - any:
           - managed_exception: { type_contains: "AccessViolation" }
           - managed_exception: { type_contains: "NullReference" }
+
+# A soldier whose formation slot is stale. LineFormation keeps its units in an MBList2D
+# (files x ranks) and writes `_units2D[unit.FormationFileIndex, unit.FormationRankIndex]` raw in
+# InsertUnit / AddUnit / RemoveUnit; MBList2D's indexer is `_data[i1 * Count2 + i2]` with no bounds
+# check of its own. A unit carrying an index outside the formation's CURRENT file/rank counts lands
+# past the logical array — silently while the backing array still has spare capacity (it grows by
+# doubling), IndexOutOfRangeException the moment it does not. The engine itself logs the precondition
+# as "Unit removed has file-rank indices: F R while line formation has file-rank counts of ...".
+# Client bundle 2026-09-14_00.29.57 (1.4.8, ~104 mods): three earlier throws caught under the
+# deployment "Begin battle" button (OrderOfBattleVM.ExecuteBeginMission -> get_Item/set_Item), the
+# fatal one in the mission tick the second a reinforcement wave spawned; 52 s earlier rgl_log carried
+# the engine line above with file index 20 in a 20-file formation.
+- id: mission.formation_unit_index_stale_ioor
+  category: managed
+  severity: critical
+  confidence: high
+  evidence_source: "Client bundle 2026-09-14_00.29.57 (Bannerlord 1.4.8, ~104 modules, BLSE): ManagedCrashCapture FATAL IndexOutOfRangeException, subsystem mission/battle, thrown in TaleWorlds.Library; the same session's crashdoctor.log shows three earlier IndexOutOfRangeException throws at TaleWorlds.Library.MBList2D`1.get_Item / set_Item swallowed by the UI-command wrapper around OrderOfBattleVM.ExecuteBeginMission (2026-09-11 22:35, 23:18, 2026-09-12 21:04). rgl_log_16632.txt: fatal at 20:29:34, same second as a reinforcement banner message and GetRandomBodyPropertyForTroop (agent spawn); at 20:28:42 the engine's own 'Unit removed has file-rank indices: 20 1 while line formation has file-rank counts of 20 3 agent state is Active'. Mechanism read from decompiled TaleWorlds.MountAndBlade.LineFormation (InsertUnit / AddUnit / RemoveUnit write _units2D raw; RemoveUnit only Debug.Prints on out-of-range indices) and TaleWorlds.Library.MBList2D (indexer _data[i1 * Count2 + i2], capacity grows by doubling, so a stale index throws only once the slack is gone). MBList2D is used by LineFormation / ColumnFormation / Mission.BatchFormationUnitPositions only."
+  requires_sources: [managed_exception]
+  title:
+    en: "Battle crash: a soldier's place in the formation points outside the formation"
+    ru: "Вылет в бою: место бойца в строю указывает за пределы строя"
+    zh: "战斗崩溃：士兵在队形中的位置指向了队形之外"
+    zht: "戰鬥崩潰：士兵在隊形中的位置指向了隊形之外"
+    tr: "Savaş çökmesi: bir askerin düzendeki yeri düzenin dışını gösteriyor"
+    fr: "Plantage en bataille : la place d'un soldat dans la formation pointe hors de la formation"
+  description:
+    en: |
+      Every soldier remembers his slot in the formation as a file and a rank, and the formation
+      keeps its soldiers in a grid of exactly files × ranks. Whenever a soldier joins, leaves or
+      moves, the game writes him into that grid at the slot he remembers, without checking that the
+      slot still exists. A soldier whose remembered slot lies outside the grid's current size — the
+      formation was reshaped after he was placed, or he was moved between formations without his
+      slot being reset — is written past the end of the grid. That goes unnoticed while the grid's
+      memory has slack, and crashes the moment it does not: an "index outside the bounds of the
+      array" inside the game's own list code, usually the second a reinforcement wave arrives or
+      when the battle starts from the deployment screen.
+      The frame on top of the stack is game code; the stale slot was left by whatever rearranged the
+      formations. Look at mods that regroup soldiers at deployment or during the fight: order-of-
+      battle and command-system mods, formation AI, reinforcement systems, mods that move troops
+      between formations. The game's own log (rgl_log) names the moment with the line "Unit removed
+      has file-rank indices ... while line formation has file-rank counts of ...".
+      This one cannot be guarded without the full stack; Crash Doctor's crash-time report.txt
+      carries it (frame, IL offset and the mods hooking the formation code).
+    ru: |
+      Каждый боец помнит своё место в строю как номер ряда и шеренги, а строй хранит бойцов в
+      сетке ровно ряды × шеренги. Когда боец входит, выходит или перемещается, игра записывает его
+      в эту сетку по тому месту, которое он помнит, не проверяя, существует ли оно ещё. Боец, чьё
+      место лежит за пределами текущего размера сетки — строй перестроили после того, как его
+      поставили, или его перевели между строями, не сбросив место, — записывается за край сетки.
+      Пока у памяти сетки есть запас, это проходит незаметно, а как только запаса нет — вылет:
+      «индекс за пределами массива» внутри собственного кода списков игры, обычно в секунду
+      прихода подкрепления или при старте боя с экрана развёртывания.
+      Верхний кадр стека — код игры; протухшее место оставил тот, кто перестраивал строи. Смотри
+      моды, которые перегруппировывают бойцов при развёртывании или во время боя: боевые порядки и
+      системы команд, ИИ строёв, системы подкреплений, моды, переводящие войска между строями.
+      Собственный лог игры (rgl_log) отмечает момент строкой «Unit removed has file-rank indices
+      ... while line formation has file-rank counts of ...».
+      Без полного стека это не защитить; report.txt Crash Doctor, снятый в момент вылета, его
+      несёт (кадр, IL-смещение и моды, перехватывающие код строя).
+    zh: |
+      每个士兵都以「列」和「排」记住自己在队形中的位置，而队形把士兵存放在一个恰好为列×排的网格里。
+      每当士兵加入、离开或移动时，游戏都会按他记住的位置把他写入该网格，而不检查该位置是否仍然存在。
+      若士兵记住的位置在网格当前大小之外——他被放置后队形被重组，或者他在队形之间被移动却未重置位置——
+      就会被写到网格末尾之外。只要网格的内存还有余量，这不会被察觉；一旦没有余量就崩溃：
+      游戏自身列表代码中的「索引超出数组范围」，通常发生在援军到达的那一秒，或从部署界面开始战斗时。
+      堆栈顶部的帧是游戏代码；过期的位置是由重排队形的东西留下的。检查在部署或战斗中重新编组士兵的模组：
+      战斗序列和指挥系统模组、队形 AI、援军系统、在队形间调动部队的模组。游戏自己的日志（rgl_log）
+      用「Unit removed has file-rank indices ... while line formation has file-rank counts of ...」
+      一行标出了这个时刻。
+      没有完整堆栈无法为此加防护；Crash Doctor 在崩溃时生成的 report.txt 会带上它（帧、IL 偏移以及挂钩
+      队形代码的模组）。
+    zht: |
+      每個士兵都以「列」和「排」記住自己在隊形中的位置，而隊形把士兵存放在一個恰好為列×排的網格裡。
+      每當士兵加入、離開或移動時，遊戲都會按他記住的位置把他寫入該網格，而不檢查該位置是否仍然存在。
+      若士兵記住的位置在網格目前大小之外——他被放置後隊形被重組，或者他在隊形之間被移動卻未重設位置——
+      就會被寫到網格末尾之外。只要網格的記憶體還有餘量，這不會被察覺；一旦沒有餘量就崩潰：
+      遊戲自身清單程式碼中的「索引超出陣列範圍」，通常發生在援軍到達的那一秒，或從部署介面開始戰鬥時。
+      堆疊頂部的框架是遊戲程式碼；過期的位置是由重排隊形的東西留下的。檢查在部署或戰鬥中重新編組士兵的模組：
+      戰鬥序列和指揮系統模組、隊形 AI、援軍系統、在隊形間調動部隊的模組。遊戲自己的日誌（rgl_log）
+      用「Unit removed has file-rank indices ... while line formation has file-rank counts of ...」
+      一行標出了這個時刻。
+      沒有完整堆疊無法為此加防護；Crash Doctor 在崩潰時產生的 report.txt 會帶上它（框架、IL 位移以及掛鉤
+      隊形程式碼的模組）。
+    tr: |
+      Her asker düzendeki yerini bir sıra ve bir saf olarak hatırlar; düzen de askerlerini tam olarak
+      sıra × saf boyutunda bir ızgarada tutar. Bir asker katıldığında, ayrıldığında ya da yer
+      değiştirdiğinde oyun onu hatırladığı yere yazar — o yerin hâlâ var olup olmadığını denetlemeden.
+      Hatırladığı yer ızgaranın güncel boyutunun dışında kalan bir asker — yerleştirildikten sonra düzen
+      yeniden şekillendi ya da yeri sıfırlanmadan düzenler arasında taşındı — ızgaranın sonunun ötesine
+      yazılır. Izgaranın belleğinde pay olduğu sürece bu fark edilmez; pay bittiği an çöker: oyunun kendi
+      liste kodunda "dizi sınırlarının dışında indeks", genellikle bir takviye dalgasının geldiği saniye
+      ya da savaş konuşlandırma ekranından başlatıldığında.
+      Yığının tepesindeki çerçeve oyun kodudur; bayat yeri, düzenleri yeniden dizen her neyse o
+      bırakmıştır. Konuşlandırmada ya da çarpışma sırasında askerleri yeniden gruplayan modlara bak:
+      savaş düzeni ve komuta sistemi modları, düzen yapay zekâsı, takviye sistemleri, birlikleri düzenler
+      arasında taşıyan modlar. Oyunun kendi günlüğü (rgl_log) o anı "Unit removed has file-rank indices ...
+      while line formation has file-rank counts of ..." satırıyla işaretler.
+      Bu, tam yığın olmadan korunamaz; Crash Doctor'ın çökme anında yazdığı report.txt onu taşır
+      (çerçeve, IL kayması ve düzen kodunu yamalayan modlar).
+    fr: |
+      Chaque soldat retient sa place dans la formation sous forme de file et de rang, et la formation range ses soldats dans une grille de exactement files × rangs. Chaque fois qu'un soldat rejoint, quitte ou change de place, le jeu l'écrit dans cette grille à la case qu'il a retenue, sans vérifier qu'elle existe encore. Un soldat dont la case retenue se trouve hors de la taille actuelle de la grille — la formation a été remodelée après son placement, ou il a été déplacé entre formations sans que sa case soit réinitialisée — est écrit au-delà de la fin de la grille. Cela passe inaperçu tant que la mémoire de la grille a de la marge, et plante dès qu'elle n'en a plus : un « index hors des limites du tableau » dans le propre code de listes du jeu, généralement à la seconde où une vague de renforts arrive ou au démarrage de la bataille depuis l'écran de déploiement.
+      L'image au sommet de la pile est du code du jeu ; la case périmée a été laissée par ce qui a réorganisé les formations. Regardez les mods qui regroupent les soldats au déploiement ou pendant le combat : mods d'ordre de bataille et de système de commandement, IA de formation, systèmes de renforts, mods qui déplacent des troupes entre formations. Le journal du jeu (rgl_log) marque le moment par la ligne « Unit removed has file-rank indices ... while line formation has file-rank counts of ... ».
+      Impossible de protéger ce cas sans la pile complète ; le report.txt que Crash Doctor écrit au moment du plantage la contient (image, décalage IL et mods qui patchent le code de formation).
+  fix:
+    en:
+      - "Turn off the mods that regroup soldiers at deployment or mid-battle (order of battle / command-system mods, formation AI, reinforcement systems, troop-transfer mods), fight three battles with reinforcements, then bring them back one at a time."
+      - "Crash Doctor cannot guard this one from the frame alone — the top frame is game code, and which mod left the stale slot is in the rest of the stack."
+      - "Send report.txt and crashdoctor_at_crash.log from this folder and say whether the game closed the moment reinforcements arrived or when you pressed «Begin battle»: https://t.me/CodeRickTg / https://discord.gg/ZDJZFxQeMV ."
+    ru:
+      - "Отключи моды, которые перегруппировывают бойцов при развёртывании или в бою (боевые порядки / системы команд, ИИ строёв, системы подкреплений, перевод войск между строями), проведи три боя с подкреплениями, потом возвращай по одному."
+      - "По одному кадру Crash Doctor это не защитит — верхний кадр это код игры, а какой мод оставил протухшее место, видно только в остальном стеке."
+      - "Пришли report.txt и crashdoctor_at_crash.log из этой папки и напиши, закрылась ли игра в момент прихода подкрепления или по кнопке «Начать бой»: https://t.me/CodeRickTg / https://discord.gg/ZDJZFxQeMV ."
+    zh:
+      - "关闭在部署或战斗中重新编组士兵的模组（战斗序列 / 指挥系统模组、队形 AI、援军系统、部队调动模组），打三场有援军的仗，再逐个恢复。"
+      - "仅凭这一帧 Crash Doctor 无法加防护——堆栈顶部是游戏代码，是哪个模组留下了过期位置只能从堆栈的其余部分看出。"
+      - "请发送本文件夹中的 report.txt 和 crashdoctor_at_crash.log，并说明游戏是在援军到达的瞬间关闭，还是在按下「开始战斗」时关闭：https://t.me/CodeRickTg / https://discord.gg/ZDJZFxQeMV 。"
+    zht:
+      - "關閉在部署或戰鬥中重新編組士兵的模組（戰鬥序列 / 指揮系統模組、隊形 AI、援軍系統、部隊調動模組），打三場有援軍的仗，再逐個恢復。"
+      - "僅憑這一框架 Crash Doctor 無法加防護——堆疊頂部是遊戲程式碼，是哪個模組留下了過期位置只能從堆疊的其餘部分看出。"
+      - "請傳送本資料夾中的 report.txt 和 crashdoctor_at_crash.log，並說明遊戲是在援軍到達的瞬間關閉，還是在按下「開始戰鬥」時關閉：https://t.me/CodeRickTg / https://discord.gg/ZDJZFxQeMV 。"
+    tr:
+      - "Konuşlandırmada ya da savaş ortasında askerleri yeniden gruplayan modları kapat (savaş düzeni / komuta sistemi modları, düzen yapay zekâsı, takviye sistemleri, birlik aktarma modları), takviyeli üç savaş yap, sonra teker teker geri aç."
+      - "Crash Doctor bunu tek bir çerçeveden koruyamaz — tepedeki çerçeve oyun kodudur, bayat yeri hangi modun bıraktığı ise yığının geri kalanındadır."
+      - "Bu klasördeki report.txt ve crashdoctor_at_crash.log dosyalarını gönder ve oyunun takviyeler geldiği anda mı yoksa «Savaşı başlat»a bastığında mı kapandığını yaz: https://t.me/CodeRickTg / https://discord.gg/ZDJZFxQeMV ."
+    fr:
+      - "Désactivez les mods qui regroupent les soldats au déploiement ou en pleine bataille (mods d'ordre de bataille / de système de commandement, IA de formation, systèmes de renforts, mods de transfert de troupes), livrez trois batailles avec renforts, puis réactivez-les un par un."
+      - "Crash Doctor ne peut pas protéger ce cas à partir de cette seule image — le sommet de la pile est du code du jeu, et le mod qui a laissé la case périmée se lit dans le reste de la pile."
+      - "Envoyez report.txt et crashdoctor_at_crash.log depuis ce dossier et précisez si le jeu s'est fermé à l'arrivée des renforts ou en appuyant sur « Commencer la bataille » : https://t.me/CodeRickTg / https://discord.gg/ZDJZFxQeMV ."
+  match:
+    all:
+      - managed_exception: { frame_contains: "MBList2D" }
+      - managed_exception: { type_contains: "IndexOutOfRange" }
+
+# A formation query evaluated on a formation that has never held a soldier. Formation.TransferUnitsAux
+# copies orders into a NEW, still-empty formation before moving any unit into it; a mod's prefix on
+# Formation.SetMovementOrder reads QuerySystem.ClosestSignificantlyLargeEnemyFormation from there; the
+# query lambda divides by the empty formation's FormationPower (0 → +∞, the branch passes) and calls
+# CachedMedianPosition.GetNavMeshZ() on a default(WorldPosition) whose scene pointer is 0 — native
+# WorldPositionValidateZ dereferences it: AccessViolation, uncatchable. Vanilla never asks an empty
+# formation and guards its own read of that position behind OrderPositionIsValid in the same method.
+# Client 40b69e1e (1.4.8, BetterPikes 1.3.2): 4 of 4 siege deployments in 20 minutes.
+- id: battle.formation_query_empty_formation_av
+  category: managed
+  severity: critical
+  confidence: high
+  evidence_source: "Client crash id 40b69e1e (2026-09-15, Bannerlord 1.4.8, ~170 modules, seen 4 times in 20 minutes, every siege deployment) — System.AccessViolationException at FormationQuerySystem+<>c__DisplayClass231_1.<.ctor>b__33 <- QueryData`1.Evaluate <- QueryData`1.get_Value <- FormationQuerySystem.get_ClosestSignificantlyLargeEnemyFormation <- BetterPikes.BetterPikesFormation.Prefix1 (BetterPikesFormation.cs:15) <- Formation.SetMovementOrder_Patch3 <- Formation.CopyOrdersFrom <- Formation.TransferUnitsAux <- OrderController.TransferUnits <- TacticComponent.SplitFormationClassIntoGivenNumber <- TacticBreachWalls.ManageFormationCounts <- ... <- SiegeDeploymentHandler.AutoDeployTeamUsingTeamAI <- MissionOrderDeploymentControllerVM.ExecuteDeployPlayerSide <- DeploymentMissionController.OnMissionTick <- Mission.OnTick <- MissionState.TickMission. Mechanism read from the shipped 1.4.8 TaleWorlds.MountAndBlade.dll (TransferUnitsAux: `if (target.CountOfUnits == 0) target.CopyOrdersFrom(this)`; Formation.CachedMedianPosition written only by OnUnitAddedOrRemoved/Tick/ForceCalculateCaches; the query lambda's FormationPower ratio and CachedMedianPosition.GetNavMeshZ()), TaleWorlds.Engine.WorldPosition (ValidateZ -> native IScene.WorldPositionValidateZ with the struct's own scene pointer) and the decompiled BetterPikes 1.3.2 (IsPikeFormation is `pikemen >= CountOfUnits * pct`, true for an empty formation; Prefix1 reads the query on line 15). Not on 1.2.10: there the median position is a live query with a valid scene."
+  requires_sources: [managed_exception]
+  title:
+    en: "Battle crash at deployment: a mod asked a still-empty formation where its nearest enemy is — guarded by Crash Doctor"
+    ru: "Вылет при развёртывании: мод спросил у ещё пустого строя, где ближайший враг — перехвачено Crash Doctor"
+    zh: "部署时的战斗崩溃：某个模组向仍为空的队形询问最近的敌人——已被 Crash Doctor 拦截"
+    zht: "部署時的戰鬥崩潰：某個模組向仍為空的隊形詢問最近的敵人——已被 Crash Doctor 攔截"
+    tr: "Konuşlandırmada savaş çökmesi: bir mod, hâlâ boş bir düzene en yakın düşmanını sordu — Crash Doctor tarafından korunuyor"
+    fr: "Plantage au déploiement : un mod a demandé à une formation encore vide où est son ennemi le plus proche — intercepté par Crash Doctor"
+  description:
+    en: |
+      When the AI splits its troops into several formations at deployment, the game creates each new
+      formation empty and copies the orders into it BEFORE moving a single soldier in. A formation
+      that has never held a soldier has no position yet. The base game never asks such a formation
+      where its nearest enemy is; the mod named in the stack does, from its hook on formation
+      orders, and the game's own query then reads that unset position in native code and faults with
+      a memory access violation — an error nothing can catch, so the game closes. It repeats on
+      every deployment where the AI splits formations (sieges above all).
+      Crash Doctor now answers "no enemy" for a formation that has never held a soldier without
+      running the query — the only answer the base game could give for it anyway — so the mod's hook
+      goes on and the battle deploys. The mod is a trigger, not the owner of the fault: the base
+      game's query has no check of its own. Until the mod's author adds an empty-formation check, the
+      guard is what keeps the deployment alive.
+    ru: |
+      Когда ИИ при развёртывании делит войска на несколько строёв, игра создаёт каждый новый строй
+      пустым и копирует в него приказы ДО того, как перевести туда хоть одного бойца. У строя, в
+      котором ещё не было бойцов, нет позиции. Базовая игра никогда не спрашивает у такого строя, где
+      его ближайший враг; мод, названный в стеке, спрашивает — из своего хука на приказы строя, — и
+      тогда собственный запрос игры читает эту незаданную позицию в нативном коде и падает с
+      нарушением доступа к памяти — ошибкой, которую никто не может поймать, поэтому игра закрывается.
+      Повторяется на каждом развёртывании, где ИИ делит строи (прежде всего в осадах).
+      Crash Doctor теперь отвечает «врага нет» для строя, в котором ещё не было бойцов, не запуская
+      запрос — единственный ответ, который базовая игра вообще могла бы для него дать, — так что хук
+      мода идёт дальше, и бой развёртывается. Мод — триггер, а не владелец сбоя: у собственного
+      запроса игры проверки нет. Пока автор мода не добавит проверку на пустой строй, развёртывание
+      держится на этой защите.
+    zh: |
+      当 AI 在部署时把部队拆分为多个队形，游戏会先创建空的新队形并把命令复制进去，然后才把士兵调入。
+      从未有过士兵的队形还没有位置。原版游戏从不向这样的队形询问最近的敌人在哪里；堆栈中点名的模组会通过
+      它对队形命令的挂钩这样做，于是游戏自身的查询在原生代码中读取这个未设置的位置，并以内存访问违规崩溃——
+      这种错误无法被捕获，游戏因此关闭。凡是 AI 拆分队形的部署（尤其是攻城）都会重现。
+      Crash Doctor 现在对从未有过士兵的队形直接回答“没有敌人”，不运行查询——这本来也是原版游戏对它唯一
+      可能给出的答案——于是模组的挂钩继续执行，战斗正常部署。该模组是触发者，而不是故障的所有者：原版游戏的
+      查询自身没有检查。在模组作者加入空队形检查之前，部署靠这项防护维持。
+    zht: |
+      當 AI 在部署時把部隊拆分為多個隊形，遊戲會先建立空的新隊形並把命令複製進去，然後才把士兵調入。
+      從未有過士兵的隊形還沒有位置。原版遊戲從不向這樣的隊形詢問最近的敵人在哪裡；堆疊中點名的模組會透過
+      它對隊形命令的掛鉤這樣做，於是遊戲自身的查詢在原生程式碼中讀取這個未設定的位置，並以記憶體存取違規崩潰——
+      這種錯誤無法被捕捉，遊戲因此關閉。凡是 AI 拆分隊形的部署（尤其是攻城）都會重現。
+      Crash Doctor 現在對從未有過士兵的隊形直接回答「沒有敵人」，不執行查詢——這本來也是原版遊戲對它唯一
+      可能給出的答案——於是模組的掛鉤繼續執行，戰鬥正常部署。該模組是觸發者，而不是故障的擁有者：原版遊戲的
+      查詢自身沒有檢查。在模組作者加入空隊形檢查之前，部署靠這項防護維持。
+    tr: |
+      Yapay zekâ konuşlandırmada birliklerini birkaç düzene böldüğünde oyun her yeni düzeni boş
+      oluşturur ve tek bir asker taşımadan ÖNCE emirleri ona kopyalar. Hiç asker tutmamış bir düzenin
+      henüz konumu yoktur. Oyunun kendisi böyle bir düzene en yakın düşmanının nerede olduğunu asla
+      sormaz; yığında adı geçen mod, düzen emirlerine koyduğu kancadan sorar ve o zaman oyunun kendi
+      sorgusu bu ayarlanmamış konumu yerel kodda okur ve bir bellek erişim ihlaliyle çöker — kimsenin
+      yakalayamayacağı bir hata, bu yüzden oyun kapanır. Yapay zekânın düzenleri böldüğü her
+      konuşlandırmada (en başta kuşatmalarda) tekrarlanır.
+      Crash Doctor artık hiç asker tutmamış bir düzen için sorguyu çalıştırmadan "düşman yok" yanıtı
+      verir — oyunun onun için verebileceği tek yanıt zaten budur — böylece modun kancası devam eder
+      ve savaş konuşlanır. Mod tetikleyicidir, hatanın sahibi değil: oyunun kendi sorgusunda denetim
+      yoktur. Modun yazarı boş düzen denetimi ekleyene kadar konuşlandırmayı ayakta tutan bu korumadır.
+    fr: |
+      Lorsque l'IA répartit ses troupes en plusieurs formations au déploiement, le jeu crée chaque nouvelle formation vide et y copie les ordres AVANT d'y déplacer le moindre soldat. Une formation qui n'a jamais eu de soldat n'a pas encore de position. Le jeu de base ne demande jamais à une telle formation où se trouve son ennemi le plus proche ; le mod nommé dans la pile le fait, depuis son crochet sur les ordres de formation, et la requête du jeu lit alors cette position jamais définie dans le code natif et échoue par une violation d'accès mémoire — une erreur que rien ne peut intercepter, le jeu se ferme donc. Cela se répète à chaque déploiement où l'IA scinde des formations (les sièges avant tout).
+      Crash Doctor répond désormais « aucun ennemi » pour une formation qui n'a jamais eu de soldat sans exécuter la requête — la seule réponse que le jeu de base pourrait de toute façon donner — de sorte que le crochet du mod continue et que la bataille se déploie. Le mod est un déclencheur, pas le propriétaire de la faute : la requête du jeu de base n'a aucune vérification. Tant que l'auteur du mod n'ajoute pas un contrôle de formation vide, c'est cette protection qui maintient le déploiement.
+  fix:
+    en:
+      - "Make sure the «enemy query on a formation that never held a soldier» guard is on in Crash Fixes: it answers the query safely and the deployment goes on."
+      - "The mod named in the stack right above the game's query (its «Prefix» on SetMovementOrder / SetArrangementOrder / SetFormOrder) is the one asking; the crash-time report.txt names it under «patched by». Report it to that mod's author with this stack — the fix on their side is one check for an empty formation."
+      - "Without the guard: disable that mod for siege battles, or accept auto-deployment instead of pressing Deploy manually — the split happens either way, so the guard is the real fix."
+      - "If the game still closes at deployment with the guard on, send report.txt and crashdoctor_at_crash.log from this folder: https://t.me/CodeRickTg / https://discord.gg/ZDJZFxQeMV ."
+    ru:
+      - "Проверь, что защита «запрос о враге к строю, в котором ещё не было бойцов» включена во вкладке «Фиксы крашей»: она безопасно отвечает на запрос, и развёртывание идёт дальше."
+      - "Мод, названный в стеке прямо над запросом игры (его «Prefix» на SetMovementOrder / SetArrangementOrder / SetFormOrder), и есть тот, кто спрашивает; report.txt, снятый в момент вылета, называет его под «patched by». Сообщи автору этого мода со стеком — правка на его стороне это одна проверка на пустой строй."
+      - "Без защиты: отключи этот мод на осады, или соглашайся на авторазвёртывание вместо ручного «Развернуть» — деление строёв происходит в любом случае, так что настоящее лечение — защита."
+      - "Если с включённой защитой игра всё равно закрывается при развёртывании — пришли report.txt и crashdoctor_at_crash.log из этой папки: https://t.me/CodeRickTg / https://discord.gg/ZDJZFxQeMV ."
+    zh:
+      - "请在「崩溃修复」中确认「对从未有过士兵的队形查询敌人」防护已开启：它会安全地回答该查询，部署继续。"
+      - "堆栈中紧靠游戏查询上方点名的模组（它在 SetMovementOrder / SetArrangementOrder / SetFormOrder 上的「Prefix」）就是发起询问的模组；崩溃时生成的 report.txt 在「patched by」下会列出它。把这个堆栈报告给该模组作者——他们那边的修复只是一处空队形检查。"
+      - "没有防护时：在攻城战中禁用该模组，或接受自动部署而不是手动按「部署」——拆分无论如何都会发生，所以真正的解决办法是防护。"
+      - "如果开启防护后游戏在部署时仍然关闭，请发送本文件夹中的 report.txt 和 crashdoctor_at_crash.log：https://t.me/CodeRickTg / https://discord.gg/ZDJZFxQeMV 。"
+    zht:
+      - "請在「崩潰修復」中確認「對從未有過士兵的隊形查詢敵人」防護已開啟：它會安全地回答該查詢，部署繼續。"
+      - "堆疊中緊靠遊戲查詢上方點名的模組（它在 SetMovementOrder / SetArrangementOrder / SetFormOrder 上的「Prefix」）就是發起詢問的模組；崩潰時產生的 report.txt 在「patched by」下會列出它。把這個堆疊回報給該模組作者——他們那邊的修復只是一處空隊形檢查。"
+      - "沒有防護時：在攻城戰中停用該模組，或接受自動部署而不是手動按「部署」——拆分無論如何都會發生，所以真正的解決辦法是防護。"
+      - "如果開啟防護後遊戲在部署時仍然關閉，請傳送本資料夾中的 report.txt 和 crashdoctor_at_crash.log：https://t.me/CodeRickTg / https://discord.gg/ZDJZFxQeMV 。"
+    tr:
+      - "Çökme Düzeltmeleri'nde «hiç asker tutmamış bir düzene düşman sorgusu» korumasının açık olduğundan emin ol: sorguyu güvenle yanıtlar ve konuşlandırma sürer."
+      - "Yığında oyunun sorgusunun hemen üstünde adı geçen mod (SetMovementOrder / SetArrangementOrder / SetFormOrder üzerindeki «Prefix»i) soruyu soran moddur; çökme anında yazılan report.txt onu «patched by» altında adlandırır. Bu yığınla o modun yazarına bildir — onların tarafındaki düzeltme boş düzen için tek bir denetimdir."
+      - "Koruma olmadan: o modu kuşatma savaşlarında kapat ya da elle «Konuşlandır»a basmak yerine otomatik konuşlandırmayı kabul et — bölme her hâlükârda olur, bu yüzden gerçek çözüm korumadır."
+      - "Koruma açıkken oyun konuşlandırmada yine kapanıyorsa bu klasördeki report.txt ve crashdoctor_at_crash.log dosyalarını gönder: https://t.me/CodeRickTg / https://discord.gg/ZDJZFxQeMV ."
+    fr:
+      - "Vérifiez que la protection « requête d'ennemi sur une formation qui n'a jamais eu de soldat » est activée dans Correctifs de plantage : elle répond à la requête sans risque et le déploiement continue."
+      - "Le mod nommé dans la pile juste au-dessus de la requête du jeu (son « Prefix » sur SetMovementOrder / SetArrangementOrder / SetFormOrder) est celui qui pose la question ; le report.txt écrit au moment du plantage le nomme sous « patched by ». Signalez-le à l'auteur de ce mod avec cette pile — le correctif de son côté est une seule vérification de formation vide."
+      - "Sans la protection : désactivez ce mod pour les sièges, ou acceptez le déploiement automatique au lieu d'appuyer sur Déployer manuellement — la scission a lieu de toute façon, la protection est donc la vraie solution."
+      - "Si le jeu se ferme encore au déploiement avec la protection activée, envoyez report.txt et crashdoctor_at_crash.log depuis ce dossier : https://t.me/CodeRickTg / https://discord.gg/ZDJZFxQeMV ."
+  match:
+    all:
+      - managed_exception: { type_contains: "AccessViolation" }
+      - managed_exception: { frame_contains: "FormationQuerySystem" }
+      - managed_exception: { frame_contains: "ClosestSignificantlyLargeEnemyFormation" }

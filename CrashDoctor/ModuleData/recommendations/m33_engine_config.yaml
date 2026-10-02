@@ -16,7 +16,7 @@
       (terrain_quality, tesselation, shader_quality, etc.) invalidates the precompiled
       shader cache. Bannerlord's next launch will load a cache built against the OLD
       values, hit a mismatch, and crash on the splash screen with the imperial-soldier
-      image. To prevent that, Apply ALSO sends the shader cache to the Recycle Bin —
+      image. To prevent that, Apply ALSO deletes the generated shader cache in ProgramData —
       after which the game will spend 10–60 minutes rebuilding shaders on first launch.
 
       MANDATORY sequence after Apply (skip any step → game won't start):
@@ -34,7 +34,7 @@
       инвалидирует скомпилированный кэш шейдеров. Следующий запуск Bannerlord
       попытается загрузить кэш под СТАРЫЕ значения, наткнётся на mismatch, и
       рухнет на заставке с имперским солдатом. Чтобы этого не было, «Применить»
-      ТАКЖЕ отправляет кэш шейдеров в Корзину — после чего игра при первом запуске
+      ТАКЖЕ удаляет сгенерированный кэш шейдеров в ProgramData — после чего игра при первом запуске
       потратит 10–60 минут на пересборку.
 
       ОБЯЗАТЕЛЬНАЯ последовательность после «Применить» (пропуск любого шага →
@@ -50,8 +50,8 @@
       为什么这张卡片需要重启 + 重建着色器：更改图形键
       （terrain_quality、tesselation、shader_quality 等）会使预编译的着色器缓存失效。
       Bannerlord 下次启动时会加载针对旧值构建的缓存，遇到不匹配，
-      并在带有帝国士兵图像的启动画面上崩溃。为防止这种情况，「应用」还会将着色器缓存
-      发送到回收站——之后游戏在首次启动时会花费 10–60 分钟重建着色器。
+      并在带有帝国士兵图像的启动画面上崩溃。为防止这种情况，「应用」还会删除 ProgramData 中
+      生成的着色器缓存——之后游戏在首次启动时会花费 10–60 分钟重建着色器。
 
       「应用」后的必要步骤顺序（跳过任何一步 → 游戏将无法启动）：
         1. 重启电脑。
@@ -65,8 +65,8 @@
       為什麼這張卡片需要重新啟動 + 重建著色器：更改圖形鍵
       （terrain_quality、tesselation、shader_quality 等）會使預編譯的著色器快取失效。
       Bannerlord 下次啟動時會載入針對舊值建構的快取，遇到不匹配，
-      並在帶有帝國士兵圖像的啟動畫面上當機。為防止這種情況，「套用」還會將著色器快取
-      傳送到資源回收筒——之後遊戲在首次啟動時會花費 10–60 分鐘重建著色器。
+      並在帶有帝國士兵圖像的啟動畫面上當機。為防止這種情況，「套用」還會刪除 ProgramData 中
+      產生的著色器快取——之後遊戲在首次啟動時會花費 10–60 分鐘重建著色器。
 
       「套用」後的必要步驟順序（跳過任何一步 → 遊戲將無法啟動）：
         1. 重新啟動電腦。
@@ -84,8 +84,8 @@
       önceden derlenmiş gölgelendirici önbelleğini geçersiz kılar. Bannerlord'un bir
       sonraki başlatması ESKİ değerlere göre oluşturulmuş bir önbelleği yükler, bir
       uyumsuzlukla karşılaşır ve imparatorluk askeri görseliyle açılış ekranında çöker.
-      Bunu önlemek için Uygula, gölgelendirici önbelleğini de Geri Dönüşüm Kutusu'na
-      gönderir — ardından oyun ilk başlatmada gölgelendiricileri yeniden oluşturmak için
+      Bunu önlemek için Uygula, ProgramData içinde oluşturulan gölgelendirici önbelleğini
+      de siler — ardından oyun ilk başlatmada gölgelendiricileri yeniden oluşturmak için
       10–60 dakika harcar.
 
       Uygula sonrası ZORUNLU sıra (herhangi bir adımı atlarsanız → oyun başlamaz):
@@ -100,7 +100,7 @@
 
       POURQUOI cette carte nécessite un redémarrage + reconstruction du cache de shaders : la modification des clés graphiques
       (terrain_quality, tesselation, shader_quality, etc.) invalide le cache de shaders précompilé. Au prochain lancement, Bannerlord chargera un cache basé sur les ANCIENNES
-      valeurs, détectera une incohérence et plantera sur l'écran de chargement avec l'image du soldat impérial. Pour éviter cela, Apply ENVOIE ÉGALEMENT le cache de shaders vers la Corbeille —
+      valeurs, détectera une incohérence et plantera sur l'écran de chargement avec l'image du soldat impérial. Pour éviter cela, Apply SUPPRIME ÉGALEMENT le cache de shaders généré dans ProgramData —
       après quoi le jeu passera 10 à 60 minutes à reconstruire les shaders lors du premier lancement.
 
       SÉQUENCE OBLIGATOIRE après Apply (sauter une étape → le jeu ne démarrera pas) :
@@ -112,37 +112,37 @@
     en:
       - "engine_config.txt is backed up before rewriting (Recovery Bin = Documents fallback if Rollback fails)."
       - "Comments and unknown keys are kept untouched."
-      - "Shader cache (ProgramData/Shaders + game/Shaders/D3D11/compressed_shaders_cache.sack + per-module sacks) is sent to the Recycle Bin."
+      - "Only the generated shader cache in ProgramData/Shaders is deleted (permanently; the game rebuilds it). Shader files that ship with the game or with mods are never touched."
       - "RECOVERY if game won't start at all: see workshop description 'If the game won't launch' or docs/Recovery_If_Game_Wont_Start_EN.md."
       - "Reversible from History tab — restores engine_config.txt; the shader cache is NOT restored, the game just rebuilds it again."
     ru:
       - "engine_config.txt сохраняется в backup перед перезаписью (резервная копия в Documents — на случай если Rollback не сработает)."
       - "Комментарии и неизвестные ключи остаются как есть."
-      - "Кэш шейдеров (ProgramData/Shaders + game/Shaders/D3D11/compressed_shaders_cache.sack + per-module sacks) уезжает в Корзину."
+      - "Удаляется только сгенерированный кэш шейдеров в ProgramData/Shaders (безвозвратно; игра пересоберёт его). Файлы шейдеров, которые поставляются с игрой и модами, не трогаются никогда."
       - "ВОССТАНОВЛЕНИЕ если игра вообще не запускается: см. описание мода в Workshop — раздел «Если игра не запускается» или docs/Recovery_If_Game_Wont_Start_RU.md."
       - "Откат из вкладки «Журнал» — восстанавливает engine_config.txt; кэш шейдеров НЕ восстанавливается, игра просто пересобирает его заново."
     zh:
       - "重写前会备份 engine_config.txt（如果回滚失败，恢复区 = Documents 备用位置）。"
       - "注释和未知键保持原样不动。"
-      - "着色器缓存（ProgramData/Shaders + game/Shaders/D3D11/compressed_shaders_cache.sack + 每个模块的 sack）会被发送到回收站。"
+      - "只（永久）删除 ProgramData/Shaders 中生成的着色器缓存，游戏会自行重建。随游戏或模组附带的着色器文件永远不会被触碰。"
       - "如果游戏完全无法启动的恢复方法：参见 Workshop 描述中的「If the game won't launch」或 docs/Recovery_If_Game_Wont_Start_EN.md。"
       - "可从「历史」选项卡撤销——会恢复 engine_config.txt；着色器缓存不会恢复，游戏只是再次重建它。"
     zht:
       - "重寫前會備份 engine_config.txt（如果回滾失敗，復原區 = Documents 備用位置）。"
       - "註解和未知鍵保持原樣不動。"
-      - "著色器快取（ProgramData/Shaders + game/Shaders/D3D11/compressed_shaders_cache.sack + 每個模組的 sack）會被傳送到資源回收筒。"
+      - "只（永久）刪除 ProgramData/Shaders 中產生的著色器快取，遊戲會自行重建。隨遊戲或模組附帶的著色器檔案永遠不會被觸碰。"
       - "如果遊戲完全無法啟動的復原方法：參見 Workshop 描述中的「If the game won't launch」或 docs/Recovery_If_Game_Wont_Start_EN.md。"
       - "可從「歷史」索引標籤復原——會還原 engine_config.txt；著色器快取不會還原，遊戲只是再次重建它。"
     tr:
       - "engine_config.txt yeniden yazılmadan önce yedeklenir (Geri Alma başarısız olursa Kurtarma Kutusu = Documents yedeği)."
       - "Yorumlar ve bilinmeyen anahtarlar dokunulmadan tutulur."
-      - "Gölgelendirici önbelleği (ProgramData/Shaders + game/Shaders/D3D11/compressed_shaders_cache.sack + modül başına sack'ler) Geri Dönüşüm Kutusu'na gönderilir."
+      - "Yalnızca ProgramData/Shaders içinde oluşturulan gölgelendirici önbelleği (kalıcı olarak) silinir; oyun onu yeniden oluşturur. Oyunla veya modlarla gelen gölgelendirici dosyalarına asla dokunulmaz."
       - "Oyun hiç başlamıyorsa KURTARMA: Workshop açıklamasındaki 'If the game won't launch' bölümüne veya docs/Recovery_If_Game_Wont_Start_EN.md dosyasına bakın."
       - "Geçmiş sekmesinden geri alınabilir — engine_config.txt'yi geri yükler; gölgelendirici önbelleği geri yüklenmez, oyun onu yeniden oluşturur."
 
     fr:
       - "engine_config.txt est sauvegardé avant la réécriture (Recovery Bin = fallback Documents si Rollback échoue)."
       - "Les commentaires et les clés inconnues sont conservés tels quels."
-      - "Le cache de shaders (ProgramData/Shaders + game/Shaders/D3D11/compressed_shaders_cache.sack + sacs par module) est envoyé vers la Corbeille."
+      - "Seul le cache de shaders généré dans ProgramData/Shaders est supprimé (définitivement ; le jeu le reconstruit). Les fichiers de shaders livrés avec le jeu ou les mods ne sont jamais touchés."
       - "RÉCUPÉRATION si le jeu ne démarre pas du tout : voir la description du workshop 'Si le jeu ne se lance pas' ou docs/Recovery_If_Game_Wont_Start_EN.md."
       - "Réversible depuis l'onglet Historique — restaure engine_config.txt ; le cache de shaders n'est PAS restauré, le jeu le reconstruit simplement à nouveau."

@@ -32,33 +32,33 @@
       Le cache de shaders contient les shaders GPU compilés. Après une mise à jour de Bannerlord ou de TOR, ou après un changement de pilote GPU, le cache peut devenir obsolète et provoquer des erreurs d3d, des écrans noirs ou des plantages de compilation de shaders (« Error compiling shader file: ...particle_shading.rs »).
   details:
     en:
-      - "Files are moved to the Windows Recycle Bin and can be restored if needed."
+      - "Only the generated cache in ProgramData is deleted, permanently - the game rebuilds it on the next launch. Files that ship with the game or with mods are never touched."
       - "First Bannerlord launch after this will spend 10–60 minutes recompiling shaders."
       - "Use the main-menu 'Build Shader Cache' button right after restarting the game,"
       - "otherwise the first battle will stutter heavily."
     ru:
-      - "Файлы уезжают в корзину Windows и могут быть восстановлены."
+      - "Удаляется только сгенерированный кэш в ProgramData, безвозвратно — игра пересоберёт его при следующем запуске. Файлы, которые поставляются с игрой и модами, не трогаются никогда."
       - "Первый запуск Bannerlord после очистки будет долго (10–60 минут) перекомпилировать шейдеры."
       - "Сразу после очистки нажмите «Build Shader Cache» в главном меню,"
       - "иначе первое сражение будет очень сильно фризить."
     zh:
-      - "文件会被移到 Windows 回收站，需要时可以还原。"
+      - "只永久删除 ProgramData 中生成的缓存——游戏会在下次启动时重建。随游戏或模组附带的文件永远不会被触碰。"
       - "清理后首次启动 Bannerlord 会花费 10–60 分钟重新编译着色器。"
       - "重启游戏后请立即在主菜单点击 'Build Shader Cache' 按钮，"
       - "否则第一场战斗会严重卡顿。"
     zht:
-      - "檔案會被移到 Windows 資源回收筒，需要時可以還原。"
+      - "只永久刪除 ProgramData 中產生的快取——遊戲會在下次啟動時重建。隨遊戲或模組附帶的檔案永遠不會被觸碰。"
       - "清理後首次啟動 Bannerlord 會花費 10–60 分鐘重新編譯著色器。"
       - "重新啟動遊戲後請立即在主選單點擊 'Build Shader Cache' 按鈕，"
       - "否則第一場戰鬥會嚴重卡頓。"
     tr:
-      - "Dosyalar Windows Geri Dönüşüm Kutusu'na taşınır ve gerekirse geri yüklenebilir."
+      - "Yalnızca ProgramData içinde oluşturulan önbellek kalıcı olarak silinir - oyun bir sonraki açılışta onu yeniden oluşturur. Oyunla veya modlarla gelen dosyalara asla dokunulmaz."
       - "Bundan sonra Bannerlord'un ilk açılışı gölgelendiricileri yeniden derlemek için 10–60 dakika harcar."
       - "Oyunu yeniden başlattıktan hemen sonra ana menüdeki 'Build Shader Cache' düğmesini kullanın,"
       - "aksi halde ilk savaş ciddi şekilde takılır."
 
     fr:
-      - "Les fichiers sont déplacés vers la Corbeille de Windows et peuvent être restaurés si nécessaire."
+      - "Seul le cache généré dans ProgramData est supprimé, définitivement - le jeu le reconstruit au prochain lancement. Les fichiers livrés avec le jeu ou les mods ne sont jamais touchés."
       - "Le premier lancement de Bannerlord après cette opération passera 10 à 60 minutes à recompiler les shaders."
       - "Utilisez le bouton 'Construire le cache de shaders' du menu principal juste après avoir redémarré le jeu,"
       - "sinon la première bataille sera fortement saccadée."

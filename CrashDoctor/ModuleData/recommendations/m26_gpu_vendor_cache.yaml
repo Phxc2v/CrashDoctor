@@ -67,32 +67,32 @@
   details:
     en:
       - "Threshold for 'NeedsAction': vendor-cache symptom strings in recent crash logs OR cache > 2 GB."
-      - "Files go to the Recycle Bin and can be restored."
+      - "Deletion is permanent (not to the Recycle Bin) - the graphics driver rebuilds these caches by itself."
       - "Affects ALL DirectX games on the system (not just Bannerlord) — they'll spend a few extra seconds on next launch rebuilding their vendor caches. Acceptable trade-off."
       - "Not reversible from Crash Doctor."
     ru:
       - "Порог для 'NeedsAction': симптом-строки vendor-кэша в свежих крэш-логах ИЛИ объём > 2 ГБ."
-      - "Файлы уезжают в Корзину, можно восстановить."
+      - "Удаление безвозвратное (не в Корзину) — драйвер видеокарты сам пересоберёт эти кэши."
       - "Затрагивает ВСЕ DirectX-игры (не только Bannerlord) — на следующем запуске они потратят несколько лишних секунд на rebuild vendor-кэшей. Допустимый компромисс."
       - "Откат из Crash Doctor не предусмотрен."
     zh:
       - "'NeedsAction' 阈值：近期崩溃日志中出现厂商缓存症状字符串，或缓存 > 2 GB。"
-      - "文件会移到回收站，可以还原。"
+      - "删除是永久性的（不进回收站）——显卡驱动会自行重建这些缓存。"
       - "影响系统上所有的 DirectX 游戏（不只是 Bannerlord）—— 它们在下次启动时会多花几秒重建各自的厂商缓存。可接受的取舍。"
       - "无法从 Crash Doctor 撤销。"
     zht:
       - "'NeedsAction' 閾值：近期當機記錄中出現廠商快取症狀字串，或快取 > 2 GB。"
-      - "檔案會移到資源回收筒，可以還原。"
+      - "刪除是永久性的（不進資源回收筒）——顯示卡驅動程式會自行重建這些快取。"
       - "影響系統上所有的 DirectX 遊戲（不只是 Bannerlord）—— 它們在下次啟動時會多花幾秒重建各自的廠商快取。可接受的取捨。"
       - "無法從 Crash Doctor 復原。"
     tr:
       - "'NeedsAction' eşiği: son çökme günlüklerinde üretici önbelleği belirti dizeleri VEYA önbellek > 2 GB."
-      - "Dosyalar Geri Dönüşüm Kutusu'na gider ve geri yüklenebilir."
+      - "Silme kalıcıdır (Geri Dönüşüm Kutusu'na gitmez) - ekran kartı sürücüsü bu önbellekleri kendisi yeniden oluşturur."
       - "Sistemdeki TÜM DirectX oyunlarını etkiler (yalnızca Bannerlord'u değil) — bir sonraki açılışta üretici önbelleklerini yeniden oluşturmak için birkaç saniye fazladan harcarlar. Kabul edilebilir bir ödünleşim."
       - "Crash Doctor'dan geri alınamaz."
 
     fr:
       - "Seuil pour 'NeedsAction' : chaînes de symptômes de cache fournisseur dans les journaux de plantage récents OU cache > 2 Go."
-      - "Les fichiers vont à la Corbeille et peuvent être restaurés."
+      - "La suppression est définitive (pas de Corbeille) - le pilote graphique reconstruit ces caches lui-même."
       - "Affecte TOUS les jeux DirectX sur le système (pas seulement Bannerlord) — ils passeront quelques secondes supplémentaires au prochain lancement à reconstruire leurs caches fournisseurs. Compromis acceptable."
       - "Non réversible depuis Crash Doctor."

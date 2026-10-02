@@ -7,12 +7,6 @@
   1. Upload the ENTIRE .zip as-is to https://t.me/CodeRickTg / https://discord.gg/ZDJZFxQeMV	  1. Téléchargez le fichier .zip ENTIÈREMENT tel quel vers https://t.me/CodeRickTg / https://discord.gg/ZDJZFxQeMV
   2. Do NOT unpack or edit files inside — the support team needs the\n     original Bannerlord logs (rgl_log_*.txt, watchdog_log_*.txt,\n     crash_tags.txt) exactly as the game wrote them.	  2. Ne décompressez ni ne modifiez pas les fichiers à l’intérieur — l’équipe d’assistance a besoin des\n     logs originaux de Bannerlord (rgl_log_*.txt, watchdog_log_*.txt,\n     crash_tags.txt) exactement tels que le jeu les a écrits.
   3. With the upload, briefly describe what you were doing when it\n     crashed (battle? menu? save load? new mod?). Saves time.	  3. Avec le téléchargement, décrivez brièvement ce que vous faisiez au moment du\n     plantage (bataille ? menu ? chargement de sauvegarde ? nouveau mod ?). Cela fait gagner du temps.
-  Broken armies found (not auto-removed): 	Armées cassées trouvées (non supprimées automatiquement) :
-  Broken clans destroyed:       	Clans corrompus détruits :
-  Corrupted log entries removed: 	Entrées de journal corrompues supprimées :
-  Ghost parties destroyed:      	Groupes fantômes détruits :
-  Glitched parties destroyed:    	Groupes corrompus détruits :
-  Orphan captives freed:        	Otages orphelins libérés :
   This member belongs to another mod ({P0}) — its version does not match the one {P1} expects.	  Ce membre appartient à un autre mod ({P0}) — sa version ne correspond pas à celle attendue par {P1}.
   crash/               ProgramData\\...\\crashes\\<ts>\\ folder verbatim	crash/ ProgramData\\...\\crashes\\<ts>\\ dossier tel quel
   crashdoctor.log      Crash Doctor's own log (if present)	crashdoctor.log Journal propre à Crash Doctor (si présent)
@@ -22,7 +16,6 @@
   … +{P0}	  … +{P0}
   … and possibly more (list capped).	… et possiblement plus (liste tronquée).
  (Ctrl+Alt+D — full list)	(Ctrl+Alt+D — liste complète)
- (failed: 	(échec :
  Data: {P0}.	 Données : {P0}.
  Possibly caused by mod: {P0}.	 Probablement causé par le mod : {P0}.
  broken entries from the sent troops.	 entrées corrompues parmi les troupes envoyées.
@@ -40,9 +33,7 @@
 -- Note --	-- Note --
 --- What's in this archive ---	--- Contenu de cette archive ---
 1. Close Crash Doctor (button at bottom-right).\n2. Load the problem save via 'Continue' or 'Load Game'.\n3. In-game press Ctrl+Alt+D — Save Analysis opens.\n4. Three buttons: Scan, Backup, Clean save.\n\nScan and clean only work with a loaded campaign. A backup is created automatically before cleaning — if anything goes wrong, load it.	1. Fermez Crash Doctor (bouton en bas à droite).\n2. Chargez la sauvegarde problématique via 'Continuer' ou 'Charger une partie'.\n3. En jeu, appuyez sur Ctrl+Alt+D — l'Analyse de sauvegarde s'ouvre.\n4. Trois boutons : Analyser, Sauvegarder, Nettoyer la sauvegarde.\n\nAnalyser et nettoyer ne fonctionnent qu'avec une campagne chargée. Une sauvegarde est créée automatiquement avant le nettoyage — en cas de problème, chargez-la.
-1/2 Scanning and removing broken objects…	1/2 Analyse et suppression des objets cassés…
 1/4 Collecting the serialization graph…	1/4 Collecte du graphe de sérialisation…
-2/2 Saving cleaned save: 	2/2 Sauvegarde nettoyée :
 2/4 Finding removable objects…	2/4 Recherche des objets supprimables…
 3/4 Removing objects and scrubbing references…	3/4 Suppression des objets et nettoyage des références…
 4/4 Saving the cleaned save: 	4/4 Sauvegarde de la sauvegarde nettoyée :
@@ -85,14 +76,12 @@ Checking system...	Vérification du système...
 Checking system...{P0}	Vérification du système...{P0}
 Clean save	Sauvegarde propre
 Cleaned save: 	Sauvegarde nettoyée :
-Cleaning phase error: 	Erreur de phase de nettoyage :
 Cleaning...	Nettoyage...
 Cleanup error.	Erreur de nettoyage.
 Cleanup error: 	Erreur de nettoyage :
 Cleanup failed.	Nettoyage échoué.
 Cleanup failed: 	Nettoyage échoué :
 Cleanup finished.	Nettoyage terminé.
-Cleanup ran but saving the cleaned file failed.	Le nettoyage a été effectué, mais la sauvegarde du fichier nettoyé a échoué.
 Cleanup start error: 	Erreur de démarrage du nettoyage :
 Clear	Effacer
 Clear failed	Effacement échoué
@@ -343,7 +332,7 @@ No saves found.	Aucune sauvegarde trouvée.
 Not installed at all ({P0}):	Non installé du tout ({P0}) :
 Not needed here	Inutile ici
 Not working — missing file or library	Ne fonctionne pas — fichier ou bibliothèque manquant
-Note: the cleaned save loads as a normal (non-Ironman) save. Use it for diagnosis; keep playing your Ironman as-is.	Remarque : la sauvegarde nettoyée se charge comme une sauvegarde normale (non-Ironman). Utilisez-la pour le diagnostic ; continuez à jouer à votre sauvegarde Ironman telle quelle.
+Note: the cleaned save loads as a normal (non-Ironman) save. The game running now was changed by the clean too, and Ironman autosaves into your one slot: exit to the main menu WITHOUT saving, then load your Ironman save to keep playing it.	Remarque : la sauvegarde nettoyée se charge comme une sauvegarde normale (non Ironman). La partie en cours a elle aussi été modifiée par le nettoyage, et l'Ironman sauvegarde automatiquement dans votre unique emplacement : quittez vers le menu principal SANS sauvegarder, puis chargez votre sauvegarde Ironman pour continuer à jouer.
 Notes:	Notes :
 Nothing prevented yet in this save — no safety net has had to fire.	Rien n'a été empêché dans cette sauvegarde — aucun filet de sécurité n'a dû intervenir.
 Nothing prevented yet — no safety net has had to fire.	Aucun incident n'a été empêché — aucun filet de sécurité n'a eu à intervenir.
@@ -357,7 +346,6 @@ Open download page	Ouvrir la page de téléchargement
 Open file page	Ouvrir la page du fichier
 Opened BLSE download page in browser. Install 1.6.2 manually.	Page de téléchargement BLSE ouverte dans le navigateur. Installez la 1.6.2 manuellement.
 Opened BLSE download page. Install BLSE — TOR requires it.	Page de téléchargement BLSE ouverte. Installez BLSE — TOR en a besoin.
-Original save on disk is unchanged — load it if anything goes wrong.	La sauvegarde d'origine sur le disque reste intacte — rechargez-la si quelque chose tourne mal.
 Other things we make	Autres projets
 Our other mods	Nos autres mods
 Phase 1: report only. Cleaners arrive in Phase 2 with auto-backup of the save.	Phase 1 : rapport uniquement. Les nettoyeurs interviennent en Phase 2 avec une sauvegarde automatique de la sauvegarde.
@@ -371,7 +359,6 @@ Prevented crashes	Plantages évités
 Re-scan	Relancer l'analyse
 Refresh	Actualiser
 Removal error: 	Erreur de suppression :
-Removed / freed:	Supprimé / libéré :
 Removed the Windows download-block from {P0} mod DLL(s). Restart Bannerlord so they load.	Blocage de téléchargement Windows retiré des DLL de {P0} mod(s). Redémarrez Bannerlord pour qu'elles se chargent.
 Removed {P0} entries.	{P0} entrée(s) supprimée(s).
 Removed: {P0} entries.\nPreserved for possible rollback: {P1}.\n(Reversible entries are kept so .reg backups don't get orphaned.)\n\nPreserved:\n{P2}	Supprimé : {P0} entrées.\nConservé pour un éventuel retour en arrière : {P1}.\n(Les entrées réversibles sont conservées afin que les sauvegardes .reg ne soient pas orphelines.)\n\nConservé :\n{P2}
@@ -397,7 +384,6 @@ Save scan — {P0}	Analyse de sauvegarde — {P0}
 Save scanned from active campaign. Results:	Sauvegarde analysée dans la campagne active. Résultats :
 Saves: {0}, with mod mismatches: {1}.	Sauvegardes : {0}, avec incompatibilités de mod : {1}.
 Saving did not finish within 90 seconds. The file may still have been written — check the Game Saves folder.	La sauvegarde n'a pas été terminée en 90 secondes. Le fichier a peut-être été écrit — vérifiez le dossier des sauvegardes du jeu.
-Saving the cleaned save did not finish within 90 seconds. The file may still have been written — check the Game Saves folder. Your original save on disk is untouched.	La sauvegarde du fichier nettoyé n'a pas abouti dans les 90 secondes. Le fichier a peut-être tout de même été écrit — vérifiez le dossier des sauvegardes. Votre sauvegarde originale sur le disque n'est pas modifiée.
 Scan already running. Wait, then try again.	Analyse déjà en cours. Attendez, puis réessayez.
 Scan error: 	Erreur de scan :
 Scan failed. See crashdoctor.log.	Échec de l'analyse. Consultez crashdoctor.log.
@@ -430,7 +416,6 @@ The cleaned save was NOT written; your original save on disk is intact. Log: cra
 The game did not close - Crash Doctor caught these situations.	Le jeu ne s'est pas fermé - Crash Doctor a intercepté ces situations.
 The game hit a crash while closing the session (typically right after a siege/battle — e.g. a broken siege with "besiegers -0"). Crash Doctor caught it, so instead of crashing to desktop you were returned to the main menu.\n\nYour last save is NOT damaged — load it and continue. Rebuilding shaders or changing drivers will NOT help (this is a campaign-state bug, not graphics). If it keeps happening at the same siege, send the report from the Crash-diagnosis tab.	Le jeu a planté lors de la fermeture de la session (généralement juste après un siège/bataille — e.g. un siège corrompu avec « assiégeants -0 »). Crash Doctor l’a intercepté, vous avez donc été renvoyé au menu principal au lieu de planter vers le bureau.\n\nVotre dernière sauvegarde n’est PAS endommagée — chargez-la et continuez. Reconstruire les shaders ou changer les pilotes n’AIDERA PAS (il s’agit d’un bug d’état de campagne, pas de graphismes). Si cela se reproduit toujours au même siège, envoyez le rapport depuis l’onglet Diagnostic de crash.
 The game is saving another file right now — wait a moment and try again.	Le jeu enregistre un autre fichier en ce moment — attendez un moment et réessayez.
-The game's in-memory state is now modified. Close this, return to main menu and load '{P0}' via Load Game.	L'état en mémoire du jeu est maintenant modifié. Fermez ceci, retournez au menu principal et chargez '{P0}' via Charger la sauvegarde.
 The installed Harmony is the WRONG version for your game ({P0}). Bannerlord 1.2.x needs the legacy 'Harmony v1.0.0–v1.2.12' build; the current one only works on 1.3+. Download the right one below and replace it, then restart — your choices here are saved.	La version installée de Harmony est la MAUVAISE version pour votre jeu ({P0}). Bannerlord 1.2.x nécessite l'ancienne version 'Harmony v1.0.0–v1.2.12' ; la version actuelle ne fonctionne que sur 1.3+. Téléchargez la bonne version ci-dessous et remplacez-la, puis redémarrez — vos choix ici sont sauvegardés.
 The same page inside Telegram — if you have it installed.	La même page sur Telegram — si vous l'avez installé.
 The save loaded in memory: '{P0}'.\nYou clicked on: '{P1}' — a different save.\n\nBannerlord keeps only one save in memory at a time. To scan '{P2}', go to main menu and Load Game it, then press Ctrl+Alt+D and click 'Scan save' again.\n\nTo scan the currently-loaded save, use 'Scan current save' at the bottom.	La sauvegarde chargée en mémoire : '{P0}'.\nVous avez cliqué sur : '{P1}' — une sauvegarde différente.\n\nBannerlord ne conserve qu'une seule sauvegarde en mémoire à la fois. Pour analyser '{P2}', allez au menu principal et chargez-la, puis appuyez sur Ctrl+Alt+D et cliquez à nouveau sur 'Analyser la sauvegarde'.\n\nPour analyser la sauvegarde actuellement chargée, utilisez 'Analyser la sauvegarde actuelle' en bas.
@@ -514,7 +499,6 @@ mods	mods
 not for {P0}	non compatible avec {P0}
 not loaded	non chargé
 not working	ne fonctionne pas
-save FAILED	sauvegarde ÉCHOUÉE
 starting	démarrage
 {0} is active but absent from this save. This mod is documented as not safe to add mid-campaign — start a new game.	{0} est actif mais absent de cette sauvegarde. Ce mod est documenté comme n'étant pas sûr à ajouter en cours de campagne — commencez une nouvelle partie.
 {0} is recorded in this save and stores campaign data. Removing it usually crashes load. Re-install: {1}	{0} est enregistré dans cette sauvegarde et stocke les données de campagne. Le supprimer provoque généralement un plantage au chargement. Réinstallez : {1}
@@ -580,3 +564,30 @@ The author asks for this mod to load BEFORE «{P0}», and right now it loads aft
 Donate on Boosty	Faire un don sur Boosty
 Subscription or a one-off payment, card from any country — boosty.to/coderick	Abonnement ou paiement unique, carte de n'importe quel pays — boosty.to/coderick
 If Crash Doctor has earned its keep, the project is made by one person and lives on donations - the Donate button is at the bottom.	Si Crash Doctor vous a été utile : le projet est fait par une seule personne et vit de dons - le bouton « Don » est en bas de la fenêtre.
+This mod's characters borrow equipment sets by an id that no switched-on module file defines. The game looks the id up with no check, and the first such character ends the reading of the MERGED character list of every mod: every troop listed after it — the game's own and the player's character included — stays empty, and the game later crashes on one of them with no mod in the report.	Les personnages de ce mod empruntent des ensembles d'équipement par un id qu'aucun fichier de module activé ne définit. Le jeu cherche cet id sans aucun contrôle, et le premier personnage de ce genre met fin à la lecture de la liste FUSIONNÉE des personnages de tous les mods : chaque troupe listée après lui — y compris celles du jeu et le personnage du joueur — reste vide, et le jeu plante ensuite sur l'une d'elles sans aucun mod dans le rapport.
+Update this mod first, or install the mod it expects to find those equipment sets in. Crash Doctor's «Character-list crash guard» skips the missing set meanwhile, so that one character loses one set and the rest of the list loads.	Mettez d'abord ce mod à jour, ou installez le mod dans lequel il s'attend à trouver ces ensembles d'équipement. En attendant, la «Protection de la liste des personnages» de Crash Doctor saute l'ensemble manquant : ce personnage perd un ensemble et le reste de la liste se charge.
+characters: {P0} missing equipment set(s)	personnages : {P0} ensemble(s) d'équipement manquant(s)
+Crash Doctor: prevented a crash while the campaign was loading — a mod's character borrows an equipment set that does not exist, and that makes the game stop reading the whole character list, its own troops and your character included. The missing set is skipped and the list loads. The Mods tab names the mod to update.	Crash Doctor : plantage évité pendant le chargement de la campagne — un personnage d'un mod emprunte un ensemble d'équipement qui n'existe pas, ce qui fait abandonner au jeu la lecture de toute la liste des personnages, y compris ses propres troupes et votre personnage. L'ensemble manquant est ignoré et la liste se charge. L'onglet Mods indique quel mod mettre à jour.
+Not available on Linux/Proton: this check reads and changes Windows system settings that do not exist under Wine.	Indisponible sous Linux/Proton : cette vérification lit et modifie des paramètres système de Windows qui n’existent pas sous Wine.
+Next time the game's own crash window offers to send the report to TaleWorlds, close it without sending: sending deletes the crash files. Your report is here: Crash Doctor → Crash diagnosis → Export.	La prochaine fois que la fenêtre de plantage du jeu propose d'envoyer le rapport à TaleWorlds, fermez-la sans envoyer : l'envoi supprime les fichiers du plantage. Votre rapport se trouve ici : Crash Doctor → Diagnostic → Exporter.
+Crash Doctor: prevented a campaign-map crash on the daily tick — a party on the map belongs to no one, usually the militia of a settlement left without an owner clan. The Naval DLC skips its daily ship repair and the game continues, but the save keeps that party; see crashdoctor.log for which one.	Crash Doctor : plantage sur la carte de campagne évité au tick quotidien — un groupe sur la carte n'appartient à personne, généralement la milice d'un fief resté sans clan propriétaire. Le DLC naval saute sa réparation quotidienne des navires et le jeu continue, mais la sauvegarde garde ce groupe ; voir crashdoctor.log pour savoir lequel.
+Also remove glitched parties (broken links that crash the map AI). Never touches your party or companions.	Supprimer aussi les groupes défectueux (liens cassés, plantage de l'IA). Jamais votre groupe ni vos compagnons.
+Crash Doctor: prevented a crash at the end of a battle. A banner texture finished rendering after the battle was already torn down; the armour it was meant for no longer exists, so it was discarded.	Crash Doctor : plantage évité à la fin d'une bataille. Une texture de bannière a fini son rendu alors que la bataille était déjà démontée ; l'armure à laquelle elle était destinée n'existe plus, elle a donc été ignorée.
+Crash Doctor: prevented a battle crash. A soldier was re-dressed while his banner texture was still rendering, and the texture arrived for armour that no longer exists; it was discarded. A mod that changes soldiers' gear at spawn is the usual reason — see crashdoctor.log.	Crash Doctor : plantage de bataille évité. Un soldat a été rhabillé pendant que la texture de sa bannière était encore en rendu, et la texture est arrivée pour une armure qui n'existe plus ; elle a été ignorée. La cause habituelle est un mod qui change l'équipement des soldats à leur apparition — voir crashdoctor.log.
+Crash Doctor: prevented a crash while a merchant was sending out a caravan. That caravan is not created today, the campaign continues.	Crash Doctor : plantage évité pendant qu'un marchand envoyait une caravane. Cette caravane n'est pas créée aujourd'hui, la campagne continue.
+Crash Doctor: prevented a crash in a settlement — a townsperson is no longer listed in the place they are walking around, and the game's "walk to another place" check cannot run without that entry. They simply stay where they are; the game continues.	Crash Doctor : plantage évité dans une colonie — un habitant ne figure plus dans le lieu où il se promène, et la vérification « aller vers un autre lieu » du jeu ne peut pas s'exécuter sans cette entrée. Il reste simplement où il est ; le jeu continue.
+Crash Doctor: prevented a campaign-map crash — a hero sentenced to execution died with no executioner on record (a mod executed them without naming one). The blood-feud bookkeeping for that death is skipped and the game continues.	Crash Doctor : plantage évité sur la carte de campagne — un héros condamné à l'exécution est mort sans bourreau enregistré (un mod l'a exécuté sans en désigner un). Le suivi de vendetta pour ce décès est ignoré et le jeu continue.
+Crash Doctor: prevented a battle crash — a brand-new, still-empty formation was asked where its nearest enemy is, and the game faults on a position that was never set. Answered "none"; the battle continues.	Crash Doctor : plantage de bataille évité — on a demandé à une formation toute neuve, encore vide, où se trouve l'ennemi le plus proche, et le jeu échoue sur une position jamais définie. Réponse « aucun » ; la bataille continue.
+Crash Doctor: prevented a crash on the day change in a town market. An item there belongs to a category the game no longer knows, so it is not traded today; everything else continues as normal.	Crash Doctor : plantage évité au changement de jour dans le marché d'une ville. Un objet y appartient à une catégorie que le jeu ne connaît plus, il n'est donc pas échangé aujourd'hui ; tout le reste continue normalement.
+Crash Doctor: prevented a crash on opening a settlement menu — the menu asked for places this settlement does not have (for example a town menu inside a castle). The missing places were left out; the game continues.	Crash Doctor : plantage évité à l'ouverture d'un menu de colonie — le menu demandait des lieux que cette colonie n'a pas (par exemple un menu de ville dans un château). Les lieux manquants ont été omis ; le jeu continue.
+Crash Doctor: prevented a campaign-map crash at a birth — the parent's character has no face data (a mod's character that was never defined in a file). The newborn borrowed a face range from the other parent or the culture's troops, and the game continues.	Crash Doctor : plantage évité sur la carte de campagne lors d'une naissance — le personnage du parent n'a pas de données de visage (un personnage de mod jamais défini dans un fichier). Le nouveau-né a emprunté une plage de visage à l'autre parent ou aux troupes de sa culture, et le jeu continue.
+Crash Doctor: prevented a campaign-map crash — a leaderless party (garrison or militia) had a troop roster whose headcount did not match its troop list. The count was corrected from the list and the game continues.	Crash Doctor : plantage évité sur la carte de campagne — un groupe sans chef (garnison ou milice) avait une liste de troupes dont l'effectif ne correspondait pas à ses entrées. L'effectif a été recalculé à partir de la liste et le jeu continue.
+Crash Doctor: prevented a battle crash (TOR) — you killed a unit whose troop has no culture set, and TOR's career-perk check reads that culture without a check. The unit counts as "not Chaos / not a Beastman"; the battle continues.	Crash Doctor : plantage de bataille évité (TOR) — vous avez tué une unité dont la troupe n'a pas de culture définie, et la vérification des atouts de carrière de TOR lit cette culture sans contrôle. L'unité compte comme « ni Chaos, ni Homme-bête » ; la bataille continue.
+Crash Doctor: prevented a campaign-map crash — a clan added by a mod has no leader, and the game's daily clan bookkeeping cannot run without one. One of its own lords was made leader and the game continues.	Crash Doctor : plantage évité sur la carte de campagne — un clan ajouté par un mod n'a pas de chef, et le calcul quotidien du clan ne peut pas se faire sans lui. L'un de ses propres seigneurs a été nommé chef et le jeu continue.
+Crash Doctor: prevented a campaign-map crash — a clan added by a mod has no leader, and the game's daily clan bookkeeping cannot run without one. It has no lords at all, so its daily bookkeeping was skipped and the game continues.	Crash Doctor : plantage évité sur la carte de campagne — un clan ajouté par un mod n'a pas de chef, et le calcul quotidien du clan ne peut pas se faire sans lui. Il n'a aucun seigneur, son calcul quotidien a donc été ignoré et le jeu continue.
+Crash dump cleanup failed: {P0}	Échec du nettoyage des vidages de plantage : {P0}
+FDS blacklist cleanup failed: {P0}	Échec du nettoyage de la liste noire FDS : {P0}
+Save cleaning is unavailable: Harmony is installed but cannot patch this game version, so the cleaner did not start. Use the Harmony build that matches your game, then restart. Nothing was changed.	Le nettoyage de sauvegarde est indisponible : Harmony est installé mais ne peut pas modifier cette version du jeu, le nettoyeur n'a donc pas démarré. Utilisez la version de Harmony adaptée à votre jeu, puis redémarrez. Rien n'a été modifié.
+Crash Doctor — this save carries broken troops	Crash Doctor — cette sauvegarde contient des troupes endommagées
+Crash Doctor has had to repair {P0} different troop types this session — including troops that come with the game.\n\nYour mods' files are fine: the game's own troops loaded correctly. The empty ones are copies this save carries in its parties. Your campaign is running on substitutes, and a battle or the daily tick can still crash on data no substitute covers.\n\nLoad an earlier save. And restart the game before loading a different save — saves made after loading another save in a running game are where these copies come from.	Crash Doctor a dû réparer {P0} types de troupes différents pendant cette session — y compris des troupes fournies avec le jeu.\n\nLes fichiers de vos mods sont en bon état : les troupes du jeu lui-même se sont chargées correctement. Les troupes vides sont des copies que cette sauvegarde conserve dans ses groupes. Votre campagne tourne sur des valeurs de remplacement, et une bataille ou le tick quotidien peut encore planter sur des données qu'aucun remplacement ne couvre.\n\nChargez une sauvegarde plus ancienne. Et redémarrez le jeu avant de charger une autre sauvegarde — ces copies proviennent de sauvegardes faites après avoir chargé une autre sauvegarde dans un jeu déjà lancé.
+«{P0}» needs «{P1}», which is now called «{P2}» — it is installed but DISABLED  →  enable «{P3}» in the launcher	«{P0}» nécessite «{P1}», qui s'appelle désormais «{P2}» — il est installé mais DÉSACTIVÉ  →  activez «{P3}» dans le lanceur

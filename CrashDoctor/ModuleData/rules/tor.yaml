@@ -1366,3 +1366,105 @@
     all:
       - managed_exception: { frame_contains: "CalculateAICastMatrixFrame" }
       - managed_exception: { type_contains: "NullReferenceException" }
+
+# TOR's culture predicates read BasicCharacterObject.Culture with no check.
+#   TOR_Core.Extensions.CharacterObjectExtensions.IsChaos / IsBeastman / IsCultist (BasicCharacterObject)
+#   ← CareerPerkMissionBehavior.OnAgentRemoved (line 354: IsUndead() || IsChaos() || IsBeastman())
+#   ← Mission.OnAgentRemoved ← Mission_OnAgentRemoved (native callback).
+# BasicCharacterObject.Culture is a plain field read; Crash Doctor's culture fallback covers only the
+# `new` CharacterObject.Culture, so a troop whose XML culture never resolved still kills these checks.
+# The same pair is called by the KnightOldWorld / Warden / WitchHunter career choices, IsCultist by
+# VampireCount. The fatal record often carries only Mission_MissileHitCallback (the exception crossed a
+# native callback and lost its TOR frames) — this rule matches the inner record.
+# Guarded by Crash Doctor (id "tor_culture_predicate").
+- id: tor.culture_predicate_null_culture
+  category: tor
+  severity: critical
+  confidence: high
+  evidence_source: "Client crash 2026-09-27 00:55 (RickLauncher report, Bannerlord 1.3.15, TOR_Core + TOR_Armory + TOR_Environment + LoreHardcore + RTSCameraUniversal): NullReferenceException TOR_Core.Extensions.CharacterObjectExtensions.IsChaos(BasicCharacterObject) CharacterObjectExtensions.cs:line 348 ← TOR_Core.BattleMechanics.CareerPerkMissionBehavior.OnAgentRemoved CareerPerkMissionBehavior.cs:line 354 ← Mission.OnAgentRemoved ← Mission_OnAgentRemoved_Patch1, then re-surfacing through Mission_MissileHitCallback with the TOR frames gone. Verified against TOR source (TORSource) and decompiled TaleWorlds.Core / CampaignSystem: BasicCharacterObject.Culture returns the raw _culture field; CharacterObject.Culture is `new` (the one CharacterDataFallbackPatch covers); CareerHelper.IsValidCareerMissionInteractionBetweenAgents rejects mounts, so the null is the troop's culture."
+  requires_sources: [managed_exception]
+  title:
+    en: "TOR battle crash: Chaos / Beastman check on a troop with no culture — guarded by Crash Doctor"
+    ru: "Вылет TOR в бою: проверка «Хаос / зверолюд» у войска без культуры — перехвачено Crash Doctor"
+    zh: "TOR 战斗崩溃：对无文化兵种进行混沌／兽人判断——已被 Crash Doctor 拦截"
+    zht: "TOR 戰鬥當機：對無文化兵種進行混沌／獸人判斷——已被 Crash Doctor 攔截"
+    tr: "TOR savaş çökmesi: kültürü olmayan birlikte Kaos / Hayvan-insan denetimi — Crash Doctor koruyor"
+    fr: "Plantage de bataille TOR : test Chaos / Homme-bête sur une troupe sans culture — intercepté par Crash Doctor"
+  description:
+    en: |
+      NullReferenceException from TOR_Core.Extensions.CharacterObjectExtensions.IsChaos (or IsBeastman /
+      IsCultist) when you kill a unit. TOR's career perks ask whether the unit you killed is Chaos, a
+      Beastman or a Cultist by reading its troop's culture with no check. This troop has no culture — its
+      culture never loaded, usually because the troop comes from an add-on mod whose data does not match
+      the installed TOR — so the check crashes the battle at the moment of the kill. The crash report may
+      only show Mission_MissileHitCallback: the exception crossed the engine's native callback and lost the
+      TOR frames on the way. This is TOR code TRIGGERED by troop data, NOT a shader or driver problem.
+    ru: |
+      NullReferenceException из TOR_Core.Extensions.CharacterObjectExtensions.IsChaos (или IsBeastman /
+      IsCultist) в момент, когда ты убиваешь юнита. Карьерные перки TOR проверяют, не Хаос ли убитый, не
+      зверолюд ли и не культист ли, читая культуру его войска без проверки. У этого войска культуры нет — она
+      так и не загрузилась, обычно потому что войско из мода-дополнения, чьи данные не совпадают с
+      установленным TOR, — и проверка роняет бой в момент убийства. В отчёте может быть виден только
+      Mission_MissileHitCallback: исключение прошло через нативный колбэк движка и потеряло по дороге
+      кадры TOR. Это код TOR, ЗАПУЩЕННЫЙ данными войска, а НЕ проблема шейдеров или драйвера.
+    zh: |
+      击杀单位时 TOR_Core.Extensions.CharacterObjectExtensions.IsChaos（或 IsBeastman / IsCultist）抛出
+      NullReferenceException。TOR 的职业天赋会不加检查地读取被击杀单位兵种的文化，以判断它是否为混沌、兽人或
+      邪教徒。该兵种没有文化——文化从未加载，通常是因为该兵种来自数据与所装 TOR 不匹配的附加模组——于是这个判断在
+      击杀的瞬间让战斗崩溃。崩溃报告可能只显示 Mission_MissileHitCallback：异常穿过了引擎的原生回调，途中丢失了
+      TOR 的堆栈帧。这是由兵种数据触发的 TOR 代码，而不是着色器或驱动问题。
+    zht: |
+      擊殺單位時 TOR_Core.Extensions.CharacterObjectExtensions.IsChaos（或 IsBeastman / IsCultist）擲出
+      NullReferenceException。TOR 的職業天賦會不加檢查地讀取被擊殺單位兵種的文化，以判斷它是否為混沌、獸人或
+      邪教徒。該兵種沒有文化——文化從未載入，通常是因為該兵種來自資料與所裝 TOR 不相符的附加模組——於是這個判斷在
+      擊殺的瞬間讓戰鬥崩潰。崩潰報告可能只顯示 Mission_MissileHitCallback：例外穿過了引擎的原生回呼，途中遺失了
+      TOR 的堆疊框架。這是由兵種資料觸發的 TOR 程式碼，而不是著色器或驅動問題。
+    tr: |
+      Bir birimi öldürdüğünde TOR_Core.Extensions.CharacterObjectExtensions.IsChaos'tan (ya da IsBeastman /
+      IsCultist'ten) NullReferenceException. TOR'un kariyer yetenekleri öldürdüğün birimin Kaos, Hayvan-insan
+      ya da Tarikatçı olup olmadığını, birliğinin kültürünü denetlemeden okuyarak sorar. Bu birliğin kültürü
+      yok — hiç yüklenmemiş, genellikle birlik, verisi kurulu TOR ile uyuşmayan bir eklenti moddan geldiği
+      için — bu yüzden denetim öldürme anında savaşı çökertir. Çökme raporunda yalnızca
+      Mission_MissileHitCallback görünebilir: istisna motorun yerel geri çağrısından geçti ve yolda TOR
+      çerçevelerini kaybetti. Bu, birlik verisinin TETİKLEDİĞİ TOR kodudur; gölgelendirici ya da sürücü sorunu DEĞİLDİR.
+    fr: |
+      NullReferenceException depuis TOR_Core.Extensions.CharacterObjectExtensions.IsChaos (ou IsBeastman /
+      IsCultist) au moment où vous tuez une unité. Les avantages de carrière de TOR demandent si l'unité tuée
+      est du Chaos, un Homme-bête ou un Cultiste en lisant la culture de sa troupe sans vérification. Cette
+      troupe n'a pas de culture — elle ne s'est jamais chargée, généralement parce que la troupe vient d'un mod
+      complémentaire dont les données ne correspondent pas au TOR installé — et le test fait planter la
+      bataille au moment de la mort. Le rapport de plantage peut ne montrer que Mission_MissileHitCallback :
+      l'exception a traversé le rappel natif du moteur et a perdu les cadres de TOR en chemin. Il s'agit de
+      code TOR DÉCLENCHÉ par des données de troupe, PAS d'un problème de shader ou de pilote.
+  fix:
+    en:
+      - "Crash Doctor already guards this — its safety net treats a troop with no culture as \"not Chaos / not a Beastman / not a Cultist\", so the perk gives no bonus and the battle continues. Keep the «TOR crash guard (Chaos / Beastman / Cultist check on a troop with no culture)» fix ON (Crash Fixes tab)."
+      - "Open the Prevented tab or crashdoctor.log: the entry names the troop id. That id tells you which mod adds the troop — update that add-on to the version made for your TOR, or report the missing culture to its author."
+      - "Do NOT rebuild shaders or change drivers — this is troop data, none of that helps."
+    ru:
+      - "Crash Doctor уже это перехватывает — safety net считает войско без культуры «не Хаос / не зверолюд / не культист», перк не даёт бонуса, бой продолжается. Держи фикс «Защита от вылета TOR (проверка «Хаос / зверолюд / культист» у войска без культуры)» ВКЛ (вкладка «Фиксы крашей»)."
+      - "Открой вкладку «Предотвращено» или crashdoctor.log: в записи указан id войска. По нему видно, какой мод добавил это войско — обнови это дополнение до версии под твой TOR или сообщи автору о пропавшей культуре."
+      - "НЕ пересобирай шейдеры и не меняй драйвер — это данные войска, ничего из этого не поможет."
+    zh:
+      - "Crash Doctor 已经拦截了它——安全网会把无文化的兵种视为“非混沌／非兽人／非邪教徒”，天赋不给加成，战斗继续。在「崩溃修复」页保持「TOR 崩溃防护（对无文化兵种进行混沌／兽人／邪教徒判断）」为开。"
+      - "打开「已避免」页或 crashdoctor.log：记录中写有兵种 id。由此可知是哪个模组添加了该兵种——把该附加模组更新到适配你所用 TOR 的版本，或向其作者报告缺失的文化。"
+      - "不要重建着色器或更换驱动——这是兵种数据，这些都没用。"
+    zht:
+      - "Crash Doctor 已經攔截了它——安全網會把無文化的兵種視為「非混沌／非獸人／非邪教徒」，天賦不給加成，戰鬥繼續。在「崩潰修復」頁保持「TOR 崩潰防護（對無文化兵種進行混沌／獸人／邪教徒判斷）」為開。"
+      - "開啟「已避免」頁或 crashdoctor.log：記錄中寫有兵種 id。由此可知是哪個模組新增了該兵種——把該附加模組更新到適配你所用 TOR 的版本，或向其作者回報缺少的文化。"
+      - "不要重建著色器或更換驅動——這是兵種資料，這些都沒用。"
+    tr:
+      - "Crash Doctor bunu zaten koruyor — güvenlik ağı kültürü olmayan bir birliği \"Kaos değil / Hayvan-insan değil / Tarikatçı değil\" sayar, yetenek bonus vermez ve savaş devam eder. «TOR çökme koruması (kültürü olmayan birlikte Kaos / Hayvan-insan / Tarikatçı denetimi)» düzeltmesini AÇIK tut (Çökme Düzeltmeleri sekmesi)."
+      - "Önlenen sekmesini ya da crashdoctor.log'u aç: kayıt birliğin kimliğini verir. Bu kimlik birliği hangi modun eklediğini söyler — o eklentiyi TOR sürümüne uygun sürüme güncelle ya da eksik kültürü yazarına bildir."
+      - "Gölgelendiricileri yeniden oluşturma veya sürücü değiştirme — bu birlik verisi, hiçbiri yardımcı olmaz."
+    fr:
+      - "Crash Doctor protège déjà ce cas — son filet de sécurité traite une troupe sans culture comme « ni Chaos, ni Homme-bête, ni Cultiste » ; l'avantage ne donne pas de bonus et la bataille continue. Gardez le correctif « Anti-plantage TOR (test Chaos / Homme-bête / Cultiste sur une troupe sans culture) » ACTIVÉ (onglet Crash Fixes)."
+      - "Ouvrez l'onglet Évités ou crashdoctor.log : l'entrée indique l'identifiant de la troupe. Cet identifiant dit quel mod ajoute la troupe — mettez ce mod complémentaire à jour vers la version prévue pour votre TOR, ou signalez la culture manquante à son auteur."
+      - "Ne reconstruisez PAS les shaders ni ne changez les pilotes — il s'agit de données de troupe, rien de tout cela n'aidera."
+  match:
+    all:
+      - managed_exception: { type_contains: "NullReference" }
+      - any:
+          - managed_exception: { frame_contains: "TOR_Core.Extensions.CharacterObjectExtensions.IsChaos" }
+          - managed_exception: { frame_contains: "TOR_Core.Extensions.CharacterObjectExtensions.IsBeastman" }
+          - managed_exception: { frame_contains: "TOR_Core.Extensions.CharacterObjectExtensions.IsCultist" }

@@ -20,16 +20,10 @@
     <string id="cd_btn_close" text="Close" />
     <string id="cd_btn_force_crash" text="Force crash (test)" />
     <string id="cd_section_crashes" text="Crashes" />
-    <string id="cd_section_fix" text="Fix steps:" />
-    <string id="cd_section_evidence" text="Matched lines:" />
-    <string id="cd_section_diagnoses" text="Diagnoses" />
     <string id="cd_severity_critical" text="CRITICAL" />
     <string id="cd_severity_warning" text="WARNING" />
     <string id="cd_severity_info" text="INFO" />
     <string id="cd_severity_unknown" text="UNKNOWN" />
-    <string id="cd_confidence_high" text="high confidence" />
-    <string id="cd_confidence_medium" text="medium confidence" />
-    <string id="cd_confidence_low" text="low confidence" />
     <string id="cd_unrecognized_title" text="Unrecognized crash" />
     <string id="cd_unrecognized_desc" text="This crash isn't in our catalogue yet. Click 'Export' — Crash Doctor saves report.txt (plus a .zip with full logs) and opens the folder with report.txt selected. Send report.txt to https://t.me/CodeRickTg / https://discord.gg/ZDJZFxQeMV and we'll add a rule for it." />
     <string id="cd_clear_dialog_title" text="Delete crash logs?" />
@@ -39,7 +33,6 @@
     <string id="cd_clear_dialog_cancel" text="Cancel" />
     <string id="cd_clear_dialog_recycle_note" text="Files go to the Windows Recycle Bin and can be restored." />
     <string id="cd_clear_done" text="Removed {COUNT} files. Restore from the Windows Recycle Bin if needed." />
-    <string id="cd_clear_preview" text="Will delete: {DEL} of {TOTAL} crash folders" />
     <string id="cd_checkbox_on" text="[X]" />
     <string id="cd_checkbox_off" text="[ ]" />
 
@@ -49,13 +42,7 @@
     <string id="cd_tab_history" text="History" />
     <string id="cd_tab_saves" text="Saves" />
     <string id="cd_tab_mods" text="Mods" />
-    <string id="cd_saves_btn_rescan" text="Re-scan" />
-    <string id="cd_saves_btn_open_folder" text="Open Game Saves folder" />
-    <string id="cd_saves_no_saves" text="No saves found in your Game Saves folder." />
-    <string id="cd_saves_summary" text="Saves: {TOTAL}, with mod mismatches: {MISMATCH}." />
 
-    <string id="cd_tuneup_scanning" text="Checking system..." />
-    <string id="cd_tuneup_summary" text="{ISSUES} issues found, {HEALTHY} checks passed" />
     <string id="cd_tuneup_summary_actionable" text="Found {COUNT} issue(s) needing attention." />
     <string id="cd_tuneup_all_good" text="No issues found. If a crash still happens, open the «Crash diagnosis» tab." />
     <string id="cd_tuneup_scan_failed" text="Scan failed. See crashdoctor.log." />
@@ -64,7 +51,6 @@
     <string id="cd_tuneup_btn_apply" text="Apply" />
     <string id="cd_tuneup_btn_ignore" text="Ignore" />
     <string id="cd_tuneup_btn_details_show" text="Details" />
-    <string id="cd_tuneup_btn_details_hide" text="Hide details" />
     <string id="cd_tuneup_btn_open_uac" text="Open UAC settings" />
     <string id="cd_details_btn_close" text="Close" />
     <string id="cd_details_header" text="More details:" />
@@ -96,8 +82,6 @@
     <string id="cd_history_load_failed" text="Failed to load history. See crashdoctor.log." />
     <string id="cd_history_btn_refresh" text="Refresh" />
     <string id="cd_history_btn_clear_all" text="Clear history" />
-    <string id="cd_history_result_ok" text="applied" />
-    <string id="cd_history_result_fail" text="failed" />
     <string id="cd_history_items_count" text="{COUNT} items affected" />
     <string id="cd_history_reboot_pending" text="reboot pending" />
     <string id="cd_history_rolled_back_at" text="rolled back {WHEN}" />
@@ -105,33 +89,16 @@
 
     <!-- NEW (2026-05-14) Emergency Save service strings. Surfaced when wiring a settings UI
          and the post-crash banner that tells the player which file holds their last save. -->
-    <string id="cd_new_badge" text="NEW" />
-    <string id="cd_emergency_save_title" text="Emergency save before crash" />
-    <string id="cd_emergency_save_hint" text="If the game is about to die, Crash Doctor tries one last SaveAs so you don't lose hours of unsaved progress. Default: ON. Disable only if it interferes with another save-related mod." />
-    <string id="cd_emergency_save_made" text="Emergency save made: {NAME}" />
-    <string id="cd_emergency_save_failed" text="Emergency save did not run: {REASON}" />
-    <string id="cd_emergency_save_disabled" text="Emergency save disabled in settings." />
-    <string id="cd_new_banner_emergency_save_on" text="Emergency save before crash is active — your progress is protected." />
-    <string id="cd_new_banner_emergency_save_off" text="NEW feature available: emergency save before crash (currently OFF in CrashDoctorSettings.xml)." />
-    <string id="cd_status_on" text="ON" />
-    <string id="cd_status_off" text="OFF" />
     <string id="cd_toggle_on_prefix" text="● ON" />
     <string id="cd_toggle_off_prefix" text="○ OFF" />
     <string id="cd_toggle_emergency_save" text="Emergency save before crash" />
     <string id="cd_toggle_native_crash_log" text="Native crash logging" />
-    <string id="cd_native_crash_log_title" text="Native crash logging" />
-    <string id="cd_native_crash_log_hint" text="When ON, writes a one-line summary to crashdoctor.log when a native crash occurs (access violation, stack overflow, heap corruption). Observe-only — does not change the crash, the usual TaleWorlds dump still happens. Default OFF — opt in if you want the extra log line." />
-    <string id="cd_patch_conflicts_badge" text="{COUNT} method(s) patched by multiple mods — click for crashdoctor.log" />
     <string id="cd_tab_settings" text="Settings  ★" />
     <string id="cd_toggle_ui_error_patching" text="UI error swallowing" />
     <string id="cd_settings_title" text="Crash Doctor settings" />
     <string id="cd_hint_emergency_save" text="When the game is about to crash with a .NET error, Crash Doctor tries one last SaveAs so you don't lose hours of progress. Saves under 'CrashDoctor_Emergency_&lt;timestamp&gt;'." />
     <string id="cd_hint_native_crash_log" text="Writes a one-line summary to crashdoctor.log when a native crash occurs (access violation, stack overflow, heap corruption). The crash itself is not affected — TaleWorlds' dump still happens." />
     <string id="cd_hint_ui_error_patching" text="Wraps a hand-picked list of UI refresh methods (Encyclopedia, Inventory, Party, Clan, Kingdom, Quests). Covers UI ONLY — battles, AI, daily tick, missions stay unprotected." />
-    <string id="cd_toggle_nre_safety_patches" text="NRE safety nets (wage / food / AI tick)" />
-    <string id="cd_hint_nre_safety_patches" text="Catches null-reference crashes in TOR_Core's wage and food-consumption models, and in every AI hourly tick. These crashes happen when another mod leaves a 'dangling' troop in a party's roster (a unit that was removed but never scrubbed). With the safety net on, the offending party simply skips that tick and the game continues. Default ON." />
-    <string id="cd_toggle_dangling_roster_cleanup" text="Dangling troop cleanup on load" />
-    <string id="cd_hint_dangling_roster_cleanup" text="When you load a save, scans every party and settlement and removes broken troop entries (characters that no longer exist). Without this, the next AI tick crashes on those entries. Safe and silent when no broken entries are found. Default ON." />
 
   </strings>
 </base>

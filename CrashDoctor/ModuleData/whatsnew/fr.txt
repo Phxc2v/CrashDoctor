@@ -1,45 +1,43 @@
 Merci d'utiliser Crash Doctor !
 
-NOTRE PROPRE BUG, CORRIGÉ
+NOS PROPRES BUGS, CORRIGÉS
 
-• Sur Bannerlord 1.2.10, le mod cassait lui-même le calcul des soldes : une protection posée au menu principal exécutait un morceau de code du jeu trop tôt, le jeu mémorisait l'échec, et la solde de chaque groupe valait zéro jusqu'au redémarrage — pendant que le mod comptait les dégâts comme 94 332 « plantages évités ». Plus aucune protection n'est posée si tôt, et un tel échec est désormais signalé une seule fois, avec des mots honnêtes.
+• Sur certaines installations, Crash Doctor faisait lui-même planter le jeu à chaque changement d'effectif d'un groupe : le jeu chargeait la version du mod prévue pour 1.2 au lieu de celle pour 1.3 et plus. Les deux versions portent désormais des noms différents, et le chargeur refuse la mauvaise au lieu de l'exécuter.
 
-• La protection du menu de rencontre ne boucle plus : un journal contenait 3 223 déclenchements en deux minutes, chacun compté comme un sauvetage. La répétition est détectée et signalée une fois.
+• La réparation de sauvegarde « groupes détruits revenus sur la carte » n'a jamais fonctionné et, à chaque rechargement, annonçait une réparation qui n'avait pas eu lieu. Réécrite : elle vérifie désormais la carte une fois le chargement terminé.
+
+• report.txt n'était pas écrit quand le jeu tourne sur l'environnement .NET Core. Corrigé.
 
 NOUVEAUTÉS
 
-• report.txt contient une pile enrichie : la position dans chaque méthode, l'appel le plus proche et les propriétaires de chaque patch. Plus besoin d'un rapporteur de plantage tiers.
+• Onglet Mods : une dépendance écrite sous l'ancien nom d'un mod (les extensions d'Europe 1700 qui demandent EoE1700) n'est plus signalée manquante si le mod renommé est installé. Les personnages qui empruntent des ensembles d'équipement qu'aucun mod ne définit sont nommés avant le début de la campagne.
 
-• Les plantages natifs sont lus depuis le dump : la bibliothèque fautive décide du verdict — pilote graphique, overlay injecté, moteur audio ou DLL native d'un mod. Le mod supprimait le dump avant de le lire.
+• Linux / Steam Deck (Proton) : les vérifications qui modifient des réglages Windows ne sont plus proposées.
 
-• Les dossiers de plantage sont associés à l'enregistrement du mod dans tout fuseau horaire (les noms sont en UTC), et la liste des modules nomme les identifiants, pas les dossiers.
+• Tales from the Age of Men : Crash Doctor croyait Harmony désactivé et ses protections restaient inactives. Corrigé.
 
-• L'onglet Mods analyse en arrière-plan avec progression et garde le résultat tant qu'aucun fichier ne change. Un module listé deux fois dans l'ordre de chargement, un manifeste illisible pour le jeu et une traduction placée au-dessus de son mod sont signalés avant le lancement.
+• Nettoyage de sauvegarde : nouvelle case « Supprimer aussi les groupes défaillants » — désactivée par défaut, elle ne touche jamais votre propre groupe.
 
-• Le bouton du cache des shaders ne touche que le cache généré — jamais un fichier du jeu ou d'un mod.
+• Le report.txt exporté masque votre nom d'utilisateur Windows et le nom de l'ordinateur.
 
-• Un correctif attendant une session de jeu s'affiche « Différé », pas « Inutile ici ». Les textes longs défilent au lieu de rétrécir. L'onglet Évités regroupe les répétitions et suit votre langue.
+• Les cartes du cache de shaders ne suppriment plus les fichiers fournis avec le jeu ou les mods.
 
 NOUVELLES PROTECTIONS
 
-• Plantage au changement de jour dû à un objet dont la catégorie vient d'une campagne précédente de la même session. Redémarrez le jeu avant de charger une sauvegarde.
+• Plantage sur la carte 20 à 30 secondes après chaque chargement : un clan sans chef au tick quotidien.
 
-• Plantage à la première vague de renforts quand un mod ajoute une équipe après le début de la bataille.
+• Plantage au déploiement en siège : un mod a demandé à une formation vide son ennemi le plus proche.
 
-• Plantage en bataille au dessin de l'icône de bannière au-dessus de soldats partageant une bannière.
+• Plantage à l'ouverture d'un menu de lieu qui demande des endroits que le lieu n'a pas.
 
-• Plantage quand un marchand envoie une caravane — régression du jeu depuis la mise à jour navale.
+• Plantage en ville ou au village : un habitant absent de la liste de l'endroit qu'il parcourt.
 
-• Plantage de carte à chaque tick dû à une colonie sans clan propriétaire — ajoutée au jeu après la sauvegarde.
+• Plantage TOR en bataille en tuant une unité dont la troupe n'a pas de culture.
 
-• Plantage quelques secondes après chaque chargement : héros exécuté sans bourreau enregistré (1.5+).
+• Plantage au début d'une nouvelle campagne : un personnage emprunte un ensemble d'équipement inexistant.
 
-• Plantage à la naissance d'un enfant d'un parent sans données de visage — réparé au lieu d'être contourné.
+• La protection « groupe sans propriétaire » couvre aussi la réparation quotidienne des navires de War Sails.
 
-• Plantage au début d'un siège dû à un effectif qui compte des hommes alors que sa liste est vide.
+Crash Doctor est fait par une seule personne et vit des dons. S'il vous a sauvé une bataille ou une sauvegarde, le bouton Don est en bas de sa fenêtre.
 
-• Plantage dû à une texture de bannière arrivant sur une armure déjà détruite avec son soldat.
-
-Crash Doctor est fait par une seule personne et vit de dons. S'il vous a sauvé une bataille ou une sauvegarde, le bouton Don est en bas de sa fenêtre.
-
-Signaler un plantage : t.me/CodeRickTg / discord.gg/ZDJZFxQeMV — cliquez « Ouvrir le dossier » sur la carte du plantage et envoyez LES DEUX fichiers : report.txt et crashdoctor_at_crash.log.
+Signaler un plantage : t.me/CodeRickTg / discord.gg/ZDJZFxQeMV — fermez la fenêtre de plantage du jeu SANS l'envoyer à TaleWorlds (l'envoi supprime les fichiers), puis dans Crash Doctor ouvrez Diagnostic, cliquez sur Exporter et envoyez le fichier obtenu.

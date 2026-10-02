@@ -20,16 +20,10 @@
     <string id="cd_btn_close" text="Fermer" />
     <string id="cd_btn_force_crash" text="Forcer un plantage" />
     <string id="cd_section_crashes" text="Plantages" />
-    <string id="cd_section_fix" text="Étapes de résolution :" />
-    <string id="cd_section_evidence" text="Lignes correspondantes :" />
-    <string id="cd_section_diagnoses" text="Diagnostics" />
     <string id="cd_severity_critical" text="CRITIQUE" />
     <string id="cd_severity_warning" text="AVERTISSEMENT" />
     <string id="cd_severity_info" text="INFO" />
     <string id="cd_severity_unknown" text="INCONNU" />
-    <string id="cd_confidence_high" text="confiance élevée" />
-    <string id="cd_confidence_medium" text="confiance moyenne" />
-    <string id="cd_confidence_low" text="confiance faible" />
     <string id="cd_unrecognized_title" text="Plantage non reconnu" />
     <string id="cd_unrecognized_desc" text="Ce plantage n'est pas encore dans notre catalogue. Cliquez sur « Exporter » : Crash Doctor enregistre report.txt (ainsi qu'une archive .zip avec les journaux complets) et ouvre le dossier avec report.txt sélectionné. Envoyez report.txt sur https://t.me/CodeRickTg / https://discord.gg/ZDJZFxQeMV et nous ajouterons une règle pour lui." />
     <string id="cd_clear_dialog_title" text="Supprimer les journaux de plantage ?" />
@@ -39,7 +33,6 @@
     <string id="cd_clear_dialog_cancel" text="Annuler" />
     <string id="cd_clear_dialog_recycle_note" text="Les fichiers vont dans la Corbeille de Windows et peuvent être restaurés." />
     <string id="cd_clear_done" text="{COUNT} fichiers supprimés. Restaurez-les depuis la Corbeille de Windows si besoin." />
-    <string id="cd_clear_preview" text="Seront supprimés : {DEL} dossiers de plantage sur {TOTAL}" />
     <string id="cd_checkbox_on" text="[X]" />
     <string id="cd_checkbox_off" text="[ ]" />
 
@@ -49,13 +42,7 @@
     <string id="cd_tab_history" text="Historique" />
     <string id="cd_tab_saves" text="Sauvegardes" />
     <string id="cd_tab_mods" text="Mods" />
-    <string id="cd_saves_btn_rescan" text="Réanalyser" />
-    <string id="cd_saves_btn_open_folder" text="Ouvrir le dossier des sauvegardes" />
-    <string id="cd_saves_no_saves" text="Aucune sauvegarde trouvée dans votre dossier de sauvegardes." />
-    <string id="cd_saves_summary" text="Sauvegardes : {TOTAL}, avec des écarts de mods : {MISMATCH}." />
 
-    <string id="cd_tuneup_scanning" text="Vérification du système..." />
-    <string id="cd_tuneup_summary" text="{ISSUES} problèmes trouvés, {HEALTHY} vérifications réussies" />
     <string id="cd_tuneup_summary_actionable" text="{COUNT} problème(s) nécessitant votre attention." />
     <string id="cd_tuneup_all_good" text="Aucun problème trouvé. Si un plantage survient malgré tout, ouvrez l'onglet « Diagnostic des plantages »." />
     <string id="cd_tuneup_scan_failed" text="Échec de l'analyse. Voir crashdoctor.log." />
@@ -64,7 +51,6 @@
     <string id="cd_tuneup_btn_apply" text="Appliquer" />
     <string id="cd_tuneup_btn_ignore" text="Ignorer" />
     <string id="cd_tuneup_btn_details_show" text="Détails" />
-    <string id="cd_tuneup_btn_details_hide" text="Masquer les détails" />
     <string id="cd_tuneup_btn_open_uac" text="Ouvrir les paramètres UAC" />
     <string id="cd_details_btn_close" text="Fermer" />
     <string id="cd_details_header" text="Plus de détails :" />
@@ -96,8 +82,6 @@
     <string id="cd_history_load_failed" text="Échec du chargement de l'historique. Voir crashdoctor.log." />
     <string id="cd_history_btn_refresh" text="Actualiser" />
     <string id="cd_history_btn_clear_all" text="Effacer l'historique" />
-    <string id="cd_history_result_ok" text="appliqué" />
-    <string id="cd_history_result_fail" text="échoué" />
     <string id="cd_history_items_count" text="{COUNT} éléments concernés" />
     <string id="cd_history_reboot_pending" text="redémarrage en attente" />
     <string id="cd_history_rolled_back_at" text="annulé {WHEN}" />
@@ -105,33 +89,16 @@
 
     <!-- NEW (2026-05-14) Emergency Save service strings. Surfaced when wiring a settings UI
          and the post-crash banner that tells the player which file holds their last save. -->
-    <string id="cd_new_badge" text="NOUVEAU" />
-    <string id="cd_emergency_save_title" text="Sauvegarde d'urgence avant plantage" />
-    <string id="cd_emergency_save_hint" text="Si le jeu est sur le point de mourir, Crash Doctor tente une dernière sauvegarde pour ne pas vous faire perdre des heures de progression. Par défaut : ACTIVÉ. Ne le désactivez que si cela gêne un autre mod lié aux sauvegardes." />
-    <string id="cd_emergency_save_made" text="Sauvegarde d'urgence effectuée : {NAME}" />
-    <string id="cd_emergency_save_failed" text="La sauvegarde d'urgence n'a pas eu lieu : {REASON}" />
-    <string id="cd_emergency_save_disabled" text="Sauvegarde d'urgence désactivée dans les paramètres." />
-    <string id="cd_new_banner_emergency_save_on" text="La sauvegarde d'urgence avant plantage est active — votre progression est protégée." />
-    <string id="cd_new_banner_emergency_save_off" text="NOUVELLE fonction disponible : sauvegarde d'urgence avant plantage (actuellement DÉSACTIVÉE dans CrashDoctorSettings.xml)." />
-    <string id="cd_status_on" text="ACTIVÉ" />
-    <string id="cd_status_off" text="DÉSACTIVÉ" />
     <string id="cd_toggle_on_prefix" text="● ACTIVÉ" />
     <string id="cd_toggle_off_prefix" text="○ DÉSACTIVÉ" />
     <string id="cd_toggle_emergency_save" text="Sauvegarde d'urgence avant plantage" />
     <string id="cd_toggle_native_crash_log" text="Journalisation des plantages natifs" />
-    <string id="cd_native_crash_log_title" text="Journalisation des plantages natifs" />
-    <string id="cd_native_crash_log_hint" text="Une fois activée, écrit un résumé d'une ligne dans crashdoctor.log lorsqu'un plantage natif survient (violation d'accès, débordement de pile, corruption du tas). Observation seule — ne change rien au plantage, le vidage habituel de TaleWorlds a toujours lieu. Désactivée par défaut : activez-la si vous voulez cette ligne de journal supplémentaire." />
-    <string id="cd_patch_conflicts_badge" text="{COUNT} méthode(s) patchée(s) par plusieurs mods — cliquez pour crashdoctor.log" />
     <string id="cd_tab_settings" text="Options  ★" />
     <string id="cd_toggle_ui_error_patching" text="Absorption des erreurs d'interface" />
     <string id="cd_settings_title" text="Paramètres de Crash Doctor" />
     <string id="cd_hint_emergency_save" text="Quand le jeu est sur le point de planter sur une erreur .NET, Crash Doctor tente une dernière sauvegarde pour ne pas vous faire perdre des heures de progression. Enregistre sous « CrashDoctor_Emergency_&lt;horodatage&gt; »." />
     <string id="cd_hint_native_crash_log" text="Écrit un résumé d'une ligne dans crashdoctor.log lorsqu'un plantage natif survient (violation d'accès, débordement de pile, corruption du tas). Le plantage lui-même n'est pas affecté — le vidage de TaleWorlds a toujours lieu." />
     <string id="cd_hint_ui_error_patching" text="Enveloppe une liste choisie de méthodes de rafraîchissement de l'interface (Encyclopédie, Inventaire, Groupe, Clan, Royaume, Quêtes). Couvre UNIQUEMENT l'interface — les batailles, l'IA, le tick journalier et les missions restent non protégés." />
-    <string id="cd_toggle_nre_safety_patches" text="Filets de sécurité NRE (solde / nourriture / tick IA)" />
-    <string id="cd_hint_nre_safety_patches" text="Intercepte les plantages de référence nulle dans les modèles de solde et de consommation de nourriture de TOR_Core, ainsi que dans chaque tick horaire de l'IA. Ces plantages surviennent quand un autre mod laisse une unité « fantôme » dans la composition d'un groupe (une unité retirée mais jamais nettoyée). Avec le filet actif, le groupe fautif saute simplement ce tick et le jeu continue. Activé par défaut." />
-    <string id="cd_toggle_dangling_roster_cleanup" text="Nettoyage des unités fantômes au chargement" />
-    <string id="cd_hint_dangling_roster_cleanup" text="Au chargement d'une sauvegarde, parcourt chaque groupe et chaque colonie et retire les entrées d'unités cassées (des personnages qui n'existent plus). Sans cela, le tick suivant de l'IA plante dessus. Sûr et silencieux quand rien de cassé n'est trouvé. Activé par défaut." />
 
   </strings>
 </base>

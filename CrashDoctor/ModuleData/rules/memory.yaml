@@ -553,6 +553,10 @@
       - any:
           - managed_exception: { frame_contains: "Mission.Tick" }
           - managed_exception: { frame_contains: "MissionState.TickMission" }
+      # "This stack cannot name the mod" is false for the formation-query fault: the mod's prefix that
+      # asked is right there in the stack — battle.formation_query_empty_formation_av owns it.
+      - none:
+          - managed_exception: { frame_contains: "ClosestSignificantlyLargeEnemyFormation" }
 
 - id: native.stack_overflow
   category: native

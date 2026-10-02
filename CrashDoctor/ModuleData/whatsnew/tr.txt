@@ -1,45 +1,43 @@
-Crash Doctor'ı kullandığınız için teşekkürler!
+Crash Doctor'u kullandığın için teşekkürler!
 
-KENDİ HATAMIZ, DÜZELTİLDİ
+KENDİ HATALARIMIZ, DÜZELTİLDİ
 
-• Bannerlord 1.2.10'da modun kendisi maaş hesabını bozuyordu: ana menüde kurulan bir koruma, oyunun bir kod parçasını çok erken çalıştırıyor, oyun bu hatayı kalıcı olarak hafızaya alıyor ve her grubun maaşı yeniden başlatana kadar sıfır okunuyordu — mod ise sonuçları 94.332 "önlenen çökme" olarak sayıyordu. Artık hiçbir koruma bu kadar erken kurulmuyor ve böyle bir hata bir kez, dürüst sözlerle bildiriliyor.
+• Bazı kurulumlarda Crash Doctor, bir birliğin kadrosu her değiştiğinde oyunu kendisi çökertiyordu: oyun, modun 1.3 ve sonrası için olan sürümü yerine 1.2 sürümünü yüklüyordu. İki sürümün artık farklı adları var ve yükleyici yanlış olanı çalıştırmak yerine reddediyor.
 
-• Karşılaşma menüsü koruması artık döngüye girmiyor: bir günlükte iki dakikada 3.223 tetiklenme vardı, her biri kurtarma sayılmıştı. Tekrar artık algılanıyor ve bir kez bildiriliyor.
+• "Yok edilen birlikler haritaya geri döndü" kayıt onarımı hiç çalışmadı ve her yeniden yüklemede gerçekleşmeyen bir onarımı bildiriyordu. Yeniden yazıldı: artık haritayı yükleme bittikten sonra denetliyor.
+
+• Oyun .NET Core ortamında çalışırken report.txt yazılmıyordu. Düzeltildi.
 
 YENİLİKLER
 
-• report.txt zenginleştirilmiş yığın içeriyor: her yöntemin içindeki konum, oradaki en yakın çağrı ve üzerindeki her yamanın sahibi. Üçüncü taraf çökme raporlayıcısına gerek kalmadı.
+• Modlar sekmesi: bir modun eski adıyla yazılmış bağımlılık (EoE1700 isteyen Europe 1700 eklentileri), yeniden adlandırılan mod kuruluysa artık eksik sayılmıyor. Hiçbir modun tanımlamadığı ekipman setlerini ödünç alan karakterler kampanya başlamadan adlarıyla bildiriliyor.
 
-• Yerel çökmeler dökümden okunuyor: hatalı kütüphane kararı belirliyor — grafik sürücüsü, enjekte edilen overlay, ses motoru ya da bir modun kendi yerel DLL'i. Mod eskiden dökümü okumadan siliyordu.
+• Linux / Steam Deck (Proton): Windows ayarlarını değiştiren denetimler artık önerilmiyor.
 
-• Çökme klasörleri her saat diliminde modun kendi kaydıyla eşleşiyor (klasör adları UTC), modül listesi klasörleri değil mod kimliklerini gösteriyor.
+• Tales from the Age of Men: Crash Doctor, Harmony'yi kapalı sanıyordu ve canlı korumalar boşta duruyordu. Düzeltildi.
 
-• Modlar sekmesi arka planda ilerleme göstererek tarıyor ve bir dosya değişene kadar sonucu hatırlıyor. Yükleme sırasında iki kez yazılmış bir modül, oyunun okuyamadığı bir manifest ve kendi modunun üstüne yerleştirilmiş bir çeviri başlatmadan önce bildiriliyor.
+• Kayıt temizliği: yeni "Arızalı birlikleri de sil" kutusu — varsayılan olarak kapalı ve kendi birliğine asla dokunmaz.
 
-• Shader önbelleği düğmesi yalnızca üretilen önbelleğe dokunuyor — oyunun ya da bir modun dosyasına asla.
+• Dışa aktarılan report.txt, Windows kullanıcı adını ve bilgisayar adını gizliyor.
 
-• Oyun oturumu bekleyen bir düzeltme "Gerekli değil" değil "Ertelendi" olarak görünüyor. Uzun metinler küçülmek yerine kaydırılıyor. Önlenenler sekmesi tekrarları tek satırda topluyor ve dilinizi izliyor.
+• Gölgelendirici önbelleği kartları artık oyunla ya da modlarla gelen dosyaları silmiyor.
 
 YENİ ÇÖKME KORUMALARI
 
-• Aynı oyun oturumundaki önceki bir kampanyaya ait kategori taşıyan bir eşyadan kaynaklanan gün değişimi çökmesi. Kayıt yüklemeden önce oyunu yeniden başlatın.
+• Her yüklemeden 20–30 saniye sonra haritada çökme: günlük tikte lideri olmayan bir klan.
 
-• Bir mod savaş başladıktan sonra takım eklediğinde ilk takviye dalgasındaki çökme.
+• Kuşatmada konuşlanırken çökme: bir mod boş bir düzene en yakın düşmanını sordu.
 
-• Aynı sancağı paylaşan askerlerin üzerine sancak simgesi çizilirken savaş çökmesi.
+• Yerleşimde bulunmayan yerleri isteyen bir yerleşim menüsü açılırken çökme.
 
-• Bir tüccar kervan gönderdiğinde çökme — deniz güncellemesinden beri oyunun kendi gerilemesi.
+• Kasaba ya da köyde çökme: bir sakin, dolaştığı yerin listesinden kaybolmuş.
 
-• Sahibi olmayan bir yerleşimden kaynaklanan her tikte harita çökmesi — kayıttan sonra oyuna eklenen bir yerleşim.
+• Kültürü olmayan bir birliğin askerini öldürürken TOR savaşında çökme.
 
-• Her yüklemeden saniyeler sonra çökme: cellat kaydı olmadan idam edilmiş kahraman (1.5+).
+• Yeni kampanya başlarken çökme: bir karakter var olmayan bir ekipman setini ödünç alıyor.
 
-• Yüz verisi olmayan bir ebeveynden doğum çökmesi — artık etrafından dolaşılmıyor, onarılıyor.
+• "Sahipsiz birlik" koruması artık War Sails'in günlük gemi onarımını da kapsıyor.
 
-• Listesi boşken mevcudu asker gösteren bir kadrodan kaynaklanan kuşatma başlangıcı çökmesi.
+Crash Doctor'u tek bir kişi yapıyor ve bağışlarla yaşıyor. Sana bir savaşı ya da bir kaydı kurtardıysa, Bağış düğmesi penceresinin altında.
 
-• Askeriyle birlikte yok edilmiş bir zırha inen sancak dokusundan kaynaklanan çökme.
-
-Crash Doctor'ı tek bir kişi yapıyor ve bağışlarla yaşıyor. Size bir savaş ya da bir kayıt kazandırdıysa, Bağış düğmesi penceresinin altında.
-
-Çökme bildir: t.me/CodeRickTg / discord.gg/ZDJZFxQeMV — çökme kartında "Klasörü aç"a basın ve HER İKİ dosyayı gönderin: report.txt ve crashdoctor_at_crash.log.
+Çökme bildir: t.me/CodeRickTg / discord.gg/ZDJZFxQeMV — oyunun çökme penceresini TaleWorlds'e GÖNDERMEDEN kapat (gönderme dosyaları siler), sonra Crash Doctor'da Çökme tanısı'nı aç, Dışa aktar'a bas ve oluşan dosyayı gönder.
